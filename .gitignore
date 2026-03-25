@@ -1,0 +1,102 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code related
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Flutter/Dart/Pub related
+**/doc/api/
+.dart_tool/
+**/.dart_tool/
+.packages
+**/.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+**/.pub-cache/
+.pub/
+**/.pub/
+build/
+**/build/
+coverage/
+**/coverage/
+
+# Android related
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+**/android/debug
+**/android/profile
+**/android/release
+*.keystore
+*.jks
+key.properties
+**/android/local.properties
+**/android/key.properties
+*.apk
+*.aab
+
+# iOS/macOS related
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/Runner.xcworkspace/xcuserdata/
+**/macos/Flutter/ephemeral/
+**/macos/Flutter/GeneratedPluginRegistrant.*
+**/macos/Pods/
+
+# Web/Windows/Linux related
+**/linux/flutter/ephemeral/
+**/windows/flutter/ephemeral/
+**/windows/flutter/ephemeral/generated_config.cmake
+
+# Env files
+.env
+.env.*
+
+# Generated code (Biasanya g.dart dan freezed.dart bisa di-commit, tapi ditaruh formatnya di sini jika diperlukan)
+# *.g.dart
+# *.freezed.dart
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Melos
+.melos_tool/
+
+# Tambahan Spesifik Proyek (AI Assistants & Docs)
+.gemini/
+.dartServer/
+.agent/
+.agents/
+.claude/
+docs/
