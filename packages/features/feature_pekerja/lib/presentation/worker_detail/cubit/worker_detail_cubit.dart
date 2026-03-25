@@ -35,7 +35,7 @@ class WorkerDetailCubit extends Cubit<WorkerDetailState> {
           );
         },
         (workerEntity) {
-          // Map to Detail Model (Using placeholder mock fields for absent arrays)
+          // Map to Detail Model using newly pulled API fields
           final model = WorkerDetailModel(
             id: workerEntity.id,
             name: workerEntity.name,
@@ -44,12 +44,14 @@ class WorkerDetailCubit extends Cubit<WorkerDetailState> {
             age: workerEntity.age,
             rating: workerEntity.rating,
             reviewCount: workerEntity.reviewCount,
-            wageText: 'Rp ${workerEntity.wage} / jam',
+            wageText: 'Rp ${workerEntity.wage}', // Modified from Rp wage / jam depending on formatting
             avatarUrl: workerEntity.avatarUrl,
-            address: 'Alamat dari API tidak tersedia di base entity', 
-            workExperiences: ['Pengalaman dari API'],
-            workingHours: 'Fleksibel',
-            phoneNumber: '08xxxxxxxxx',
+            address: workerEntity.address ?? 'Alamat tidak tersedia', 
+            workExperiences: (workerEntity.workExperience != null && workerEntity.workExperience!.isNotEmpty)
+                ? [workerEntity.workExperience!]
+                : ['Tidak ada pengalaman kerja terdaftar'],
+            workingHours: workerEntity.available ?? 'Fleksibel',
+            phoneNumber: workerEntity.phoneNumber ?? '-',
             badges: [],
           );
 

@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'cubit/worker_detail_cubit.dart';
 import 'cubit/worker_detail_state.dart';
@@ -523,13 +524,45 @@ class _BottomActionSection extends StatelessWidget {
           width: double.infinity,
           height: 48,
           child: ElevatedButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Fitur Chat akan segera hadir!'),
-                  backgroundColor: AppColors.info,
-                ),
-              );
+            onPressed: () async {
+              final phone = worker.phoneNumber;
+              if (phone.isNotEmpty && phone != '-') {
+                String formattedPhone = phone;
+                // Format typical Indonesian number 08x to 628x
+                if (formattedPhone.startsWith('0')) {
+                  formattedPhone = '62${formattedPhone.substring(1)}';
+                }
+                
+                final Uri url = Uri.parse('https://wa.me/$formattedPhone');
+                
+                try {
+                  final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+                  if (!launched && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Tidak dapat membuka tautan WhatsApp'),
+                        backgroundColor: AppColors.error, // Adjust if AppColors.error is not defined
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Gagal tersambung ke WhatsApp'),
+                        backgroundColor: Colors.red, // Using Colors.red as fallback if AppColors.error doesn't exist just in case
+                      ),
+                    );
+                  }
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Nomor telepon pekerja tidak tersedia'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(

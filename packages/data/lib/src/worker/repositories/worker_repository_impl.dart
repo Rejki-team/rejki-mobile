@@ -98,6 +98,16 @@ class WorkerRepositoryImpl implements WorkerRepository {
       isAd: json['is_ad'] ?? false,
       adTitle: json['ad_title'],
       adImageUrl: json['ad_image_url'],
+      
+      // Detail fields mapping
+      education: json['education'],
+      available: json['available'],
+      isNegotiable: json['is_negotiable'] == 1 || json['is_negotiable'] == true, // Handle tinyint or boolean boolean
+      phoneNumber: json['phone_number'],
+      workExperience: json['work_experience'],
+      address: json['address'],
+      latitude: json['latitude'] != null ? (json['latitude'] as num).toDouble() : null,
+      longitude: json['longitude'] != null ? (json['longitude'] as num).toDouble() : null,
     );
   }
 }

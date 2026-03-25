@@ -18,5 +18,15 @@ abstract class WorkerEntity with _$WorkerEntity {
     @Default(false) bool isAd,
     String? adTitle,
     String? adImageUrl,
+    
+    // New fields for Detail Worker API
+    String? education,
+    String? available,
+    bool? isNegotiable,
+    String? phoneNumber,
+    String? workExperience,
+    String? address,
+    double? latitude,
+    double? longitude,
   }) = _WorkerEntity;
 }
