@@ -1,0 +1,24 @@
+name: network
+description: Network package - Dio client, interceptors, API handling, Connectivity
+version: 1.0.0
+publish_to: none
+environment:
+  sdk: ^3.10.4
+resolution: workspace
+
+dependencies:
+  dio: ^5.9.0
+  pretty_dio_logger: ^1.4.0
+  fpdart: ^1.1.1
+  connectivity_plus: ^6.1.4
+  # DI
+  injectable: ^2.5.0
+  # Internal packages
+  local:
+    path: ../local
+  core:
+    path: ../core
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

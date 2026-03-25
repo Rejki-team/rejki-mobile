@@ -1,0 +1,30 @@
+# Flutter Native Splash Configuration
+# Run: dart run flutter_native_splash:create
+
+flutter_native_splash:
+  # Background color
+  color: "#1E88E5"
+  
+  # Background color for dark mode
+  color_dark: "#11111B"
+  
+  # Splash image from designsystems package
+  image: packages/designsystems/assets/images/splash_screen.png
+  
+  # Web configuration
+  web: true
+  web_image_mode: center
+  
+  # Android configuration
+  android: true
+  android_12:
+    # Android 12+ splash screen
+    image: packages/designsystems/assets/images/splash_screen.png
+    color: "#1E88E5"
+    color_dark: "#11111B"
+  
+  # iOS configuration
+  ios: true
+  
+  # Fullscreen mode
+  fullscreen: true

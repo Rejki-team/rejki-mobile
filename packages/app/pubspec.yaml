@@ -1,0 +1,72 @@
+name: app
+description: "App package - main application configuration"
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.10.4
+  flutter: ">=1.17.0"
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  go_router: ^17.0.1
+  flutter_bloc: ^9.1.1
+  flutter_native_splash: ^2.4.7
+  freezed_annotation: ^3.1.0
+  cupertino_icons: ^1.0.8
+  get_it: ^8.0.3
+  
+  # Internal packages
+  # DI package - for dependency injection
+  di:
+    path: ../di
+  # Domain - for entities and types
+  domain:
+    path: ../domain
+  core:
+    path: ../core
+  local:
+    path: ../local
+  network:
+    path: ../network
+  # UI packages
+  designsystems:
+    path: ../designsystems
+  components:
+    path: ../components
+  
+  # Feature packages
+  feature_home:
+    path: ../features/feature_home
+  feature_splashscreen:
+    path: ../features/feature_splashscreen
+  feature_onboarding:
+    path: ../features/feature_onboarding
+  feature_login:
+    path: ../features/feature_login
+  feature_forgotpassword:
+    path: ../features/feature_forgotpassword
+  feature_register:
+    path: ../features/feature_register
+  feature_profile:
+    path: ../features/feature_profile
+  feature_pekerjaan:
+    path: ../features/feature_pekerjaan
+  feature_pekerja:
+    path: ../features/feature_pekerja
+  feature_pelatihan:
+    path: ../features/feature_pelatihan
+  feature_barangbekas:
+    path: ../features/feature_barangbekas
+  feature_notification:
+    path: ../features/feature_notification
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.10.4
+  freezed: ^3.2.3
+  melos: ^7.3.0

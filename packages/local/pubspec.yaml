@@ -1,0 +1,20 @@
+name: local
+description: Local storage package - SharedPreferences, secure storage
+version: 1.0.0
+publish_to: none
+environment:
+  sdk: ^3.10.4
+resolution: workspace
+
+dependencies:
+  shared_preferences: ^2.5.4
+  flutter_secure_storage: ^9.2.4
+  # DI
+  injectable: ^2.5.0
+  # Internal packages
+  core:
+    path: ../core
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

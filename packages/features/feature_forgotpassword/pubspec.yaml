@@ -1,0 +1,34 @@
+name: feature_forgotpassword
+description: "Forgot password feature module"
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.10.4
+  flutter: ">=1.17.0"
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_svg: ^2.0.17
+  freezed_annotation: ^3.1.0
+  go_router: ^17.0.1
+  formz: ^0.8.0
+  # Internal packages - only domain and UI packages
+  core:
+    path: ../../core
+  domain:
+    path: ../../domain
+  designsystems:
+    path: ../../designsystems
+  components:
+    path: ../../components
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.10.4
+  freezed: ^3.2.3

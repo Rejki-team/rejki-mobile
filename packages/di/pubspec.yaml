@@ -1,0 +1,63 @@
+name: di
+description: "Dependency Injection package - centralizes all DI registration"
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.10.4
+  flutter: ">=1.17.0"
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Dependency Injection
+  get_it: ^8.0.3
+  injectable: ^2.5.0
+  # Required for DI registration
+  flutter_secure_storage: ^9.2.4
+  shared_preferences: ^2.5.4
+  
+  # Internal packages - Layer packages
+  local:
+    path: ../local
+  network:
+    path: ../network
+  domain:
+    path: ../domain
+  data:
+    path: ../data
+  
+  # Feature packages - for Bloc/Cubit registration
+  feature_home:
+    path: ../features/feature_home
+  feature_pekerjaan:
+    path: ../features/feature_pekerjaan
+  feature_pekerja:
+    path: ../features/feature_pekerja
+  feature_pelatihan:
+    path: ../features/feature_pelatihan
+  feature_barangbekas:
+    path: ../features/feature_barangbekas
+  feature_notification:
+    path: ../features/feature_notification
+  feature_login:
+    path: ../features/feature_login
+  feature_register:
+    path: ../features/feature_register
+  feature_splashscreen:
+    path: ../features/feature_splashscreen
+  feature_onboarding:
+    path: ../features/feature_onboarding
+  feature_forgotpassword:
+    path: ../features/feature_forgotpassword
+  feature_profile:
+    path: ../features/feature_profile
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  # DI Code Generation
+  injectable_generator: ^2.7.0
+  build_runner: ^2.10.4

@@ -1,0 +1,12 @@
+  /// Shows exit confirmation dialog
+  Future<bool?> _showExitConfirmationDialog(BuildContext context) {
+    return showWarningDialog(
+      context,
+      title: 'Tidak melanjutkan pengisian?',
+      message: 'Data tidak akan tersimpan ketika kamu keluar dari proses pengisian data',
+      cancelText: 'Lanjut Isi',
+      confirmText: 'Ya, Keluar',
+      onCancel: () => Navigator.of(context).pop(false),
+      onConfirm: () => Navigator.of(context).pop(true),
+    ).then((_) => false); // Return false by default if dialog dismissed
+  }

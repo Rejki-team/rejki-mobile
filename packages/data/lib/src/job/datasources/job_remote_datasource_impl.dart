@@ -1,0 +1,33 @@
+import 'package:domain/domain.dart';
+import 'package:network/network.dart';
+
+import '../models/job_model.dart';
+import '../models/jobs_response_model.dart';
+import 'job_remote_datasource.dart';
+
+/// Implementation of Job Remote Data Source
+///
+/// Uses DioClient for proper authentication and error handling
+class JobRemoteDataSourceImpl implements JobRemoteDataSource {
+  final DioClient _dioClient;
+
+  JobRemoteDataSourceImpl(this._dioClient);
+
+  @override
+  Future<JobsResponseModel> getJobs(JobQueryParams params) async {
+    final response = await _dioClient.get(
+      ApiConfig.jobs,
+      queryParameters: params.toQueryParameters(),
+    );
+
+    // Parse the response data
+    final data = response.data['data'] as Map<String, dynamic>;
+    return JobsResponseModel.fromJson(data);
+  }
+
+  @override
+  Future<JobModel> getJobById(String id) async {
+    final response = await _dioClient.get(ApiConfig.jobById(id));
+    return JobModel.fromJson(response.data['data']);
+  }
+}

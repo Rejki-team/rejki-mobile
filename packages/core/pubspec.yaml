@@ -1,0 +1,32 @@
+name: core
+description: "Core package - Pure Dart utilities, constants, and abstractions"
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.10.4
+
+resolution: workspace
+
+dependencies:
+  # Form Validation (pure Dart)
+  formz: ^0.8.0
+  # Freezed for models (pure Dart)
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+  # Functional Programming
+  fpdart: ^1.1.0
+  # Equatable
+  equatable: ^2.0.7
+  # Image compression utility (max 250 KB)
+  flutter_image_compress: ^2.4.0
+  # Flutter (required for flutter_image_compress)
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6
+  build_runner: ^2.10.4
+  freezed: ^3.2.3
+  json_serializable: ^6.9.6

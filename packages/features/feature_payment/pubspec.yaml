@@ -1,0 +1,37 @@
+name: feature_payment
+description: "A new Flutter package project."
+version: 0.0.1
+homepage:
+publish_to: 'none'
+
+environment:
+  sdk: ^3.10.4
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  components:
+    path: ../../components
+  designsystems:
+    path: ../../designsystems
+  core:
+    path: ../../core
+  get_it: ^8.3.0
+  injectable: ^2.5.0
+  flutter_bloc: ^8.1.5
+  bloc: ^8.1.4
+  freezed_annotation: ^3.0.0
+  flutter_svg: ^2.0.10+1
+  image_picker: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  build_runner: ^2.4.9
+  freezed: ^3.0.0
+  injectable_generator: ^2.6.2
+
+flutter:
+

@@ -1,0 +1,234 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
+
+// **************************************************************************
+// InjectableConfigGenerator
+// **************************************************************************
+
+// ignore_for_file: type=lint
+// coverage:ignore-file
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:data/data.dart' as _i437;
+import 'package:domain/domain.dart' as _i494;
+import 'package:feature_barangbekas/feature_barangbekas.dart' as _i685;
+import 'package:feature_home/feature_home.dart' as _i545;
+import 'package:feature_notification/feature_notification.dart' as _i884;
+import 'package:feature_pekerja/feature_pekerja.dart' as _i950;
+import 'package:feature_pekerja/presentation/location/bloc/location_bloc.dart'
+    as _i991;
+import 'package:feature_pekerjaan/feature_pekerjaan.dart' as _i10;
+import 'package:feature_pekerjaan/presentation/job_detail/cubit/take_job_cubit.dart'
+    as _i806;
+import 'package:feature_pelatihan/feature_pelatihan.dart' as _i216;
+import 'package:feature_register/feature_register.dart' as _i473;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
+import 'package:get_it/get_it.dart' as _i174;
+import 'package:injectable/injectable.dart' as _i526;
+import 'package:local/local.dart' as _i960;
+import 'package:network/network.dart' as _i372;
+import 'package:shared_preferences/shared_preferences.dart' as _i460;
+
+import 'register_module.dart' as _i291;
+
+extension GetItInjectableX on _i174.GetIt {
+  // initializes the registration of main-scope dependencies inside of GetIt
+  Future<_i174.GetIt> init({
+    String? environment,
+    _i526.EnvironmentFilter? environmentFilter,
+  }) async {
+    final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    final registerModule = _$RegisterModule();
+    await gh.factoryAsync<_i460.SharedPreferences>(
+      () => registerModule.sharedPreferences,
+      preResolve: true,
+    );
+    gh.factory<_i216.TrainingListingCubit>(
+      () => registerModule.trainingListingCubit(),
+    );
+    gh.factory<_i216.CreateTrainingAdCubit>(
+      () => registerModule.createTrainingAdCubit(),
+    );
+    gh.factory<_i685.SearchUsedGoodsAdCubit>(
+      () => registerModule.searchUsedGoodsAdCubit(),
+    );
+    gh.factory<_i685.CreateUsedGoodsAdCubit>(
+      () => registerModule.createUsedGoodsAdCubit(),
+    );
+    gh.factory<_i884.NotificationCubit>(
+      () => registerModule.notificationCubit(),
+    );
+    gh.singleton<_i558.FlutterSecureStorage>(
+      () => registerModule.secureStorage,
+    );
+    gh.lazySingleton<_i372.ConnectivityUtil>(
+      () => registerModule.connectivityUtil,
+    );
+    gh.lazySingleton<_i960.EnumStorage>(
+      () => registerModule.enumStorage(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i960.SessionStorage>(
+      () => registerModule.sessionStorage(
+        gh<_i558.FlutterSecureStorage>(),
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
+    gh.lazySingleton<_i372.DioClient>(
+      () => registerModule.dioClient(gh<_i960.SessionStorage>()),
+    );
+    gh.lazySingleton<_i437.AuthRemoteDataSource>(
+      () => registerModule.authRemoteDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i437.JobRemoteDataSource>(
+      () => registerModule.jobRemoteDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i437.BidJobDataSource>(
+      () => registerModule.bidJobDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i437.JobMutationDataSource>(
+      () => registerModule.jobMutationDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i437.LocationRemoteDataSource>(
+      () => registerModule.locationRemoteDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i437.HelperRemoteDataSource>(
+      () => registerModule.helperRemoteDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i437.WorkerRemoteDataSource>(
+      () => registerModule.workerRemoteDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i494.JobMutationRepository>(
+      () => registerModule.jobMutationRepository(
+        gh<_i437.JobMutationDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i494.CreateJobUseCase>(
+      () => registerModule.createJobUseCase(gh<_i494.JobMutationRepository>()),
+    );
+    gh.lazySingleton<_i494.LocationRepository>(
+      () => registerModule.locationRepository(
+        gh<_i437.LocationRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i494.WorkerRepository>(
+      () => registerModule.workerRepository(gh<_i437.WorkerRemoteDataSource>()),
+    );
+    gh.lazySingleton<_i494.GetProvincesUseCase>(
+      () => registerModule.getProvincesUseCase(gh<_i494.LocationRepository>()),
+    );
+    gh.lazySingleton<_i494.GetRegenciesUseCase>(
+      () => registerModule.getRegenciesUseCase(gh<_i494.LocationRepository>()),
+    );
+    gh.lazySingleton<_i494.GetDistrictsUseCase>(
+      () => registerModule.getDistrictsUseCase(gh<_i494.LocationRepository>()),
+    );
+    gh.lazySingleton<_i494.GetVillagesUseCase>(
+      () => registerModule.getVillagesUseCase(gh<_i494.LocationRepository>()),
+    );
+    gh.lazySingleton<_i494.AuthRepository>(
+      () => registerModule.authRepository(
+        gh<_i437.AuthRemoteDataSource>(),
+        gh<_i960.SessionStorage>(),
+      ),
+    );
+    gh.lazySingleton<_i494.HelperRepository>(
+      () => registerModule.helperRepository(
+        gh<_i437.HelperRemoteDataSource>(),
+        gh<_i960.EnumStorage>(),
+      ),
+    );
+    gh.factory<_i10.CreateJobBloc>(
+      () => registerModule.createJobBloc(gh<_i494.CreateJobUseCase>()),
+    );
+    gh.lazySingleton<_i494.JobRepository>(
+      () => registerModule.jobRepository(
+        gh<_i437.JobRemoteDataSource>(),
+        gh<_i437.BidJobDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i494.GetWorkersUseCase>(
+      () => registerModule.getWorkersUseCase(gh<_i494.WorkerRepository>()),
+    );
+    gh.lazySingleton<_i494.GetWorkerByIdUseCase>(
+      () => registerModule.getWorkerByIdUseCaseWorker(
+        gh<_i494.WorkerRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.CreateWorkerAdUseCase>(
+      () => registerModule.createWorkerAdUseCase(gh<_i494.WorkerRepository>()),
+    );
+    gh.factory<_i10.LocationBloc>(
+      () => registerModule.locationBloc(
+        gh<_i494.GetProvincesUseCase>(),
+        gh<_i494.GetRegenciesUseCase>(),
+        gh<_i494.GetDistrictsUseCase>(),
+        gh<_i494.GetVillagesUseCase>(),
+      ),
+    );
+    gh.factory<_i991.LocationBloc>(
+      () => registerModule.locationBlocPekerja(
+        gh<_i494.GetProvincesUseCase>(),
+        gh<_i494.GetRegenciesUseCase>(),
+        gh<_i494.GetDistrictsUseCase>(),
+        gh<_i494.GetVillagesUseCase>(),
+      ),
+    );
+    gh.factory<_i950.WorkerDetailCubit>(
+      () => registerModule.workerDetailCubit(gh<_i494.GetWorkerByIdUseCase>()),
+    );
+    gh.lazySingleton<_i494.LoginUseCase>(
+      () => registerModule.loginUseCase(gh<_i494.AuthRepository>()),
+    );
+    gh.lazySingleton<_i494.RegisterUseCase>(
+      () => registerModule.registerUseCase(gh<_i494.AuthRepository>()),
+    );
+    gh.lazySingleton<_i494.SyncEnumsUseCase>(
+      () => registerModule.syncEnumsUseCase(gh<_i494.HelperRepository>()),
+    );
+    gh.factory<_i950.WorkerListingCubit>(
+      () => registerModule.workerListingCubit(gh<_i494.GetWorkersUseCase>()),
+    );
+    gh.lazySingleton<_i494.GetLatestJobsUseCase>(
+      () => registerModule.getLatestJobsUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.lazySingleton<_i494.GetJobsUseCase>(
+      () => registerModule.getJobsUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.lazySingleton<_i494.GetJobByIdUseCase>(
+      () => registerModule.getJobByIdUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.lazySingleton<_i494.BidJobUseCase>(
+      () => registerModule.bidJobUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.factory<_i950.CreateWorkerAdCubit>(
+      () => registerModule.createWorkerAdCubit(
+        gh<_i494.CreateWorkerAdUseCase>(),
+        gh<_i960.EnumStorage>(),
+      ),
+    );
+    gh.factory<_i473.RegisterCubit>(
+      () => registerModule.registerCubit(gh<_i494.RegisterUseCase>()),
+    );
+    gh.factory<_i10.JobDetailCubit>(
+      () => registerModule.jobDetailCubit(gh<_i494.GetJobByIdUseCase>()),
+    );
+    gh.factory<_i545.HomeBloc>(
+      () => registerModule.homeBloc(gh<_i494.GetLatestJobsUseCase>()),
+    );
+    gh.factory<_i10.JobListingCubit>(
+      () => registerModule.jobListingCubit(
+        gh<_i494.GetJobsUseCase>(),
+        gh<_i494.SyncEnumsUseCase>(),
+      ),
+    );
+    gh.factory<_i806.TakeJobCubit>(
+      () => registerModule.takeJobCubit(
+        gh<_i494.BidJobUseCase>(),
+        gh<_i960.SessionStorage>(),
+      ),
+    );
+    return this;
+  }
+}
+
+class _$RegisterModule extends _i291.RegisterModule {}

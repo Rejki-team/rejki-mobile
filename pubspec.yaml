@@ -1,0 +1,229 @@
+name: rejki
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+workspace:
+  - packages/app
+  - packages/components
+  - packages/core
+  - packages/data
+  - packages/di
+  - packages/designsystems
+  - packages/domain
+  - packages/features/feature_barangbekas
+  - packages/features/feature_chat
+  - packages/features/feature_forgotpassword
+  - packages/features/feature_history
+  - packages/features/feature_home
+  - packages/features/feature_login
+  - packages/features/feature_news
+  - packages/features/feature_notification
+  - packages/features/feature_onboarding
+  - packages/features/feature_pekerja
+  - packages/features/feature_pekerjaan
+  - packages/features/feature_pelatihan
+  - packages/features/feature_profile
+  - packages/features/feature_register
+  - packages/features/feature_splashscreen
+  - packages/local
+  - packages/network
+  - packages/shared_widgets
+
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Native splash
+  flutter_native_splash: ^2.4.7
+  # Localization
+  intl: ^0.19.0
+  # Internal packages
+  app:
+    path: packages/app
+  di:
+    path: packages/di
+  # Required by main.dart for manual Auth wiring
+  domain:
+    path: packages/domain
+  data:
+    path: packages/data
+  network:
+    path: packages/network
+  local:
+    path: packages/local
+
+dev_dependencies:
+  melos: ^7.3.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/to/resolution-aware-images
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/to/asset-from-package
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/to/font-from-package
+
+melos:
+  scripts:
+    get:
+      run: melos exec -- "flutter pub get"
+      description: Get dependencies for all packages
+
+    clean:
+      run: melos exec -- "flutter clean"
+      description: Clean all packages
+
+    analyze:
+      run: melos exec -- "flutter analyze"
+      description: Run flutter analyze in all packages
+
+    format:
+      run: melos exec -- "dart format ."
+      description: Format code in all packages
+
+    test:
+      run: melos exec -- "flutter test"
+      description: Run tests in all packages
+      packageFilters:
+        dirExists: test
+
+    # ==========================================
+    # BUILD RUNNER SCRIPTS (ORDERED EXECUTION)
+    # ==========================================
+    # The build_runner must run in dependency order to avoid
+    # AssetNotFoundException errors. Packages that depend on
+    # generated files from other packages need those packages
+    # to be built first.
+    #
+    # Dependency order:
+    # 1. core (base package, no deps)
+    # 2. domain (depends on core)
+    # 3. data (depends on domain, core)
+    # 4. features (depends on data, domain, core)
+    # 5. di (depends on all)
+    # ==========================================
+
+    # Build core package first (base package)
+    build:core:
+      run: dart run build_runner build --delete-conflicting-outputs
+      description: Build core package (base, run first)
+      packageFilters:
+        scope: core
+
+    # Build domain package (depends on core)
+    build:domain:
+      run: dart run build_runner build --delete-conflicting-outputs
+      description: Build domain package (depends on core)
+      packageFilters:
+        scope: domain
+
+    # Build data package (depends on domain)
+    build:data:
+      run: dart run build_runner build --delete-conflicting-outputs
+      description: Build data package (depends on domain)
+      packageFilters:
+        scope: data
+
+    # Build feature packages in parallel (all depend on data/domain/core)
+    build:features:
+      run: melos exec --concurrency=4 -- "dart run build_runner build --delete-conflicting-outputs"
+      description: Build all feature packages
+      packageFilters:
+        dependsOn: build_runner
+        scope:
+          - feature_*
+
+    # Build DI package last (depends on all features)
+    build:di:
+      run: dart run build_runner build --delete-conflicting-outputs
+      description: Build DI package (depends on all, run last)
+      packageFilters:
+        scope: di
+
+    # Main build_runner command - runs all in correct order
+    # Uses sequential execution to ensure proper dependency order
+    build_runner:
+      description: |
+        Run build_runner in correct dependency order.
+        Order: core -> domain -> data -> features -> di
+        IMPORTANT: Run individual scripts in order if this fails on your OS
+      run: melos run build:core && melos run build:domain && melos run build:data && melos run build:features && melos run build:di
+
+    # Alternative: Parallel build (original, use only if no cross-deps needed)
+    build_runner:parallel:
+      run: melos exec -- "dart run build_runner build --delete-conflicting-outputs"
+      description: Run build_runner in parallel (may fail with cross-package deps)
+      packageFilters:
+        dependsOn: build_runner
+
+    # Clean build_runner cache in all packages
+    build_runner:clean:
+      run: melos exec -- "dart run build_runner clean"
+      description: Clean build_runner cache in all packages
+      packageFilters:
+        dependsOn: build_runner
+
+    upgrade:
+      run: melos exec -- "flutter pub upgrade"
+      description: Upgrade dependencies in all packages
+
+    fix:
+      run: melos exec -- "dart fix --apply"
+      description: Apply dart fix to all packages
+
+    
