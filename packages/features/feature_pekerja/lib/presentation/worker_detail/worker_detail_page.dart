@@ -272,17 +272,17 @@ class _WorkerProfileHeader extends StatelessWidget {
         horizontal: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFE2FBE9), // Light green background
+        color: AppColors.badgeGreen.withValues(alpha: 0.1),
         borderRadius: AppDimensions.borderRadiusXs,
         border: Border.all(
-          color: const Color(0xFFC6F6D5),
+          color: AppColors.badgeGreen.withValues(alpha: 0.2),
           width: AppDimensions.borderThin,
         ),
       ),
       child: Text(
         worker.statusLabel,
         style: AppTypography.caption.copyWith(
-          color: const Color(0xFF22C55E), // Green text
+          color: AppColors.badgeGreen,
           fontWeight: FontWeight.w500,
         ),
         textAlign: TextAlign.center,
@@ -311,8 +311,8 @@ class _WorkerDetailsSection extends StatelessWidget {
           // 1. Alamat
           _DetailCard(
             icon: AppAssets.iconLocation,
-            iconColor: const Color(0xFF9333EA),
-            iconBgColor: const Color(0xFFF3E8FF),
+            iconColor: AppColors.iconPurple,
+            iconBgColor: AppColors.iconPurple.withValues(alpha: 0.1),
             title: 'Alamat :',
             content: Text(
               worker.address,
@@ -327,8 +327,8 @@ class _WorkerDetailsSection extends StatelessWidget {
           // 2. Pengalaman Kerja
           _DetailCard(
             icon: AppAssets.iconWork,
-            iconColor: const Color(0xFF2563EB),
-            iconBgColor: const Color(0xFFDBEAFE),
+            iconColor: AppColors.badgeBlue,
+            iconBgColor: AppColors.badgeBlue.withValues(alpha: 0.1),
             title: 'Pengalaman Kerja :',
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,20 +352,20 @@ class _WorkerDetailsSection extends StatelessWidget {
           // 3. Jam Kerja
           _DetailCard(
             icon: AppAssets.iconClock,
-            iconColor: const Color(0xFF22C55E),
-            iconBgColor: const Color(0xFFDCFCE7),
+            iconColor: AppColors.badgeGreen,
+            iconBgColor: AppColors.badgeGreen.withValues(alpha: 0.1),
             title: 'Jam Kerja',
             trailingRow: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFE2FBE9),
+                color: AppColors.badgeGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: const Color(0xFFC6F6D5)),
+                border: Border.all(color: AppColors.badgeGreen.withValues(alpha: 0.2)),
               ),
               child: Text(
                 worker.workingHours,
                 style: AppTypography.caption.copyWith(
-                  color: const Color(0xFF22C55E),
+                  color: AppColors.badgeGreen,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -376,8 +376,8 @@ class _WorkerDetailsSection extends StatelessWidget {
           // 4. Nomor Telphone
           _DetailCard(
             icon: AppAssets.iconCalling,
-            iconColor: const Color(0xFF9333EA),
-            iconBgColor: const Color(0xFFF3E8FF),
+            iconColor: AppColors.iconPurple,
+            iconBgColor: AppColors.iconPurple.withValues(alpha: 0.1),
             title: 'Nomor Telphone',
             content: Text(
               worker.phoneNumber,
@@ -390,10 +390,9 @@ class _WorkerDetailsSection extends StatelessWidget {
 
           // 5. Badge Saya
           _DetailCard(
-            icon:
-                AppAssets.iconStar, // Close logic fallback if badge icon missed
-            iconColor: const Color(0xFFEA580C),
-            iconBgColor: const Color(0xFFFFEDD5),
+            icon: AppAssets.iconStar, 
+            iconColor: AppColors.iconOrange,
+            iconBgColor: AppColors.iconOrange.withValues(alpha: 0.1),
             title: 'Badge Saya',
             content: Row(
               children: worker.badges.map((b) => _buildBadgeItem()).toList(),
@@ -405,19 +404,18 @@ class _WorkerDetailsSection extends StatelessWidget {
   }
 
   Widget _buildBadgeItem() {
-    // using placeholder style imitating the design
     return Container(
       margin: const EdgeInsets.only(right: 8),
       width: 40,
       height: 40,
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        color: Color(0xFF334155), // Imitating the dark blue badge background
+        color: AppColors.textBlack,
       ),
       alignment: Alignment.center,
       child: const Icon(
-        Icons.electric_bolt, // Lightning icon inside medal
-        color: Color(0xFFFACC15),
+        Icons.electric_bolt,
+        color: AppColors.iconOrange,
         size: 20,
       ),
     );
@@ -565,9 +563,7 @@ class _BottomActionSection extends StatelessWidget {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(
-                0xFF0A0A0A,
-              ), // Solid black based on design
+              backgroundColor: AppColors.textBlack,
               disabledBackgroundColor: AppColors.border,
               shape: RoundedRectangleBorder(
                 borderRadius: AppDimensions.borderRadiusSm,

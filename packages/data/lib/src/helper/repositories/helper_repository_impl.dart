@@ -38,7 +38,7 @@ class HelperRepositoryImpl extends HelperRepository {
         e.type == DioExceptionType.receiveTimeout) {
       return const HelperFailure.networkError();
     }
-    final message = e.response?.data?['message'] ?? 'Server error occurred';
+    final message = e.message ?? 'Terjadi kesalahan dari server';
     return HelperFailure.serverError(message);
   }
 }

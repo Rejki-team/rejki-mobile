@@ -294,7 +294,7 @@ class _WorkerListingView extends StatelessWidget {
                   wageText: 'Rp ${_formatNumber(worker.wage)} / jam',
                 ),
                 onDetailPressed: () {
-                  // Proceed to Detail
+                  context.push('/pekerja/${worker.id}');
                 },
               );
             },

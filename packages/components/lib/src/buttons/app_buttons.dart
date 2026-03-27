@@ -81,7 +81,17 @@ class AppFilledGradientButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (showIcon && iconLeading) ...[
+                  if (isLoading) ...[
+                    const SizedBox(
+                      width: AppDimensions.iconXs,
+                      height: AppDimensions.iconXs,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.white,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                  ] else if (showIcon && iconLeading) ...[
                     Icon(
                       icon ?? Icons.arrow_forward,
                       size: AppDimensions.iconXs,
@@ -101,7 +111,7 @@ class AppFilledGradientButton extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  if (showIcon && !iconLeading) ...[
+                  if (!isLoading && showIcon && !iconLeading) ...[
                     const SizedBox(width: AppSpacing.sm),
                     Icon(
                       icon ?? Icons.arrow_forward,
@@ -223,7 +233,17 @@ class AppOutlinedButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (showIcon && !iconTrailing) ...[
+                if (isLoading) ...[
+                  SizedBox(
+                    width: AppDimensions.iconXs,
+                    height: AppDimensions.iconXs,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.textBlack.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                ] else if (showIcon && !iconTrailing) ...[
                   buildIcon(),
                   const SizedBox(width: AppSpacing.sm),
                 ],
@@ -239,7 +259,7 @@ class AppOutlinedButton extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (showIcon && iconTrailing) ...[
+                if (!isLoading && showIcon && iconTrailing) ...[
                   const SizedBox(width: AppSpacing.sm),
                   buildIcon(),
                 ],

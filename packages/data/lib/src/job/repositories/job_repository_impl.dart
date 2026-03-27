@@ -61,7 +61,7 @@ class JobRepositoryImpl extends JobRepository {
         e.type == DioExceptionType.receiveTimeout) {
       return const JobFailure.networkError();
     }
-    final message = e.response?.data?['message'] ?? 'Server error occurred';
+    final message = e.message ?? 'Terjadi kesalahan dari server';
     return JobFailure.serverError(message);
   }
 }

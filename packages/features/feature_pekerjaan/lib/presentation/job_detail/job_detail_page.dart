@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:network/network.dart';
 import 'package:core/core.dart';
 import 'package:components/components.dart';
+import 'package:designsystems/designsystems.dart';
 
 import 'cubit/job_detail_cubit.dart';
 import 'cubit/job_detail_state.dart';
@@ -119,9 +120,18 @@ class _JobDetailBottomSheetLoaderState
   }
 
   Widget _buildLoadingSheet() {
-    return const Material(
-      color: Colors.transparent,
-      child: AppDetailShimmer.standard(),
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(AppDimensions.radiusLg),
+          topRight: Radius.circular(AppDimensions.radiusLg),
+        ),
+      ),
+      child: const SingleChildScrollView(
+        child: AppDetailShimmer.standard(),
+      ),
     );
   }
 

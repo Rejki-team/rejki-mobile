@@ -53,9 +53,15 @@ class ErrorInterceptor extends Interceptor {
   String _handleBadResponse(Response? response) {
     if (response == null) return 'Terjadi kesalahan pada server.';
 
+    // Selalu prioritaskan error message dari server jika ada
+    final serverMessage = _extractErrorMessage(response);
+    if (serverMessage != null && serverMessage.isNotEmpty) {
+      return serverMessage;
+    }
+
     switch (response.statusCode) {
       case 400:
-        return _extractErrorMessage(response) ?? 'Request tidak valid.';
+        return 'Request tidak valid.';
       case 401:
         return 'Sesi Anda telah berakhir. Silakan login kembali.';
       case 403:
@@ -63,7 +69,7 @@ class ErrorInterceptor extends Interceptor {
       case 404:
         return 'Data tidak ditemukan.';
       case 422:
-        return _extractErrorMessage(response) ?? 'Data tidak valid.';
+        return 'Data tidak valid.';
       case 429:
         return 'Terlalu banyak request. Coba lagi nanti.';
       case 500:

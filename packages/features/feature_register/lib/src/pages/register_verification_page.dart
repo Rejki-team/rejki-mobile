@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:domain/domain.dart';
 import 'package:designsystems/designsystems.dart';
 import 'package:components/components.dart';
 import '../cubit/cubit.dart';
@@ -10,6 +11,9 @@ import '../cubit/cubit.dart';
 ///
 /// Menampilkan form verifikasi kode setelah pendaftaran berhasil.
 class RegisterVerificationPage extends StatelessWidget {
+  /// AuthRepository untuk API calls
+  final AuthRepository authRepository;
+
   /// Email yang sudah dimasking
   final String email;
 
@@ -24,6 +28,7 @@ class RegisterVerificationPage extends StatelessWidget {
 
   const RegisterVerificationPage({
     super.key,
+    required this.authRepository,
     required this.email,
     this.loginRoute = '/login',
     this.homeRoute = '/home',
@@ -51,7 +56,10 @@ class RegisterVerificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => RegisterVerificationCubit(),
+      create: (_) => RegisterVerificationCubit(
+        authRepository: authRepository,
+        email: email,
+      ),
       child: _RegisterVerificationView(
         email: email,
         loginRoute: loginRoute,

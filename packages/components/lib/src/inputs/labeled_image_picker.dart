@@ -311,20 +311,22 @@ class LabeledImagePicker extends StatelessWidget {
 
   /// Builds the bottom sheet content
   Widget _buildBottomSheet(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(
-        top: AppSpacing.md,
-        right: AppSpacing.lg,
-        bottom: AppSpacing.lg,
-        left: AppSpacing.lg,
-      ),
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(AppDimensions.radiusLg),
-          topRight: Radius.circular(AppDimensions.radiusLg),
+    return SafeArea(
+      bottom: true,
+      child: Container(
+        padding: const EdgeInsets.only(
+          top: AppSpacing.md,
+          right: AppSpacing.lg,
+          bottom: AppSpacing.lg,
+          left: AppSpacing.lg,
         ),
-      ),
+        decoration: const BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(AppDimensions.radiusLg),
+            topRight: Radius.circular(AppDimensions.radiusLg),
+          ),
+        ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,7 +427,7 @@ class LabeledImagePicker extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 
   /// Builds a single bottom sheet option

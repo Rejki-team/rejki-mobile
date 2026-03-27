@@ -116,6 +116,7 @@ class AppRouter {
           // Get email from query parameters
           final email = state.uri.queryParameters['email'] ?? '';
           return RegisterVerificationPage(
+            authRepository: GetIt.I<AuthRepository>(),
             email: email,
             loginRoute: AppRoutes.login,
             homeRoute: AppRoutes.home,
@@ -400,7 +401,7 @@ class AppRouter {
             parentNavigatorKey: rootNavigatorKey,
             builder: (context, state) {
               final id = state.pathParameters['id']!;
-              return PlaceholderPage(title: 'Detail Pekerja: $id');
+              return WorkerDetailPage(workerId: id);
             },
           ),
         ],

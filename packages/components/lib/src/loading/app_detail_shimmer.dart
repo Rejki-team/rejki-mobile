@@ -23,6 +23,10 @@ class AppDetailShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (isWorkerVariant) {
+      return _buildWorkerShimmerVariant();
+    }
+
     return SingleChildScrollView(
       physics: const NeverScrollableScrollPhysics(),
       child: Column(
@@ -47,24 +51,196 @@ class AppDetailShimmer extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderShimmer() {
-    if (isWorkerVariant) {
-      return Container(
-        padding: const EdgeInsets.only(top: AppSpacing.xl, bottom: AppSpacing.md),
-        alignment: Alignment.center,
-        child: AppShimmer(
-          child: Container(
-            width: 120,
-            height: 120,
-            decoration: const BoxDecoration(
-              color: AppColors.white,
-              shape: BoxShape.circle,
+  // ==========================================
+  // WORKER VARIANT (Matches worker_detail_page)
+  // ==========================================
+
+  Widget _buildWorkerShimmerVariant() {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                _buildWorkerProfileHeaderShimmer(),
+                _buildWorkerDetailsSectionShimmer(),
+              ],
             ),
           ),
         ),
-      );
-    }
+        _buildWorkerBottomActionShimmer(),
+      ],
+    );
+  }
 
+  Widget _buildWorkerProfileHeaderShimmer() {
+    return Container(
+      width: double.infinity,
+      color: AppColors.white,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.lg,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Avatar
+              AppShimmer(
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: AppColors.white,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Name Placeholder
+                        Expanded(
+                          child: AppShimmer(
+                            child: Container(
+                              height: 20,
+                              width: double.infinity,
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        // Badge Placeholder
+                        AppShimmer(
+                          child: Container(
+                            height: 24,
+                            width: 60,
+                            decoration: BoxDecoration(
+                              color: AppColors.white,
+                              borderRadius: AppDimensions.borderRadiusXs,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    // Ad Code Placeholder
+                    AppShimmer(
+                      child: Container(
+                        height: 14,
+                        width: 150,
+                        color: AppColors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          // Rating and Age Meta Data
+          Padding(
+            padding: const EdgeInsets.only(left: 56),
+            child: AppShimmer(
+              child: Container(
+                height: 14,
+                width: 200,
+                color: AppColors.white,
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          // Wage
+          Padding(
+            padding: const EdgeInsets.only(left: 56),
+            child: AppShimmer(
+              child: Container(
+                height: 14,
+                width: 120,
+                color: AppColors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWorkerDetailsSectionShimmer() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.xxl,
+      ),
+      color: AppColors.background,
+      child: Column(
+        children: List.generate(
+          5,
+          (index) => Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.md),
+            child: AppShimmer(
+              child: Container(
+                height: 80,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: AppDimensions.borderRadiusSm,
+                  border: Border.all(
+                    color: AppColors.border,
+                    width: AppDimensions.borderThin,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWorkerBottomActionShimmer() {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: AppShimmer(
+          child: Container(
+            width: double.infinity,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: AppDimensions.borderRadiusSm,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ==========================================
+  // STANDARD VARIANT (Generic)
+  // ==========================================
+
+  Widget _buildHeaderShimmer() {
     return AppShimmer(
       child: Container(
         height: 250,
@@ -75,30 +251,6 @@ class AppDetailShimmer extends StatelessWidget {
   }
 
   Widget _buildTitleSection() {
-    if (isWorkerVariant) {
-      return Center(
-        child: Column(
-          children: [
-            AppShimmer(
-              child: Container(
-                height: 28,
-                width: 200,
-                color: AppColors.white,
-                margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-              ),
-            ),
-            AppShimmer(
-              child: Container(
-                height: 16,
-                width: 150,
-                color: AppColors.white,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

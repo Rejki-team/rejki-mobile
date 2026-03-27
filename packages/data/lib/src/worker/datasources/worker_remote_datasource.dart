@@ -48,7 +48,10 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
 
       return ApiResponse.fromJson(
         response.data as Map<String, dynamic>,
-        fromJsonT: (json) => (json as List<dynamic>),
+        fromJsonT: (json) {
+          final map = json as Map<String, dynamic>;
+          return map['workers'] as List<dynamic>? ?? [];
+        },
       );
     } catch (e) {
       rethrow;

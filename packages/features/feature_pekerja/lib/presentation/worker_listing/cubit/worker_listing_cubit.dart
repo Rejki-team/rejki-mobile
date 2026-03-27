@@ -66,8 +66,11 @@ class WorkerListingCubit extends Cubit<WorkerListingState> {
             adTitle: w.adTitle,
             adImageUrl: w.adImageUrl,
           )).toList();
-        
-        emit(state.copyWith(isLoading: false, workers: uiModels));
+        emit(state.copyWith(
+          isLoading: false, 
+          workers: uiModels,
+          jobCountDisplayText: '${uiModels.length} Pekerja disekitar',
+        ));
       },
     );
   }

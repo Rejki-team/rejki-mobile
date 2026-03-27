@@ -196,9 +196,13 @@ class AuthRepositoryImpl implements AuthRepository {
         purpose: purpose,
       );
 
-      // Save token to secure storage for later use
-      await _sessionStorage.saveResetPasswordToken(token);
-      print('✅ [AuthRepository] OTP verified and token saved');
+      // Save token to secure storage ONLY if purpose is password_reset
+      if (purpose == 'password_reset') {
+        await _sessionStorage.saveResetPasswordToken(token);
+        print('✅ [AuthRepository] OTP verified and reset password token saved');
+      } else {
+        print('✅ [AuthRepository] OTP verification for $purpose succeeded');
+      }
 
       return Right(token);
     } on DioException catch (e) {
@@ -271,34 +275,22 @@ class AuthRepositoryImpl implements AuthRepository {
         return const AuthFailure.networkError();
       case DioExceptionType.badResponse:
         final statusCode = e.response?.statusCode;
-        final data = e.response?.data;
+        final defaultMsg = e.message ?? 'Unknown error';
 
         if (statusCode == 401 || statusCode == 403) {
-          final message = data is Map
-              ? data['message'] ?? 'Invalid credentials'
-              : 'Invalid credentials';
-          return AuthFailure.invalidCredentials(message: message);
+          return AuthFailure.invalidCredentials(message: defaultMsg);
         }
         if (statusCode == 409) {
-          final message = data is Map
-              ? data['message'] ?? 'Email atau nomor telepon sudah terdaftar'
-              : 'Email atau nomor telepon sudah terdaftar';
-          return AuthFailure.unexpected(message: message);
+          return AuthFailure.unexpected(message: defaultMsg);
         }
         if (statusCode == 422) {
-          final message = data is Map
-              ? data['message'] ?? 'Data tidak valid'
-              : 'Data tidak valid';
-          return AuthFailure.unexpected(message: message);
+          return AuthFailure.unexpected(message: defaultMsg);
         }
         if (statusCode != null && statusCode >= 500) {
-          return const AuthFailure.serverError();
+          return AuthFailure.serverError(message: defaultMsg);
         }
 
-        final message = data is Map
-            ? data['message'] ?? 'Request failed'
-            : 'Request failed';
-        return AuthFailure.unexpected(message: message);
+        return AuthFailure.unexpected(message: defaultMsg);
       default:
         return AuthFailure.unexpected(message: e.message ?? 'Unknown error');
     }

@@ -148,17 +148,25 @@ class AuthRemoteDataSource {
 
       final data = response.data as Map<String, dynamic>;
 
-      if (data['success'] == true && data['data'] != null) {
-        final responseData = data['data'] as Map<String, dynamic>;
-        final token = responseData['token'] as String?;
-        if (token != null && token.isNotEmpty) {
-          return token;
+      if (data['success'] == true) {
+        if (purpose == 'password_reset') {
+          if (data['data'] != null) {
+            final responseData = data['data'] as Map<String, dynamic>;
+            final token = responseData['token'] as String?;
+            if (token != null && token.isNotEmpty) {
+              return token;
+            }
+          }
+          throw DioException(
+            requestOptions: response.requestOptions,
+            message: 'Token not found in response',
+            type: DioExceptionType.badResponse,
+          );
+        } else {
+          // Tidak memerlukan token jika purpose bukan password_reset 
+          // (contoh: registration), langsung kembalikan message kesuksesannya.
+          return data['message'] as String? ?? 'OTP verified successfully';
         }
-        throw DioException(
-          requestOptions: response.requestOptions,
-          message: 'Token not found in response',
-          type: DioExceptionType.badResponse,
-        );
       } else {
         throw DioException(
           requestOptions: response.requestOptions,

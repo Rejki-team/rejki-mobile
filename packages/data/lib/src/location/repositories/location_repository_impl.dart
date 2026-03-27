@@ -82,7 +82,7 @@ class LocationRepositoryImpl implements LocationRepository {
         e.type == DioExceptionType.connectionError) {
       return const LocationFailure.networkError();
     }
-    final message = e.response?.data?['message'] ?? 'Server error occurred';
+    final message = e.message ?? 'Terjadi kesalahan dari peladen';
     return LocationFailure.serverError(message);
   }
 }

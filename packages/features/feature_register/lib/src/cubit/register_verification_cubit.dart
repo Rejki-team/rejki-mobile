@@ -1,12 +1,19 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:domain/domain.dart';
 import 'register_verification_state.dart';
 
 /// Cubit untuk mengelola state verifikasi register
 class RegisterVerificationCubit extends Cubit<RegisterVerificationState> {
+  final AuthRepository _authRepository;
+  final String email;
   Timer? _countdownTimer;
 
-  RegisterVerificationCubit() : super(const RegisterVerificationState()) {
+  RegisterVerificationCubit({
+    required AuthRepository authRepository,
+    required this.email,
+  })  : _authRepository = authRepository,
+        super(const RegisterVerificationState()) {
     _startCountdown();
   }
 
@@ -56,41 +63,62 @@ class RegisterVerificationCubit extends Cubit<RegisterVerificationState> {
       ),
     );
 
-    try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+    // Call actual API untuk verifikasi
+    final result = await _authRepository.verifyOtp(
+      code: state.code,
+      email: email,
+      purpose: 'registration',
+    );
 
-      // TODO: Call actual API untuk verifikasi
-      // await authRepository.verifyRegistration(code: state.code);
-
-      emit(state.copyWith(status: RegisterVerificationStatus.success));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: RegisterVerificationStatus.failure,
-          errorMessage: 'Kode verifikasi tidak valid. Silakan coba lagi.',
-        ),
-      );
-    }
+    result.fold(
+      (failure) {
+        final message = failure.when(
+          invalidCredentials: (msg) => msg,
+          serverError: (msg) => msg,
+          networkError: (msg) => msg,
+          sessionExpired: (msg) => msg,
+          unexpected: (msg) => msg,
+        );
+        emit(
+          state.copyWith(
+            status: RegisterVerificationStatus.failure,
+            errorMessage: message,
+          ),
+        );
+      },
+      (_) {
+        // Berhasil verifikasi
+        emit(state.copyWith(status: RegisterVerificationStatus.success));
+      },
+    );
   }
 
   /// Kirim ulang kode
   Future<void> resendCode() async {
     if (!state.canResend) return;
 
-    try {
-      // TODO: Call actual API untuk resend kode
-      // await authRepository.resendVerificationCode();
+    final result = await _authRepository.resendOtp(email: email);
 
-      // Restart countdown
-      _startCountdown();
-    } catch (e) {
-      emit(
-        state.copyWith(
-          errorMessage: 'Gagal mengirim ulang kode. Silakan coba lagi.',
-        ),
-      );
-    }
+    result.fold(
+      (failure) {
+        final message = failure.when(
+          invalidCredentials: (msg) => msg,
+          serverError: (msg) => msg,
+          networkError: (msg) => msg,
+          sessionExpired: (msg) => msg,
+          unexpected: (msg) => msg,
+        );
+        emit(
+          state.copyWith(
+            errorMessage: message,
+          ),
+        );
+      },
+      (_) {
+        // Berhasil dikirim ulang
+        _startCountdown();
+      },
+    );
   }
 
   /// Reset state
