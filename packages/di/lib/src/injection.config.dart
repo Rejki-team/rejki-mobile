@@ -21,6 +21,8 @@ import 'package:feature_pekerjaan/feature_pekerjaan.dart' as _i10;
 import 'package:feature_pekerjaan/presentation/job_detail/cubit/take_job_cubit.dart'
     as _i806;
 import 'package:feature_pelatihan/feature_pelatihan.dart' as _i216;
+import 'package:feature_profile/feature_profile.dart' as _i1070;
+import 'package:feature_profile/src/location/bloc/location_bloc.dart' as _i1018;
 import 'package:feature_register/feature_register.dart' as _i473;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
@@ -76,6 +78,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i372.DioClient>(
       () => registerModule.dioClient(gh<_i960.SessionStorage>()),
     );
+    gh.lazySingleton<_i437.ProfileRemoteDataSource>(
+      () => registerModule.profileRemoteDataSource(gh<_i372.DioClient>()),
+    );
     gh.lazySingleton<_i437.AuthRemoteDataSource>(
       () => registerModule.authRemoteDataSource(gh<_i372.DioClient>()),
     );
@@ -104,6 +109,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i494.CreateJobUseCase>(
       () => registerModule.createJobUseCase(gh<_i494.JobMutationRepository>()),
+    );
+    gh.lazySingleton<_i494.ProfileRepository>(
+      () => registerModule.profileRepository(
+        gh<_i437.ProfileRemoteDataSource>(),
+        gh<_i960.SessionStorage>(),
+      ),
     );
     gh.lazySingleton<_i494.LocationRepository>(
       () => registerModule.locationRepository(
@@ -140,6 +151,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i10.CreateJobBloc>(
       () => registerModule.createJobBloc(gh<_i494.CreateJobUseCase>()),
     );
+    gh.lazySingleton<_i494.UpdateProfileUseCase>(
+      () => registerModule.updateProfileUseCase(gh<_i494.ProfileRepository>()),
+    );
     gh.lazySingleton<_i494.JobRepository>(
       () => registerModule.jobRepository(
         gh<_i437.JobRemoteDataSource>(),
@@ -173,6 +187,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetVillagesUseCase>(),
       ),
     );
+    gh.factory<_i1018.LocationBloc>(
+      () => registerModule.locationBlocProfile(
+        gh<_i494.GetProvincesUseCase>(),
+        gh<_i494.GetRegenciesUseCase>(),
+        gh<_i494.GetDistrictsUseCase>(),
+        gh<_i494.GetVillagesUseCase>(),
+      ),
+    );
     gh.factory<_i950.WorkerDetailCubit>(
       () => registerModule.workerDetailCubit(gh<_i494.GetWorkerByIdUseCase>()),
     );
@@ -184,6 +206,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i494.SyncEnumsUseCase>(
       () => registerModule.syncEnumsUseCase(gh<_i494.HelperRepository>()),
+    );
+    gh.factory<_i1070.EditProfileCubit>(
+      () => registerModule.editProfileCubit(gh<_i494.UpdateProfileUseCase>()),
     );
     gh.factory<_i950.WorkerListingCubit>(
       () => registerModule.workerListingCubit(gh<_i494.GetWorkersUseCase>()),

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
+import 'package:local/local.dart';
 import 'package:designsystems/designsystems.dart';
 import 'package:components/components.dart';
 import 'package:core/core.dart';
@@ -29,6 +30,9 @@ abstract class _HomeRoutes {
   static const String createWorker = '/pekerja/create';
   static const String createTraining = '/pelatihan/create';
   static const String createUsedGoods = '/barang-bekas/create';
+
+  // Verification
+  static const String personalInfo = '/profile/personal-info';
 
   // Parameterized routes
   static String pekerjaanDetail(String id) => '/pekerjaan/$id';
@@ -90,24 +94,31 @@ class _HomeScaffold extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: const _HomeBodyContent(),
       floatingActionButton: CreateAdFab(
-        onJobAdPressed: () {
-          debugPrint('[FAB] pushing ${_HomeRoutes.createJob}');
-          context.push(_HomeRoutes.createJob);
-        },
-        onWorkerAdPressed: () {
-          debugPrint('[FAB] pushing ${_HomeRoutes.createWorker}');
-          context.push(_HomeRoutes.createWorker);
-        },
-        onTrainingAdPressed: () {
-          debugPrint('[FAB] pushing ${_HomeRoutes.createTraining}');
-          context.push(_HomeRoutes.createTraining);
-        },
-        onSecondHandAdPressed: () {
-          debugPrint('[FAB] pushing ${_HomeRoutes.createUsedGoods}');
-          context.push(_HomeRoutes.createUsedGoods);
-        },
+        onJobAdPressed: () => _guardedPush(context, _HomeRoutes.createJob),
+        onWorkerAdPressed: () => _guardedPush(context, _HomeRoutes.createWorker),
+        onTrainingAdPressed: () => _guardedPush(context, _HomeRoutes.createTraining),
+        onSecondHandAdPressed: () => _guardedPush(context, _HomeRoutes.createUsedGoods),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  /// Navigasi dengan pengecekan verifikasi.
+  ///
+  /// Jika user sudah aktif & terverifikasi → push ke [route].
+  /// Jika belum → tampilkan dialog warning dengan opsi verifikasi.
+  void _guardedPush(BuildContext context, String route) {
+    final sessionStorage = GetIt.I<SessionStorage>();
+
+    if (sessionStorage.isUserActiveAndVerified()) {
+      context.push(route);
+      return;
+    }
+
+    showVerificationRequiredDialog(
+      context,
+      userStatus: sessionStorage.getUserStatus(),
+      onVerify: () => context.go(_HomeRoutes.personalInfo),
     );
   }
 }
@@ -244,7 +255,7 @@ class _ServicesSection extends StatelessWidget {
               title: 'Pekerjaan',
               description: 'Cari dan iklankan pekerjaan',
               filledIconColor: AppColors.white,
-              onTap: () => context.push(_HomeRoutes.pekerjaan),
+              onTap: () => _guardedServicePush(context, _HomeRoutes.pekerjaan),
             ),
             ServiceCard.outlined(
               icon: AppAssets.iconTwoUser,
@@ -252,7 +263,7 @@ class _ServicesSection extends StatelessWidget {
               description: 'Cari pekerja dan iklankan diri.',
               outlinedIconColor: AppColors.badgeBlue,
               outlinedIconWrapperColor: AppColors.serviceCardIconBgBlue,
-              onTap: () => context.push(_HomeRoutes.pekerja),
+              onTap: () => _guardedServicePush(context, _HomeRoutes.pekerja),
             ),
             ServiceCard.outlined(
               icon: AppAssets.iconPaper,
@@ -260,7 +271,7 @@ class _ServicesSection extends StatelessWidget {
               description: 'Cari dan iklankan pelatihan',
               outlinedIconColor: AppColors.badgeGreen,
               outlinedIconWrapperColor: AppColors.serviceCardIconBgGreen,
-              onTap: () => context.push(_HomeRoutes.pelatihan),
+              onTap: () => _guardedServicePush(context, _HomeRoutes.pelatihan),
             ),
             ServiceCard.outlined(
               icon: AppAssets.iconArchive,
@@ -268,11 +279,27 @@ class _ServicesSection extends StatelessWidget {
               description: 'Cari dan iklankan barang',
               outlinedIconColor: AppColors.iconPurple,
               outlinedIconWrapperColor: AppColors.serviceCardIconBgPurple,
-              onTap: () => context.push(_HomeRoutes.barangBekas),
+              onTap: () => _guardedServicePush(context, _HomeRoutes.barangBekas),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  /// Navigasi service card dengan pengecekan verifikasi.
+  void _guardedServicePush(BuildContext context, String route) {
+    final sessionStorage = GetIt.I<SessionStorage>();
+
+    if (sessionStorage.isUserActiveAndVerified()) {
+      context.push(route);
+      return;
+    }
+
+    showVerificationRequiredDialog(
+      context,
+      userStatus: sessionStorage.getUserStatus(),
+      onVerify: () => context.go(_HomeRoutes.personalInfo),
     );
   }
 }

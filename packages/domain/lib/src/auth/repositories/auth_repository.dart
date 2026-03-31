@@ -59,7 +59,10 @@ abstract class AuthRepository {
   ///
   /// Resends OTP to user's email
   /// Returns success message from API
-  Future<Either<AuthFailure, String>> resendOtp({required String email});
+  Future<Either<AuthFailure, String>> resendOtp({
+    required String email,
+    required OtpPurpose purpose,
+  });
 
   /// Get saved reset password token from secure storage
   Future<String?> getResetPasswordToken();

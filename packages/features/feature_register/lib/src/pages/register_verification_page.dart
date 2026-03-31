@@ -70,7 +70,7 @@ class RegisterVerificationPage extends StatelessWidget {
   }
 }
 
-class _RegisterVerificationView extends StatefulWidget {
+class _RegisterVerificationView extends StatelessWidget {
   final String email;
   final String loginRoute;
   final String homeRoute;
@@ -84,32 +84,14 @@ class _RegisterVerificationView extends StatefulWidget {
   });
 
   @override
-  State<_RegisterVerificationView> createState() =>
-      _RegisterVerificationViewState();
-}
-
-class _RegisterVerificationViewState extends State<_RegisterVerificationView> {
-  @override
-  void initState() {
-    super.initState();
-    // Set status bar transparent
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final maskedEmail = RegisterVerificationPage.maskEmail(widget.email);
+    final maskedEmail = RegisterVerificationPage.maskEmail(email);
 
     return BlocListener<RegisterVerificationCubit, RegisterVerificationState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.isSuccess) {
-          widget.onVerificationSuccess?.call();
+          onVerificationSuccess?.call();
 
           // Show success dialog
           showSuccessDialog(
@@ -120,7 +102,7 @@ class _RegisterVerificationViewState extends State<_RegisterVerificationView> {
             buttonText: 'Login Sekarang',
             onPressed: () {
               Navigator.of(context).pop();
-              context.go(widget.loginRoute);
+              context.go(loginRoute);
             },
           );
         } else if (state.status == RegisterVerificationStatus.failure &&
@@ -134,44 +116,50 @@ class _RegisterVerificationViewState extends State<_RegisterVerificationView> {
           );
         }
       },
-      child: Scaffold(
-        body: Stack(
-          children: [
-            // Main content
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(AppAssets.baseBackground),
-                  fit: BoxFit.cover,
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+        ),
+        child: Scaffold(
+          body: Stack(
+            children: [
+              // Main content
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(AppAssets.baseBackground),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: SafeArea(
+                  bottom: false,
+                  child: Column(
+                    children: [
+                      // Content Container (mepet status bar)
+                      Expanded(
+                        child: _ContentContainer(maskedEmail: maskedEmail),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              child: SafeArea(
-                bottom: false,
-                child: Column(
-                  children: [
-                    // Content Container (mepet status bar)
-                    Expanded(
-                      child: _ContentContainer(maskedEmail: maskedEmail),
-                    ),
-                  ],
-                ),
-              ),
-            ),
 
-            // Loading overlay
-            BlocBuilder<RegisterVerificationCubit, RegisterVerificationState>(
-              buildWhen: (previous, current) =>
-                  previous.isLoading != current.isLoading,
-              builder: (context, state) {
-                if (state.isLoading) {
-                  return const AppLoadingOverlay();
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ],
+              // Loading overlay
+              BlocBuilder<RegisterVerificationCubit, RegisterVerificationState>(
+                buildWhen: (previous, current) =>
+                    previous.isLoading != current.isLoading,
+                builder: (context, state) {
+                  if (state.isLoading) {
+                    return const AppLoadingOverlay();
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -302,35 +290,47 @@ class _FormSection extends StatelessWidget {
 
             const SizedBox(height: AppSpacing.lg),
 
-            // Resend code section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Tidak mendapatkan kode?',
-                  style: AppTypography.linkTextSmall,
-                ),
-                const SizedBox(width: AppSpacing.xxs),
-                if (state.canResend)
-                  GestureDetector(
-                    onTap: cubit.resendCode,
-                    child: Text(
-                      'Kirim ulang',
-                      style: AppTypography.linkTextSmall.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w500,
+            // Resend code section — IgnorePointer saat loading sebagai
+            // lapisan perlindungan tambahan terhadap accidental double-tap.
+            BlocBuilder<RegisterVerificationCubit, RegisterVerificationState>(
+              buildWhen: (previous, current) =>
+                  previous.canResend != current.canResend ||
+                  previous.countdown != current.countdown ||
+                  previous.isLoading != current.isLoading,
+              builder: (context, state) {
+                return IgnorePointer(
+                  ignoring: state.isLoading,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Tidak mendapatkan kode?',
+                        style: AppTypography.linkTextSmall,
                       ),
-                    ),
-                  )
-                else
-                  Text(
-                    '${state.countdown}',
-                    style: AppTypography.linkTextSmall.copyWith(
-                      color: AppColors.success,
-                      fontWeight: FontWeight.w500,
-                    ),
+                      const SizedBox(width: AppSpacing.xxs),
+                      if (state.canResend)
+                        GestureDetector(
+                          onTap: cubit.resendCode,
+                          child: Text(
+                            'Kirim ulang',
+                            style: AppTypography.linkTextSmall.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        )
+                      else
+                        Text(
+                          '${state.countdown}',
+                          style: AppTypography.linkTextSmall.copyWith(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                    ],
                   ),
-              ],
+                );
+              },
             ),
           ],
         );

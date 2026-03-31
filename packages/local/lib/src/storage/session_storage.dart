@@ -16,6 +16,7 @@ abstract class SessionStorageKeys {
   static const String onboardingCompleted = 'onboarding_completed';
   static const String verificationStatus = 'verification_status';
   static const String resetPasswordToken = 'reset_password_token';
+  static const String userStatus = 'user_status';
 }
 
 /// Service untuk mengelola session dan token
@@ -175,6 +176,26 @@ class SessionStorage {
     await _prefs.setString(SessionStorageKeys.verificationStatus, status);
   }
 
+  /// Ambil user status (active/pending/suspended)
+  String? getUserStatus() =>
+      _prefs.getString(SessionStorageKeys.userStatus);
+
+  /// Set user status
+  Future<void> saveUserStatus(String status) async {
+    await _prefs.setString(SessionStorageKeys.userStatus, status);
+  }
+
+  /// Cek apakah user aktif DAN terverifikasi.
+  ///
+  /// Digunakan sebagai guard untuk fitur-fitur yang memerlukan
+  /// akun aktif dan terverifikasi (Pekerjaan, Pekerja, Pelatihan,
+  /// Barang Bekas, Chat, History, Promosikan Diri).
+  bool isUserActiveAndVerified() {
+    final status = getUserStatus();
+    final verification = getVerificationStatus();
+    return status == 'active' && verification == 'verified';
+  }
+
   // ==================== SESSION STATUS ====================
 
   /// Cek apakah user sudah login
@@ -239,6 +260,7 @@ class SessionStorage {
     await _prefs.remove(SessionStorageKeys.userEmail);
     await _prefs.remove(SessionStorageKeys.userName);
     await _prefs.remove(SessionStorageKeys.verificationStatus);
+    await _prefs.remove(SessionStorageKeys.userStatus);
     await _prefs.setBool(SessionStorageKeys.isLoggedIn, false);
   }
 

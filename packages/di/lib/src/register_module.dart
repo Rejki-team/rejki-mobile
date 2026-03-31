@@ -14,6 +14,9 @@ import 'package:feature_notification/feature_notification.dart';
 import 'package:feature_register/feature_register.dart';
 import 'package:feature_pekerjaan/presentation/job_detail/cubit/take_job_cubit.dart';
 import 'package:feature_pekerja/presentation/location/bloc/location_bloc.dart' as worker_loc;
+// ignore: implementation_imports
+import 'package:feature_profile/src/location/bloc/location_bloc.dart' as profile_loc;
+import 'package:feature_profile/feature_profile.dart' hide LocationBloc;
 
 /// Register module untuk third-party dependencies
 ///
@@ -259,6 +262,42 @@ abstract class RegisterModule {
     getDistrictsUseCase: getDistrictsUseCase,
     getVillagesUseCase: getVillagesUseCase,
   );
+
+  /// LocationBloc - for cascading location selection (Profile)
+  @factoryMethod
+  profile_loc.LocationBloc locationBlocProfile(
+    GetProvincesUseCase getProvincesUseCase,
+    GetRegenciesUseCase getRegenciesUseCase,
+    GetDistrictsUseCase getDistrictsUseCase,
+    GetVillagesUseCase getVillagesUseCase,
+  ) => profile_loc.LocationBloc(
+    getProvincesUseCase: getProvincesUseCase,
+    getRegenciesUseCase: getRegenciesUseCase,
+    getDistrictsUseCase: getDistrictsUseCase,
+    getVillagesUseCase: getVillagesUseCase,
+  );
+
+  /// ProfileRemoteDataSourceImpl
+  @lazySingleton
+  ProfileRemoteDataSource profileRemoteDataSource(DioClient client) =>
+      ProfileRemoteDataSourceImpl(client);
+
+  /// ProfileRepositoryImpl
+  @lazySingleton
+  ProfileRepository profileRepository(
+      ProfileRemoteDataSource remoteDataSource,
+      SessionStorage sessionStorage) =>
+      ProfileRepositoryImpl(remoteDataSource, sessionStorage);
+
+  /// UpdateProfileUseCase
+  @lazySingleton
+  UpdateProfileUseCase updateProfileUseCase(ProfileRepository repository) =>
+      UpdateProfileUseCase(repository);
+
+  /// EditProfileCubit
+  @factoryMethod
+  EditProfileCubit editProfileCubit(UpdateProfileUseCase updateProfileUseCase) =>
+      EditProfileCubit(updateProfileUseCase);
 
   /// JobListingCubit - for job listing page
   @factoryMethod

@@ -169,7 +169,7 @@ class DioClient {
     );
   }
 
-  /// Upload file dengan progress
+  /// Upload file dengan progress (POST)
   Future<Response<T>> upload<T>(
     String path, {
     required FormData data,
@@ -179,6 +179,29 @@ class DioClient {
     void Function(int, int)? onSendProgress,
   }) {
     return _dio.post<T>(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+    );
+  }
+
+  /// Upload file dengan progress (PUT)
+  ///
+  /// Sama seperti [upload] tapi menggunakan HTTP PUT method.
+  /// Digunakan untuk update resource yang memerlukan FormData
+  /// (contoh: update profile dengan file upload).
+  Future<Response<T>> uploadPut<T>(
+    String path, {
+    required FormData data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    void Function(int, int)? onSendProgress,
+  }) {
+    return _dio.put<T>(
       path,
       data: data,
       queryParameters: queryParameters,

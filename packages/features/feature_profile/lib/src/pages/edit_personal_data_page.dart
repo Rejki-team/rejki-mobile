@@ -2,10 +2,18 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:get_it/get_it.dart';
 import 'package:designsystems/designsystems.dart';
 import 'package:components/components.dart';
+import 'package:shared_widgets/shared_widgets.dart';
+import 'package:domain/domain.dart';
 
 import '../widgets/edit_personal_data/edit_personal_data_widgets.dart';
+import '../cubit/edit_profile_cubit.dart';
+import '../cubit/edit_profile_state.dart';
+import '../location/bloc/location_bloc.dart';
 import 'id_camera_page.dart';
 
 /// Edit Personal Data Page
@@ -14,9 +22,11 @@ import 'id_camera_page.dart';
 /// Includes: Data Pribadi (Personal Data), Foto KTP (ID Photo),
 /// and Foto Swafoto (Selfie Photo).
 ///
-/// Specifications:
-/// - Background: #F8FAFC
-/// - Status bar: #272777
+/// Architecture:
+/// - [BlocListener] for side effects only (SnackBar, dialog)
+/// - [BlocSelector] for AppBar (rebuilds only on isFormValid/isLoading)
+/// - Form fields read state once via context.read() — no reactive rebuild
+/// - Photo tabs use [BlocSelector] for captured image display
 class EditPersonalDataPage extends StatefulWidget {
   const EditPersonalDataPage({super.key});
 
@@ -25,765 +35,554 @@ class EditPersonalDataPage extends StatefulWidget {
 }
 
 class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
-  /// Currently selected tab index
   int _selectedTabIndex = 0;
-
-  /// Tab items configuration
   final List<EditPersonalDataTabItem> _tabItems =
       EditPersonalDataTabBar.defaultItems;
 
-  /// Whether save is in progress
-  bool _isSaving = false;
-
-  // Controllers for text fields
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _nikController = TextEditingController();
-  final TextEditingController _educationController = TextEditingController();
-
-  // State for dropdown and date picker
-  String? _selectedGender;
-  DateTime? _selectedBirthDate;
-
-  // Gender options
   static const List<DropdownOption<String>> _genderOptions = [
-    DropdownOption(value: 'male', label: 'Laki-laki'),
-    DropdownOption(value: 'female', label: 'Perempuan'),
+    DropdownOption(value: 'L', label: 'Laki-laki'),
+    DropdownOption(value: 'P', label: 'Perempuan'),
   ];
 
-  // State for KTP photo capture
-  File? _ktpImage;
-
-  // State for Selfie with KTP photo capture
-  File? _selfieImage;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _nikController.dispose();
-    _educationController.dispose();
-    super.dispose();
-  }
+  static const List<DropdownOption<String>> _educationOptions = [
+    DropdownOption(value: 'SD', label: 'SD'),
+    DropdownOption(value: 'SMP', label: 'SMP'),
+    DropdownOption(value: 'SMA', label: 'SMA / SMK'),
+    DropdownOption(value: 'Diploma', label: 'Diploma'),
+    DropdownOption(value: 'Sarjana', label: 'Sarjana'),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    // Set status bar to match app bar color (#272777)
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Color(0xFF272777),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: AppColors.buttonGradientEnd,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
-    );
-
-    return Scaffold(
-      backgroundColor: AppColors.background, // #F8FAFC
-      body: Column(
-        children: [
-          // App Bar
-          EditPersonalDataAppBar(
-            onBackPressed: _handleBackPressed,
-            onSavePressed: _handleSavePressed,
-            isSaveLoading: _isSaving,
-            isSaveEnabled: !_isSaving,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<EditProfileCubit>(
+            create: (context) => GetIt.I<EditProfileCubit>(),
           ),
-
-          // Tab Bar
-          EditPersonalDataTabBar(
-            items: _tabItems,
-            selectedIndex: _selectedTabIndex,
-            onTabChanged: _handleTabChanged,
+          BlocProvider<LocationBloc>(
+            create: (context) =>
+                GetIt.I<LocationBloc>()..add(const LocationEvent.loadProvinces()),
           ),
-
-          // Gap between Tab Bar and Content (16px)
-          const SizedBox(height: AppSpacing.md),
-
-          // Tab Content with smooth transition
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: AppAnimations.durationNormal,
-              switchInCurve: AppAnimations.curveFastOutSlowIn,
-              switchOutCurve: AppAnimations.curveFastOutSlowIn,
-              transitionBuilder: (child, animation) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              layoutBuilder: (currentChild, previousChildren) {
-                return Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    ...previousChildren,
-                    if (currentChild != null) currentChild,
-                  ],
-                );
-              },
-              child: KeyedSubtree(
-                key: ValueKey<int>(_selectedTabIndex),
-                child: _buildTabContent(),
+        ],
+        child: BlocListener<EditProfileCubit, EditProfileState>(
+          listenWhen: (prev, curr) =>
+              prev.errorMessage != curr.errorMessage ||
+              prev.isSuccess != curr.isSuccess,
+          listener: _handleStateChange,
+          // Builder provides a context below MultiBlocProvider
+          // so context.read<EditProfileCubit>() resolves correctly.
+          child: Builder(
+            builder: (providerContext) => Scaffold(
+              backgroundColor: AppColors.background,
+              body: Column(
+                children: [
+                  // AppBar — only rebuilds when isFormValid or isLoading changes
+                  _buildAppBar(),
+                  // Tab bar — local state, no bloc dependency
+                  EditPersonalDataTabBar(
+                    items: _tabItems,
+                    selectedIndex: _selectedTabIndex,
+                    onTabChanged: (index) =>
+                        setState(() => _selectedTabIndex = index),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  // Tab content — uses providerContext for Bloc access
+                  Expanded(
+                    child: AnimatedSwitcher(
+                      duration: AppAnimations.durationNormal,
+                      switchInCurve: AppAnimations.curveFastOutSlowIn,
+                      switchOutCurve: AppAnimations.curveFastOutSlowIn,
+                      child: KeyedSubtree(
+                        key: ValueKey<int>(_selectedTabIndex),
+                        child: _buildTabContent(providerContext),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
-  /// Handle back button press
-  void _handleBackPressed() {
-    Navigator.of(context).pop();
-  }
+  // ============================================
+  // SIDE EFFECTS
+  // ============================================
 
-  /// Handle save button press
-  Future<void> _handleSavePressed() async {
-    setState(() {
-      _isSaving = true;
-    });
-
-    try {
-      // TODO: Implement save logic with Bloc
-      await Future.delayed(const Duration(seconds: 2));
-
-      if (mounted) {
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Data berhasil disimpan'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-        Navigator.of(context).pop();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal menyimpan: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSaving = false;
-        });
-      }
+  /// Handles Cubit state side effects (errors and success).
+  ///
+  /// Only called when [errorMessage] or [isSuccess] actually changes,
+  /// thanks to [listenWhen].
+  void _handleStateChange(BuildContext context, EditProfileState state) {
+    if (state.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.errorMessage!),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+    if (state.isSuccess) {
+      showSuccessDialog(
+        context,
+        title: 'Submit Data Berhasil',
+        message:
+            'Data diri Anda berhasil disubmit dan sedang menunggu proses verifikasi.',
+        buttonText: 'Kembali ke Beranda',
+        onPressed: () {
+          Navigator.of(context).pop(); // dismiss dialog
+          if (context.mounted) context.go('/home');
+        },
+      );
     }
   }
 
-  /// Handle tab change
-  void _handleTabChanged(int index) {
-    setState(() {
-      _selectedTabIndex = index;
-    });
+  // ============================================
+  // APP BAR (selective rebuild)
+  // ============================================
+
+  /// AppBar yang hanya rebuild saat [isFormValid] atau [isLoading] berubah.
+  ///
+  /// Menggunakan Dart Records sebagai selector return type agar
+  /// perbandingan equality otomatis field-by-field.
+  Widget _buildAppBar() {
+    return BlocSelector<EditProfileCubit, EditProfileState,
+        ({bool isFormValid, bool isLoading})>(
+      selector: (state) =>
+          (isFormValid: state.isFormValid, isLoading: state.isLoading),
+      builder: (context, data) {
+        return EditPersonalDataAppBar(
+          onBackPressed: () => Navigator.of(context).pop(),
+          onSavePressed: () => context.read<EditProfileCubit>().submit(),
+          isSaveLoading: data.isLoading,
+          isSaveEnabled: !data.isLoading && data.isFormValid,
+        );
+      },
+    );
   }
 
-  /// Build tab content based on selected index
-  Widget _buildTabContent() {
+  // ============================================
+  // TAB CONTENT ROUTING
+  // ============================================
+
+  Widget _buildTabContent(BuildContext context) {
     switch (_selectedTabIndex) {
       case 0:
-        return _buildPersonalDataTab();
+        return _buildPersonalDataTab(context);
       case 1:
-        return _buildIdPhotoTab();
+        return _buildIdPhotoTab(context);
       case 2:
-        return _buildSelfiePhotoTab();
+        return _buildSelfiePhotoTab(context);
       default:
-        return _buildPersonalDataTab();
+        return _buildPersonalDataTab(context);
     }
   }
 
-  /// Build Personal Data tab content
-  Widget _buildPersonalDataTab() {
+  // ============================================
+  // TAB 0: DATA PRIBADI
+  // ============================================
+
+  /// Tab Data Pribadi.
+  ///
+  /// Form fields membaca Cubit state **sekali** via [context.read]
+  /// untuk `initialValue`, dan menggunakan internal controller
+  /// agar typing tidak menyebabkan full-page rebuild.
+  Widget _buildPersonalDataTab(BuildContext context) {
+    final cubit = context.read<EditProfileCubit>();
+    final currentState = cubit.state;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 1. Nama Lengkap Sesuai KTP
           LabeledTextField(
             number: '1',
             label: 'Nama Lengkap Sesuai KTP',
             hint: 'Nama Lengkap',
             isMandatory: true,
-            controller: _nameController,
-            onChanged: (value) {
-              // TODO: Update state with Bloc
-            },
+            initialValue: currentState.fullName,
+            onChanged: cubit.fullNameChanged,
           ),
-
           const SizedBox(height: AppSpacing.sm),
-
-          // 2. NIK
           LabeledNumberField(
             number: '2',
             label: 'NIK',
             hint: 'NIK 16 Angka',
             isMandatory: true,
-            controller: _nikController,
-            maxValue: 9999999999999999, // 16 digits max
-            onChanged: (value) {
-              // TODO: Update state with Bloc
-            },
+            initialValue:
+                currentState.nik.isNotEmpty ? int.tryParse(currentState.nik) : null,
+            maxValue: 9999999999999999,
+            onChanged: cubit.nikChanged,
           ),
-
           const SizedBox(height: AppSpacing.sm),
-
-          // 3. Tingkat Pendidikan
+          BlocSelector<EditProfileCubit, EditProfileState, String>(
+            selector: (state) => state.educationLevel,
+            builder: (context, educationLevel) => LabeledDropdownField<String>(
+              number: '3',
+              label: 'Tingkat Pendidikan',
+              hint: 'Cth. S1',
+              isMandatory: true,
+              options: _educationOptions,
+              selectedValue:
+                  educationLevel.isNotEmpty ? educationLevel : null,
+              onChanged: (val) =>
+                  context.read<EditProfileCubit>().educationLevelChanged(val ?? ''),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
           LabeledTextField(
-            number: '3',
-            label: 'Tingkat Pendidikan',
-            hint: 'Cth. SMP',
+            number: '4',
+            label: 'Fokus Pendidikan',
+            hint: 'Cth. Teknik Mesin',
             isMandatory: true,
-            controller: _educationController,
-            onChanged: (value) {
-              // TODO: Update state with Bloc
-            },
+            initialValue: currentState.educationFocus,
+            onChanged: cubit.educationFocusChanged,
           ),
-
           const SizedBox(height: AppSpacing.sm),
-
-          // 4. Jenis Kelamin - Custom Wrapper
-          _buildGenderWrapper(),
-
+          BlocSelector<EditProfileCubit, EditProfileState, String>(
+            selector: (state) => state.gender,
+            builder: (context, gender) => LabeledDropdownField<String>(
+              number: '5',
+              label: 'Jenis Kelamin',
+              hint: 'Pilih Jenis Kelamin',
+              isMandatory: true,
+              options: _genderOptions,
+              selectedValue: gender.isNotEmpty ? gender : null,
+              onChanged: (val) =>
+                  context.read<EditProfileCubit>().genderChanged(val ?? ''),
+            ),
+          ),
           const SizedBox(height: AppSpacing.sm),
-
-          // 5. Tanggal Lahir - Custom Wrapper
-          _buildBirthDateWrapper(),
-
+          _buildBirthDateSelector(context),
           const SizedBox(height: AppSpacing.sm),
-
-          // 6. Ad/Promo Card
+          LabeledTextArea(
+            number: '7',
+            label: 'Pengalaman Kerja',
+            hint: 'Cth. Pernah menjadi mekanik 3 tahun...',
+            isMandatory: true,
+            maxLines: 4,
+            minLines: 2,
+            initialValue: currentState.workExperience,
+            onChanged: cubit.workExperienceChanged,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          LabeledTextField(
+            number: '8',
+            label: 'Alamat Sesuai KTP',
+            hint: 'Jl. Merdeka...',
+            isMandatory: true,
+            initialValue: currentState.addressKtp,
+            onChanged: cubit.addressKtpChanged,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          _buildLocationField(),
+          const SizedBox(height: AppSpacing.lg),
           AdCard(
             title: 'Pelatihan Gratis + Sertifikasi Resmi',
             description: 'Pelatihan digital marketing dan banyak lagi',
             ctaText: 'Lihat pelatihan',
-            onCtaPressed: () {
-              // TODO: Navigate to training page
-            },
+            onCtaPressed: () {},
           ),
-
-          // Bottom padding for safe area
           SizedBox(
-            height: MediaQuery.of(context).padding.bottom + AppSpacing.md,
-          ),
+              height: MediaQuery.of(context).padding.bottom + AppSpacing.md),
         ],
       ),
     );
   }
 
-  /// Builds the gender selection wrapper
-  Widget _buildGenderWrapper() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: AppDimensions.borderRadiusSm,
-        border: Border.all(
-          color: AppColors.border,
-          width: AppDimensions.borderThin,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Label Row
-          _buildFormLabelRow('4', 'Jenis Kelamin', isMandatory: true),
+  // ============================================
+  // BIRTH DATE SELECTOR (selective rebuild)
+  // ============================================
 
-          const SizedBox(height: AppSpacing.lg),
+  /// Hanya rebuild saat [dob] berubah, bukan pada setiap state change.
+  Widget _buildBirthDateSelector(BuildContext context) {
+    return BlocSelector<EditProfileCubit, EditProfileState, String>(
+      selector: (state) => state.dob,
+      builder: (context, dob) {
+        final dateText = dob.isNotEmpty ? dob : 'DD/MM/YYYY';
+        final hasValue = dob.isNotEmpty;
 
-          // Dropdown Input
-          _buildGenderDropdown(),
-        ],
-      ),
-    );
-  }
-
-  /// Builds the gender dropdown input
-  Widget _buildGenderDropdown() {
-    final selectedOption = _genderOptions
-        .cast<DropdownOption<String>?>()
-        .firstWhere(
-          (option) => option?.value == _selectedGender,
-          orElse: () => null,
-        );
-
-    final displayText = selectedOption?.label ?? '-Select-';
-    final hasValue = selectedOption != null;
-
-    return GestureDetector(
-      onTap: () => _showGenderDropdown(),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(
-          vertical: AppDimensions.inputPaddingVerticalSm,
-          horizontal: AppSpacing.md,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.inputBackground,
-          borderRadius: AppDimensions.borderRadiusSm,
-          border: Border.all(
-            color: AppColors.border,
-            width: AppDimensions.borderThin,
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: AppDimensions.borderRadiusSm,
+            border: Border.all(
+                color: AppColors.border, width: AppDimensions.borderThin),
           ),
-        ),
-        child: Row(
-          children: [
-            // Selected Value / Hint Text
-            Expanded(
-              child: Text(
-                displayText,
-                style: AppTypography.formHint.copyWith(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
-                  letterSpacing: 0,
-                  color: hasValue ? AppColors.textBlack : AppColors.textCaption,
-                ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Text('6.',
+                      style: AppTypography.formLabel
+                          .copyWith(color: AppColors.textBlack)),
+                  const SizedBox(width: AppSpacing.xxs),
+                  Text('Tanggal Lahir',
+                      style: AppTypography.formLabel
+                          .copyWith(color: AppColors.textBlack)),
+                  const SizedBox(width: AppSpacing.xxs),
+                  Text('*',
+                      style: AppTypography.formLabel
+                          .copyWith(color: AppColors.textBlack)),
+                ],
               ),
-            ),
-
-            const SizedBox(width: AppSpacing.sm),
-
-            // Arrow Icon
-            SvgPicture.asset(
-              AppAssets.iconArrowIosDown,
-              width: AppDimensions.iconXxs14,
-              height: AppDimensions.iconXxs14,
-              colorFilter: const ColorFilter.mode(
-                AppColors.textCaption,
-                BlendMode.srcIn,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Shows gender dropdown options
-  Future<void> _showGenderDropdown() async {
-    final result = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: AppColors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(AppDimensions.radiusMd),
-          topRight: Radius.circular(AppDimensions.radiusMd),
-        ),
-      ),
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle
-            Container(
-              margin: const EdgeInsets.only(top: AppSpacing.sm),
-              width: AppDimensions.bottomSheetHandleWidth,
-              height: AppDimensions.bottomSheetHandleHeight,
-              decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(
-                  AppDimensions.radiusCircular,
-                ),
-              ),
-            ),
-
-            // Title
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Text(
-                'Pilih Jenis Kelamin',
-                style: AppTypography.bottomSheetTitle,
-              ),
-            ),
-
-            const Divider(height: 1, color: AppColors.border),
-
-            // Options
-            ListView.separated(
-              shrinkWrap: true,
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-              itemCount: _genderOptions.length,
-              separatorBuilder: (context, index) => const Divider(
-                height: 1,
-                color: AppColors.border,
-                indent: AppSpacing.md,
-                endIndent: AppSpacing.md,
-              ),
-              itemBuilder: (context, index) {
-                final option = _genderOptions[index];
-                final isSelected = option.value == _selectedGender;
-
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
+              const SizedBox(height: AppSpacing.lg),
+              GestureDetector(
+                onTap: () => _pickBirthDate(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppDimensions.inputPaddingVerticalSm,
                     horizontal: AppSpacing.md,
-                    vertical: AppSpacing.xs,
                   ),
-                  title: Text(
-                    option.label,
-                    style: AppTypography.formHint.copyWith(
-                      color: isSelected
-                          ? AppColors.buttonGradientEnd
-                          : AppColors.textBlack,
-                      fontWeight: isSelected
-                          ? FontWeight.w500
-                          : FontWeight.w400,
-                    ),
+                  decoration: BoxDecoration(
+                    color: AppColors.inputBackground,
+                    borderRadius: AppDimensions.borderRadiusSm,
+                    border: Border.all(
+                        color: AppColors.border,
+                        width: AppDimensions.borderThin),
                   ),
-                  trailing: isSelected
-                      ? const Icon(
-                          Icons.check,
-                          color: AppColors.buttonGradientEnd,
-                          size: AppDimensions.iconSm,
-                        )
-                      : null,
-                  onTap: () => Navigator.of(context).pop(option.value),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (result != null) {
-      setState(() {
-        _selectedGender = result;
-      });
-      // TODO: Update state with Bloc
-    }
-  }
-
-  /// Builds the birth date wrapper
-  Widget _buildBirthDateWrapper() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: AppDimensions.borderRadiusSm,
-        border: Border.all(
-          color: AppColors.border,
-          width: AppDimensions.borderThin,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Label Row
-          _buildFormLabelRow('5', 'Tanggal Lahir', isMandatory: true),
-
-          const SizedBox(height: AppSpacing.lg),
-
-          // Date Input
-          _buildBirthDateInput(),
-        ],
-      ),
-    );
-  }
-
-  /// Builds the birth date input field
-  Widget _buildBirthDateInput() {
-    final dateText = _selectedBirthDate != null
-        ? '${_selectedBirthDate!.day.toString().padLeft(2, '0')}/${_selectedBirthDate!.month.toString().padLeft(2, '0')}/${_selectedBirthDate!.year}'
-        : 'DD/MM/YYYY';
-    final hasValue = _selectedBirthDate != null;
-
-    return GestureDetector(
-      onTap: () => _showBirthDatePicker(),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(
-          vertical: AppDimensions.inputPaddingVerticalSm,
-          horizontal: AppSpacing.md,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.inputBackground,
-          borderRadius: AppDimensions.borderRadiusSm,
-          border: Border.all(
-            color: AppColors.border,
-            width: AppDimensions.borderThin,
-          ),
-        ),
-        child: Row(
-          children: [
-            // Date Text
-            Expanded(
-              child: Text(
-                dateText,
-                style: AppTypography.formHint.copyWith(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
-                  letterSpacing: 0,
-                  color: hasValue ? AppColors.textBlack : AppColors.textCaption,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          dateText,
+                          style: AppTypography.formHint.copyWith(
+                            color: hasValue
+                                ? AppColors.textBlack
+                                : AppColors.textCaption,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      SvgPicture.asset(
+                        AppAssets.iconCalendar,
+                        width: AppDimensions.iconXxs14,
+                        height: AppDimensions.iconXxs14,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-
-            const SizedBox(width: AppSpacing.sm),
-
-            // Calendar Icon
-            SvgPicture.asset(
-              AppAssets.iconCalendar,
-              width: AppDimensions.iconXxs14,
-              height: AppDimensions.iconXxs14,
-              colorFilter: const ColorFilter.mode(
-                AppColors.textBlack,
-                BlendMode.srcIn,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Shows the birth date picker
-  Future<void> _showBirthDatePicker() async {
-    final now = DateTime.now();
-    final firstDate = DateTime(now.year - 100);
-    final lastDate = now;
-    final initialDate = _selectedBirthDate ?? DateTime(now.year - 20);
-
-    // Ensure initial date is within bounds
-    DateTime safeInitial = initialDate;
-    if (safeInitial.isBefore(firstDate)) safeInitial = firstDate;
-    if (safeInitial.isAfter(lastDate)) safeInitial = lastDate;
-
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: safeInitial,
-      firstDate: firstDate,
-      lastDate: lastDate,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.buttonGradientEnd,
-              onPrimary: AppColors.white,
-              surface: AppColors.white,
-              onSurface: AppColors.textBlack,
-            ),
+            ],
           ),
-          child: child!,
         );
       },
     );
+  }
 
-    if (pickedDate != null) {
-      setState(() {
-        _selectedBirthDate = pickedDate;
-      });
-      // TODO: Update state with Bloc
+  /// Menampilkan DatePicker dan update Cubit.
+  Future<void> _pickBirthDate(BuildContext context) async {
+    final now = DateTime.now();
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime(now.year - 20),
+      firstDate: DateTime(now.year - 100),
+      lastDate: now,
+    );
+    if (date != null && context.mounted) {
+      final dob =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      context.read<EditProfileCubit>().dobChanged(dob);
     }
   }
 
-  /// Builds a label row for form fields
-  Widget _buildFormLabelRow(
-    String number,
-    String label, {
-    bool isMandatory = false,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // Number
-        Text(
-          '$number.',
-          style: AppTypography.formLabel.copyWith(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            height: 1.5,
-            letterSpacing: 0,
-            color: AppColors.textBlack,
-          ),
-        ),
+  // ============================================
+  // LOCATION FIELD (uses LocationBloc)
+  // ============================================
 
-        const SizedBox(width: AppSpacing.xxs),
-
-        // Label
-        Text(
-          label,
-          style: AppTypography.formLabel.copyWith(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            height: 1.5,
-            letterSpacing: 0,
-            color: AppColors.textBlack,
-          ),
-        ),
-
-        // Mandatory indicator
-        if (isMandatory) ...[
-          const SizedBox(width: AppSpacing.xxs),
-          Text(
-            '*',
-            style: AppTypography.formLabel.copyWith(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              height: 1.5,
-              letterSpacing: 0,
-              color: AppColors.textBlack,
-            ),
-          ),
-        ],
-      ],
+  Widget _buildLocationField() {
+    final indonesiaCountry = const LocationEntity(id: 'ID', name: 'Indonesia');
+    return BlocBuilder<LocationBloc, LocationState>(
+      builder: (context, locationState) {
+        final selectedCountry =
+            locationState.selectedCountry ?? indonesiaCountry;
+        return CascadingLocationField(
+          number: '9',
+          label: 'Lokasi (Negara, Provinsi, Kota, dll)',
+          isMandatory: true,
+          selectedCountry: selectedCountry,
+          selectedProvince: locationState.selectedProvince,
+          selectedCity: locationState.selectedRegency,
+          selectedDistrict: locationState.selectedDistrict,
+          selectedVillage: locationState.selectedVillage,
+          countryItems: [indonesiaCountry],
+          provinceItems: locationState.provinces,
+          cityItems: locationState.regencies,
+          districtItems: locationState.districts,
+          villageItems: locationState.villages,
+          isLoadingCountries: false,
+          isLoadingProvinces: locationState.isLoadingProvinces,
+          isLoadingCities: locationState.isLoadingRegencies,
+          isLoadingDistricts: locationState.isLoadingDistricts,
+          isLoadingVillages: locationState.isLoadingVillages,
+          errorText: locationState.errorMessage,
+          onCountryChanged: (entity) {
+            if (entity != null) {
+              context
+                  .read<LocationBloc>()
+                  .add(LocationEvent.selectCountry(entity));
+              context
+                  .read<LocationBloc>()
+                  .add(const LocationEvent.loadProvinces());
+              context.read<EditProfileCubit>().countryChanged(entity.name);
+            }
+          },
+          onProvinceChanged: (entity) {
+            if (entity != null) {
+              context
+                  .read<LocationBloc>()
+                  .add(LocationEvent.selectProvince(entity));
+              context.read<EditProfileCubit>().provinceChanged(entity.name);
+            }
+          },
+          onCityChanged: (entity) {
+            if (entity != null) {
+              context
+                  .read<LocationBloc>()
+                  .add(LocationEvent.selectRegency(entity));
+              context.read<EditProfileCubit>().cityChanged(entity.name);
+            }
+          },
+          onDistrictChanged: (entity) {
+            if (entity != null) {
+              context
+                  .read<LocationBloc>()
+                  .add(LocationEvent.selectDistrict(entity));
+              context.read<EditProfileCubit>().districtChanged(entity.name);
+            }
+          },
+          onVillageChanged: (entity) {
+            if (entity != null) {
+              context
+                  .read<LocationBloc>()
+                  .add(LocationEvent.selectVillage(entity));
+              context.read<EditProfileCubit>().villageChanged(entity.name);
+            }
+          },
+        );
+      },
     );
   }
 
-  /// Build ID Photo tab content
-  Widget _buildIdPhotoTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          // KTP Photo Capture Widget
-          IdPhotoCapture(
-            label: 'Foto KTP',
-            isMandatory: true,
-            capturedImage: _ktpImage,
-            emptyStateHint: 'Ambil foto agar pemberi kerja tau siap dirimu',
-            captionText: 'Klik button foto ktp untuk mengambil foto KTP anda',
-            retakeCaptionText:
-                'Klik button retake foto ktp untuk update foto KTP anda',
-            captureButtonText: 'Foto KTP',
-            retakeButtonText: 'Retake',
-            onCapturePressed: () => _handleKtpCapture(),
-          ),
+  // ============================================
+  // TAB 1: FOTO KTP (selective rebuild)
+  // ============================================
 
-          const SizedBox(height: AppSpacing.md),
-
-          // Ad/Promo Card
-          AdCard(
-            title: 'Pelatihan Gratis + Sertifikasi Resmi',
-            description: 'Pelatihan digital marketing dan banyak lagi',
-            ctaText: 'Lihat pelatihan',
-            onCtaPressed: () {
-              // TODO: Navigate to training page
-            },
+  Widget _buildIdPhotoTab(BuildContext context) {
+    final cubit = context.read<EditProfileCubit>();
+    return BlocSelector<EditProfileCubit, EditProfileState, File?>(
+      selector: (state) => state.ktpFile,
+      builder: (context, ktpFile) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              IdPhotoCapture(
+                label: 'Foto KTP',
+                isMandatory: true,
+                capturedImage: ktpFile,
+                emptyStateHint: 'Ambil foto KTP agar data valid',
+                captionText: 'Klik untuk mengambil foto KTP anda',
+                captureButtonText: 'Foto KTP',
+                retakeButtonText: 'Retake',
+                onCapturePressed: () async {
+                  final File? file = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const IdCameraPage(
+                        documentType: IdDocumentType.ktp,
+                        title: 'Foto KTP',
+                        instruction: 'Posisikan KTP Anda dalam bingkai',
+                      ),
+                    ),
+                  );
+                  if (file != null) cubit.ktpFileChanged(file);
+                },
+              ),
+              const SizedBox(height: AppSpacing.md),
+              AdCard(
+                title: 'Pelatihan Gratis',
+                description: 'Pelatihan bersama kami',
+                ctaText: 'Lihat',
+                onCtaPressed: () {},
+              ),
+              SizedBox(
+                  height:
+                      MediaQuery.of(context).padding.bottom + AppSpacing.md),
+            ],
           ),
-
-          // Bottom padding for safe area
-          SizedBox(
-            height: MediaQuery.of(context).padding.bottom + AppSpacing.md,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  /// Handle KTP photo capture
-  Future<void> _handleKtpCapture() async {
-    if (!mounted) return;
+  // ============================================
+  // TAB 2: FOTO SWAFOTO (selective rebuild)
+  // ============================================
 
-    // Navigate to custom camera page with KTP overlay
-    final capturedImage = await Navigator.push<File>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const IdCameraPage(
-          documentType: IdDocumentType.ktp,
-          title: 'Foto KTP',
-          instruction: 'Posisikan KTP Anda dalam bingkai',
-        ),
-      ),
-    );
-
-    // Update state if image was captured
-    if (capturedImage != null && mounted) {
-      setState(() {
-        _ktpImage = capturedImage;
-      });
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Foto KTP berhasil diambil'),
-          duration: Duration(seconds: 2),
-          backgroundColor: AppColors.success,
-        ),
-      );
-    }
-  }
-
-  /// Build Selfie Photo tab content
-  Widget _buildSelfiePhotoTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Selfie with KTP Capture Widget
-          SelfieWithIdCapture(
-            label: 'Foto Swafoto dan KTP',
-            isMandatory: true,
-            capturedImage: _selfieImage,
-            emptyStateHint: 'Ambil foto agar pemberi kerja tau siap dirimu',
-            captionText: 'Klik button foto Swafoto untuk mengambil foto',
-            retakeCaptionText:
-                'Klik button retake foto ktp untuk update foto KTP anda',
-            captureButtonText: 'Foto Swafoto',
-            retakeButtonText: 'Retake',
-            infoText:
-                'Pastikan wajah dan ktp anda masuk ke dalam frame sesuai dengan contoh gambar di bawah',
-            exampleImagePath: AppAssets.imageSelfieKtp,
-            onCapturePressed: () => _handleSelfieCapture(),
+  Widget _buildSelfiePhotoTab(BuildContext context) {
+    final cubit = context.read<EditProfileCubit>();
+    return BlocSelector<EditProfileCubit, EditProfileState, File?>(
+      selector: (state) => state.selfieKtpFile,
+      builder: (context, selfieKtpFile) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SelfieWithIdCapture(
+                label: 'Foto Swafoto dan KTP',
+                isMandatory: true,
+                capturedImage: selfieKtpFile,
+                emptyStateHint: 'Ambil swafoto beserta KTP',
+                captionText: 'Klik untuk mengambil foto',
+                captureButtonText: 'Foto Swafoto',
+                retakeButtonText: 'Retake',
+                infoText: 'Pastikan wajah dan KTP masuk bingkai',
+                exampleImagePath: AppAssets.imageSelfieKtp,
+                onCapturePressed: () async {
+                  final File? file = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const IdCameraPage(
+                        documentType: IdDocumentType.selfieWithKtp,
+                        title: 'Foto Swafoto',
+                        instruction:
+                            'Posisikan wajah dan KTP dalam bingkai',
+                      ),
+                    ),
+                  );
+                  if (file != null) cubit.selfieKtpFileChanged(file);
+                },
+              ),
+              const SizedBox(height: AppSpacing.md),
+              AdCard(
+                title: 'Pelatihan Gratis',
+                description: 'Pelatihan bersama kami',
+                ctaText: 'Lihat',
+                onCtaPressed: () {},
+              ),
+              SizedBox(
+                  height:
+                      MediaQuery.of(context).padding.bottom + AppSpacing.md),
+            ],
           ),
-
-          const SizedBox(height: AppSpacing.md),
-
-          // Ad/Promo Card
-          AdCard(
-            title: 'Pelatihan Gratis + Sertifikasi Resmi',
-            description: 'Pelatihan digital marketing dan banyak lagi',
-            ctaText: 'Lihat pelatihan',
-            onCtaPressed: () {
-              // TODO: Navigate to training page
-            },
-          ),
-
-          // Bottom padding for safe area
-          SizedBox(
-            height: MediaQuery.of(context).padding.bottom + AppSpacing.md,
-          ),
-        ],
-      ),
+        );
+      },
     );
-  }
-
-  /// Handle Selfie with KTP photo capture
-  Future<void> _handleSelfieCapture() async {
-    if (!mounted) return;
-
-    // Navigate to custom camera page with selfie + KTP overlay
-    final capturedImage = await Navigator.push<File>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const IdCameraPage(
-          documentType: IdDocumentType.selfieWithKtp,
-          title: 'Foto Swafoto',
-          instruction: 'Posisikan wajah dan KTP dalam bingkai',
-        ),
-      ),
-    );
-
-    // Update state if image was captured
-    if (capturedImage != null && mounted) {
-      setState(() {
-        _selfieImage = capturedImage;
-      });
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Foto Swafoto berhasil diambil'),
-          duration: Duration(seconds: 2),
-          backgroundColor: AppColors.success,
-        ),
-      );
-    }
   }
 }

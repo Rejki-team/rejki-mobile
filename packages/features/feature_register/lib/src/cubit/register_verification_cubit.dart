@@ -67,7 +67,7 @@ class RegisterVerificationCubit extends Cubit<RegisterVerificationState> {
     final result = await _authRepository.verifyOtp(
       code: state.code,
       email: email,
-      purpose: 'registration',
+      purpose: OtpPurpose.registration.value,
     );
 
     result.fold(
@@ -94,10 +94,27 @@ class RegisterVerificationCubit extends Cubit<RegisterVerificationState> {
   }
 
   /// Kirim ulang kode
+  ///
+  /// Guard canResend di-cek pertama, lalu [canResend] langsung di-set false
+  /// secara synchronous sebelum API call untuk mencegah race condition double-tap.
+  /// Jika API gagal → [canResend] dikembalikan menjadi true (Opsi A).
   Future<void> resendCode() async {
     if (!state.canResend) return;
 
-    final result = await _authRepository.resendOtp(email: email);
+    // Set canResend = false + status = resending SEGERA (synchronous)
+    // agar tombol langsung disabled sebelum API call dimulai.
+    emit(
+      state.copyWith(
+        canResend: false,
+        status: RegisterVerificationStatus.resending,
+        errorMessage: null,
+      ),
+    );
+
+    final result = await _authRepository.resendOtp(
+      email: email,
+      purpose: OtpPurpose.registration,
+    );
 
     result.fold(
       (failure) {
@@ -108,18 +125,23 @@ class RegisterVerificationCubit extends Cubit<RegisterVerificationState> {
           sessionExpired: (msg) => msg,
           unexpected: (msg) => msg,
         );
+        // Opsi A: Kembalikan canResend = true agar user bisa coba lagi
         emit(
           state.copyWith(
+            status: RegisterVerificationStatus.initial,
+            canResend: true,
             errorMessage: message,
           ),
         );
       },
       (_) {
-        // Berhasil dikirim ulang
+        // Berhasil → mulai countdown 30 detik
+        // _startCountdown() sudah set countdown = 30 dan canResend = false
         _startCountdown();
       },
     );
   }
+
 
   /// Reset state
   void reset() {

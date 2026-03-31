@@ -26,6 +26,7 @@ import 'package:feature_barangbekas/feature_barangbekas.dart';
 import 'app_routes.dart';
 import '../pages/main_shell.dart';
 import '../pages/placeholder_page.dart';
+import '../pages/verification_required_page.dart';
 
 /// Router configuration untuk aplikasi
 ///
@@ -176,6 +177,14 @@ class AppRouter {
         },
       ),
 
+      // ==================== VERIFICATION REQUIRED ====================
+      GoRoute(
+        path: AppRoutes.verificationRequired,
+        name: 'verificationRequired',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const VerificationRequiredPage(),
+      ),
+
       // ==================== MAIN APP (SHELL) ====================
       ShellRoute(
         navigatorKey: shellNavigatorKey,
@@ -224,8 +233,12 @@ class AppRouter {
           GoRoute(
             path: AppRoutes.chat,
             name: 'chat',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: PlaceholderPage(title: 'Chat')),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: VerificationGuard(
+                onVerifyPressed: () => context.go(AppRoutes.personalInfo),
+                child: const PlaceholderPage(title: 'Chat'),
+              ),
+            ),
             routes: [
               GoRoute(
                 path: ':id',
@@ -243,8 +256,11 @@ class AppRouter {
           GoRoute(
             path: AppRoutes.history,
             name: 'history',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: PlaceholderPage(title: 'Riwayat'),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: VerificationGuard(
+                onVerifyPressed: () => context.go(AppRoutes.personalInfo),
+                child: const PlaceholderPage(title: 'Riwayat'),
+              ),
             ),
             routes: [
               GoRoute(
@@ -487,6 +503,29 @@ class AppRouter {
             currentPath == AppRoutes.register ||
             currentPath == AppRoutes.onboarding)) {
       return AppRoutes.home;
+    }
+
+    // Routes yang memerlukan user aktif dan terverifikasi
+    //
+    // Jika user belum aktif/terverifikasi dan mencoba akses
+    // fitur protected, redirect ke halaman verifikasi.
+    // Tab Chat dan History di-guard via VerificationGuard widget
+    // di MainShell, bukan di sini, untuk menghindari redirect loop.
+    const verificationRequiredPrefixes = [
+      '/pekerjaan',
+      '/pekerja',
+      '/pelatihan',
+      '/barang-bekas',
+    ];
+
+    final needsVerification = verificationRequiredPrefixes.any(
+      (prefix) => currentPath.startsWith(prefix),
+    );
+
+    if (isLoggedIn &&
+        needsVerification &&
+        !_sessionStorage.isUserActiveAndVerified()) {
+      return AppRoutes.verificationRequired;
     }
 
     return null;

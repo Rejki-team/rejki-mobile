@@ -84,6 +84,7 @@ class LabeledNumberField extends StatefulWidget {
 
 class _LabeledNumberFieldState extends State<LabeledNumberField> {
   late FocusNode _focusNode;
+  late TextEditingController _controller;
   bool _isFocused = false;
 
   @override
@@ -91,6 +92,10 @@ class _LabeledNumberFieldState extends State<LabeledNumberField> {
     super.initState();
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_handleFocusChange);
+    _controller = widget.controller ??
+        TextEditingController(
+          text: widget.initialValue?.toString() ?? '',
+        );
   }
 
   @override
@@ -99,6 +104,9 @@ class _LabeledNumberFieldState extends State<LabeledNumberField> {
       _focusNode.dispose();
     } else {
       _focusNode.removeListener(_handleFocusChange);
+    }
+    if (widget.controller == null) {
+      _controller.dispose();
     }
     super.dispose();
   }
@@ -176,7 +184,7 @@ class _LabeledNumberFieldState extends State<LabeledNumberField> {
       hasError: widget.errorText != null,
       isDisabled: !widget.enabled,
       child: TextField(
-        controller: widget.controller,
+        controller: _controller,
         focusNode: _focusNode,
         enabled: widget.enabled,
         keyboardType: TextInputType.number,

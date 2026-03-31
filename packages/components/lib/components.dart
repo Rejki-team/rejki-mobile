@@ -53,3 +53,6 @@ export 'src/images/images.dart';
 
 // FAB
 export 'src/fab/fab.dart';
+
+// Guards
+export 'src/guards/guards.dart';

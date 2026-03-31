@@ -13,6 +13,7 @@ abstract class AppRoutes {
   static const String forgotPassword = '/forgot-password';
   static const String resetPassword = '/reset-password';
   static const String verifyOtp = '/verify-otp';
+  static const String verificationRequired = '/verification-required';
 
   // ==================== MAIN (with bottom nav) ====================
   static const String home = '/home';

@@ -67,7 +67,7 @@ class VerificationCodeCubit extends Cubit<VerificationCodeState> {
     final result = await _authRepository.verifyOtp(
       code: state.code,
       email: email,
-      purpose: 'password_reset',
+      purpose: OtpPurpose.passwordReset.value,
     );
 
     result.fold(
@@ -98,18 +98,28 @@ class VerificationCodeCubit extends Cubit<VerificationCodeState> {
   }
 
   /// Kirim ulang kode
+  ///
+  /// Guard canResend di-cek pertama, lalu [canResend] langsung di-set false
+  /// secara synchronous sebelum API call untuk mencegah race condition double-tap.
+  /// Jika API gagal → [canResend] dikembalikan menjadi true (Opsi A).
   Future<void> resendCode() async {
     if (!state.canResend) return;
 
+    // Set canResend = false + status = resending SEGERA (synchronous)
+    // agar tombol langsung disabled sebelum API call dimulai.
     emit(
       state.copyWith(
+        canResend: false,
         status: VerificationCodeStatus.resending,
         errorMessage: null,
       ),
     );
 
     // Call resend OTP API
-    final result = await _authRepository.resendOtp(email: email);
+    final result = await _authRepository.resendOtp(
+      email: email,
+      purpose: OtpPurpose.passwordReset,
+    );
 
     result.fold(
       (failure) {
@@ -120,15 +130,18 @@ class VerificationCodeCubit extends Cubit<VerificationCodeState> {
           sessionExpired: (msg) => msg,
           unexpected: (msg) => msg,
         );
+        // Opsi A: Kembalikan canResend = true agar user bisa coba lagi
         emit(
           state.copyWith(
             status: VerificationCodeStatus.initial,
+            canResend: true,
             errorMessage: message,
           ),
         );
       },
       (successMessage) {
-        // Restart countdown
+        // Berhasil → mulai countdown 30 detik
+        // _startCountdown() sudah set countdown = 30 dan canResend = false
         _startCountdown();
         emit(
           state.copyWith(
@@ -139,6 +152,7 @@ class VerificationCodeCubit extends Cubit<VerificationCodeState> {
       },
     );
   }
+
 
   /// Reset state
   void reset() {

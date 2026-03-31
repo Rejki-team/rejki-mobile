@@ -14,17 +14,28 @@ dependencies:
   flutter_bloc: ^9.1.1
   go_router: ^17.0.1
   get_it: ^8.0.3
+  injectable: ^2.5.0
   camera: ^0.11.0+2
   # Internal packages
   designsystems:
     path: ../../designsystems
   components:
     path: ../../components
+  shared_widgets:
+    path: ../../shared_widgets
+  domain:
+    path: ../../domain
+  data:
+    path: ../../data
   local:
     path: ../../local
   flutter_svg: ^2.0.17
+  freezed_annotation: ^3.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  build_runner: ^2.10.4
+  freezed: ^3.2.3
+  injectable_generator: ^2.6.0

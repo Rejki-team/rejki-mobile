@@ -74,7 +74,7 @@ class VerificationCodePage extends StatelessWidget {
   }
 }
 
-class _VerificationCodeView extends StatefulWidget {
+class _VerificationCodeView extends StatelessWidget {
   final String email;
   final String loginRoute;
   final String resetPasswordRoute;
@@ -88,23 +88,6 @@ class _VerificationCodeView extends StatefulWidget {
     this.onVerificationSuccess,
     this.onCancel,
   });
-
-  @override
-  State<_VerificationCodeView> createState() => _VerificationCodeViewState();
-}
-
-class _VerificationCodeViewState extends State<_VerificationCodeView> {
-  @override
-  void initState() {
-    super.initState();
-    // Set status bar transparent
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,8 +107,8 @@ class _VerificationCodeViewState extends State<_VerificationCodeView> {
               Navigator.of(context).pop();
               // Navigate to reset password page
               // Token is loaded from secure storage, no need to pass via URL
-              context.go(widget.resetPasswordRoute);
-              widget.onVerificationSuccess?.call();
+              context.go(resetPasswordRoute);
+              onVerificationSuccess?.call();
             },
           );
         } else if (state.status == VerificationCodeStatus.failure) {
@@ -139,51 +122,56 @@ class _VerificationCodeViewState extends State<_VerificationCodeView> {
           );
         }
       },
-      child: Scaffold(
-        body: Stack(
-          children: [
-            // Main content
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(AppAssets.baseBackground),
-                  fit: BoxFit.cover,
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+        ),
+        child: Scaffold(
+          body: Stack(
+            children: [
+              // Main content
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(AppAssets.baseBackground),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: Column(
-                  children: [
-                    // Content Container (mepet status bar)
-                    Expanded(
-                      child: _ContentContainer(
-                        maskedEmail: VerificationCodePage.maskEmail(
-                          widget.email,
+                child: SafeArea(
+                  bottom: false,
+                  child: Column(
+                    children: [
+                      // Content Container (mepet status bar)
+                      Expanded(
+                        child: _ContentContainer(
+                          maskedEmail: VerificationCodePage.maskEmail(
+                            email,
+                          ),
+                          onCancel:
+                              onCancel ?? () => context.go(loginRoute),
                         ),
-                        onCancel:
-                            widget.onCancel ??
-                            () => context.go(widget.loginRoute),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            // Loading overlay
-            BlocBuilder<VerificationCodeCubit, VerificationCodeState>(
-              buildWhen: (previous, current) =>
-                  previous.isLoading != current.isLoading,
-              builder: (context, state) {
-                if (state.isLoading) {
-                  return const AppLoadingOverlay();
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ],
+              // Loading overlay
+              BlocBuilder<VerificationCodeCubit, VerificationCodeState>(
+                buildWhen: (previous, current) =>
+                    previous.isLoading != current.isLoading,
+                builder: (context, state) {
+                  if (state.isLoading) {
+                    return const AppLoadingOverlay();
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -329,22 +317,38 @@ class _FormSection extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
 
             // Resend code link with countdown
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Tidak mendapat kode?',
-                  style: AppTypography.linkTextSmall,
-                ),
-                const SizedBox(width: AppSpacing.xxs),
-                if (state.canResend)
-                  GestureDetector(
-                    onTap: cubit.resendCode,
-                    child: Text('Kirim Ulang', style: AppTypography.linkText),
-                  )
-                else
-                  Text('${state.countdown}', style: AppTypography.linkText),
-              ],
+            // IgnorePointer saat loading sebagai lapisan perlindungan tambahan
+            // terhadap accidental double-tap.
+            BlocBuilder<VerificationCodeCubit, VerificationCodeState>(
+              buildWhen: (previous, current) =>
+                  previous.canResend != current.canResend ||
+                  previous.countdown != current.countdown ||
+                  previous.isLoading != current.isLoading,
+              builder: (context, state) {
+                return IgnorePointer(
+                  ignoring: state.isLoading,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Tidak mendapat kode?',
+                        style: AppTypography.linkTextSmall,
+                      ),
+                      const SizedBox(width: AppSpacing.xxs),
+                      if (state.canResend)
+                        GestureDetector(
+                          onTap: cubit.resendCode,
+                          child: Text(
+                            'Kirim Ulang',
+                            style: AppTypography.linkText,
+                          ),
+                        )
+                      else
+                        Text('${state.countdown}', style: AppTypography.linkText),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         );

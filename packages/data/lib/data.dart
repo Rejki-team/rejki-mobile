@@ -15,3 +15,6 @@ export 'src/location/location.dart';
 // Helper Module
 export 'src/helper/helper.dart';
 export 'src/worker/worker.dart';
+
+// Profile Module
+export 'src/profile/profile.dart';

@@ -325,4 +325,18 @@ abstract class AppDimensions {
 
   /// Full radius for circular elements - 100px
   static const double radiusCircular = 100;
+
+  // ============================================
+  // VERIFICATION GUARD
+  // ============================================
+
+  /// Verification required illustration size - 120px
+  static const double verificationIllustrationSize = 120;
+
+  // ============================================
+  // DIALOG
+  // ============================================
+
+  /// Dialog icon/illustration size - 80px
+  static const double dialogIconSize = 80;
 }

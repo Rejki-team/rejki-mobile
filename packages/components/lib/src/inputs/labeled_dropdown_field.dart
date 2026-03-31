@@ -105,12 +105,22 @@ class _LabeledDropdownFieldState<T> extends State<LabeledDropdownField<T>> {
   late FocusNode _focusNode;
   bool _isFocused = false;
   bool _isExpanded = false;
+  T? _localSelectedValue;
 
   @override
   void initState() {
     super.initState();
+    _localSelectedValue = widget.selectedValue;
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_handleFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(LabeledDropdownField<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedValue != oldWidget.selectedValue) {
+      _localSelectedValue = widget.selectedValue;
+    }
   }
 
   @override
@@ -221,7 +231,7 @@ class _LabeledDropdownFieldState<T> extends State<LabeledDropdownField<T>> {
   /// Builds the dropdown input field
   Widget _buildDropdownInput() {
     final selectedOption = widget.options.cast<DropdownOption<T>?>().firstWhere(
-      (option) => option?.value == widget.selectedValue,
+      (option) => option?.value == _localSelectedValue,
       orElse: () => null,
     );
 
@@ -295,13 +305,20 @@ class _LabeledDropdownFieldState<T> extends State<LabeledDropdownField<T>> {
       ),
       builder: (context) => _DropdownBottomSheet<T>(
         options: widget.options,
-        selectedValue: widget.selectedValue,
+        selectedValue: _localSelectedValue,
         label: widget.label,
       ),
     );
 
+    // Guard against setState after dispose — widget may have been removed
+    // from the tree while the bottom sheet was open (e.g. navigation).
+    if (!mounted) return;
+
     setState(() {
       _isExpanded = false;
+      if (result != null) {
+        _localSelectedValue = result;
+      }
     });
     _focusNode.unfocus();
 

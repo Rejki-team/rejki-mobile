@@ -183,12 +183,13 @@ class AuthRemoteDataSource {
   ///
   /// Resends OTP to user's email
   /// [email] - User's email address
+  /// [purpose] - Purpose of OTP ('registration' or 'password_reset')
   /// Returns message from API response
-  Future<String> resendOtp(String email) async {
+  Future<String> resendOtp(String email, String purpose) async {
     try {
       final response = await _client.post(
         ApiConfig.resendOtp,
-        data: {'email': email},
+        data: {'email': email, 'purpose': purpose},
       );
 
       final data = response.data as Map<String, dynamic>;

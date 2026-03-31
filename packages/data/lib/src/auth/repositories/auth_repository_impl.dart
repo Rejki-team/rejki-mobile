@@ -70,6 +70,7 @@ class AuthRepositoryImpl implements AuthRepository {
         name: authModel.user.userInfo.fullName,
         verificationStatus: authModel.user.verificationStatus,
       );
+      await _sessionStorage.saveUserStatus(authModel.user.status);
 
       // ========================================
       // Return hanya data minimal ke Domain/UI
@@ -122,6 +123,7 @@ class AuthRepositoryImpl implements AuthRepository {
         name: responseModel.user.userInfo.fullName,
         verificationStatus: responseModel.user.verificationStatus,
       );
+      await _sessionStorage.saveUserStatus(responseModel.user.status);
 
       // ========================================
       // Return data dengan message ke Domain/UI
@@ -197,7 +199,7 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       // Save token to secure storage ONLY if purpose is password_reset
-      if (purpose == 'password_reset') {
+      if (purpose == OtpPurpose.passwordReset.value) {
         await _sessionStorage.saveResetPasswordToken(token);
         print('✅ [AuthRepository] OTP verified and reset password token saved');
       } else {
@@ -213,11 +215,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<AuthFailure, String>> resendOtp({required String email}) async {
+  Future<Either<AuthFailure, String>> resendOtp({
+    required String email,
+    required OtpPurpose purpose,
+  }) async {
     try {
-      print('🔄 [AuthRepository] Resending OTP to: $email');
+      print('🔄 [AuthRepository] Resending OTP to: $email, purpose: ${purpose.value}');
 
-      final message = await _remoteDataSource.resendOtp(email);
+      final message = await _remoteDataSource.resendOtp(email, purpose.value);
 
       print('✅ [AuthRepository] OTP resent successfully');
 
