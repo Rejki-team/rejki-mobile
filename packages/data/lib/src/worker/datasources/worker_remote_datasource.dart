@@ -15,7 +15,14 @@ abstract class WorkerRemoteDataSource {
   Future<ApiResponse<dynamic>> getWorkerById(String id);
 
   Future<ApiResponse<dynamic>> createWorkerAd(CreateWorkerParams params);
+
+  /// Fetches the worker profile(s) owned by the currently logged-in user.
+  ///
+  /// Hits [ApiConfig.workerMe] (`GET /workers/me`).
+  /// Returns the raw `data.workers` list directly.
+  Future<ApiResponse<List<dynamic>>> getMyWorkerProfile();
 }
+
 
 @LazySingleton(as: WorkerRemoteDataSource)
 class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
@@ -113,5 +120,22 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
       response.data as Map<String, dynamic>,
       fromJsonT: (data) => data,
     );
+  }
+
+  @override
+  Future<ApiResponse<List<dynamic>>> getMyWorkerProfile() async {
+    try {
+      final response = await _dioClient.get(ApiConfig.workerMe);
+
+      return ApiResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        fromJsonT: (json) {
+          final map = json as Map<String, dynamic>;
+          return map['workers'] as List<dynamic>? ?? [];
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 }

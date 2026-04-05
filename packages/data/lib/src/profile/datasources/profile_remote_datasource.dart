@@ -1,5 +1,6 @@
 import 'package:network/network.dart';
 import 'package:domain/domain.dart';
+import '../../auth/models/user_model.dart';
 
 /// Remote data source untuk profile API.
 ///
@@ -7,6 +8,9 @@ import 'package:domain/domain.dart';
 abstract class ProfileRemoteDataSource {
   /// Update profile user dengan FormData (multipart).
   Future<ApiResponse<dynamic>> updateProfile(UpdateProfileParams params);
+
+  /// Ambil profil user yang sedang login (GET /users/profile).
+  Future<UserModel> getProfile();
 }
 
 /// Implementasi [ProfileRemoteDataSource].
@@ -52,5 +56,12 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       response.data as Map<String, dynamic>,
       fromJsonT: (data) => data,
     );
+  }
+
+  @override
+  Future<UserModel> getProfile() async {
+    final response = await _dioClient.get(ApiConfig.profile);
+    final data = response.data['data'] as Map<String, dynamic>;
+    return UserModel.fromJson(data);
   }
 }

@@ -640,44 +640,158 @@ class ModalBottomSheetRoute<T> extends PopupRoute<T> {
   }
 }
 
-/// Content widget for Job Detail Bottom Sheet
-/// This is used by the router to display job detail as a modal bottom sheet
-class _JobDetailBottomSheetContent extends StatelessWidget {
+/// Content widget for Job Detail Bottom Sheet.
+/// This is used by the router to display job detail as a modal bottom sheet.
+///
+/// Manages [TakeJobCubit] lifecycle (create + close) to prevent memory leaks.
+class _JobDetailBottomSheetContent extends StatefulWidget {
   const _JobDetailBottomSheetContent();
 
   @override
+  State<_JobDetailBottomSheetContent> createState() =>
+      _JobDetailBottomSheetContentState();
+}
+
+class _JobDetailBottomSheetContentState
+    extends State<_JobDetailBottomSheetContent> {
+  late final TakeJobCubit _takeJobCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _takeJobCubit = GetIt.I<TakeJobCubit>();
+  }
+
+  @override
+  void dispose() {
+    _takeJobCubit.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<JobDetailCubit, JobDetailState>(
-      builder: (context, state) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.9,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          builder: (context, scrollController) {
-            if (state.isLoading || state.isInitial) {
-              return _buildLoadingSheet();
-            }
-
-            if (state.isError) {
-              return _buildErrorSheet(context, state);
-            }
-
-            if (state.isSuccess && state.job != null) {
-              return _buildSuccessSheet(context, state);
-            }
-
-            return _buildLoadingSheet();
+    return BlocProvider.value(
+      value: _takeJobCubit,
+      child: BlocListener<TakeJobCubit, TakeJobState>(
+        listener: _handleTakeJobState,
+        child: BlocBuilder<JobDetailCubit, JobDetailState>(
+          builder: (context, state) {
+            return DraggableScrollableSheet(
+              initialChildSize: 0.9,
+              minChildSize: 0.5,
+              maxChildSize: 0.95,
+              builder: (context, scrollController) {
+                if (state.isLoading || state.isInitial) {
+                  return _buildLoadingSheet();
+                }
+                if (state.isError) {
+                  return _buildErrorSheet(context, state);
+                }
+                if (state.isSuccess && state.job != null) {
+                  return _buildSuccessSheet(context, state);
+                }
+                return _buildLoadingSheet();
+              },
+            );
           },
+        ),
+      ),
+    );
+  }
+
+  void _handleTakeJobState(BuildContext context, TakeJobState state) {
+    state.when(
+      initial: () {},
+      checkingWorkerProfile: () {},
+      workerProfileNotFound: () {
+        Navigator.of(context).pop();
+        Navigator.of(context, rootNavigator: true).pushNamed('/pekerja/create');
+      },
+      workerProfileFound: (workerId, workerCount, defaultDateTime) {
+        _showBidDialog(
+          context: context,
+          workerId: workerId,
+          workerCount: workerCount,
+          defaultDateTime: defaultDateTime,
+        );
+      },
+      submitting: () {},
+      success: () {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (ctx) => AppDialogSuccess(
+            title: 'Berhasil',
+            message: 'Kamu telah berhasil melamar pekerjaan ini',
+            onPressed: () {
+              Navigator.pop(ctx);
+              Navigator.of(context).pop(true);
+            },
+          ),
+        );
+      },
+      failure: (message) {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (ctx) => AppDialogFailed(
+            title: 'Gagal',
+            message: message,
+            onPressed: () => Navigator.pop(ctx),
+          ),
         );
       },
     );
   }
 
+  void _showBidDialog({
+    required BuildContext context,
+    required String workerId,
+    required int workerCount,
+    required DateTime? defaultDateTime,
+  }) {
+    final jobState = context.read<JobDetailCubit>().state;
+    if (!jobState.isSuccess || jobState.job == null) return;
+    final job = jobState.job!;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => BlocProvider.value(
+        // Dialog route baru tidak mewarisi provider tree — inject eksplisit
+        value: _takeJobCubit,
+        child: BlocBuilder<TakeJobCubit, TakeJobState>(
+          builder: (ctx, takeJobState) => TakeJobDialog(
+            data: TakeJobDialogData(
+              defaultDateTime: job.dateOfJob,
+              defaultDateText: JobFormatter.formatDate(job.dateOfJob),
+              defaultTimeText: JobFormatter.formatTime(job.dateOfJob),
+              workerCount: workerCount,
+            ),
+            workerId: workerId,
+            isSubmitting: takeJobState.maybeWhen(
+              submitting: () => true,
+              orElse: () => false,
+            ),
+            onSubmit: (selectedDateTime, resolvedWorkerId) {
+              Navigator.of(dialogContext).pop();
+              _takeJobCubit.submitBid(
+                jobId: job.id,
+                workerId: resolvedWorkerId,
+                dateOfJob: selectedDateTime,
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildLoadingSheet() {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.white,
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(AppDimensions.radiusLg),
           topRight: Radius.circular(AppDimensions.radiusLg),
         ),
@@ -688,9 +802,9 @@ class _JobDetailBottomSheetContent extends StatelessWidget {
 
   Widget _buildErrorSheet(BuildContext context, JobDetailState state) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.white,
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(AppDimensions.radiusLg),
           topRight: Radius.circular(AppDimensions.radiusLg),
         ),
@@ -698,14 +812,14 @@ class _JobDetailBottomSheetContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 64, color: AppColors.error),
-          const SizedBox(height: 16),
+          Icon(Icons.error_outline, size: AppDimensions.iconXxl, color: AppColors.error),
+          const SizedBox(height: AppSpacing.md),
           Text(
             state.errorMessage ?? 'Terjadi kesalahan',
             style: const TextStyle(color: AppColors.error),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Tutup'),
@@ -718,108 +832,50 @@ class _JobDetailBottomSheetContent extends StatelessWidget {
   Widget _buildSuccessSheet(BuildContext context, JobDetailState state) {
     final job = state.job!;
 
-    // Debug: log image URLs
-    debugPrint('🖼️ [JobDetail] Number of images: ${job.images.length}');
-    for (var i = 0; i < job.images.length; i++) {
-      final uriPath = job.images[i].uriPath;
-      final fullUrl = ApiConfig.buildImageUrl(uriPath);
-      debugPrint('🖼️ [JobDetail] Image $i uri_path: $uriPath');
-      debugPrint('🖼️ [JobDetail] Image $i full URL: $fullUrl');
-    }
-
+    debugPrint('[JobDetail] Number of images: ${job.images.length}');
     final photoUrls = job.images
         .map((e) => ApiConfig.buildImageUrl(e.uriPath))
         .toList();
 
-    return JobDetailBottomSheet(
-      data: JobDetailData(
-        category: 'Pekerjaan',
-        // ✅ Use actual ad_code from API — consistent with job_detail_page.dart
-        adCode: job.adCode,
-        statusLabel: JobFormatter.getStatusLabel(job.status),
-        description: job.description,
-        dateText: JobFormatter.formatDate(job.dateOfJob),
-        timeText: JobFormatter.formatTime(job.dateOfJob),
-        paymentText: JobFormatter.formatSalary(job.salary, job.salaryType),
-        // ✅ Use registered address + village — ward/subdistrict are ID codes
-        locationText: JobFormatter.formatLocation(job.address, job.village),
-        address: job.address,
-        workerCount: job.workerCount.toString(),
-        // ✅ Employer info from API user object
-        employerName: job.employerName.isNotEmpty ? job.employerName : '-',
-        employerRating: 0.0,
-        reviewCount: 0,
-        phoneNumber: job.employerPhone.isNotEmpty ? job.employerPhone : '-',
-        requirements: job.requirements ?? '-',
-        photoUrls: photoUrls,
-      ),
-      onChatPressed: () {
-        Navigator.of(context).pop();
-        debugPrint('Chat pressed for job: ${job.id}');
-        // TODO: Navigate to chat
-      },
-      onTakeJobPressed: () {
-        Navigator.of(context).pop(); // dismiss bottom sheet first
-        
-        final dateText = JobFormatter.formatDate(job.dateOfJob);
-        final timeText = JobFormatter.formatTime(job.dateOfJob);
+    return BlocBuilder<TakeJobCubit, TakeJobState>(
+      builder: (context, takeJobState) {
+        final isCheckingProfile = takeJobState.maybeWhen(
+          checkingWorkerProfile: () => true,
+          orElse: () => false,
+        );
 
-        showDialog(
-          context: context,
-          builder: (dialogContext) => BlocProvider(
-            create: (context) => GetIt.I<TakeJobCubit>(),
-            child: BlocConsumer<TakeJobCubit, TakeJobState>(
-              listener: (context, state) {
-                state.maybeWhen(
-                  success: () {
-                    Navigator.of(context).pop(); // close dialog
-                    showDialog(
-                      context: context,
-                      builder: (dialogCtx) => AppDialogSuccess(
-                        title: 'Berhasil',
-                        message: 'Kamu telah berhasil melamar pekerjaan ini',
-                        onPressed: () => Navigator.pop(dialogCtx),
-                      ),
-                    );
-                  },
-                  failure: (message) {
-                    Navigator.of(context).pop(); // close dialog
-                    showDialog(
-                      context: context,
-                      builder: (dialogCtx) => AppDialogFailed(
-                        title: 'Gagal',
-                        message: message,
-                        onPressed: () => Navigator.pop(dialogCtx),
-                      ),
-                    );
-                  },
-                  orElse: () {},
-                );
-              },
-              builder: (context, state) {
-                return TakeJobDialog(
-                  data: TakeJobDialogData(
-                    defaultDate: dateText,
-                    defaultTime: timeText,
-                  ),
-                  isSubmitting: state.maybeWhen(
-                    submitting: () => true,
-                    orElse: () => false,
-                  ),
-                  onSubmit: (selectedDateTime) {
-                    context.read<TakeJobCubit>().submitBid(
-                          jobId: job.id,
-                          dateOfJob: selectedDateTime,
-                        );
-                  },
-                );
-              },
-            ),
+        return JobDetailBottomSheet(
+          data: JobDetailData(
+            category: 'Pekerjaan',
+            adCode: job.adCode,
+            statusLabel: JobFormatter.getStatusLabel(job.status),
+            description: job.description,
+            dateText: JobFormatter.formatDate(job.dateOfJob),
+            timeText: JobFormatter.formatTime(job.dateOfJob),
+            paymentText: JobFormatter.formatSalary(job.salary, job.salaryType),
+            locationText: JobFormatter.formatLocation(job.address, job.village),
+            address: job.address,
+            workerCount: job.workerCount.toString(),
+            employerName: job.employerName.isNotEmpty ? job.employerName : '-',
+            employerRating: 0.0,
+            reviewCount: 0,
+            phoneNumber: job.employerPhone.isNotEmpty ? job.employerPhone : '-',
+            requirements: job.requirements ?? '-',
+            photoUrls: photoUrls,
           ),
+          onChatPressed: () {
+            Navigator.of(context).pop();
+            debugPrint('[JobDetail] Chat pressed for job: ${job.id}');
+          },
+          onTakeJobPressed: isCheckingProfile
+              ? null
+              : () => context.read<TakeJobCubit>().checkWorkerProfileAndProceed(
+                    workerCount: job.workerCount,
+                    defaultDateTime: job.dateOfJob,
+                  ),
         );
       },
     );
   }
-
-  // Format helpers removed — now delegated to JobFormatter in core package.
 }
+

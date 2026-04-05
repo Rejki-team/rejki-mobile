@@ -31,6 +31,15 @@ class ApiConfig {
   static const String workers = '/workers';
   static String workerById(String id) => '/workers/$id';
 
+  /// Endpoint untuk mendapatkan profil pekerja milik user yang sedang login
+  /// Response: data.workers[] — kosong jika belum punya profil
+  static const String workerMe = '/workers/me';
+
+  /// API Endpoints - Secondhand (Barang Bekas)
+  static const String secondhands = '/secondhands';
+  static String secondhandById(String id) => '/secondhands/$id';
+  static String secondhandClaim(String id) => '/secondhands/$id/claim';
+
   /// API Endpoints - Location Helpers
   static const String provinces = '/helpers/provinsi';
   static String regenciesByProvince(String provinceId) =>

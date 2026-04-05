@@ -1,31 +1,44 @@
 import 'package:bloc/bloc.dart';
-import 'package:injectable/injectable.dart';
+import 'package:domain/domain.dart';
 
 import 'detail_used_goods_ad_state.dart';
 
-@injectable
+/// Cubit responsible for loading a single secondhand ad by ID.
 class DetailUsedGoodsAdCubit extends Cubit<DetailUsedGoodsAdState> {
-  DetailUsedGoodsAdCubit() : super(const DetailUsedGoodsAdState());
+  final GetSecondhandByIdUseCase _getSecondhandByIdUseCase;
 
-  Future<void> loadAdDetail() async {
+  DetailUsedGoodsAdCubit(this._getSecondhandByIdUseCase)
+      : super(const DetailUsedGoodsAdState());
+
+  /// Fetch detail for secondhand ad with [id].
+  Future<void> loadAdDetail(String id) async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
 
-    try {
-      await Future.delayed(
-        const Duration(milliseconds: 800),
-      ); // Mock Network load
+    final result = await _getSecondhandByIdUseCase(id);
 
-      if (isClosed) return;
+    if (isClosed) return;
 
-      emit(state.copyWith(isLoading: false));
-    } catch (e) {
-      if (isClosed) return;
-      emit(
+    result.fold(
+      (failure) => emit(
         state.copyWith(
           isLoading: false,
-          errorMessage: 'Gagal memuat detail barang.',
+          errorMessage: _mapFailureMessage(failure),
         ),
-      );
-    }
+      ),
+      (entity) => emit(
+        state.copyWith(isLoading: false, secondhand: entity),
+      ),
+    );
+  }
+
+  String _mapFailureMessage(SecondhandFailure failure) {
+    return failure.when(
+      serverError: (msg) => msg ?? 'Terjadi kesalahan dari server.',
+      networkError: () => 'Tidak ada koneksi internet.',
+      unauthorized: () => 'Sesi habis, silakan login ulang.',
+      notFound: () => 'Barang bekas tidak ditemukan.',
+      validationError: (msg) => msg,
+      unknown: () => 'Terjadi kesalahan. Coba lagi.',
+    );
   }
 }

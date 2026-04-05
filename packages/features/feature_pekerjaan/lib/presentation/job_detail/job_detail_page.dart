@@ -12,6 +12,11 @@ import 'cubit/take_job_cubit.dart';
 import 'cubit/take_job_state.dart';
 import 'widgets/job_detail_bottom_sheet.dart';
 
+// Route constants (mirror dari AppRoutes — tidak boleh import package:app karena circular)
+abstract class _JobRoutes {
+  static const String pekerjaCreate = '/pekerja/create';
+}
+
 /// Job Detail Helper
 ///
 /// Provides a static method to show job detail bottom sheet directly
@@ -28,54 +33,52 @@ class JobDetail {
   ///   context: context,
   ///   jobId: 'job-id-123',
   ///   onChatPressed: () => print('Chat'),
-  ///   onTakeJobPressed: () => print('Take Job'),
   /// );
   /// ```
   static Future<void> show({
     required BuildContext context,
     required String jobId,
     VoidCallback? onChatPressed,
-    VoidCallback? onTakeJobPressed,
   }) async {
-    // Create cubit instance
-    final cubit = GetIt.I<JobDetailCubit>();
+    // Create cubits — lifecycle tied to this bottom sheet session
+    final detailCubit = GetIt.I<JobDetailCubit>();
+    final takeJobCubit = GetIt.I<TakeJobCubit>();
 
-    // Show loading bottom sheet first
     final result = await showModalBottomSheet<bool>(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (bottomSheetContext) => BlocProvider.value(
-        value: cubit,
+      builder: (bottomSheetContext) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: detailCubit),
+          BlocProvider.value(value: takeJobCubit),
+        ],
         child: _JobDetailBottomSheetLoader(
           jobId: jobId,
           onChatPressed: onChatPressed,
-          onTakeJobPressed: onTakeJobPressed,
         ),
       ),
     );
 
-    // Clean up the cubit after bottom sheet is closed
-    cubit.close();
+    // Clean up cubits after bottom sheet is dismissed
+    detailCubit.close();
+    takeJobCubit.close();
 
-    // Handle result if needed
     if (result == true) {
-      debugPrint('Job action completed');
+      debugPrint('Job bid completed successfully');
     }
   }
 }
 
-/// Internal loader widget for job detail bottom sheet
+/// Internal loader widget — handles loading/error/success states berserta flow bid
 class _JobDetailBottomSheetLoader extends StatefulWidget {
   final String jobId;
   final VoidCallback? onChatPressed;
-  final VoidCallback? onTakeJobPressed;
 
   const _JobDetailBottomSheetLoader({
     required this.jobId,
     this.onChatPressed,
-    this.onTakeJobPressed,
   });
 
   @override
@@ -88,36 +91,158 @@ class _JobDetailBottomSheetLoaderState
   @override
   void initState() {
     super.initState();
-    // Load job when widget is created
     context.read<JobDetailCubit>().loadJob(widget.jobId);
   }
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.9,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      builder: (context, scrollController) =>
-          BlocBuilder<JobDetailCubit, JobDetailState>(
-            builder: (context, state) {
-              if (state.isLoading || state.isInitial) {
-                return _buildLoadingSheet();
-              }
-
-              if (state.isError) {
-                return _buildErrorSheet(context, state);
-              }
-
-              if (state.isSuccess && state.job != null) {
-                return _buildSuccessSheet(context, state);
-              }
-
+    return MultiBlocListener(
+      listeners: [
+        // Listener untuk TakeJobCubit — handle semua state transisi bid
+        BlocListener<TakeJobCubit, TakeJobState>(
+          listener: _handleTakeJobState,
+        ),
+      ],
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) =>
+            BlocBuilder<JobDetailCubit, JobDetailState>(
+          builder: (context, state) {
+            if (state.isLoading || state.isInitial) {
               return _buildLoadingSheet();
-            },
-          ),
+            }
+
+            if (state.isError) {
+              return _buildErrorSheet(context, state);
+            }
+
+            if (state.isSuccess && state.job != null) {
+              return _buildSuccessSheet(context, state);
+            }
+
+            return _buildLoadingSheet();
+          },
+        ),
+      ),
     );
   }
+
+  // ---------------------------------------------------------------------------
+  // TakeJob State Listener
+  // ---------------------------------------------------------------------------
+
+  void _handleTakeJobState(BuildContext context, TakeJobState state) {
+    state.when(
+      initial: () {},
+      checkingWorkerProfile: () {
+        // Loading indicator sudah ditangani di bottom sheet
+      },
+      workerProfileNotFound: () {
+        // User belum punya profil pekerja → tutup bottom sheet lalu arahkan
+        Navigator.of(context).pop();
+        // Navigasi ke halaman buat profil pekerja
+        // Gunakan rootNavigator agar di atas bottom nav
+        Navigator.of(context, rootNavigator: true).pushNamed(
+          _JobRoutes.pekerjaCreate,
+        );
+      },
+      workerProfileFound: (workerId, workerCount, defaultDateTime) {
+        // Profil ditemukan → tampilkan dialog bid
+        _showBidDialog(
+          context: context,
+          workerId: workerId,
+          workerCount: workerCount,
+          defaultDateTime: defaultDateTime,
+        );
+      },
+      submitting: () {},
+      success: () {
+        // Tutup dialog (sudah ditutup dari _showBidDialog callback)
+        // Tampilkan success dialog di atas
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (dialogCtx) => AppDialogSuccess(
+            title: 'Berhasil',
+            message: 'Kamu telah berhasil melamar pekerjaan ini',
+            onPressed: () {
+              Navigator.pop(dialogCtx);
+              // Tutup bottom sheet juga
+              Navigator.of(context).pop(true);
+            },
+          ),
+        );
+      },
+      failure: (message) {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (dialogCtx) => AppDialogFailed(
+            title: 'Gagal',
+            message: message,
+            onPressed: () => Navigator.pop(dialogCtx),
+          ),
+        );
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Bid Dialog
+  // ---------------------------------------------------------------------------
+
+  void _showBidDialog({
+    required BuildContext context,
+    required String workerId,
+    required int workerCount,
+    required DateTime? defaultDateTime,
+  }) {
+    // Ambil data job dari state
+    final jobState = context.read<JobDetailCubit>().state;
+    if (!jobState.isSuccess || jobState.job == null) return;
+    final job = jobState.job!;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => BlocProvider.value(
+        // Dialog route baru tidak mewarisi provider tree — inject eksplisit
+        value: context.read<TakeJobCubit>(),
+        child: BlocBuilder<TakeJobCubit, TakeJobState>(
+          builder: (ctx, state) {
+            final isSubmitting = state.maybeWhen(
+              submitting: () => true,
+              orElse: () => false,
+            );
+            return TakeJobDialog(
+              data: TakeJobDialogData(
+                defaultDateTime: job.dateOfJob,
+                defaultDateText: _formatDate(job.dateOfJob),
+                defaultTimeText: _formatTime(job.dateOfJob),
+                workerCount: workerCount,
+              ),
+              workerId: workerId,
+              isSubmitting: isSubmitting,
+              onSubmit: (selectedDateTime, resolvedWorkerId) {
+                Navigator.of(dialogContext).pop();
+                ctx.read<TakeJobCubit>().submitBid(
+                      jobId: job.id,
+                      workerId: resolvedWorkerId,
+                      dateOfJob: selectedDateTime,
+                    );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sheet Builders
+  // ---------------------------------------------------------------------------
 
   Widget _buildLoadingSheet() {
     return Container(
@@ -140,10 +265,10 @@ class _JobDetailBottomSheetLoaderState
       color: Colors.transparent,
       child: Container(
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
+            topLeft: Radius.circular(AppDimensions.radiusLg),
+            topRight: Radius.circular(AppDimensions.radiusLg),
           ),
         ),
         child: AppErrorState(
@@ -157,155 +282,91 @@ class _JobDetailBottomSheetLoaderState
   Widget _buildSuccessSheet(BuildContext context, JobDetailState state) {
     final job = state.job!;
 
-    // Format data for bottom sheet using shared JobFormatter (single source of truth)
     final dateText = _formatDate(job.dateOfJob);
     final timeText = _formatTime(job.dateOfJob);
     final paymentText = _formatPayment(job.salary, job.salaryType);
-
-    // Use registered address + village name — readable & consistent with card view.
-    // ward/subdistrict are ID codes (e.g. '3174051006') — not human-readable.
     final locationText = JobFormatter.formatLocation(job.address, job.village);
 
-    return JobDetailBottomSheet(
-      data: JobDetailData(
-        category: 'Pekerjaan',
-        // Use actual ad_code from API instead of UUID substring
-        adCode: job.adCode,
-        statusLabel: _getStatusLabel(job.status),
-        description: job.description,
-        dateText: dateText,
-        timeText: timeText,
-        paymentText: paymentText,
-        locationText: locationText,
-        address: job.address,
-        workerCount: job.workerCount.toString(),
-        // Employer info from API user.user_info.full_name and user.phone_number
-        employerName: job.employerName.isNotEmpty ? job.employerName : '-',
-        employerRating: 0.0,
-        reviewCount: 0,
-        phoneNumber: job.employerPhone.isNotEmpty ? job.employerPhone : '-',
-        requirements: job.requirements ?? '-',
-        photoUrls: job.images
-            .map((e) => ApiConfig.buildImageUrl(e.uriPath))
-            .toList(),
-      ),
-      onChatPressed: () {
-        Navigator.of(context).pop();
-        widget.onChatPressed?.call();
-      },
-      onTakeJobPressed: () {
-        Navigator.of(context).pop(); // dismiss bottom sheet first
-        
-        showDialog(
-          context: context,
-          builder: (dialogContext) => BlocProvider(
-            create: (context) => GetIt.I<TakeJobCubit>(),
-            child: BlocConsumer<TakeJobCubit, TakeJobState>(
-              listener: (context, state) {
-                state.maybeWhen(
-                  success: () {
-                    Navigator.of(context).pop(); // close dialog
-                    showDialog(
-                      context: context,
-                      builder: (dialogCtx) => AppDialogSuccess(
-                        title: 'Berhasil',
-                        message: 'Kamu telah berhasil melamar pekerjaan ini',
-                        onPressed: () => Navigator.pop(dialogCtx),
-                      ),
-                    );
-                    widget.onTakeJobPressed?.call();
-                  },
-                  failure: (message) {
-                    Navigator.of(context).pop(); // close dialog
-                    showDialog(
-                      context: context,
-                      builder: (dialogCtx) => AppDialogFailed(
-                        title: 'Gagal',
-                        message: message,
-                        onPressed: () => Navigator.pop(dialogCtx),
-                      ),
-                    );
-                  },
-                  orElse: () {},
-                );
-              },
-              builder: (context, state) {
-                return TakeJobDialog(
-                  data: TakeJobDialogData(
-                    defaultDate: dateText,
-                    defaultTime: timeText,
-                  ),
-                  isSubmitting: state.maybeWhen(
-                    submitting: () => true,
-                    orElse: () => false,
-                  ),
-                  onSubmit: (selectedDateTime) {
-                    context.read<TakeJobCubit>().submitBid(
-                          jobId: job.id,
-                          dateOfJob: selectedDateTime,
-                        );
-                  },
-                );
-              },
-            ),
+    return BlocBuilder<TakeJobCubit, TakeJobState>(
+      builder: (context, takeJobState) {
+        final isCheckingProfile = takeJobState.maybeWhen(
+          checkingWorkerProfile: () => true,
+          orElse: () => false,
+        );
+
+        return JobDetailBottomSheet(
+          data: JobDetailData(
+            category: 'Pekerjaan',
+            adCode: job.adCode,
+            statusLabel: _getStatusLabel(job.status),
+            description: job.description,
+            dateText: dateText,
+            timeText: timeText,
+            paymentText: paymentText,
+            locationText: locationText,
+            address: job.address,
+            workerCount: job.workerCount.toString(),
+            employerName:
+                job.employerName.isNotEmpty ? job.employerName : '-',
+            employerRating: 0.0,
+            reviewCount: 0,
+            phoneNumber:
+                job.employerPhone.isNotEmpty ? job.employerPhone : '-',
+            requirements: job.requirements ?? '-',
+            photoUrls: job.images
+                .map((e) => ApiConfig.buildImageUrl(e.uriPath))
+                .toList(),
           ),
+          onChatPressed: () {
+            Navigator.of(context).pop();
+            widget.onChatPressed?.call();
+          },
+          // Ketika Ambil Pekerjaan ditekan: cek profil pekerja terlebih dahulu
+          onTakeJobPressed: isCheckingProfile
+              ? null // disable saat sedang loading
+              : () => context.read<TakeJobCubit>().checkWorkerProfileAndProceed(
+                    workerCount: job.workerCount,
+                    defaultDateTime: job.dateOfJob,
+                  ),
         );
       },
     );
   }
 
-  /// Get display label for job status
+  // ---------------------------------------------------------------------------
+  // Formatters (private — tidak expose ke luar)
+  // ---------------------------------------------------------------------------
+
   String _getStatusLabel(String status) {
-    switch (status.toLowerCase()) {
-      case 'open':
-        return 'Tersedia';
-      case 'in_progress':
-        return 'Dalam Proses';
-      case 'closed':
-        return 'Selesai';
-      default:
-        return 'Tersedia';
-    }
+    return switch (status.toLowerCase()) {
+      'open' => 'Tersedia',
+      'in_progress' => 'Dalam Proses',
+      'closed' => 'Selesai',
+      _ => 'Tersedia',
+    };
   }
 
-  /// Format date from DateTime
   String _formatDate(DateTime? date) {
     if (date == null) return '-';
-    final months = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
+    const months = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
-  /// Format time from DateTime
   String _formatTime(DateTime? date) {
     if (date == null) return '-';
     final hour = date.hour.toString().padLeft(2, '0');
     final minute = date.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
+    return '$hour:$minute WIB';
   }
 
-  /// Format payment string
   String _formatPayment(int salary, String salaryType) {
     final formatted = 'Rp. ${_formatNumber(salary)}';
-    if (salaryType.isNotEmpty) {
-      return '$formatted - $salaryType';
-    }
-    return formatted;
+    return salaryType.isNotEmpty ? '$formatted - $salaryType' : formatted;
   }
 
-  /// Format number with thousand separator
   String _formatNumber(int number) {
     return number.toString().replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
@@ -333,7 +394,6 @@ class _JobDetailPageState extends State<JobDetailPage> {
   @override
   void initState() {
     super.initState();
-    // Load job when page is created
     context.read<JobDetailCubit>().loadJob(widget.jobId);
   }
 
@@ -341,10 +401,8 @@ class _JobDetailPageState extends State<JobDetailPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<JobDetailCubit, JobDetailState>(
       listener: (context, state) {
-        // Show bottom sheet when job is loaded successfully
         if (state.isSuccess && !_bottomSheetShown) {
           _bottomSheetShown = true;
-          _showJobDetailBottomSheet(context, state);
         }
       },
       builder: (context, state) {
@@ -359,14 +417,35 @@ class _JobDetailPageState extends State<JobDetailPage> {
   Widget _buildBody(BuildContext context, JobDetailState state) {
     if (state.isLoading || state.isInitial) {
       return Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AppShimmer(child: Container(height: 24, width: 200, color: Colors.white, margin: const EdgeInsets.only(bottom: 16))),
-            AppShimmer(child: Container(height: 120, width: double.infinity, color: Colors.white, margin: const EdgeInsets.only(bottom: 16))),
-            AppShimmer(child: Container(height: 24, width: 150, color: Colors.white, margin: const EdgeInsets.only(bottom: 16))),
+            AppShimmer(
+              child: Container(
+                height: 24,
+                width: 200,
+                color: AppColors.white,
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+              ),
+            ),
+            AppShimmer(
+              child: Container(
+                height: 120,
+                width: double.infinity,
+                color: AppColors.white,
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+              ),
+            ),
+            AppShimmer(
+              child: Container(
+                height: 24,
+                width: 150,
+                color: AppColors.white,
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+              ),
+            ),
           ],
         ),
       );
@@ -379,165 +458,6 @@ class _JobDetailPageState extends State<JobDetailPage> {
       );
     }
 
-    // Success state - transparent background while bottom sheet is shown
     return const SizedBox.shrink();
-  }
-
-  void _showJobDetailBottomSheet(BuildContext context, JobDetailState state) {
-    final job = state.job!;
-
-    // Format data for bottom sheet
-    final dateText = _formatDate(job.dateOfJob);
-    final timeText = _formatTime(job.dateOfJob);
-    final paymentText = _formatPayment(job.salary, job.salaryType);
-    final locationText = '${job.ward}, ${job.subdistrict}';
-
-    // Capture navigator before async operation
-    final navigator = Navigator.of(context);
-
-    JobDetailBottomSheet.show(
-      context: context,
-      data: JobDetailData(
-        category: 'Pekerjaan',
-        adCode: job.id.length > 8
-            ? job.id.substring(0, 8).toUpperCase()
-            : job.id.toUpperCase(),
-        statusLabel: _getStatusLabel(job.status),
-        description: job.description,
-        dateText: dateText,
-        timeText: timeText,
-        paymentText: paymentText,
-        locationText: locationText,
-        address: job.address,
-        workerCount: job.workerCount.toString(),
-        employerName: 'Pemberi Kerja',
-        employerRating: 0.0,
-        reviewCount: 0,
-        phoneNumber: '-',
-        requirements: job.requirements ?? '-',
-        photoUrls: job.images
-            .map((e) => ApiConfig.buildImageUrl(e.uriPath))
-            .toList(),
-      ),
-      onChatPressed: () {
-        debugPrint('Chat pressed for job: ${job.id}');
-      },
-      onTakeJobPressed: () {
-        Navigator.of(context).pop(); // dismiss bottom sheet first
-        
-        showDialog(
-          context: context,
-          builder: (dialogContext) => BlocProvider(
-            create: (context) => GetIt.I<TakeJobCubit>(),
-            child: BlocConsumer<TakeJobCubit, TakeJobState>(
-              listener: (context, state) {
-                state.maybeWhen(
-                  success: () {
-                    Navigator.of(context).pop(); // close dialog
-                    showDialog(
-                      context: context,
-                      builder: (dialogCtx) => AppDialogSuccess(
-                        title: 'Berhasil',
-                        message: 'Kamu telah berhasil melamar pekerjaan ini',
-                        onPressed: () => Navigator.pop(dialogCtx),
-                      ),
-                    );
-                  },
-                  failure: (message) {
-                    Navigator.of(context).pop(); // close dialog
-                    showDialog(
-                      context: context,
-                      builder: (dialogCtx) => AppDialogFailed(
-                        title: 'Gagal',
-                        message: message,
-                        onPressed: () => Navigator.pop(dialogCtx),
-                      ),
-                    );
-                  },
-                  orElse: () {},
-                );
-              },
-              builder: (context, state) {
-                return TakeJobDialog(
-                  data: TakeJobDialogData(
-                    defaultDate: dateText,
-                    defaultTime: timeText,
-                  ),
-                  isSubmitting: state.maybeWhen(
-                    submitting: () => true,
-                    orElse: () => false,
-                  ),
-                  onSubmit: (selectedDateTime) {
-                    context.read<TakeJobCubit>().submitBid(
-                          jobId: job.id,
-                          dateOfJob: selectedDateTime,
-                        );
-                  },
-                );
-              },
-            ),
-          ),
-        );
-      },
-    ).then((_) {
-      // Pop this page when bottom sheet is dismissed
-      if (mounted) {
-        navigator.maybePop();
-      }
-    });
-  }
-
-  String _getStatusLabel(String status) {
-    switch (status.toLowerCase()) {
-      case 'open':
-        return 'Tersedia';
-      case 'in_progress':
-        return 'Dalam Proses';
-      case 'closed':
-        return 'Selesai';
-      default:
-        return 'Tersedia';
-    }
-  }
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return '-';
-    final months = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
-  }
-
-  String _formatTime(DateTime? date) {
-    if (date == null) return '-';
-    final hour = date.hour.toString().padLeft(2, '0');
-    final minute = date.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
-  }
-
-  String _formatPayment(int salary, String salaryType) {
-    final formatted = 'Rp. ${_formatNumber(salary)}';
-    if (salaryType.isNotEmpty) {
-      return '$formatted - $salaryType';
-    }
-    return formatted;
-  }
-
-  String _formatNumber(int number) {
-    return number.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
   }
 }

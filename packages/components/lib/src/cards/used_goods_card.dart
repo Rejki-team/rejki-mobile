@@ -202,7 +202,7 @@ class UsedGoodsCard extends StatelessWidget {
               Text(
                 freeText,
                 style: AppTypography.labelMedium.copyWith(
-                  color: AppColors.success, // Green text per mockup
+                  color: AppColors.chatButtonGreen,
                   fontWeight: FontWeight.w600,
                   fontSize: 11,
                 ),

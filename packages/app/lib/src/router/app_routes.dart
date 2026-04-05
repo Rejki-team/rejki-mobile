@@ -63,6 +63,7 @@ abstract class AppRoutes {
   // ==================== BARANG BEKAS (TOP LEVEL) ====================
   static const String barangBekasRoot = '/barang-bekas';
   static const String barangBekasCreate = '/barang-bekas/create';
+  static const String barangBekasDetail = '/barang-bekas/:id';
 
   // ==================== HELPER METHODS ====================
 
@@ -75,4 +76,5 @@ abstract class AppRoutes {
   static String chatRoomPath(String id) => '/chat/$id';
   static String historyDetailPath(String id) => '/history/$id';
   static String pekerjaDetailPath(String id) => '/pekerja/$id';
+  static String barangBekasDetailPath(String id) => '/barang-bekas/$id';
 }

@@ -19,4 +19,12 @@ abstract class WorkerRepository {
 
   /// Creates a new worker advertisement
   Future<Either<WorkerFailure, Unit>> createWorkerAd(CreateWorkerParams params);
+
+  /// Gets the worker profile owned by the currently logged-in user.
+  ///
+  /// Returns [null] inside [Right] when the user has no worker profile yet
+  /// (API returns an empty workers array), so the caller can redirect the user
+  /// to the create-worker-profile page.
+  Future<Either<WorkerFailure, WorkerEntity?>> getMyWorkerProfile();
 }
+

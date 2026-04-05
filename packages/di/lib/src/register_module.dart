@@ -9,7 +9,8 @@ import 'package:feature_home/feature_home.dart';
 import 'package:feature_pekerjaan/feature_pekerjaan.dart';
 import 'package:feature_pekerja/feature_pekerja.dart';
 import 'package:feature_pelatihan/feature_pelatihan.dart';
-import 'package:feature_barangbekas/feature_barangbekas.dart';
+import 'package:feature_barangbekas/feature_barangbekas.dart' hide LocationBloc;
+import 'package:feature_barangbekas/presentation/location/bloc/location_bloc.dart' as barangbekas_loc;
 import 'package:feature_notification/feature_notification.dart';
 import 'package:feature_register/feature_register.dart';
 import 'package:feature_pekerjaan/presentation/job_detail/cubit/take_job_cubit.dart';
@@ -310,9 +311,14 @@ abstract class RegisterModule {
       JobDetailCubit(getJobByIdUseCase: getJobByIdUseCase);
 
   /// TakeJobCubit - for take job dialog
+  /// Menggunakan GetMyWorkerProfileUseCase (bukan SessionStorage) untuk mendapatkan
+  /// workerId yang benar dari profil pekerja.
   @factoryMethod
-  TakeJobCubit takeJobCubit(BidJobUseCase bidJobUseCase, SessionStorage sessionStorage) =>
-      TakeJobCubit(bidJobUseCase, sessionStorage);
+  TakeJobCubit takeJobCubit(
+    BidJobUseCase bidJobUseCase,
+    GetMyWorkerProfileUseCase getMyWorkerProfileUseCase,
+  ) =>
+      TakeJobCubit(bidJobUseCase, getMyWorkerProfileUseCase);
 
   /// RegisterCubit - for registration page
   @factoryMethod
@@ -343,6 +349,14 @@ abstract class RegisterModule {
   @lazySingleton
   CreateWorkerAdUseCase createWorkerAdUseCase(WorkerRepository repository) =>
       CreateWorkerAdUseCase(repository);
+
+  /// GetMyWorkerProfileUseCase - untuk cek apakah user sudah punya profil pekerja
+  /// Digunakan sebelum bid pekerjaan (GET /workers/me)
+  @lazySingleton
+  GetMyWorkerProfileUseCase getMyWorkerProfileUseCase(
+    WorkerRepository repository,
+  ) =>
+      GetMyWorkerProfileUseCase(repository);
 
   // ============================================
   // FEATURE PEKERJA CUBITS
@@ -378,16 +392,107 @@ abstract class RegisterModule {
   CreateTrainingAdCubit createTrainingAdCubit() => CreateTrainingAdCubit();
 
   // ============================================
+  // SECONDHAND DATA LAYER
+  // ============================================
+
+  /// SecondhandRemoteDataSource - untuk fetch secondhand data dari API
+  @lazySingleton
+  SecondhandRemoteDataSource secondhandRemoteDataSource(DioClient dioClient) =>
+      SecondhandRemoteDataSourceImpl(dioClient);
+
+  /// SecondhandMutationDataSource - untuk POST secondhand
+  @lazySingleton
+  SecondhandMutationDataSource secondhandMutationDataSource(
+    DioClient dioClient,
+  ) => SecondhandMutationDataSourceImpl(dio: dioClient.dio);
+
+  /// SecondhandRepository - implementation untuk secondhand repository
+  @LazySingleton(as: SecondhandRepository)
+  SecondhandRepositoryImpl secondhandRepository(
+    SecondhandRemoteDataSource remoteDataSource,
+  ) => SecondhandRepositoryImpl(remoteDataSource);
+
+  /// SecondhandMutationRepository - implementation untuk secondhand mutations
+  @LazySingleton(as: SecondhandMutationRepository)
+  SecondhandMutationRepositoryImpl secondhandMutationRepository(
+    SecondhandMutationDataSource dataSource,
+  ) => SecondhandMutationRepositoryImpl(dataSource);
+
+  // ============================================
+  // SECONDHAND USE CASES
+  // ============================================
+
+  /// GetSecondhandsUseCase - untuk mendapatkan daftar secondhand
+  @lazySingleton
+  GetSecondhandsUseCase getSecondhandsUseCase(
+    SecondhandRepository repository,
+  ) => GetSecondhandsUseCase(repository);
+
+  /// CreateSecondhandUseCase - untuk membuat iklan secondhand
+  @lazySingleton
+  CreateSecondhandUseCase createSecondhandUseCase(
+    SecondhandMutationRepository repository,
+  ) => CreateSecondhandUseCase(repository);
+
+  /// GetSecondhandByIdUseCase - untuk mendapatkan detail secondhand by ID
+  @lazySingleton
+  GetSecondhandByIdUseCase getSecondhandByIdUseCase(
+    SecondhandRepository repository,
+  ) => GetSecondhandByIdUseCase(repository);
+
+  /// ClaimSecondhandUseCase - untuk mengambil barang bekas
+  @lazySingleton
+  ClaimSecondhandUseCase claimSecondhandUseCase(
+    SecondhandMutationRepository repository,
+  ) => ClaimSecondhandUseCase(repository);
+
+  /// GetUserProfileUseCase - untuk mendapatkan profil user (radius filter)
+  @lazySingleton
+  GetUserProfileUseCase getUserProfileUseCase(ProfileRepository repository) =>
+      GetUserProfileUseCase(repository);
+
+  // ============================================
   // FEATURE BARANG BEKAS CUBITS
   // ============================================
 
   /// SearchUsedGoodsAdCubit - untuk halaman cari barang bekas
   @factoryMethod
-  SearchUsedGoodsAdCubit searchUsedGoodsAdCubit() => SearchUsedGoodsAdCubit();
+  SearchUsedGoodsAdCubit searchUsedGoodsAdCubit(
+    GetSecondhandsUseCase getSecondhandsUseCase,
+    GetUserProfileUseCase getUserProfileUseCase,
+  ) => SearchUsedGoodsAdCubit(getSecondhandsUseCase, getUserProfileUseCase);
 
   /// CreateUsedGoodsAdCubit - untuk membuat iklan barang bekas
   @factoryMethod
-  CreateUsedGoodsAdCubit createUsedGoodsAdCubit() => CreateUsedGoodsAdCubit();
+  CreateUsedGoodsAdCubit createUsedGoodsAdCubit(
+    CreateSecondhandUseCase createSecondhandUseCase,
+  ) => CreateUsedGoodsAdCubit(createSecondhandUseCase);
+
+  /// DetailUsedGoodsAdCubit - untuk halaman detail barang bekas
+  @factoryMethod
+  DetailUsedGoodsAdCubit detailUsedGoodsAdCubit(
+    GetSecondhandByIdUseCase getSecondhandByIdUseCase,
+  ) => DetailUsedGoodsAdCubit(getSecondhandByIdUseCase);
+
+  /// ClaimSecondhandCubit - untuk mengambil barang bekas
+  @factoryMethod
+  ClaimSecondhandCubit claimSecondhandCubit(
+    ClaimSecondhandUseCase claimSecondhandUseCase,
+  ) => ClaimSecondhandCubit(claimSecondhandUseCase);
+
+  /// LocationBloc - for cascading location selection (BarangBekas)
+  @factoryMethod
+  barangbekas_loc.LocationBloc locationBlocBarangBekas(
+    GetProvincesUseCase getProvincesUseCase,
+    GetRegenciesUseCase getRegenciesUseCase,
+    GetDistrictsUseCase getDistrictsUseCase,
+    GetVillagesUseCase getVillagesUseCase,
+  ) => barangbekas_loc.LocationBloc(
+    getProvincesUseCase: getProvincesUseCase,
+    getRegenciesUseCase: getRegenciesUseCase,
+    getDistrictsUseCase: getDistrictsUseCase,
+    getVillagesUseCase: getVillagesUseCase,
+  );
 
   // ============================================
   // FEATURE NOTIFICATION CUBITS

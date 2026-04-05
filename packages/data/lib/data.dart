@@ -18,3 +18,6 @@ export 'src/worker/worker.dart';
 
 // Profile Module
 export 'src/profile/profile.dart';
+
+// Secondhand Module
+export 'src/secondhand/secondhand.dart';

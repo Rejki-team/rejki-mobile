@@ -19,3 +19,6 @@ export 'src/worker/worker.dart';
 
 // Profile Module
 export 'src/profile/profile.dart';
+
+// Secondhand (Barang Bekas) Module
+export 'src/secondhand/secondhand.dart';

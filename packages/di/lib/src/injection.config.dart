@@ -51,12 +51,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i216.CreateTrainingAdCubit>(
       () => registerModule.createTrainingAdCubit(),
     );
-    gh.factory<_i685.SearchUsedGoodsAdCubit>(
-      () => registerModule.searchUsedGoodsAdCubit(),
-    );
-    gh.factory<_i685.CreateUsedGoodsAdCubit>(
-      () => registerModule.createUsedGoodsAdCubit(),
-    );
     gh.factory<_i884.NotificationCubit>(
       () => registerModule.notificationCubit(),
     );
@@ -101,6 +95,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i437.WorkerRemoteDataSource>(
       () => registerModule.workerRemoteDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i437.SecondhandRemoteDataSource>(
+      () => registerModule.secondhandRemoteDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i437.SecondhandMutationDataSource>(
+      () => registerModule.secondhandMutationDataSource(gh<_i372.DioClient>()),
     );
     gh.lazySingleton<_i494.JobMutationRepository>(
       () => registerModule.jobMutationRepository(
@@ -151,13 +151,26 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i10.CreateJobBloc>(
       () => registerModule.createJobBloc(gh<_i494.CreateJobUseCase>()),
     );
+    gh.lazySingleton<_i494.SecondhandRepository>(
+      () => registerModule.secondhandRepository(
+        gh<_i437.SecondhandRemoteDataSource>(),
+      ),
+    );
     gh.lazySingleton<_i494.UpdateProfileUseCase>(
       () => registerModule.updateProfileUseCase(gh<_i494.ProfileRepository>()),
+    );
+    gh.lazySingleton<_i494.GetUserProfileUseCase>(
+      () => registerModule.getUserProfileUseCase(gh<_i494.ProfileRepository>()),
     );
     gh.lazySingleton<_i494.JobRepository>(
       () => registerModule.jobRepository(
         gh<_i437.JobRemoteDataSource>(),
         gh<_i437.BidJobDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i494.SecondhandMutationRepository>(
+      () => registerModule.secondhandMutationRepository(
+        gh<_i437.SecondhandMutationDataSource>(),
       ),
     );
     gh.lazySingleton<_i494.GetWorkersUseCase>(
@@ -170,6 +183,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i494.CreateWorkerAdUseCase>(
       () => registerModule.createWorkerAdUseCase(gh<_i494.WorkerRepository>()),
+    );
+    gh.lazySingleton<_i494.GetMyWorkerProfileUseCase>(
+      () => registerModule.getMyWorkerProfileUseCase(
+        gh<_i494.WorkerRepository>(),
+      ),
     );
     gh.factory<_i10.LocationBloc>(
       () => registerModule.locationBloc(
@@ -195,6 +213,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetVillagesUseCase>(),
       ),
     );
+    gh.factory<_i685.LocationBloc>(
+      () => registerModule.locationBlocBarangBekas(
+        gh<_i494.GetProvincesUseCase>(),
+        gh<_i494.GetRegenciesUseCase>(),
+        gh<_i494.GetDistrictsUseCase>(),
+        gh<_i494.GetVillagesUseCase>(),
+      ),
+    );
     gh.factory<_i950.WorkerDetailCubit>(
       () => registerModule.workerDetailCubit(gh<_i494.GetWorkerByIdUseCase>()),
     );
@@ -204,11 +230,26 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.RegisterUseCase>(
       () => registerModule.registerUseCase(gh<_i494.AuthRepository>()),
     );
+    gh.lazySingleton<_i494.GetSecondhandsUseCase>(
+      () => registerModule.getSecondhandsUseCase(
+        gh<_i494.SecondhandRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.GetSecondhandByIdUseCase>(
+      () => registerModule.getSecondhandByIdUseCase(
+        gh<_i494.SecondhandRepository>(),
+      ),
+    );
     gh.lazySingleton<_i494.SyncEnumsUseCase>(
       () => registerModule.syncEnumsUseCase(gh<_i494.HelperRepository>()),
     );
     gh.factory<_i1070.EditProfileCubit>(
       () => registerModule.editProfileCubit(gh<_i494.UpdateProfileUseCase>()),
+    );
+    gh.factory<_i685.DetailUsedGoodsAdCubit>(
+      () => registerModule.detailUsedGoodsAdCubit(
+        gh<_i494.GetSecondhandByIdUseCase>(),
+      ),
     );
     gh.factory<_i950.WorkerListingCubit>(
       () => registerModule.workerListingCubit(gh<_i494.GetWorkersUseCase>()),
@@ -225,10 +266,31 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.BidJobUseCase>(
       () => registerModule.bidJobUseCase(gh<_i494.JobRepository>()),
     );
+    gh.lazySingleton<_i494.CreateSecondhandUseCase>(
+      () => registerModule.createSecondhandUseCase(
+        gh<_i494.SecondhandMutationRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.ClaimSecondhandUseCase>(
+      () => registerModule.claimSecondhandUseCase(
+        gh<_i494.SecondhandMutationRepository>(),
+      ),
+    );
     gh.factory<_i950.CreateWorkerAdCubit>(
       () => registerModule.createWorkerAdCubit(
         gh<_i494.CreateWorkerAdUseCase>(),
         gh<_i960.EnumStorage>(),
+      ),
+    );
+    gh.factory<_i685.CreateUsedGoodsAdCubit>(
+      () => registerModule.createUsedGoodsAdCubit(
+        gh<_i494.CreateSecondhandUseCase>(),
+      ),
+    );
+    gh.factory<_i685.SearchUsedGoodsAdCubit>(
+      () => registerModule.searchUsedGoodsAdCubit(
+        gh<_i494.GetSecondhandsUseCase>(),
+        gh<_i494.GetUserProfileUseCase>(),
       ),
     );
     gh.factory<_i473.RegisterCubit>(
@@ -240,16 +302,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i545.HomeBloc>(
       () => registerModule.homeBloc(gh<_i494.GetLatestJobsUseCase>()),
     );
+    gh.factory<_i806.TakeJobCubit>(
+      () => registerModule.takeJobCubit(
+        gh<_i494.BidJobUseCase>(),
+        gh<_i494.GetMyWorkerProfileUseCase>(),
+      ),
+    );
+    gh.factory<_i685.ClaimSecondhandCubit>(
+      () => registerModule.claimSecondhandCubit(
+        gh<_i494.ClaimSecondhandUseCase>(),
+      ),
+    );
     gh.factory<_i10.JobListingCubit>(
       () => registerModule.jobListingCubit(
         gh<_i494.GetJobsUseCase>(),
         gh<_i494.SyncEnumsUseCase>(),
-      ),
-    );
-    gh.factory<_i806.TakeJobCubit>(
-      () => registerModule.takeJobCubit(
-        gh<_i494.BidJobUseCase>(),
-        gh<_i960.SessionStorage>(),
       ),
     );
     return this;

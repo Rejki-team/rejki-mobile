@@ -2,6 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:network/network.dart';
 import 'package:local/local.dart';
 import 'package:domain/domain.dart';
+import '../../auth/models/user_info_model.dart';
 import '../datasources/profile_remote_datasource.dart';
 
 /// Implementasi [ProfileRepository].
@@ -35,6 +36,37 @@ class ProfileRepositoryImpl implements ProfileRepository {
     } catch (e) {
       return Left(ProfileFailure.serverError(e.toString()));
     }
+  }
+
+  @override
+  Future<Either<ProfileFailure, UserInfoEntity>> getProfile() async {
+    try {
+      final userModel = await _remoteDataSource.getProfile();
+      return Right(_toUserInfoEntity(userModel.userInfo));
+    } on DioException catch (e) {
+      return Left(_mapDioError(e));
+    } catch (e) {
+      return Left(ProfileFailure.serverError(e.toString()));
+    }
+  }
+
+  UserInfoEntity _toUserInfoEntity(UserInfoModel model) {
+    return UserInfoEntity(
+      id: model.id,
+      userId: model.userId,
+      fullName: model.fullName,
+      nik: model.nik,
+      gender: model.gender,
+      dob: DateTime.tryParse(model.dob) ?? DateTime(1),
+      province: model.province,
+      city: model.city,
+      districts: model.districts,
+      village: model.village,
+      rtRw: model.rtRw,
+      ktpFilePath: model.ktpFilePath,
+      createdAt: DateTime.tryParse(model.createdAt) ?? DateTime(1),
+      updatedAt: DateTime.tryParse(model.updatedAt) ?? DateTime(1),
+    );
   }
 
   /// Map DioException ke ProfileFailure

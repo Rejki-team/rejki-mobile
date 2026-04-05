@@ -84,6 +84,32 @@ class WorkerRepositoryImpl implements WorkerRepository {
     }
   }
 
+  @override
+  Future<Either<WorkerFailure, WorkerEntity?>> getMyWorkerProfile() async {
+    try {
+      final response = await _remoteDataSource.getMyWorkerProfile();
+
+      final List<dynamic> workers = response.data ?? [];
+
+      // Empty list means the user has no worker profile yet — this is NOT an error.
+      if (workers.isEmpty) {
+        return right(null);
+      }
+
+      // Use the first worker profile (a user can only have one profile).
+      final entity = _mapToEntity(workers.first as Map<String, dynamic>);
+      return right(entity);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        return left(const WorkerFailure.networkError());
+      }
+      return left(WorkerFailure.serverError(e.message));
+    } catch (e) {
+      return left(const WorkerFailure.unknown());
+    }
+  }
+
   WorkerEntity _mapToEntity(Map<String, dynamic> json) {
     return WorkerEntity(
       id: json['id']?.toString() ?? '',

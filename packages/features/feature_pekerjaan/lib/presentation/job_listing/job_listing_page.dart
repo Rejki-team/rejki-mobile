@@ -341,10 +341,6 @@ class _JobListingView extends StatelessWidget {
             debugPrint('[JobListing] Chat pressed for job: ${job.id}');
             // TODO: Navigate to chat
           },
-          onTakeJobPressed: () {
-            debugPrint('[JobListing] Take job pressed for: ${job.id}');
-            // TODO: Handle take job action
-          },
         );
       },
     );

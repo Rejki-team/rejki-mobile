@@ -11,3 +11,6 @@ export 'otp_purpose.dart';
 
 // Enum untuk status pengguna dan status verifikasi
 export 'user_status.dart';
+
+// User info entity (digunakan oleh profile domain)
+export 'user_info_entity.dart';

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DetailUsedGoodsAdState {
 
- bool get isLoading; String? get errorMessage;
+ SecondhandEntity? get secondhand; bool get isLoading; String? get errorMessage;
 /// Create a copy of DetailUsedGoodsAdState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $DetailUsedGoodsAdStateCopyWith<DetailUsedGoodsAdState> get copyWith => _$Detail
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DetailUsedGoodsAdState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DetailUsedGoodsAdState&&(identical(other.secondhand, secondhand) || other.secondhand == secondhand)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,secondhand,isLoading,errorMessage);
 
 @override
 String toString() {
-  return 'DetailUsedGoodsAdState(isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'DetailUsedGoodsAdState(secondhand: $secondhand, isLoading: $isLoading, errorMessage: $errorMessage)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $DetailUsedGoodsAdStateCopyWith<$Res>  {
   factory $DetailUsedGoodsAdStateCopyWith(DetailUsedGoodsAdState value, $Res Function(DetailUsedGoodsAdState) _then) = _$DetailUsedGoodsAdStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, String? errorMessage
+ SecondhandEntity? secondhand, bool isLoading, String? errorMessage
 });
 
 
-
+$SecondhandEntityCopyWith<$Res>? get secondhand;
 
 }
 /// @nodoc
@@ -62,14 +62,27 @@ class _$DetailUsedGoodsAdStateCopyWithImpl<$Res>
 
 /// Create a copy of DetailUsedGoodsAdState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? secondhand = freezed,Object? isLoading = null,Object? errorMessage = freezed,}) {
   return _then(_self.copyWith(
-isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+secondhand: freezed == secondhand ? _self.secondhand : secondhand // ignore: cast_nullable_to_non_nullable
+as SecondhandEntity?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
+/// Create a copy of DetailUsedGoodsAdState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SecondhandEntityCopyWith<$Res>? get secondhand {
+    if (_self.secondhand == null) {
+    return null;
+  }
 
+  return $SecondhandEntityCopyWith<$Res>(_self.secondhand!, (value) {
+    return _then(_self.copyWith(secondhand: value));
+  });
+}
 }
 
 
@@ -151,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SecondhandEntity? secondhand,  bool isLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DetailUsedGoodsAdState() when $default != null:
-return $default(_that.isLoading,_that.errorMessage);case _:
+return $default(_that.secondhand,_that.isLoading,_that.errorMessage);case _:
   return orElse();
 
 }
@@ -172,10 +185,10 @@ return $default(_that.isLoading,_that.errorMessage);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SecondhandEntity? secondhand,  bool isLoading,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _DetailUsedGoodsAdState():
-return $default(_that.isLoading,_that.errorMessage);case _:
+return $default(_that.secondhand,_that.isLoading,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -192,10 +205,10 @@ return $default(_that.isLoading,_that.errorMessage);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SecondhandEntity? secondhand,  bool isLoading,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _DetailUsedGoodsAdState() when $default != null:
-return $default(_that.isLoading,_that.errorMessage);case _:
+return $default(_that.secondhand,_that.isLoading,_that.errorMessage);case _:
   return null;
 
 }
@@ -207,9 +220,10 @@ return $default(_that.isLoading,_that.errorMessage);case _:
 
 
 class _DetailUsedGoodsAdState implements DetailUsedGoodsAdState {
-  const _DetailUsedGoodsAdState({this.isLoading = false, this.errorMessage});
+  const _DetailUsedGoodsAdState({this.secondhand, this.isLoading = false, this.errorMessage});
   
 
+@override final  SecondhandEntity? secondhand;
 @override@JsonKey() final  bool isLoading;
 @override final  String? errorMessage;
 
@@ -223,16 +237,16 @@ _$DetailUsedGoodsAdStateCopyWith<_DetailUsedGoodsAdState> get copyWith => __$Det
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DetailUsedGoodsAdState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DetailUsedGoodsAdState&&(identical(other.secondhand, secondhand) || other.secondhand == secondhand)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,secondhand,isLoading,errorMessage);
 
 @override
 String toString() {
-  return 'DetailUsedGoodsAdState(isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'DetailUsedGoodsAdState(secondhand: $secondhand, isLoading: $isLoading, errorMessage: $errorMessage)';
 }
 
 
@@ -243,11 +257,11 @@ abstract mixin class _$DetailUsedGoodsAdStateCopyWith<$Res> implements $DetailUs
   factory _$DetailUsedGoodsAdStateCopyWith(_DetailUsedGoodsAdState value, $Res Function(_DetailUsedGoodsAdState) _then) = __$DetailUsedGoodsAdStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, String? errorMessage
+ SecondhandEntity? secondhand, bool isLoading, String? errorMessage
 });
 
 
-
+@override $SecondhandEntityCopyWith<$Res>? get secondhand;
 
 }
 /// @nodoc
@@ -260,15 +274,28 @@ class __$DetailUsedGoodsAdStateCopyWithImpl<$Res>
 
 /// Create a copy of DetailUsedGoodsAdState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? secondhand = freezed,Object? isLoading = null,Object? errorMessage = freezed,}) {
   return _then(_DetailUsedGoodsAdState(
-isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+secondhand: freezed == secondhand ? _self.secondhand : secondhand // ignore: cast_nullable_to_non_nullable
+as SecondhandEntity?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
 
+/// Create a copy of DetailUsedGoodsAdState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SecondhandEntityCopyWith<$Res>? get secondhand {
+    if (_self.secondhand == null) {
+    return null;
+  }
 
+  return $SecondhandEntityCopyWith<$Res>(_self.secondhand!, (value) {
+    return _then(_self.copyWith(secondhand: value));
+  });
+}
 }
 
 // dart format on
