@@ -9,6 +9,7 @@ import 'cubit/worker_listing_cubit.dart';
 import 'cubit/worker_listing_state.dart';
 import 'widgets/worker_distance_filter_bottom_sheet.dart';
 import 'widgets/worker_sort_filter_bottom_sheet.dart';
+import 'widgets/promote_self_dialog.dart';
 
 class WorkerListingPage extends StatelessWidget {
   const WorkerListingPage({super.key});
@@ -38,7 +39,7 @@ class _WorkerListingView extends StatelessWidget {
                   title: 'Cari Pekerja',
                   subtitle: state.jobCountDisplayText,
                   actionLabel: 'Promosikan diri',
-                  onActionPressed: () => context.push('/pekerja/create'),
+                  onActionPressed: () => _onPromoteSelfPressed(context),
                   onBackPressed: () => Navigator.of(context).pop(),
                 );
               },
@@ -49,6 +50,26 @@ class _WorkerListingView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Menampilkan dialog "Promosikan Diri" dan navigasi ke halaman create/update
+  /// berdasarkan pilihan user.
+  ///
+  /// - Pilih "Gunakan Profil Saya" → navigasi dengan query param `useProfile=true`
+  /// - Pilih "Isi Data Baru" → navigasi tanpa query param (form kosong)
+  Future<void> _onPromoteSelfPressed(BuildContext context) async {
+    final option = await PromoteSelfDialog.show(context);
+    if (!context.mounted) return;
+
+    switch (option) {
+      case PromoteSelfOption.useExistingProfile:
+        context.push('/pekerja/create?useProfile=true');
+      case PromoteSelfOption.createNew:
+        context.push('/pekerja/create');
+      case null:
+        // User dismiss dialog — tidak melakukan navigasi
+        break;
+    }
   }
 
   Widget _buildSearchFilterSection(BuildContext context) {

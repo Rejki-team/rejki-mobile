@@ -20,6 +20,13 @@ abstract class UserInfoEntity with _$UserInfoEntity {
     required String ktpFilePath,
     required DateTime createdAt,
     required DateTime updatedAt,
+    // Additional fields from API response (GET /users/profile)
+    @Default('') String phoneNumber,
+    @Default('') String educationLevel,
+    @Default('') String educationFocus,
+    @Default('') String workExperience,
+    @Default('') String addressKtp,
+    @Default('Indonesia') String country,
   }) = _UserInfoEntity;
 
   /// Empty user info

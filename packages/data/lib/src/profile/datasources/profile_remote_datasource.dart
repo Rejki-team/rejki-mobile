@@ -1,6 +1,7 @@
 import 'package:network/network.dart';
 import 'package:domain/domain.dart';
 import '../../auth/models/user_model.dart';
+import '../models/ads_summary_model.dart';
 
 /// Remote data source untuk profile API.
 ///
@@ -11,6 +12,9 @@ abstract class ProfileRemoteDataSource {
 
   /// Ambil profil user yang sedang login (GET /users/profile).
   Future<UserModel> getProfile();
+
+  /// Ambil ringkasan statistik iklan user (GET /users/ads-summary).
+  Future<AdsSummaryModel> getAdsSummary();
 }
 
 /// Implementasi [ProfileRemoteDataSource].
@@ -63,5 +67,12 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     final response = await _dioClient.get(ApiConfig.profile);
     final data = response.data['data'] as Map<String, dynamic>;
     return UserModel.fromJson(data);
+  }
+
+  @override
+  Future<AdsSummaryModel> getAdsSummary() async {
+    final response = await _dioClient.get(ApiConfig.adsSummary);
+    final data = response.data['data'] as Map<String, dynamic>;
+    return AdsSummaryModel.fromJson(data);
   }
 }

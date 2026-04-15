@@ -72,8 +72,6 @@ class _RejkiAppState extends State<RejkiApp> {
     _appRouter = AppRouter(sessionStorage, _loginUseCase, authRepository);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(

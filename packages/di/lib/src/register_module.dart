@@ -300,6 +300,13 @@ abstract class RegisterModule {
   EditProfileCubit editProfileCubit(UpdateProfileUseCase updateProfileUseCase) =>
       EditProfileCubit(updateProfileUseCase);
 
+  /// ProfileCubit - untuk halaman Profile (READ data profil + statistik iklan)
+  ///
+  /// Berbeda dari [EditProfileCubit] yang mengelola form edit data pribadi.
+  @factoryMethod
+  ProfileCubit profileCubit(GetUserSummaryUseCase getUserSummaryUseCase) =>
+      ProfileCubit(getUserSummaryUseCase);
+
   /// JobListingCubit - for job listing page
   @factoryMethod
   JobListingCubit jobListingCubit(GetJobsUseCase getJobsUseCase, SyncEnumsUseCase syncEnumsUseCase) =>
@@ -358,6 +365,13 @@ abstract class RegisterModule {
   ) =>
       GetMyWorkerProfileUseCase(repository);
 
+  /// UpdateWorkerProfileUseCase - untuk memperbarui profil pekerja (PUT /workers/{id})
+  @lazySingleton
+  UpdateWorkerProfileUseCase updateWorkerProfileUseCase(
+    WorkerRepository repository,
+  ) =>
+      UpdateWorkerProfileUseCase(repository);
+
   // ============================================
   // FEATURE PEKERJA CUBITS
   // ============================================
@@ -372,12 +386,25 @@ abstract class RegisterModule {
   WorkerDetailCubit workerDetailCubit(GetWorkerByIdUseCase getWorkerByIdUseCaseWorker) => 
       WorkerDetailCubit(getWorkerByIdUseCaseWorker);
 
-  /// CreateWorkerAdCubit - untuk membuat iklan pekerja
+  /// CreateWorkerAdCubit - untuk membuat/memperbarui profil pekerja
+  ///
+  /// Mendukung dua mode:
+  /// - Create mode: submit ke POST /workers (CreateWorkerAdUseCase)
+  /// - Update mode: submit ke PUT /workers/{id} (UpdateWorkerProfileUseCase)
   @factoryMethod
   CreateWorkerAdCubit createWorkerAdCubit(
     CreateWorkerAdUseCase createWorkerUseCase,
+    UpdateWorkerProfileUseCase updateWorkerProfileUseCase,
+    GetMyWorkerProfileUseCase getMyWorkerProfileUseCase,
+    GetUserProfileUseCase getUserProfileUseCase,
     EnumStorage enumStorage,
-  ) => CreateWorkerAdCubit(createWorkerUseCase, enumStorage);
+  ) => CreateWorkerAdCubit(
+    createWorkerUseCase,
+    updateWorkerProfileUseCase,
+    getMyWorkerProfileUseCase,
+    getUserProfileUseCase,
+    enumStorage,
+  );
 
   // ============================================
   // FEATURE PELATIHAN CUBITS
@@ -450,6 +477,12 @@ abstract class RegisterModule {
   @lazySingleton
   GetUserProfileUseCase getUserProfileUseCase(ProfileRepository repository) =>
       GetUserProfileUseCase(repository);
+
+  /// GetUserSummaryUseCase - untuk mendapatkan ringkasan profil + statistik iklan
+  /// Digunakan oleh [ProfileCubit] pada halaman Profile.
+  @lazySingleton
+  GetUserSummaryUseCase getUserSummaryUseCase(ProfileRepository repository) =>
+      GetUserSummaryUseCase(repository);
 
   // ============================================
   // FEATURE BARANG BEKAS CUBITS

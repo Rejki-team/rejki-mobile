@@ -16,9 +16,18 @@ import 'cubit/create_worker_ad_cubit.dart';
 import 'cubit/create_worker_ad_state.dart';
 import '../location/bloc/location_bloc.dart';
 
-/// Halaman Buat Iklan Pekerja
+/// Halaman Buat/Perbarui Profil Pekerja.
+///
+/// Mendukung dua mode:
+/// - **Create mode** ([useExistingProfile] = false): form kosong, submit ke POST /workers
+/// - **Prefill + Update mode** ([useExistingProfile] = true): load & prefill dari profil user,
+///   submit ke PUT /workers/{id} jika profil pekerja sudah ada.
 class CreateWorkerAdPage extends StatefulWidget {
-  const CreateWorkerAdPage({super.key});
+  /// Jika true, akan mengambil data dari GET /users/profile dan GET /workers/me
+  /// untuk prefill form dan menentukan mode create/update.
+  final bool useExistingProfile;
+
+  const CreateWorkerAdPage({super.key, this.useExistingProfile = false});
 
   @override
   State<CreateWorkerAdPage> createState() => _CreateWorkerAdPageState();
@@ -26,8 +35,15 @@ class CreateWorkerAdPage extends StatefulWidget {
 
 class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
   final _picker = ImagePicker();
-  
+
+  // Controllers untuk field yang bisa di-prefill dari profil
+  final _fullNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _experienceController = TextEditingController();
+  final _addressController = TextEditingController();
+
   bool _isCompressing = false;
+  bool _hasPrefilled = false; // Guard agar prefill hanya terjadi sekali
   double _latitude = 0.0;
   double _longitude = 0.0;
 
@@ -35,6 +51,23 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
   void initState() {
     super.initState();
     _fetchDeviceLocation();
+    if (widget.useExistingProfile) {
+      // Jalankan di frame berikutnya agar context.read tersedia
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<CreateWorkerAdCubit>().loadExistingProfile();
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _phoneController.dispose();
+    _experienceController.dispose();
+    _addressController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchDeviceLocation() async {
@@ -165,6 +198,14 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
       create: (context) => GetIt.I<LocationBloc>()..add(const LocationEvent.loadProvinces()),
       child: BlocListener<CreateWorkerAdCubit, CreateWorkerAdState>(
         listener: (context, state) {
+          // Prefill controllers saat profile selesai dimuat
+          if (!state.isLoadingProfile && !_hasPrefilled && widget.useExistingProfile) {
+            _hasPrefilled = true;
+            _fullNameController.text = state.fullName;
+            _phoneController.text = state.phoneNumber;
+            _experienceController.text = state.experience;
+            _addressController.text = state.domicileAddress;
+          }
           if (state.errorMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -174,10 +215,13 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
             );
           }
           if (state.isSuccess) {
+            final isUpdate = state.isUpdateMode;
             showSuccessDialog(
               context,
               title: 'Berhasil!',
-              message: 'Iklan Pekerja berhasil dibuat. Anda dapat melihatnya di Riwayat',
+              message: isUpdate
+                  ? 'Profil pekerja Anda berhasil diperbarui.'
+                  : 'Iklan Pekerja berhasil dibuat. Anda dapat melihatnya di Riwayat',
               buttonText: 'Oke, mengerti',
               onPressed: () {
                 if (context.mounted) Navigator.of(context).pop();
@@ -186,20 +230,34 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
             );
           }
         },
-        child: Scaffold(
-          backgroundColor: AppColors.background,
-          appBar: AppBarWithSubtitle(
-            title: 'Buat Iklan Pekerja',
-            subtitle: 'Isi data sesuai form yang disediakan',
-            onBackPressed: () => Navigator.of(context).pop(),
-          ),
-          body: Stack(
-            children: [
-              _buildForm(),
-              _buildOverlay(),
-            ],
-          ),
-          bottomNavigationBar: _buildBottomActionSection(),
+        child: BlocBuilder<CreateWorkerAdCubit, CreateWorkerAdState>(
+          buildWhen: (prev, curr) =>
+              prev.isUpdateMode != curr.isUpdateMode ||
+              prev.isLoadingProfile != curr.isLoadingProfile,
+          builder: (context, state) {
+            final title = state.isUpdateMode
+                ? 'Perbarui Profil Pekerja'
+                : 'Buat Profil Pekerja';
+            final subtitle = state.isUpdateMode
+                ? 'Perbarui data profil pekerja Anda'
+                : 'Isi data sesuai form yang disediakan';
+
+            return Scaffold(
+              backgroundColor: AppColors.background,
+              appBar: AppBarWithSubtitle(
+                title: title,
+                subtitle: subtitle,
+                onBackPressed: () => Navigator.of(context).pop(),
+              ),
+              body: Stack(
+                children: [
+                  _buildForm(),
+                  _buildOverlay(),
+                ],
+              ),
+              bottomNavigationBar: _buildBottomActionSection(),
+            );
+          },
         ),
       ),
     );
@@ -224,6 +282,7 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                 label: 'Nama Lengkap Sesuai KTP',
                 hint: 'Cth. Rizki Rachmanudin...',
                 isMandatory: true,
+                controller: _fullNameController,
                 onChanged: cubit.fullNameChanged,
               ),
               const SizedBox(height: AppSpacing.md),
@@ -290,6 +349,7 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                 label: 'No Telphone Utama',
                 hint: 'Cth. 0812 **** ****',
                 keyboardType: TextInputType.phone,
+                controller: _phoneController,
                 onChanged: cubit.phoneNumberChanged,
               ),
               const SizedBox(height: AppSpacing.md),
@@ -302,6 +362,7 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                 isMandatory: true,
                 maxLines: 4,
                 minLines: 2,
+                controller: _experienceController,
                 onChanged: cubit.experienceChanged,
               ),
               const SizedBox(height: AppSpacing.md),
@@ -324,6 +385,7 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                 number: '9',
                 label: 'Alamat Lokasi Pekerjaan',
                 hint: 'Cth. Jl damai...',
+                controller: _addressController,
                 onChanged: cubit.domicileAddressChanged,
               ),
               const SizedBox(height: AppSpacing.md),
@@ -401,13 +463,28 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
 
   Widget _buildOverlay() {
     return BlocBuilder<CreateWorkerAdCubit, CreateWorkerAdState>(
+      buildWhen: (prev, curr) =>
+          prev.isLoading != curr.isLoading ||
+          prev.isLoadingProfile != curr.isLoadingProfile,
       builder: (context, state) {
-        if (state.isLoading || _isCompressing) {
+        if (state.isLoading || state.isLoadingProfile || _isCompressing) {
           return Positioned.fill(
             child: Container(
               color: Colors.black.withValues(alpha: 0.4),
-              child: const Center(
-                child: CircularProgressIndicator(color: AppColors.white),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(color: AppColors.white),
+                  if (state.isLoadingProfile) ... [
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      'Memuat data profil...',
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.white,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
           );
@@ -462,7 +539,9 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Submit Data Pekerja',
+                            state.isUpdateMode
+                                ? 'Perbarui Data Pekerja'
+                                : 'Submit Data Pekerja',
                             style: AppTypography.buttonRegularSmall.copyWith(
                               color: state.isFormValid ? AppColors.white : AppColors.textBlack,
                             ),

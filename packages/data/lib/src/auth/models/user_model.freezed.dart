@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserModel {
 
- String get id; String get email;@JsonKey(name: 'phone_number') String get phoneNumber;@JsonKey(name: 'working_hours') String get workingHours;@JsonKey(name: 'verification_status') String get verificationStatus;@JsonKey(name: 'is_preview_credential') bool get isPreviewCredential; String get role; String get status;@JsonKey(name: 'created_at') String get createdAt;@JsonKey(name: 'updated_at') String get updatedAt;@JsonKey(name: 'user_info') UserInfoModel get userInfo;
+ String get id; String get email;@JsonKey(name: 'phone_number') String get phoneNumber;@JsonKey(name: 'working_hours') String get workingHours;@JsonKey(name: 'verification_status') String get verificationStatus;@JsonKey(name: 'is_preview_credential') bool get isPreviewCredential; String get role; String get status;@JsonKey(name: 'profile_photo_path') String get profilePhotoPath;@JsonKey(name: 'created_at') String get createdAt;@JsonKey(name: 'updated_at') String get updatedAt;@JsonKey(name: 'user_info') UserInfoModel get userInfo;
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserModelCopyWith<UserModel> get copyWith => _$UserModelCopyWithImpl<UserModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.isPreviewCredential, isPreviewCredential) || other.isPreviewCredential == isPreviewCredential)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.userInfo, userInfo) || other.userInfo == userInfo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.isPreviewCredential, isPreviewCredential) || other.isPreviewCredential == isPreviewCredential)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.profilePhotoPath, profilePhotoPath) || other.profilePhotoPath == profilePhotoPath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.userInfo, userInfo) || other.userInfo == userInfo));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,phoneNumber,workingHours,verificationStatus,isPreviewCredential,role,status,createdAt,updatedAt,userInfo);
+int get hashCode => Object.hash(runtimeType,id,email,phoneNumber,workingHours,verificationStatus,isPreviewCredential,role,status,profilePhotoPath,createdAt,updatedAt,userInfo);
 
 @override
 String toString() {
-  return 'UserModel(id: $id, email: $email, phoneNumber: $phoneNumber, workingHours: $workingHours, verificationStatus: $verificationStatus, isPreviewCredential: $isPreviewCredential, role: $role, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, userInfo: $userInfo)';
+  return 'UserModel(id: $id, email: $email, phoneNumber: $phoneNumber, workingHours: $workingHours, verificationStatus: $verificationStatus, isPreviewCredential: $isPreviewCredential, role: $role, status: $status, profilePhotoPath: $profilePhotoPath, createdAt: $createdAt, updatedAt: $updatedAt, userInfo: $userInfo)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserModelCopyWith<$Res>  {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) _then) = _$UserModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String email,@JsonKey(name: 'phone_number') String phoneNumber,@JsonKey(name: 'working_hours') String workingHours,@JsonKey(name: 'verification_status') String verificationStatus,@JsonKey(name: 'is_preview_credential') bool isPreviewCredential, String role, String status,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'user_info') UserInfoModel userInfo
+ String id, String email,@JsonKey(name: 'phone_number') String phoneNumber,@JsonKey(name: 'working_hours') String workingHours,@JsonKey(name: 'verification_status') String verificationStatus,@JsonKey(name: 'is_preview_credential') bool isPreviewCredential, String role, String status,@JsonKey(name: 'profile_photo_path') String profilePhotoPath,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'user_info') UserInfoModel userInfo
 });
 
 
@@ -65,7 +65,7 @@ class _$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? phoneNumber = null,Object? workingHours = null,Object? verificationStatus = null,Object? isPreviewCredential = null,Object? role = null,Object? status = null,Object? createdAt = null,Object? updatedAt = null,Object? userInfo = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? phoneNumber = null,Object? workingHours = null,Object? verificationStatus = null,Object? isPreviewCredential = null,Object? role = null,Object? status = null,Object? profilePhotoPath = null,Object? createdAt = null,Object? updatedAt = null,Object? userInfo = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -75,6 +75,7 @@ as String,verificationStatus: null == verificationStatus ? _self.verificationSta
 as String,isPreviewCredential: null == isPreviewCredential ? _self.isPreviewCredential : isPreviewCredential // ignore: cast_nullable_to_non_nullable
 as bool,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,profilePhotoPath: null == profilePhotoPath ? _self.profilePhotoPath : profilePhotoPath // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as String,userInfo: null == userInfo ? _self.userInfo : userInfo // ignore: cast_nullable_to_non_nullable
@@ -172,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email, @JsonKey(name: 'phone_number')  String phoneNumber, @JsonKey(name: 'working_hours')  String workingHours, @JsonKey(name: 'verification_status')  String verificationStatus, @JsonKey(name: 'is_preview_credential')  bool isPreviewCredential,  String role,  String status, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'user_info')  UserInfoModel userInfo)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email, @JsonKey(name: 'phone_number')  String phoneNumber, @JsonKey(name: 'working_hours')  String workingHours, @JsonKey(name: 'verification_status')  String verificationStatus, @JsonKey(name: 'is_preview_credential')  bool isPreviewCredential,  String role,  String status, @JsonKey(name: 'profile_photo_path')  String profilePhotoPath, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'user_info')  UserInfoModel userInfo)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
-return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.isPreviewCredential,_that.role,_that.status,_that.createdAt,_that.updatedAt,_that.userInfo);case _:
+return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.isPreviewCredential,_that.role,_that.status,_that.profilePhotoPath,_that.createdAt,_that.updatedAt,_that.userInfo);case _:
   return orElse();
 
 }
@@ -193,10 +194,10 @@ return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email, @JsonKey(name: 'phone_number')  String phoneNumber, @JsonKey(name: 'working_hours')  String workingHours, @JsonKey(name: 'verification_status')  String verificationStatus, @JsonKey(name: 'is_preview_credential')  bool isPreviewCredential,  String role,  String status, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'user_info')  UserInfoModel userInfo)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email, @JsonKey(name: 'phone_number')  String phoneNumber, @JsonKey(name: 'working_hours')  String workingHours, @JsonKey(name: 'verification_status')  String verificationStatus, @JsonKey(name: 'is_preview_credential')  bool isPreviewCredential,  String role,  String status, @JsonKey(name: 'profile_photo_path')  String profilePhotoPath, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'user_info')  UserInfoModel userInfo)  $default,) {final _that = this;
 switch (_that) {
 case _UserModel():
-return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.isPreviewCredential,_that.role,_that.status,_that.createdAt,_that.updatedAt,_that.userInfo);case _:
+return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.isPreviewCredential,_that.role,_that.status,_that.profilePhotoPath,_that.createdAt,_that.updatedAt,_that.userInfo);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -213,10 +214,10 @@ return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email, @JsonKey(name: 'phone_number')  String phoneNumber, @JsonKey(name: 'working_hours')  String workingHours, @JsonKey(name: 'verification_status')  String verificationStatus, @JsonKey(name: 'is_preview_credential')  bool isPreviewCredential,  String role,  String status, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'user_info')  UserInfoModel userInfo)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email, @JsonKey(name: 'phone_number')  String phoneNumber, @JsonKey(name: 'working_hours')  String workingHours, @JsonKey(name: 'verification_status')  String verificationStatus, @JsonKey(name: 'is_preview_credential')  bool isPreviewCredential,  String role,  String status, @JsonKey(name: 'profile_photo_path')  String profilePhotoPath, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'user_info')  UserInfoModel userInfo)?  $default,) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
-return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.isPreviewCredential,_that.role,_that.status,_that.createdAt,_that.updatedAt,_that.userInfo);case _:
+return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.isPreviewCredential,_that.role,_that.status,_that.profilePhotoPath,_that.createdAt,_that.updatedAt,_that.userInfo);case _:
   return null;
 
 }
@@ -228,7 +229,7 @@ return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.
 @JsonSerializable()
 
 class _UserModel implements UserModel {
-  const _UserModel({required this.id, required this.email, @JsonKey(name: 'phone_number') required this.phoneNumber, @JsonKey(name: 'working_hours') required this.workingHours, @JsonKey(name: 'verification_status') required this.verificationStatus, @JsonKey(name: 'is_preview_credential') required this.isPreviewCredential, required this.role, required this.status, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'updated_at') required this.updatedAt, @JsonKey(name: 'user_info') required this.userInfo});
+  const _UserModel({required this.id, required this.email, @JsonKey(name: 'phone_number') required this.phoneNumber, @JsonKey(name: 'working_hours') required this.workingHours, @JsonKey(name: 'verification_status') required this.verificationStatus, @JsonKey(name: 'is_preview_credential') required this.isPreviewCredential, required this.role, required this.status, @JsonKey(name: 'profile_photo_path') this.profilePhotoPath = '', @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'updated_at') required this.updatedAt, @JsonKey(name: 'user_info') required this.userInfo});
   factory _UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
 @override final  String id;
@@ -239,6 +240,7 @@ class _UserModel implements UserModel {
 @override@JsonKey(name: 'is_preview_credential') final  bool isPreviewCredential;
 @override final  String role;
 @override final  String status;
+@override@JsonKey(name: 'profile_photo_path') final  String profilePhotoPath;
 @override@JsonKey(name: 'created_at') final  String createdAt;
 @override@JsonKey(name: 'updated_at') final  String updatedAt;
 @override@JsonKey(name: 'user_info') final  UserInfoModel userInfo;
@@ -256,16 +258,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.isPreviewCredential, isPreviewCredential) || other.isPreviewCredential == isPreviewCredential)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.userInfo, userInfo) || other.userInfo == userInfo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.isPreviewCredential, isPreviewCredential) || other.isPreviewCredential == isPreviewCredential)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.profilePhotoPath, profilePhotoPath) || other.profilePhotoPath == profilePhotoPath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.userInfo, userInfo) || other.userInfo == userInfo));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,phoneNumber,workingHours,verificationStatus,isPreviewCredential,role,status,createdAt,updatedAt,userInfo);
+int get hashCode => Object.hash(runtimeType,id,email,phoneNumber,workingHours,verificationStatus,isPreviewCredential,role,status,profilePhotoPath,createdAt,updatedAt,userInfo);
 
 @override
 String toString() {
-  return 'UserModel(id: $id, email: $email, phoneNumber: $phoneNumber, workingHours: $workingHours, verificationStatus: $verificationStatus, isPreviewCredential: $isPreviewCredential, role: $role, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, userInfo: $userInfo)';
+  return 'UserModel(id: $id, email: $email, phoneNumber: $phoneNumber, workingHours: $workingHours, verificationStatus: $verificationStatus, isPreviewCredential: $isPreviewCredential, role: $role, status: $status, profilePhotoPath: $profilePhotoPath, createdAt: $createdAt, updatedAt: $updatedAt, userInfo: $userInfo)';
 }
 
 
@@ -276,7 +278,7 @@ abstract mixin class _$UserModelCopyWith<$Res> implements $UserModelCopyWith<$Re
   factory _$UserModelCopyWith(_UserModel value, $Res Function(_UserModel) _then) = __$UserModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String email,@JsonKey(name: 'phone_number') String phoneNumber,@JsonKey(name: 'working_hours') String workingHours,@JsonKey(name: 'verification_status') String verificationStatus,@JsonKey(name: 'is_preview_credential') bool isPreviewCredential, String role, String status,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'user_info') UserInfoModel userInfo
+ String id, String email,@JsonKey(name: 'phone_number') String phoneNumber,@JsonKey(name: 'working_hours') String workingHours,@JsonKey(name: 'verification_status') String verificationStatus,@JsonKey(name: 'is_preview_credential') bool isPreviewCredential, String role, String status,@JsonKey(name: 'profile_photo_path') String profilePhotoPath,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'user_info') UserInfoModel userInfo
 });
 
 
@@ -293,7 +295,7 @@ class __$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? phoneNumber = null,Object? workingHours = null,Object? verificationStatus = null,Object? isPreviewCredential = null,Object? role = null,Object? status = null,Object? createdAt = null,Object? updatedAt = null,Object? userInfo = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? phoneNumber = null,Object? workingHours = null,Object? verificationStatus = null,Object? isPreviewCredential = null,Object? role = null,Object? status = null,Object? profilePhotoPath = null,Object? createdAt = null,Object? updatedAt = null,Object? userInfo = null,}) {
   return _then(_UserModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -303,6 +305,7 @@ as String,verificationStatus: null == verificationStatus ? _self.verificationSta
 as String,isPreviewCredential: null == isPreviewCredential ? _self.isPreviewCredential : isPreviewCredential // ignore: cast_nullable_to_non_nullable
 as bool,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,profilePhotoPath: null == profilePhotoPath ? _self.profilePhotoPath : profilePhotoPath // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as String,userInfo: null == userInfo ? _self.userInfo : userInfo // ignore: cast_nullable_to_non_nullable

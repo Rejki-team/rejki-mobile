@@ -162,6 +162,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.GetUserProfileUseCase>(
       () => registerModule.getUserProfileUseCase(gh<_i494.ProfileRepository>()),
     );
+    gh.lazySingleton<_i494.GetUserSummaryUseCase>(
+      () => registerModule.getUserSummaryUseCase(gh<_i494.ProfileRepository>()),
+    );
     gh.lazySingleton<_i494.JobRepository>(
       () => registerModule.jobRepository(
         gh<_i437.JobRemoteDataSource>(),
@@ -172,6 +175,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.secondhandMutationRepository(
         gh<_i437.SecondhandMutationDataSource>(),
       ),
+    );
+    gh.factory<_i1070.ProfileCubit>(
+      () => registerModule.profileCubit(gh<_i494.GetUserSummaryUseCase>()),
     );
     gh.lazySingleton<_i494.GetWorkersUseCase>(
       () => registerModule.getWorkersUseCase(gh<_i494.WorkerRepository>()),
@@ -186,6 +192,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i494.GetMyWorkerProfileUseCase>(
       () => registerModule.getMyWorkerProfileUseCase(
+        gh<_i494.WorkerRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.UpdateWorkerProfileUseCase>(
+      () => registerModule.updateWorkerProfileUseCase(
         gh<_i494.WorkerRepository>(),
       ),
     );
@@ -251,6 +262,15 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetSecondhandByIdUseCase>(),
       ),
     );
+    gh.factory<_i950.CreateWorkerAdCubit>(
+      () => registerModule.createWorkerAdCubit(
+        gh<_i494.CreateWorkerAdUseCase>(),
+        gh<_i494.UpdateWorkerProfileUseCase>(),
+        gh<_i494.GetMyWorkerProfileUseCase>(),
+        gh<_i494.GetUserProfileUseCase>(),
+        gh<_i960.EnumStorage>(),
+      ),
+    );
     gh.factory<_i950.WorkerListingCubit>(
       () => registerModule.workerListingCubit(gh<_i494.GetWorkersUseCase>()),
     );
@@ -274,12 +294,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.ClaimSecondhandUseCase>(
       () => registerModule.claimSecondhandUseCase(
         gh<_i494.SecondhandMutationRepository>(),
-      ),
-    );
-    gh.factory<_i950.CreateWorkerAdCubit>(
-      () => registerModule.createWorkerAdCubit(
-        gh<_i494.CreateWorkerAdUseCase>(),
-        gh<_i960.EnumStorage>(),
       ),
     );
     gh.factory<_i685.CreateUsedGoodsAdCubit>(

@@ -3,9 +3,15 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'create_worker_ad_state.freezed.dart';
 
+/// State untuk halaman Buat/Perbarui Profil Pekerja.
+///
+/// Mendukung dua mode:
+/// - **Create mode** ([isUpdateMode] = false): submit ke POST /workers
+/// - **Update mode** ([isUpdateMode] = true): submit ke PUT /workers/{workerId}
 @freezed
 abstract class CreateWorkerAdState with _$CreateWorkerAdState {
   const factory CreateWorkerAdState({
+    // ----- Form Fields -----
     @Default('') String fullName,
     @Default('') String education,
     @Default('') String workingHours,
@@ -21,8 +27,14 @@ abstract class CreateWorkerAdState with _$CreateWorkerAdState {
     @Default('') String district,
     @Default('') String subdistrict,
     @Default('') String village,
-    // Status flag
+    // ----- Mode & Identity -----
+    /// ID profil pekerja yang sudah ada. Non-null dan non-empty saat [isUpdateMode] = true.
+    @Default('') String workerId,
+    /// True jika form sedang dalam mode update (PUT), false untuk create (POST).
+    @Default(false) bool isUpdateMode,
+    // ----- Status Flags -----
     @Default(false) bool isLoading,
+    @Default(false) bool isLoadingProfile,
     @Default(false) bool isSuccess,
     String? errorMessage,
   }) = _CreateWorkerAdState;

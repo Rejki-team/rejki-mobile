@@ -406,10 +406,14 @@ class AppRouter {
             path: 'create',
             name: 'createWorker',
             parentNavigatorKey: rootNavigatorKey,
-            builder: (context, state) => BlocProvider(
-              create: (context) => GetIt.I<CreateWorkerAdCubit>(),
-              child: const CreateWorkerAdPage(),
-            ),
+            builder: (context, state) {
+              final useProfile =
+                  state.uri.queryParameters['useProfile'] == 'true';
+              return BlocProvider(
+                create: (context) => GetIt.I<CreateWorkerAdCubit>(),
+                child: CreateWorkerAdPage(useExistingProfile: useProfile),
+              );
+            },
           ),
           GoRoute(
             path: ':id',

@@ -3,7 +3,9 @@ import 'package:network/network.dart';
 import 'package:local/local.dart';
 import 'package:domain/domain.dart';
 import '../../auth/models/user_info_model.dart';
+import '../../auth/models/user_model.dart';
 import '../datasources/profile_remote_datasource.dart';
+import '../models/ads_summary_model.dart';
 
 /// Implementasi [ProfileRepository].
 ///
@@ -42,7 +44,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<Either<ProfileFailure, UserInfoEntity>> getProfile() async {
     try {
       final userModel = await _remoteDataSource.getProfile();
-      return Right(_toUserInfoEntity(userModel.userInfo));
+      return Right(_toUserInfoEntity(userModel));
     } on DioException catch (e) {
       return Left(_mapDioError(e));
     } catch (e) {
@@ -50,24 +52,89 @@ class ProfileRepositoryImpl implements ProfileRepository {
     }
   }
 
-  UserInfoEntity _toUserInfoEntity(UserInfoModel model) {
-    return UserInfoEntity(
-      id: model.id,
-      userId: model.userId,
-      fullName: model.fullName,
-      nik: model.nik,
-      gender: model.gender,
-      dob: DateTime.tryParse(model.dob) ?? DateTime(1),
-      province: model.province,
-      city: model.city,
-      districts: model.districts,
-      village: model.village,
-      rtRw: model.rtRw,
-      ktpFilePath: model.ktpFilePath,
-      createdAt: DateTime.tryParse(model.createdAt) ?? DateTime(1),
-      updatedAt: DateTime.tryParse(model.updatedAt) ?? DateTime(1),
+  @override
+  Future<Either<ProfileFailure, UserProfileSummary>> getUserSummary() async {
+    try {
+      // Panggil kedua endpoint secara paralel untuk efisiensi
+      final results = await Future.wait([
+        _remoteDataSource.getProfile(),
+        _remoteDataSource.getAdsSummary(),
+      ]);
+
+      final userModel = results[0] as UserModel;
+      final adsSummary = results[1] as AdsSummaryModel;
+
+      return Right(_toUserProfileSummary(userModel, adsSummary));
+    } on DioException catch (e) {
+      return Left(_mapDioError(e));
+    } catch (e) {
+      return Left(ProfileFailure.serverError(e.toString()));
+    }
+  }
+
+  // ============================================================
+  // Mapper — UserModel + AdsSummaryModel → UserProfileSummary
+  // ============================================================
+
+  UserProfileSummary _toUserProfileSummary(
+    UserModel userModel,
+    AdsSummaryModel adsSummary,
+  ) {
+    final info = userModel.userInfo;
+    return UserProfileSummary(
+      id: userModel.id,
+      email: userModel.email,
+      phoneNumber: userModel.phoneNumber,
+      fullName: info.fullName,
+      gender: info.gender,
+      age: info.age,
+      profilePhotoPath: userModel.profilePhotoPath,
+      totalJobAds: adsSummary.totalJobAds,
+      totalWorkerAds: adsSummary.totalWorkerAds,
+      totalSecondhandAds: adsSummary.totalSecondhandAds,
+      totalTrainingAds: adsSummary.totalTrainingAds,
+      totalAds: adsSummary.totalAds,
     );
   }
+
+  // ============================================================
+  // Mapper — UserModel (dengan nested UserInfoModel) → UserInfoEntity
+  // ============================================================
+
+  /// Maps [UserModel] (with nested [UserInfoModel]) to [UserInfoEntity].
+  ///
+  /// [phone_number] tersedia di level [UserModel], bukan di [UserInfoModel],
+  /// sehingga di-pass langsung dari sana.
+  UserInfoEntity _toUserInfoEntity(UserModel userModel) {
+    final UserInfoModel info = userModel.userInfo;
+    return UserInfoEntity(
+      id: info.id,
+      userId: info.userId,
+      fullName: info.fullName,
+      nik: info.nik,
+      gender: info.gender,
+      dob: DateTime.tryParse(info.dob) ?? DateTime(1),
+      province: info.province,
+      city: info.city,
+      districts: info.districts,
+      village: info.village,
+      rtRw: info.rtRw,
+      ktpFilePath: info.ktpFilePath,
+      createdAt: DateTime.tryParse(info.createdAt) ?? DateTime(1),
+      updatedAt: DateTime.tryParse(info.updatedAt) ?? DateTime(1),
+      // phone_number tersedia di level UserModel (parent), bukan UserInfoModel
+      phoneNumber: userModel.phoneNumber,
+      educationLevel: info.educationLevel,
+      educationFocus: info.educationFocus,
+      workExperience: info.workExperience,
+      addressKtp: info.addressKtp,
+      country: info.country,
+    );
+  }
+
+  // ============================================================
+  // Error Mapper
+  // ============================================================
 
   /// Map DioException ke ProfileFailure
   ProfileFailure _mapDioError(DioException e) {

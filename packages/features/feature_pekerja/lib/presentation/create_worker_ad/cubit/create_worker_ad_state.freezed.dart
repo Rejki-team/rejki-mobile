@@ -14,8 +14,12 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CreateWorkerAdState {
 
- String get fullName; String get education; String get workingHours; String get minimumWage; String get isNegotiable; String get phoneNumber; String get experience; List<File> get photos; String get domicileAddress; String get country; String get province; String get city; String get district; String get subdistrict; String get village;// Status flag
- bool get isLoading; bool get isSuccess; String? get errorMessage;
+// ----- Form Fields -----
+ String get fullName; String get education; String get workingHours; String get minimumWage; String get isNegotiable; String get phoneNumber; String get experience; List<File> get photos; String get domicileAddress; String get country; String get province; String get city; String get district; String get subdistrict; String get village;// ----- Mode & Identity -----
+/// ID profil pekerja yang sudah ada. Non-null dan non-empty saat [isUpdateMode] = true.
+ String get workerId;/// True jika form sedang dalam mode update (PUT), false untuk create (POST).
+ bool get isUpdateMode;// ----- Status Flags -----
+ bool get isLoading; bool get isLoadingProfile; bool get isSuccess; String? get errorMessage;
 /// Create a copy of CreateWorkerAdState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +30,16 @@ $CreateWorkerAdStateCopyWith<CreateWorkerAdState> get copyWith => _$CreateWorker
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateWorkerAdState&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.education, education) || other.education == education)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.minimumWage, minimumWage) || other.minimumWage == minimumWage)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.experience, experience) || other.experience == experience)&&const DeepCollectionEquality().equals(other.photos, photos)&&(identical(other.domicileAddress, domicileAddress) || other.domicileAddress == domicileAddress)&&(identical(other.country, country) || other.country == country)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.district, district) || other.district == district)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.village, village) || other.village == village)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateWorkerAdState&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.education, education) || other.education == education)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.minimumWage, minimumWage) || other.minimumWage == minimumWage)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.experience, experience) || other.experience == experience)&&const DeepCollectionEquality().equals(other.photos, photos)&&(identical(other.domicileAddress, domicileAddress) || other.domicileAddress == domicileAddress)&&(identical(other.country, country) || other.country == country)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.district, district) || other.district == district)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.village, village) || other.village == village)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.isUpdateMode, isUpdateMode) || other.isUpdateMode == isUpdateMode)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isLoadingProfile, isLoadingProfile) || other.isLoadingProfile == isLoadingProfile)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,fullName,education,workingHours,minimumWage,isNegotiable,phoneNumber,experience,const DeepCollectionEquality().hash(photos),domicileAddress,country,province,city,district,subdistrict,village,isLoading,isSuccess,errorMessage);
+int get hashCode => Object.hashAll([runtimeType,fullName,education,workingHours,minimumWage,isNegotiable,phoneNumber,experience,const DeepCollectionEquality().hash(photos),domicileAddress,country,province,city,district,subdistrict,village,workerId,isUpdateMode,isLoading,isLoadingProfile,isSuccess,errorMessage]);
 
 @override
 String toString() {
-  return 'CreateWorkerAdState(fullName: $fullName, education: $education, workingHours: $workingHours, minimumWage: $minimumWage, isNegotiable: $isNegotiable, phoneNumber: $phoneNumber, experience: $experience, photos: $photos, domicileAddress: $domicileAddress, country: $country, province: $province, city: $city, district: $district, subdistrict: $subdistrict, village: $village, isLoading: $isLoading, isSuccess: $isSuccess, errorMessage: $errorMessage)';
+  return 'CreateWorkerAdState(fullName: $fullName, education: $education, workingHours: $workingHours, minimumWage: $minimumWage, isNegotiable: $isNegotiable, phoneNumber: $phoneNumber, experience: $experience, photos: $photos, domicileAddress: $domicileAddress, country: $country, province: $province, city: $city, district: $district, subdistrict: $subdistrict, village: $village, workerId: $workerId, isUpdateMode: $isUpdateMode, isLoading: $isLoading, isLoadingProfile: $isLoadingProfile, isSuccess: $isSuccess, errorMessage: $errorMessage)';
 }
 
 
@@ -46,7 +50,7 @@ abstract mixin class $CreateWorkerAdStateCopyWith<$Res>  {
   factory $CreateWorkerAdStateCopyWith(CreateWorkerAdState value, $Res Function(CreateWorkerAdState) _then) = _$CreateWorkerAdStateCopyWithImpl;
 @useResult
 $Res call({
- String fullName, String education, String workingHours, String minimumWage, String isNegotiable, String phoneNumber, String experience, List<File> photos, String domicileAddress, String country, String province, String city, String district, String subdistrict, String village, bool isLoading, bool isSuccess, String? errorMessage
+ String fullName, String education, String workingHours, String minimumWage, String isNegotiable, String phoneNumber, String experience, List<File> photos, String domicileAddress, String country, String province, String city, String district, String subdistrict, String village, String workerId, bool isUpdateMode, bool isLoading, bool isLoadingProfile, bool isSuccess, String? errorMessage
 });
 
 
@@ -63,7 +67,7 @@ class _$CreateWorkerAdStateCopyWithImpl<$Res>
 
 /// Create a copy of CreateWorkerAdState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? fullName = null,Object? education = null,Object? workingHours = null,Object? minimumWage = null,Object? isNegotiable = null,Object? phoneNumber = null,Object? experience = null,Object? photos = null,Object? domicileAddress = null,Object? country = null,Object? province = null,Object? city = null,Object? district = null,Object? subdistrict = null,Object? village = null,Object? isLoading = null,Object? isSuccess = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? fullName = null,Object? education = null,Object? workingHours = null,Object? minimumWage = null,Object? isNegotiable = null,Object? phoneNumber = null,Object? experience = null,Object? photos = null,Object? domicileAddress = null,Object? country = null,Object? province = null,Object? city = null,Object? district = null,Object? subdistrict = null,Object? village = null,Object? workerId = null,Object? isUpdateMode = null,Object? isLoading = null,Object? isLoadingProfile = null,Object? isSuccess = null,Object? errorMessage = freezed,}) {
   return _then(_self.copyWith(
 fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,education: null == education ? _self.education : education // ignore: cast_nullable_to_non_nullable
@@ -80,7 +84,10 @@ as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non
 as String,district: null == district ? _self.district : district // ignore: cast_nullable_to_non_nullable
 as String,subdistrict: null == subdistrict ? _self.subdistrict : subdistrict // ignore: cast_nullable_to_non_nullable
 as String,village: null == village ? _self.village : village // ignore: cast_nullable_to_non_nullable
-as String,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as String,workerId: null == workerId ? _self.workerId : workerId // ignore: cast_nullable_to_non_nullable
+as String,isUpdateMode: null == isUpdateMode ? _self.isUpdateMode : isUpdateMode // ignore: cast_nullable_to_non_nullable
+as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,isLoadingProfile: null == isLoadingProfile ? _self.isLoadingProfile : isLoadingProfile // ignore: cast_nullable_to_non_nullable
 as bool,isSuccess: null == isSuccess ? _self.isSuccess : isSuccess // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -168,10 +175,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fullName,  String education,  String workingHours,  String minimumWage,  String isNegotiable,  String phoneNumber,  String experience,  List<File> photos,  String domicileAddress,  String country,  String province,  String city,  String district,  String subdistrict,  String village,  bool isLoading,  bool isSuccess,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fullName,  String education,  String workingHours,  String minimumWage,  String isNegotiable,  String phoneNumber,  String experience,  List<File> photos,  String domicileAddress,  String country,  String province,  String city,  String district,  String subdistrict,  String village,  String workerId,  bool isUpdateMode,  bool isLoading,  bool isLoadingProfile,  bool isSuccess,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CreateWorkerAdState() when $default != null:
-return $default(_that.fullName,_that.education,_that.workingHours,_that.minimumWage,_that.isNegotiable,_that.phoneNumber,_that.experience,_that.photos,_that.domicileAddress,_that.country,_that.province,_that.city,_that.district,_that.subdistrict,_that.village,_that.isLoading,_that.isSuccess,_that.errorMessage);case _:
+return $default(_that.fullName,_that.education,_that.workingHours,_that.minimumWage,_that.isNegotiable,_that.phoneNumber,_that.experience,_that.photos,_that.domicileAddress,_that.country,_that.province,_that.city,_that.district,_that.subdistrict,_that.village,_that.workerId,_that.isUpdateMode,_that.isLoading,_that.isLoadingProfile,_that.isSuccess,_that.errorMessage);case _:
   return orElse();
 
 }
@@ -189,10 +196,10 @@ return $default(_that.fullName,_that.education,_that.workingHours,_that.minimumW
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fullName,  String education,  String workingHours,  String minimumWage,  String isNegotiable,  String phoneNumber,  String experience,  List<File> photos,  String domicileAddress,  String country,  String province,  String city,  String district,  String subdistrict,  String village,  bool isLoading,  bool isSuccess,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fullName,  String education,  String workingHours,  String minimumWage,  String isNegotiable,  String phoneNumber,  String experience,  List<File> photos,  String domicileAddress,  String country,  String province,  String city,  String district,  String subdistrict,  String village,  String workerId,  bool isUpdateMode,  bool isLoading,  bool isLoadingProfile,  bool isSuccess,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _CreateWorkerAdState():
-return $default(_that.fullName,_that.education,_that.workingHours,_that.minimumWage,_that.isNegotiable,_that.phoneNumber,_that.experience,_that.photos,_that.domicileAddress,_that.country,_that.province,_that.city,_that.district,_that.subdistrict,_that.village,_that.isLoading,_that.isSuccess,_that.errorMessage);case _:
+return $default(_that.fullName,_that.education,_that.workingHours,_that.minimumWage,_that.isNegotiable,_that.phoneNumber,_that.experience,_that.photos,_that.domicileAddress,_that.country,_that.province,_that.city,_that.district,_that.subdistrict,_that.village,_that.workerId,_that.isUpdateMode,_that.isLoading,_that.isLoadingProfile,_that.isSuccess,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +216,10 @@ return $default(_that.fullName,_that.education,_that.workingHours,_that.minimumW
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fullName,  String education,  String workingHours,  String minimumWage,  String isNegotiable,  String phoneNumber,  String experience,  List<File> photos,  String domicileAddress,  String country,  String province,  String city,  String district,  String subdistrict,  String village,  bool isLoading,  bool isSuccess,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fullName,  String education,  String workingHours,  String minimumWage,  String isNegotiable,  String phoneNumber,  String experience,  List<File> photos,  String domicileAddress,  String country,  String province,  String city,  String district,  String subdistrict,  String village,  String workerId,  bool isUpdateMode,  bool isLoading,  bool isLoadingProfile,  bool isSuccess,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _CreateWorkerAdState() when $default != null:
-return $default(_that.fullName,_that.education,_that.workingHours,_that.minimumWage,_that.isNegotiable,_that.phoneNumber,_that.experience,_that.photos,_that.domicileAddress,_that.country,_that.province,_that.city,_that.district,_that.subdistrict,_that.village,_that.isLoading,_that.isSuccess,_that.errorMessage);case _:
+return $default(_that.fullName,_that.education,_that.workingHours,_that.minimumWage,_that.isNegotiable,_that.phoneNumber,_that.experience,_that.photos,_that.domicileAddress,_that.country,_that.province,_that.city,_that.district,_that.subdistrict,_that.village,_that.workerId,_that.isUpdateMode,_that.isLoading,_that.isLoadingProfile,_that.isSuccess,_that.errorMessage);case _:
   return null;
 
 }
@@ -224,9 +231,10 @@ return $default(_that.fullName,_that.education,_that.workingHours,_that.minimumW
 
 
 class _CreateWorkerAdState extends CreateWorkerAdState {
-  const _CreateWorkerAdState({this.fullName = '', this.education = '', this.workingHours = '', this.minimumWage = '', this.isNegotiable = 'Ya', this.phoneNumber = '', this.experience = '', final  List<File> photos = const [], this.domicileAddress = '', this.country = '', this.province = '', this.city = '', this.district = '', this.subdistrict = '', this.village = '', this.isLoading = false, this.isSuccess = false, this.errorMessage}): _photos = photos,super._();
+  const _CreateWorkerAdState({this.fullName = '', this.education = '', this.workingHours = '', this.minimumWage = '', this.isNegotiable = 'Ya', this.phoneNumber = '', this.experience = '', final  List<File> photos = const [], this.domicileAddress = '', this.country = '', this.province = '', this.city = '', this.district = '', this.subdistrict = '', this.village = '', this.workerId = '', this.isUpdateMode = false, this.isLoading = false, this.isLoadingProfile = false, this.isSuccess = false, this.errorMessage}): _photos = photos,super._();
   
 
+// ----- Form Fields -----
 @override@JsonKey() final  String fullName;
 @override@JsonKey() final  String education;
 @override@JsonKey() final  String workingHours;
@@ -248,8 +256,14 @@ class _CreateWorkerAdState extends CreateWorkerAdState {
 @override@JsonKey() final  String district;
 @override@JsonKey() final  String subdistrict;
 @override@JsonKey() final  String village;
-// Status flag
+// ----- Mode & Identity -----
+/// ID profil pekerja yang sudah ada. Non-null dan non-empty saat [isUpdateMode] = true.
+@override@JsonKey() final  String workerId;
+/// True jika form sedang dalam mode update (PUT), false untuk create (POST).
+@override@JsonKey() final  bool isUpdateMode;
+// ----- Status Flags -----
 @override@JsonKey() final  bool isLoading;
+@override@JsonKey() final  bool isLoadingProfile;
 @override@JsonKey() final  bool isSuccess;
 @override final  String? errorMessage;
 
@@ -263,16 +277,16 @@ _$CreateWorkerAdStateCopyWith<_CreateWorkerAdState> get copyWith => __$CreateWor
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateWorkerAdState&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.education, education) || other.education == education)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.minimumWage, minimumWage) || other.minimumWage == minimumWage)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.experience, experience) || other.experience == experience)&&const DeepCollectionEquality().equals(other._photos, _photos)&&(identical(other.domicileAddress, domicileAddress) || other.domicileAddress == domicileAddress)&&(identical(other.country, country) || other.country == country)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.district, district) || other.district == district)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.village, village) || other.village == village)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateWorkerAdState&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.education, education) || other.education == education)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.minimumWage, minimumWage) || other.minimumWage == minimumWage)&&(identical(other.isNegotiable, isNegotiable) || other.isNegotiable == isNegotiable)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.experience, experience) || other.experience == experience)&&const DeepCollectionEquality().equals(other._photos, _photos)&&(identical(other.domicileAddress, domicileAddress) || other.domicileAddress == domicileAddress)&&(identical(other.country, country) || other.country == country)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.district, district) || other.district == district)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.village, village) || other.village == village)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.isUpdateMode, isUpdateMode) || other.isUpdateMode == isUpdateMode)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isLoadingProfile, isLoadingProfile) || other.isLoadingProfile == isLoadingProfile)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,fullName,education,workingHours,minimumWage,isNegotiable,phoneNumber,experience,const DeepCollectionEquality().hash(_photos),domicileAddress,country,province,city,district,subdistrict,village,isLoading,isSuccess,errorMessage);
+int get hashCode => Object.hashAll([runtimeType,fullName,education,workingHours,minimumWage,isNegotiable,phoneNumber,experience,const DeepCollectionEquality().hash(_photos),domicileAddress,country,province,city,district,subdistrict,village,workerId,isUpdateMode,isLoading,isLoadingProfile,isSuccess,errorMessage]);
 
 @override
 String toString() {
-  return 'CreateWorkerAdState(fullName: $fullName, education: $education, workingHours: $workingHours, minimumWage: $minimumWage, isNegotiable: $isNegotiable, phoneNumber: $phoneNumber, experience: $experience, photos: $photos, domicileAddress: $domicileAddress, country: $country, province: $province, city: $city, district: $district, subdistrict: $subdistrict, village: $village, isLoading: $isLoading, isSuccess: $isSuccess, errorMessage: $errorMessage)';
+  return 'CreateWorkerAdState(fullName: $fullName, education: $education, workingHours: $workingHours, minimumWage: $minimumWage, isNegotiable: $isNegotiable, phoneNumber: $phoneNumber, experience: $experience, photos: $photos, domicileAddress: $domicileAddress, country: $country, province: $province, city: $city, district: $district, subdistrict: $subdistrict, village: $village, workerId: $workerId, isUpdateMode: $isUpdateMode, isLoading: $isLoading, isLoadingProfile: $isLoadingProfile, isSuccess: $isSuccess, errorMessage: $errorMessage)';
 }
 
 
@@ -283,7 +297,7 @@ abstract mixin class _$CreateWorkerAdStateCopyWith<$Res> implements $CreateWorke
   factory _$CreateWorkerAdStateCopyWith(_CreateWorkerAdState value, $Res Function(_CreateWorkerAdState) _then) = __$CreateWorkerAdStateCopyWithImpl;
 @override @useResult
 $Res call({
- String fullName, String education, String workingHours, String minimumWage, String isNegotiable, String phoneNumber, String experience, List<File> photos, String domicileAddress, String country, String province, String city, String district, String subdistrict, String village, bool isLoading, bool isSuccess, String? errorMessage
+ String fullName, String education, String workingHours, String minimumWage, String isNegotiable, String phoneNumber, String experience, List<File> photos, String domicileAddress, String country, String province, String city, String district, String subdistrict, String village, String workerId, bool isUpdateMode, bool isLoading, bool isLoadingProfile, bool isSuccess, String? errorMessage
 });
 
 
@@ -300,7 +314,7 @@ class __$CreateWorkerAdStateCopyWithImpl<$Res>
 
 /// Create a copy of CreateWorkerAdState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? fullName = null,Object? education = null,Object? workingHours = null,Object? minimumWage = null,Object? isNegotiable = null,Object? phoneNumber = null,Object? experience = null,Object? photos = null,Object? domicileAddress = null,Object? country = null,Object? province = null,Object? city = null,Object? district = null,Object? subdistrict = null,Object? village = null,Object? isLoading = null,Object? isSuccess = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? fullName = null,Object? education = null,Object? workingHours = null,Object? minimumWage = null,Object? isNegotiable = null,Object? phoneNumber = null,Object? experience = null,Object? photos = null,Object? domicileAddress = null,Object? country = null,Object? province = null,Object? city = null,Object? district = null,Object? subdistrict = null,Object? village = null,Object? workerId = null,Object? isUpdateMode = null,Object? isLoading = null,Object? isLoadingProfile = null,Object? isSuccess = null,Object? errorMessage = freezed,}) {
   return _then(_CreateWorkerAdState(
 fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,education: null == education ? _self.education : education // ignore: cast_nullable_to_non_nullable
@@ -317,7 +331,10 @@ as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non
 as String,district: null == district ? _self.district : district // ignore: cast_nullable_to_non_nullable
 as String,subdistrict: null == subdistrict ? _self.subdistrict : subdistrict // ignore: cast_nullable_to_non_nullable
 as String,village: null == village ? _self.village : village // ignore: cast_nullable_to_non_nullable
-as String,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as String,workerId: null == workerId ? _self.workerId : workerId // ignore: cast_nullable_to_non_nullable
+as String,isUpdateMode: null == isUpdateMode ? _self.isUpdateMode : isUpdateMode // ignore: cast_nullable_to_non_nullable
+as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,isLoadingProfile: null == isLoadingProfile ? _self.isLoadingProfile : isLoadingProfile // ignore: cast_nullable_to_non_nullable
 as bool,isSuccess: null == isSuccess ? _self.isSuccess : isSuccess // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,

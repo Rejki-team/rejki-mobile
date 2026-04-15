@@ -26,5 +26,13 @@ abstract class WorkerRepository {
   /// (API returns an empty workers array), so the caller can redirect the user
   /// to the create-worker-profile page.
   Future<Either<WorkerFailure, WorkerEntity?>> getMyWorkerProfile();
-}
 
+  /// Updates an existing worker profile via PUT /workers/{id}.
+  ///
+  /// - [id]: The worker profile ID to update.
+  /// - [params]: Updated worker data (same fields as create).
+  Future<Either<WorkerFailure, Unit>> updateWorkerProfile(
+    String id,
+    CreateWorkerParams params,
+  );
+}

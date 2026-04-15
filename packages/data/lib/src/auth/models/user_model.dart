@@ -19,6 +19,7 @@ abstract class UserModel with _$UserModel {
     @JsonKey(name: 'is_preview_credential') required bool isPreviewCredential,
     required String role,
     required String status,
+    @JsonKey(name: 'profile_photo_path') @Default('') String profilePhotoPath,
     @JsonKey(name: 'created_at') required String createdAt,
     @JsonKey(name: 'updated_at') required String updatedAt,
     @JsonKey(name: 'user_info') required UserInfoModel userInfo,

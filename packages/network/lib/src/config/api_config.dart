@@ -22,6 +22,7 @@ class ApiConfig {
   static const String verifyOtp = '/auth/verify-otp';
   static const String resendOtp = '/auth/resend-otp';
   static const String profile = '/users/profile';
+  static const String adsSummary = '/users/ads-summary';
 
   /// API Endpoints - Jobs
   static const String jobs = '/jobs';

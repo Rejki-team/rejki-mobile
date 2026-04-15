@@ -69,7 +69,9 @@ class WorkerRepositoryImpl implements WorkerRepository {
   }
 
   @override
-  Future<Either<WorkerFailure, Unit>> createWorkerAd(CreateWorkerParams params) async {
+  Future<Either<WorkerFailure, Unit>> createWorkerAd(
+    CreateWorkerParams params,
+  ) async {
     try {
       await _remoteDataSource.createWorkerAd(params);
       return right(unit);
@@ -110,6 +112,25 @@ class WorkerRepositoryImpl implements WorkerRepository {
     }
   }
 
+  @override
+  Future<Either<WorkerFailure, Unit>> updateWorkerProfile(
+    String id,
+    CreateWorkerParams params,
+  ) async {
+    try {
+      await _remoteDataSource.updateWorkerProfile(id, params);
+      return right(unit);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        return left(const WorkerFailure.networkError());
+      }
+      return left(WorkerFailure.serverError(e.message));
+    } catch (e) {
+      return left(WorkerFailure.unknown());
+    }
+  }
+
   WorkerEntity _mapToEntity(Map<String, dynamic> json) {
     return WorkerEntity(
       id: json['id']?.toString() ?? '',
@@ -124,16 +145,20 @@ class WorkerRepositoryImpl implements WorkerRepository {
       isAd: json['is_ad'] ?? false,
       adTitle: json['ad_title'],
       adImageUrl: json['ad_image_url'],
-      
+
       // Detail fields mapping
       education: json['education'],
       available: json['available'],
-      isNegotiable: json['is_negotiable'] == 1 || json['is_negotiable'] == true, // Handle tinyint or boolean boolean
+      isNegotiable: json['is_negotiable'] == 1 || json['is_negotiable'] == true,
       phoneNumber: json['phone_number'],
       workExperience: json['work_experience'],
       address: json['address'],
-      latitude: json['latitude'] != null ? (json['latitude'] as num).toDouble() : null,
-      longitude: json['longitude'] != null ? (json['longitude'] as num).toDouble() : null,
+      latitude: json['latitude'] != null
+          ? (json['latitude'] as num).toDouble()
+          : null,
+      longitude: json['longitude'] != null
+          ? (json['longitude'] as num).toDouble()
+          : null,
     );
   }
 }

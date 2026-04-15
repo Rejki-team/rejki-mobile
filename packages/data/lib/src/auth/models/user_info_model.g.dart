@@ -14,6 +14,7 @@ _UserInfoModel _$UserInfoModelFromJson(Map<String, dynamic> json) =>
       nik: json['nik'] as String,
       gender: json['gender'] as String,
       dob: json['dob'] as String,
+      age: (json['age'] as num?)?.toInt() ?? 0,
       province: json['province'] as String,
       city: json['city'] as String,
       districts: json['districts'] as String,
@@ -22,6 +23,12 @@ _UserInfoModel _$UserInfoModelFromJson(Map<String, dynamic> json) =>
       ktpFilePath: json['ktp_file_path'] as String,
       createdAt: json['created_at'] as String,
       updatedAt: json['updated_at'] as String,
+      selfieKtpFilePath: json['selfie_ktp_file_path'] as String? ?? '',
+      educationLevel: json['education_level'] as String? ?? '',
+      educationFocus: json['education_focus'] as String? ?? '',
+      workExperience: json['work_experience'] as String? ?? '',
+      addressKtp: json['address_ktp'] as String? ?? '',
+      country: json['country'] as String? ?? 'Indonesia',
     );
 
 Map<String, dynamic> _$UserInfoModelToJson(_UserInfoModel instance) =>
@@ -32,6 +39,7 @@ Map<String, dynamic> _$UserInfoModelToJson(_UserInfoModel instance) =>
       'nik': instance.nik,
       'gender': instance.gender,
       'dob': instance.dob,
+      'age': instance.age,
       'province': instance.province,
       'city': instance.city,
       'districts': instance.districts,
@@ -40,4 +48,10 @@ Map<String, dynamic> _$UserInfoModelToJson(_UserInfoModel instance) =>
       'ktp_file_path': instance.ktpFilePath,
       'created_at': instance.createdAt,
       'updated_at': instance.updatedAt,
+      'selfie_ktp_file_path': instance.selfieKtpFilePath,
+      'education_level': instance.educationLevel,
+      'education_focus': instance.educationFocus,
+      'work_experience': instance.workExperience,
+      'address_ktp': instance.addressKtp,
+      'country': instance.country,
     };
