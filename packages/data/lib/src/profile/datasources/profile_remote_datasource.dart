@@ -1,11 +1,10 @@
+import 'dart:io';
 import 'package:network/network.dart';
 import 'package:domain/domain.dart';
 import '../../auth/models/user_model.dart';
 import '../models/ads_summary_model.dart';
 
 /// Remote data source untuk profile API.
-///
-/// Membuat FormData dan mengirim ke backend via PUT.
 abstract class ProfileRemoteDataSource {
   /// Update profile user dengan FormData (multipart).
   Future<ApiResponse<dynamic>> updateProfile(UpdateProfileParams params);
@@ -15,6 +14,11 @@ abstract class ProfileRemoteDataSource {
 
   /// Ambil ringkasan statistik iklan user (GET /users/ads-summary).
   Future<AdsSummaryModel> getAdsSummary();
+
+  /// Upload atau update foto profil (PUT /users/profile/photo).
+  ///
+  /// Mengembalikan path foto baru dari response API.
+  Future<String> uploadProfilePhoto(File photo);
 }
 
 /// Implementasi [ProfileRemoteDataSource].
@@ -74,5 +78,24 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     final response = await _dioClient.get(ApiConfig.adsSummary);
     final data = response.data['data'] as Map<String, dynamic>;
     return AdsSummaryModel.fromJson(data);
+  }
+
+  @override
+  Future<String> uploadProfilePhoto(File photo) async {
+    final formData = FormData.fromMap({
+      'profile_photo': await MultipartFile.fromFile(
+        photo.path,
+        filename: 'profile_photo.jpg',
+      ),
+    });
+
+    final response = await _dioClient.uploadPut(
+      ApiConfig.profilePhoto,
+      data: formData,
+    );
+
+    // Parse path foto baru dari response
+    final data = response.data['data'] as Map<String, dynamic>?;
+    return (data?['profile_photo_path'] as String?) ?? '';
   }
 }

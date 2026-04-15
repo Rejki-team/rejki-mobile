@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:domain/domain.dart';
 import 'profile_state.dart';
@@ -6,32 +7,26 @@ import 'profile_state.dart';
 ///
 /// Bertanggung jawab untuk:
 /// - Memuat ringkasan profil pengguna dari [GetUserSummaryUseCase]
+/// - Upload/update foto profil via [UploadProfilePhotoUseCase]
 /// - Mengelola loading/success/failure state
 ///
 /// Berbeda dari [EditProfileCubit] yang mengelola form edit data pribadi.
-/// Cubit ini hanya untuk READ data pada tampilan Profile page.
-///
-/// Thread safety:
-/// - Selalu cek [isClosed] sebelum emit setelah operasi async
-///   untuk mencegah memory leak saat widget sudah di-dispose.
+/// Cubit ini hanya untuk READ data dan upload foto pada halaman Profile.
 class ProfileCubit extends Cubit<ProfileState> {
   final GetUserSummaryUseCase _getUserSummaryUseCase;
+  final UploadProfilePhotoUseCase _uploadProfilePhotoUseCase;
 
-  ProfileCubit(this._getUserSummaryUseCase) : super(const ProfileState());
+  ProfileCubit(
+    this._getUserSummaryUseCase,
+    this._uploadProfilePhotoUseCase,
+  ) : super(const ProfileState());
 
-  /// Memuat data profil pengguna dari API.
-  ///
-  /// Memanggil [GetUserSummaryUseCase] yang secara internal
-  /// menjalankan dua request secara paralel:
-  /// - `GET /users/profile`
-  /// - `GET /users/ads-summary`
+  /// Memuat data profil + statistik iklan dari dua endpoint paralel.
   Future<void> loadProfile() async {
     emit(state.copyWith(status: ProfileStatus.loading, errorMessage: null));
 
     final result = await _getUserSummaryUseCase();
 
-    // Guard: cegah emit setelah cubit ditutup (dispose) untuk menghindari
-    // memory leak dan setState-after-dispose error.
     if (isClosed) return;
 
     result.fold(
@@ -51,7 +46,43 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
   }
 
-  /// Memetakan domain failure ke pesan yang ramah pengguna.
+  /// Upload atau update foto profil pengguna.
+  ///
+  /// [photo] adalah [File] hasil pilihan ImagePicker dari View layer.
+  /// Setelah sukses, [state.summary.profilePhotoPath] diupdate
+  /// sehingga [ProfileAvatar] otomatis menampilkan foto baru tanpa reload.
+  Future<void> uploadProfilePhoto(File photo) async {
+    emit(
+      state.copyWith(isUploadingPhoto: true, uploadPhotoError: null),
+    );
+
+    final result = await _uploadProfilePhotoUseCase(photo);
+
+    if (isClosed) return;
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          isUploadingPhoto: false,
+          uploadPhotoError: _mapFailureToMessage(failure),
+        ),
+      ),
+      (newPhotoPath) {
+        // Optimistic update: update path di summary tanpa reload ulang
+        final updatedSummary = state.summary?.copyWith(
+          profilePhotoPath: newPhotoPath,
+        );
+        emit(
+          state.copyWith(
+            isUploadingPhoto: false,
+            uploadPhotoError: null,
+            summary: updatedSummary,
+          ),
+        );
+      },
+    );
+  }
+
   String _mapFailureToMessage(ProfileFailure failure) {
     return failure.map(
       serverError: (e) => e.message ?? 'Terjadi kesalahan pada server',

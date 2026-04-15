@@ -165,6 +165,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.GetUserSummaryUseCase>(
       () => registerModule.getUserSummaryUseCase(gh<_i494.ProfileRepository>()),
     );
+    gh.lazySingleton<_i494.UploadProfilePhotoUseCase>(
+      () => registerModule.uploadProfilePhotoUseCase(
+        gh<_i494.ProfileRepository>(),
+      ),
+    );
+    gh.factory<_i1070.ProfileCubit>(
+      () => registerModule.profileCubit(
+        gh<_i494.GetUserSummaryUseCase>(),
+        gh<_i494.UploadProfilePhotoUseCase>(),
+      ),
+    );
     gh.lazySingleton<_i494.JobRepository>(
       () => registerModule.jobRepository(
         gh<_i437.JobRemoteDataSource>(),
@@ -175,9 +186,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.secondhandMutationRepository(
         gh<_i437.SecondhandMutationDataSource>(),
       ),
-    );
-    gh.factory<_i1070.ProfileCubit>(
-      () => registerModule.profileCubit(gh<_i494.GetUserSummaryUseCase>()),
     );
     gh.lazySingleton<_i494.GetWorkersUseCase>(
       () => registerModule.getWorkersUseCase(gh<_i494.WorkerRepository>()),

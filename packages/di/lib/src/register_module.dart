@@ -300,12 +300,15 @@ abstract class RegisterModule {
   EditProfileCubit editProfileCubit(UpdateProfileUseCase updateProfileUseCase) =>
       EditProfileCubit(updateProfileUseCase);
 
-  /// ProfileCubit - untuk halaman Profile (READ data profil + statistik iklan)
+  /// ProfileCubit - untuk halaman Profile (READ data profil + statistik iklan + upload foto)
   ///
   /// Berbeda dari [EditProfileCubit] yang mengelola form edit data pribadi.
   @factoryMethod
-  ProfileCubit profileCubit(GetUserSummaryUseCase getUserSummaryUseCase) =>
-      ProfileCubit(getUserSummaryUseCase);
+  ProfileCubit profileCubit(
+    GetUserSummaryUseCase getUserSummaryUseCase,
+    UploadProfilePhotoUseCase uploadProfilePhotoUseCase,
+  ) =>
+      ProfileCubit(getUserSummaryUseCase, uploadProfilePhotoUseCase);
 
   /// JobListingCubit - for job listing page
   @factoryMethod
@@ -483,6 +486,14 @@ abstract class RegisterModule {
   @lazySingleton
   GetUserSummaryUseCase getUserSummaryUseCase(ProfileRepository repository) =>
       GetUserSummaryUseCase(repository);
+
+  /// UploadProfilePhotoUseCase - untuk upload/update foto profil
+  /// Digunakan oleh [ProfileCubit] pada halaman Profile.
+  @lazySingleton
+  UploadProfilePhotoUseCase uploadProfilePhotoUseCase(
+    ProfileRepository repository,
+  ) =>
+      UploadProfilePhotoUseCase(repository);
 
   // ============================================
   // FEATURE BARANG BEKAS CUBITS

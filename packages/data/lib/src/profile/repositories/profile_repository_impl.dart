@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:fpdart/fpdart.dart';
 import 'package:network/network.dart';
 import 'package:local/local.dart';
@@ -65,6 +66,18 @@ class ProfileRepositoryImpl implements ProfileRepository {
       final adsSummary = results[1] as AdsSummaryModel;
 
       return Right(_toUserProfileSummary(userModel, adsSummary));
+    } on DioException catch (e) {
+      return Left(_mapDioError(e));
+    } catch (e) {
+      return Left(ProfileFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ProfileFailure, String>> uploadProfilePhoto(File photo) async {
+    try {
+      final newPhotoPath = await _remoteDataSource.uploadProfilePhoto(photo);
+      return Right(newPhotoPath);
     } on DioException catch (e) {
       return Left(_mapDioError(e));
     } catch (e) {

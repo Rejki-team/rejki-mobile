@@ -23,6 +23,7 @@ class ApiConfig {
   static const String resendOtp = '/auth/resend-otp';
   static const String profile = '/users/profile';
   static const String adsSummary = '/users/ads-summary';
+  static const String profilePhoto = '/users/profile/photo';
 
   /// API Endpoints - Jobs
   static const String jobs = '/jobs';

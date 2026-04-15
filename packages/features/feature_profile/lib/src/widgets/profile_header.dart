@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:designsystems/designsystems.dart';
+import 'package:network/network.dart';
 
 /// Profile Header Widget
 ///
-/// Contains the user avatar with initial and edit button,
-/// plus user info (name, gender/age, rating).
+/// Menampilkan avatar pengguna (foto atau initial letter + tombol edit),
+/// nama, gender/umur, dan rating.
 class ProfileHeader extends StatelessWidget {
-  /// User's full name
   final String name;
-
-  /// User's gender and age text (e.g., "Pria, 47 tahun")
   final String genderAge;
-
-  /// User's rating
   final double rating;
 
-  /// Callback when edit button is pressed
+  /// URL foto profil lengkap. Null/kosong → tampilkan initial letter.
+  final String? profilePhotoUrl;
+
+  /// True saat upload foto sedang berlangsung.
+  final bool isUploadingPhoto;
+
+  /// Callback ketika edit button ditekan.
   final VoidCallback? onEditPressed;
 
   const ProfileHeader({
@@ -24,6 +26,8 @@ class ProfileHeader extends StatelessWidget {
     required this.name,
     required this.genderAge,
     required this.rating,
+    this.profilePhotoUrl,
+    this.isUploadingPhoto = false,
     this.onEditPressed,
   });
 
@@ -34,19 +38,18 @@ class ProfileHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Avatar with edit button
           ProfileAvatar(
             initial: name.isNotEmpty ? name[0].toUpperCase() : '?',
+            photoUrl: profilePhotoUrl,
+            isUploading: isUploadingPhoto,
             onEditPressed: onEditPressed,
           ),
 
           const SizedBox(width: AppSpacing.sm),
 
-          // User info section
           Expanded(
             child: Row(
               children: [
-                // Name and gender/age
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +73,6 @@ class ProfileHeader extends StatelessWidget {
 
                 const SizedBox(width: AppSpacing.xs),
 
-                // Rating
                 _RatingBadge(rating: rating),
               ],
             ),
@@ -81,35 +83,52 @@ class ProfileHeader extends StatelessWidget {
   }
 }
 
-/// Profile Avatar Widget
+// ---------------------------------------------------------------------------
+// ProfileAvatar
+// ---------------------------------------------------------------------------
+
+/// Avatar lingkaran dengan foto profil atau initial letter, plus tombol edit.
 ///
-/// Circular avatar with initial letter and edit button overlay.
+/// Jika [photoUrl] tidak kosong → tampilkan foto dari network.
+/// Jika [isUploading] true → tampilkan overlay loading di atas avatar.
 class ProfileAvatar extends StatelessWidget {
-  /// Initial letter to display
+  /// Initial letter (fallback jika tidak ada foto)
   final String initial;
 
-  /// Callback when edit button is pressed
+  /// URL foto lengkap (dari [ApiConfig.buildImageUrl])
+  final String? photoUrl;
+
+  /// True saat upload sedang berlangsung
+  final bool isUploading;
+
+  /// Callback saat tombol edit ditekan
   final VoidCallback? onEditPressed;
 
-  /// Size of the avatar (default: 40px)
+  /// Ukuran avatar (default 40px)
   final double size;
 
   const ProfileAvatar({
     super.key,
     required this.initial,
+    this.photoUrl,
+    this.isUploading = false,
     this.onEditPressed,
     this.size = 40,
   });
 
   @override
   Widget build(BuildContext context) {
+    final hasPhoto = photoUrl != null && photoUrl!.isNotEmpty;
+
     return SizedBox(
       width: size,
       height: size,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
+          // ----------------------------------------------------------------
           // Main avatar circle
+          // ----------------------------------------------------------------
           Container(
             width: size,
             height: size,
@@ -117,43 +136,96 @@ class ProfileAvatar extends StatelessWidget {
               color: AppColors.userIconWrapperBg,
               shape: BoxShape.circle,
             ),
-            alignment: Alignment.center,
-            child: Text(initial, style: AppTypography.profileAvatarInitial),
+            clipBehavior: Clip.antiAlias,
+            child: hasPhoto
+                ? Image.network(
+                    photoUrl!,
+                    width: size,
+                    height: size,
+                    fit: BoxFit.cover,
+                    // Reset ke initial saat network error
+                    errorBuilder: (_, _, _) => _buildInitial(),
+                    // Tampilkan initial saat gambar loading dari network
+                    loadingBuilder: (_, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return _buildInitial();
+                    },
+                    headers: const {
+                      // Sertakan header agar CDN tidak block request
+                      'Accept': ApiConfig.contentTypeJson,
+                    },
+                  )
+                : _buildInitial(),
           ),
 
-          // Edit button overlay
-          Positioned(
-            right: -2,
-            bottom: -2,
-            child: GestureDetector(
-              onTap: onEditPressed,
+          // ----------------------------------------------------------------
+          // Upload loading overlay
+          // ----------------------------------------------------------------
+          if (isUploading)
+            Positioned.fill(
               child: Container(
-                width: 16,
-                height: 16,
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: AppColors.white,
+                decoration: BoxDecoration(
+                  color: AppColors.black.withValues(alpha: 0.45),
                   shape: BoxShape.circle,
                 ),
-                child: SvgPicture.asset(
-                  AppAssets.iconEdit,
-                  width: 8,
-                  height: 8,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.userIconTint,
-                    BlendMode.srcIn,
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: size * 0.4,
+                  height: size * 0.4,
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.white,
                   ),
                 ),
               ),
             ),
-          ),
+
+          // ----------------------------------------------------------------
+          // Edit button overlay (sembunyi saat sedang upload)
+          // ----------------------------------------------------------------
+          if (!isUploading)
+            Positioned(
+              right: -2,
+              bottom: -2,
+              child: GestureDetector(
+                onTap: onEditPressed,
+                child: Container(
+                  width: 16,
+                  height: 16,
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: AppColors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: SvgPicture.asset(
+                    AppAssets.iconEdit,
+                    width: 8,
+                    height: 8,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.userIconTint,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
+
+  Widget _buildInitial() {
+    return Align(
+      alignment: Alignment.center,
+      child: Text(initial, style: AppTypography.profileAvatarInitial),
+    );
+  }
 }
 
-/// Rating Badge Widget
+// ---------------------------------------------------------------------------
+// Rating Badge
+// ---------------------------------------------------------------------------
+
 class _RatingBadge extends StatelessWidget {
   final double rating;
 

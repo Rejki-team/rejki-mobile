@@ -14,7 +14,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ProfileState {
 
- ProfileStatus get status; UserProfileSummary? get summary; String? get errorMessage;
+ ProfileStatus get status; UserProfileSummary? get summary; String? get errorMessage;/// True saat upload foto profil sedang berlangsung.
+/// Digunakan untuk menampilkan loading overlay pada avatar.
+ bool get isUploadingPhoto;/// Pesan error saat upload foto gagal (null jika tidak ada error).
+ String? get uploadPhotoError;
 /// Create a copy of ProfileState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +28,16 @@ $ProfileStateCopyWith<ProfileState> get copyWith => _$ProfileStateCopyWithImpl<P
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileState&&(identical(other.status, status) || other.status == status)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileState&&(identical(other.status, status) || other.status == status)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isUploadingPhoto, isUploadingPhoto) || other.isUploadingPhoto == isUploadingPhoto)&&(identical(other.uploadPhotoError, uploadPhotoError) || other.uploadPhotoError == uploadPhotoError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,summary,errorMessage);
+int get hashCode => Object.hash(runtimeType,status,summary,errorMessage,isUploadingPhoto,uploadPhotoError);
 
 @override
 String toString() {
-  return 'ProfileState(status: $status, summary: $summary, errorMessage: $errorMessage)';
+  return 'ProfileState(status: $status, summary: $summary, errorMessage: $errorMessage, isUploadingPhoto: $isUploadingPhoto, uploadPhotoError: $uploadPhotoError)';
 }
 
 
@@ -45,7 +48,7 @@ abstract mixin class $ProfileStateCopyWith<$Res>  {
   factory $ProfileStateCopyWith(ProfileState value, $Res Function(ProfileState) _then) = _$ProfileStateCopyWithImpl;
 @useResult
 $Res call({
- ProfileStatus status, UserProfileSummary? summary, String? errorMessage
+ ProfileStatus status, UserProfileSummary? summary, String? errorMessage, bool isUploadingPhoto, String? uploadPhotoError
 });
 
 
@@ -62,11 +65,13 @@ class _$ProfileStateCopyWithImpl<$Res>
 
 /// Create a copy of ProfileState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? summary = freezed,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? summary = freezed,Object? errorMessage = freezed,Object? isUploadingPhoto = null,Object? uploadPhotoError = freezed,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as ProfileStatus,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as UserProfileSummary?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as String?,isUploadingPhoto: null == isUploadingPhoto ? _self.isUploadingPhoto : isUploadingPhoto // ignore: cast_nullable_to_non_nullable
+as bool,uploadPhotoError: freezed == uploadPhotoError ? _self.uploadPhotoError : uploadPhotoError // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -164,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ProfileStatus status,  UserProfileSummary? summary,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ProfileStatus status,  UserProfileSummary? summary,  String? errorMessage,  bool isUploadingPhoto,  String? uploadPhotoError)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProfileState() when $default != null:
-return $default(_that.status,_that.summary,_that.errorMessage);case _:
+return $default(_that.status,_that.summary,_that.errorMessage,_that.isUploadingPhoto,_that.uploadPhotoError);case _:
   return orElse();
 
 }
@@ -185,10 +190,10 @@ return $default(_that.status,_that.summary,_that.errorMessage);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ProfileStatus status,  UserProfileSummary? summary,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ProfileStatus status,  UserProfileSummary? summary,  String? errorMessage,  bool isUploadingPhoto,  String? uploadPhotoError)  $default,) {final _that = this;
 switch (_that) {
 case _ProfileState():
-return $default(_that.status,_that.summary,_that.errorMessage);case _:
+return $default(_that.status,_that.summary,_that.errorMessage,_that.isUploadingPhoto,_that.uploadPhotoError);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +210,10 @@ return $default(_that.status,_that.summary,_that.errorMessage);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ProfileStatus status,  UserProfileSummary? summary,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ProfileStatus status,  UserProfileSummary? summary,  String? errorMessage,  bool isUploadingPhoto,  String? uploadPhotoError)?  $default,) {final _that = this;
 switch (_that) {
 case _ProfileState() when $default != null:
-return $default(_that.status,_that.summary,_that.errorMessage);case _:
+return $default(_that.status,_that.summary,_that.errorMessage,_that.isUploadingPhoto,_that.uploadPhotoError);case _:
   return null;
 
 }
@@ -220,12 +225,17 @@ return $default(_that.status,_that.summary,_that.errorMessage);case _:
 
 
 class _ProfileState extends ProfileState {
-  const _ProfileState({this.status = ProfileStatus.initial, this.summary, this.errorMessage}): super._();
+  const _ProfileState({this.status = ProfileStatus.initial, this.summary, this.errorMessage, this.isUploadingPhoto = false, this.uploadPhotoError}): super._();
   
 
 @override@JsonKey() final  ProfileStatus status;
 @override final  UserProfileSummary? summary;
 @override final  String? errorMessage;
+/// True saat upload foto profil sedang berlangsung.
+/// Digunakan untuk menampilkan loading overlay pada avatar.
+@override@JsonKey() final  bool isUploadingPhoto;
+/// Pesan error saat upload foto gagal (null jika tidak ada error).
+@override final  String? uploadPhotoError;
 
 /// Create a copy of ProfileState
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +247,16 @@ _$ProfileStateCopyWith<_ProfileState> get copyWith => __$ProfileStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileState&&(identical(other.status, status) || other.status == status)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileState&&(identical(other.status, status) || other.status == status)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isUploadingPhoto, isUploadingPhoto) || other.isUploadingPhoto == isUploadingPhoto)&&(identical(other.uploadPhotoError, uploadPhotoError) || other.uploadPhotoError == uploadPhotoError));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,summary,errorMessage);
+int get hashCode => Object.hash(runtimeType,status,summary,errorMessage,isUploadingPhoto,uploadPhotoError);
 
 @override
 String toString() {
-  return 'ProfileState(status: $status, summary: $summary, errorMessage: $errorMessage)';
+  return 'ProfileState(status: $status, summary: $summary, errorMessage: $errorMessage, isUploadingPhoto: $isUploadingPhoto, uploadPhotoError: $uploadPhotoError)';
 }
 
 
@@ -257,7 +267,7 @@ abstract mixin class _$ProfileStateCopyWith<$Res> implements $ProfileStateCopyWi
   factory _$ProfileStateCopyWith(_ProfileState value, $Res Function(_ProfileState) _then) = __$ProfileStateCopyWithImpl;
 @override @useResult
 $Res call({
- ProfileStatus status, UserProfileSummary? summary, String? errorMessage
+ ProfileStatus status, UserProfileSummary? summary, String? errorMessage, bool isUploadingPhoto, String? uploadPhotoError
 });
 
 
@@ -274,11 +284,13 @@ class __$ProfileStateCopyWithImpl<$Res>
 
 /// Create a copy of ProfileState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? summary = freezed,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? summary = freezed,Object? errorMessage = freezed,Object? isUploadingPhoto = null,Object? uploadPhotoError = freezed,}) {
   return _then(_ProfileState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as ProfileStatus,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as UserProfileSummary?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as String?,isUploadingPhoto: null == isUploadingPhoto ? _self.isUploadingPhoto : isUploadingPhoto // ignore: cast_nullable_to_non_nullable
+as bool,uploadPhotoError: freezed == uploadPhotoError ? _self.uploadPhotoError : uploadPhotoError // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

@@ -7,24 +7,24 @@ part 'profile_state.freezed.dart';
 enum ProfileStatus { initial, loading, success, failure }
 
 /// State immutable untuk halaman Profile.
-///
-/// Menggunakan Freezed untuk menjamin immutability dan memudahkan
-/// `copyWith` saat update state.
-///
-/// PENTING: `@Default(false)` pada isLoading — TIDAK boleh `@Default(true)`
-/// agar tidak memicu render loading sebelum async siap (ANR prevention).
 @freezed
 abstract class ProfileState with _$ProfileState {
   const factory ProfileState({
     @Default(ProfileStatus.initial) ProfileStatus status,
     UserProfileSummary? summary,
     String? errorMessage,
+
+    /// True saat upload foto profil sedang berlangsung.
+    /// Digunakan untuk menampilkan loading overlay pada avatar.
+    @Default(false) bool isUploadingPhoto,
+
+    /// Pesan error saat upload foto gagal (null jika tidak ada error).
+    String? uploadPhotoError,
   }) = _ProfileState;
 
   const ProfileState._();
 }
 
-/// Extension untuk computed properties agar tidak mengotori UI.
 extension ProfileStateX on ProfileState {
   bool get isLoading => status == ProfileStatus.loading;
   bool get isSuccess => status == ProfileStatus.success;

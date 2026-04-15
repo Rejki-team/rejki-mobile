@@ -8,3 +8,4 @@ export 'repositories/profile_repository.dart';
 export 'usecases/update_profile_usecase.dart';
 export 'usecases/get_user_profile_usecase.dart';
 export 'usecases/get_user_summary_usecase.dart';
+export 'usecases/upload_profile_photo_usecase.dart';
