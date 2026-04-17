@@ -19,6 +19,12 @@ abstract class ProfileRemoteDataSource {
   ///
   /// Mengembalikan path foto baru dari response API.
   Future<String> uploadProfilePhoto(File photo);
+
+  /// Update jam kerja user (PUT /users/working-hours).
+  Future<void> updateWorkingHours(String workingHours);
+
+  /// Toggle visibilitas nomor telepon (PUT /users/phone-visibility).
+  Future<void> updatePhoneVisibility({required bool isVisible});
 }
 
 /// Implementasi [ProfileRemoteDataSource].
@@ -97,5 +103,21 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     // Parse path foto baru dari response
     final data = response.data['data'] as Map<String, dynamic>?;
     return (data?['profile_photo_path'] as String?) ?? '';
+  }
+
+  @override
+  Future<void> updateWorkingHours(String workingHours) async {
+    await _dioClient.put(
+      ApiConfig.workingHours,
+      data: {'working_hours': workingHours},
+    );
+  }
+
+  @override
+  Future<void> updatePhoneVisibility({required bool isVisible}) async {
+    await _dioClient.put(
+      ApiConfig.phoneVisibility,
+      data: {'is_visible': isVisible},
+    );
   }
 }

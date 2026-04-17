@@ -1,6 +1,7 @@
 /// Profile Domain Module
 library;
 
+export 'entities/user_profile_entity.dart';
 export 'entities/user_profile_summary.dart';
 export 'failures/profile_failure.dart';
 export 'params/update_profile_params.dart';
@@ -9,3 +10,6 @@ export 'usecases/update_profile_usecase.dart';
 export 'usecases/get_user_profile_usecase.dart';
 export 'usecases/get_user_summary_usecase.dart';
 export 'usecases/upload_profile_photo_usecase.dart';
+export 'usecases/get_user_full_profile_usecase.dart';
+export 'usecases/update_working_hours_usecase.dart';
+export 'usecases/update_phone_visibility_usecase.dart';

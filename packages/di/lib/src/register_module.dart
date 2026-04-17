@@ -307,8 +307,9 @@ abstract class RegisterModule {
   ProfileCubit profileCubit(
     GetUserSummaryUseCase getUserSummaryUseCase,
     UploadProfilePhotoUseCase uploadProfilePhotoUseCase,
+    SessionStorage sessionStorage,
   ) =>
-      ProfileCubit(getUserSummaryUseCase, uploadProfilePhotoUseCase);
+      ProfileCubit(getUserSummaryUseCase, uploadProfilePhotoUseCase, sessionStorage);
 
   /// JobListingCubit - for job listing page
   @factoryMethod
@@ -494,6 +495,42 @@ abstract class RegisterModule {
     ProfileRepository repository,
   ) =>
       UploadProfilePhotoUseCase(repository);
+
+  /// GetUserFullProfileUseCase - untuk mengambil profil lengkap dari GET /users/profile
+  /// Digunakan oleh [PersonalInfoCubit] pada halaman Informasi Pribadi.
+  @lazySingleton
+  GetUserFullProfileUseCase getUserFullProfileUseCase(
+    ProfileRepository repository,
+  ) =>
+      GetUserFullProfileUseCase(repository);
+
+  /// UpdateWorkingHoursUseCase - untuk update jam kerja via PUT /users/working-hours
+  /// Digunakan oleh [PersonalInfoCubit].
+  @lazySingleton
+  UpdateWorkingHoursUseCase updateWorkingHoursUseCase(
+    ProfileRepository repository,
+  ) =>
+      UpdateWorkingHoursUseCase(repository);
+
+  /// UpdatePhoneVisibilityUseCase - untuk toggle visibilitas telepon
+  /// via PUT /users/phone-visibility. Digunakan oleh [PersonalInfoCubit].
+  @lazySingleton
+  UpdatePhoneVisibilityUseCase updatePhoneVisibilityUseCase(
+    ProfileRepository repository,
+  ) =>
+      UpdatePhoneVisibilityUseCase(repository);
+
+  /// PersonalInfoCubit - untuk halaman Informasi Pribadi
+  ///
+  /// Mengelola load profil lengkap, update jam kerja, dan toggle visibilitas
+  /// nomor telepon dengan pola auto-refresh setelah setiap PUT sukses.
+  @factoryMethod
+  PersonalInfoCubit personalInfoCubit(
+    GetUserFullProfileUseCase getFullProfile,
+    UpdateWorkingHoursUseCase updateWorkingHours,
+    UpdatePhoneVisibilityUseCase updatePhoneVisibility,
+  ) =>
+      PersonalInfoCubit(getFullProfile, updateWorkingHours, updatePhoneVisibility);
 
   // ============================================
   // FEATURE BARANG BEKAS CUBITS

@@ -74,6 +74,18 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
+  Future<Either<ProfileFailure, UserProfileEntity>> getUserFullProfile() async {
+    try {
+      final userModel = await _remoteDataSource.getProfile();
+      return Right(_toUserProfileEntity(userModel));
+    } on DioException catch (e) {
+      return Left(_mapDioError(e));
+    } catch (e) {
+      return Left(ProfileFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<ProfileFailure, String>> uploadProfilePhoto(File photo) async {
     try {
       final newPhotoPath = await _remoteDataSource.uploadProfilePhoto(photo);
@@ -83,6 +95,63 @@ class ProfileRepositoryImpl implements ProfileRepository {
     } catch (e) {
       return Left(ProfileFailure.serverError(e.toString()));
     }
+  }
+
+  @override
+  Future<Either<ProfileFailure, Unit>> updateWorkingHours(
+    String workingHours,
+  ) async {
+    try {
+      await _remoteDataSource.updateWorkingHours(workingHours);
+      return const Right(unit);
+    } on DioException catch (e) {
+      return Left(_mapDioError(e));
+    } catch (e) {
+      return Left(ProfileFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ProfileFailure, Unit>> updatePhoneVisibility({
+    required bool isVisible,
+  }) async {
+    try {
+      await _remoteDataSource.updatePhoneVisibility(isVisible: isVisible);
+      return const Right(unit);
+    } on DioException catch (e) {
+      return Left(_mapDioError(e));
+    } catch (e) {
+      return Left(ProfileFailure.serverError(e.toString()));
+    }
+  }
+
+  // ============================================================
+  // Mapper — UserModel → UserProfileEntity
+  // ============================================================
+
+  UserProfileEntity _toUserProfileEntity(UserModel userModel) {
+    final info = userModel.userInfo;
+    return UserProfileEntity(
+      id: userModel.id,
+      email: userModel.email,
+      phoneNumber: userModel.phoneNumber,
+      workingHours: userModel.workingHours,
+      verificationStatus: userModel.verificationStatus,
+      workingHoursEditable: userModel.workingHoursEditable,
+      canUpdateWorkingHours: userModel.canUpdateWorkingHours,
+      isPhoneVisible: userModel.isPhoneVisible,
+      phoneVisibleEditable: userModel.phoneVisibleEditable,
+      canUpdatePhoneVisibility: userModel.canUpdatePhoneVisibility,
+      fullName: info.fullName,
+      educationLevel: info.educationLevel,
+      educationFocus: info.educationFocus,
+      workExperience: info.workExperience,
+      addressKtp: info.addressKtp,
+      village: info.village,
+      districts: info.districts,
+      city: info.city,
+      province: info.province,
+    );
   }
 
   // ============================================================

@@ -4,15 +4,34 @@ import 'package:designsystems/designsystems.dart';
 
 /// Personal Info Experience Card
 ///
-/// Displays work experience section with icon, title, and list of experiences.
+/// Menampilkan pengalaman kerja dalam bentuk list numbered.
+/// Menerima [workExperience] sebagai satu string yang dipisahkan koma
+/// (sesuai format API: "Petani, gardening, ART").
 class PersonalInfoExperienceCard extends StatelessWidget {
-  /// List of experience texts
-  final List<String> experiences;
+  /// String pengalaman kerja dari API (dipisahkan koma)
+  final String workExperience;
 
-  const PersonalInfoExperienceCard({super.key, required this.experiences});
+  const PersonalInfoExperienceCard({
+    super.key,
+    required this.workExperience,
+  });
+
+  /// Parsing string pengalaman kerja menjadi list item yang ditampilkan.
+  ///
+  /// Split by koma, trim whitespace, dan buang item kosong.
+  List<String> get _experienceItems {
+    if (workExperience.trim().isEmpty) return [];
+    return workExperience
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final items = _experienceItems;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -27,7 +46,7 @@ class PersonalInfoExperienceCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with icon and title
+          // Header: ikon + judul
           Row(
             children: [
               _buildIconWrapper(),
@@ -41,18 +60,26 @@ class PersonalInfoExperienceCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
-          // Experience list with numbering
-          ...experiences.asMap().entries.map(
-            (entry) => Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-              child: Text(
-                '${entry.key + 1}. ${entry.value}',
-                style: AppTypography.jobCardCaption.copyWith(
-                  color: AppColors.textBlack,
+          // List pengalaman atau placeholder jika kosong
+          if (items.isEmpty)
+            Text(
+              'Belum ada pengalaman kerja',
+              style: AppTypography.jobCardCaption.copyWith(
+                color: AppColors.textCaption,
+              ),
+            )
+          else
+            ...items.asMap().entries.map(
+              (entry) => Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                child: Text(
+                  '${entry.key + 1}. ${entry.value}',
+                  style: AppTypography.jobCardCaption.copyWith(
+                    color: AppColors.textBlack,
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -64,13 +91,13 @@ class PersonalInfoExperienceCard extends StatelessWidget {
       height: AppDimensions.iconSm,
       padding: const EdgeInsets.all(AppSpacing.xs),
       decoration: BoxDecoration(
-        color: AppColors.availabilityBadgeBg, // #DBEAFE
+        color: AppColors.availabilityBadgeBg,
         borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
       ),
       child: SvgPicture.asset(
         AppAssets.iconDocument,
         colorFilter: const ColorFilter.mode(
-          AppColors.badgeBlue, // #155DFC
+          AppColors.badgeBlue,
           BlendMode.srcIn,
         ),
       ),

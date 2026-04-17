@@ -119,6 +119,7 @@ class _ProfileView extends StatelessWidget {
                               : '—',
                           rating: summary?.rating ?? 0.0,
                           profilePhotoUrl: photoUrl,
+                          imageHeaders: state.imageHeaders,
                           isUploadingPhoto: state.isUploadingPhoto,
                           onEditPressed: state.isUploadingPhoto
                               ? null

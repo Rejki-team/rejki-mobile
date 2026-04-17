@@ -24,6 +24,8 @@ class ApiConfig {
   static const String profile = '/users/profile';
   static const String adsSummary = '/users/ads-summary';
   static const String profilePhoto = '/users/profile/photo';
+  static const String workingHours = '/users/working-hours';
+  static const String phoneVisibility = '/users/phone-visibility';
 
   /// API Endpoints - Jobs
   static const String jobs = '/jobs';

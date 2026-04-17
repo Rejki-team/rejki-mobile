@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:designsystems/designsystems.dart';
-import 'package:network/network.dart';
 
 /// Profile Header Widget
 ///
@@ -15,6 +14,10 @@ class ProfileHeader extends StatelessWidget {
   /// URL foto profil lengkap. Null/kosong → tampilkan initial letter.
   final String? profilePhotoUrl;
 
+  /// HTTP headers untuk request image ke /helpers/get-image.
+  /// Berisi Authorization Bearer token.
+  final Map<String, String>? imageHeaders;
+
   /// True saat upload foto sedang berlangsung.
   final bool isUploadingPhoto;
 
@@ -27,6 +30,7 @@ class ProfileHeader extends StatelessWidget {
     required this.genderAge,
     required this.rating,
     this.profilePhotoUrl,
+    this.imageHeaders,
     this.isUploadingPhoto = false,
     this.onEditPressed,
   });
@@ -41,6 +45,7 @@ class ProfileHeader extends StatelessWidget {
           ProfileAvatar(
             initial: name.isNotEmpty ? name[0].toUpperCase() : '?',
             photoUrl: profilePhotoUrl,
+            imageHeaders: imageHeaders,
             isUploading: isUploadingPhoto,
             onEditPressed: onEditPressed,
           ),
@@ -98,6 +103,9 @@ class ProfileAvatar extends StatelessWidget {
   /// URL foto lengkap (dari [ApiConfig.buildImageUrl])
   final String? photoUrl;
 
+  /// HTTP headers untuk Image.network (Bearer token untuk /helpers/get-image)
+  final Map<String, String>? imageHeaders;
+
   /// True saat upload sedang berlangsung
   final bool isUploading;
 
@@ -111,6 +119,7 @@ class ProfileAvatar extends StatelessWidget {
     super.key,
     required this.initial,
     this.photoUrl,
+    this.imageHeaders,
     this.isUploading = false,
     this.onEditPressed,
     this.size = 40,
@@ -150,9 +159,8 @@ class ProfileAvatar extends StatelessWidget {
                       if (loadingProgress == null) return child;
                       return _buildInitial();
                     },
-                    headers: const {
-                      // Sertakan header agar CDN tidak block request
-                      'Accept': ApiConfig.contentTypeJson,
+                    headers: imageHeaders ?? const {
+                      'Accept': 'application/json',
                     },
                   )
                 : _buildInitial(),

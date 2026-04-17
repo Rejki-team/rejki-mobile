@@ -4,23 +4,45 @@ import 'package:designsystems/designsystems.dart';
 
 /// Personal Info Schedule Card
 ///
-/// Displays work schedule dropdown section.
+/// Menampilkan jam kerja dengan dropdown yang bisa dikontrol.
+/// Jika [isEditable] false, dropdown di-disable (dikontrol server).
+/// Jika [isUpdating] true, dropdown di-disable sementara selama request.
 class PersonalInfoScheduleCard extends StatelessWidget {
-  /// List of schedule options
+  /// List nilai jam kerja untuk API (e.g. 'fleksibel', 'morning', 'night')
   final List<String> scheduleOptions;
 
-  /// Currently selected schedule
+  /// Map dari nilai API ke label tampilan Indonesia.
+  /// Contoh: {'fleksibel': 'Fleksibel', 'morning': 'Pagi', 'night': 'Malam'}
+  /// Jika tidak disediakan, nilai API langsung ditampilkan.
+  final Map<String, String>? scheduleLabels;
+
+  /// Nilai API jam kerja yang sedang aktif
   final String selectedSchedule;
 
-  /// Callback when schedule is changed
+  /// Callback ketika jam kerja diubah — menerima nilai API
   final ValueChanged<String>? onScheduleChanged;
+
+  /// Apakah dropdown bisa diubah (dikontrol oleh server)
+  final bool isEditable;
+
+  /// True saat sedang request update ke server (disable sementara)
+  final bool isUpdating;
 
   const PersonalInfoScheduleCard({
     super.key,
-    this.scheduleOptions = const ['Fleksibel', 'Morning', 'Night'],
-    this.selectedSchedule = 'Fleksibel',
+    this.scheduleOptions = const ['fleksibel', 'morning', 'night'],
+    this.scheduleLabels = const {
+      'fleksibel': 'Fleksibel',
+      'morning': 'Pagi',
+      'night': 'Malam',
+    },
+    this.selectedSchedule = 'fleksibel',
     this.onScheduleChanged,
+    this.isEditable = true,
+    this.isUpdating = false,
   });
+
+  bool get _isInteractive => isEditable && !isUpdating;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +60,7 @@ class PersonalInfoScheduleCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left: Icon wrapper with title
+          // Kiri: Ikon + label
           Row(
             children: [
               _buildIconWrapper(),
@@ -51,8 +73,19 @@ class PersonalInfoScheduleCard extends StatelessWidget {
               ),
             ],
           ),
-          // Right: Dropdown
-          _buildDropdown(context),
+          // Kanan: Dropdown atau loading indicator
+          isUpdating
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.buttonGradientEnd,
+                    ),
+                  ),
+                )
+              : _buildDropdown(),
         ],
       ),
     );
@@ -64,27 +97,34 @@ class PersonalInfoScheduleCard extends StatelessWidget {
       height: AppDimensions.iconSm,
       padding: const EdgeInsets.all(AppSpacing.xs),
       decoration: BoxDecoration(
-        color: AppColors.serviceCardIconBgGreen, // #DCFCE7
+        color: AppColors.serviceCardIconBgGreen,
         borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
       ),
       child: SvgPicture.asset(
         AppAssets.iconClock,
         colorFilter: const ColorFilter.mode(
-          AppColors.badgeGreen, // #00C950
+          AppColors.badgeGreen,
           BlendMode.srcIn,
         ),
       ),
     );
   }
 
-  Widget _buildDropdown(BuildContext context) {
+  Widget _buildDropdown() {
+    // Pastikan selectedSchedule ada di options — fallback ke item pertama
+    final effectiveValue = scheduleOptions.contains(selectedSchedule)
+        ? selectedSchedule
+        : (scheduleOptions.isNotEmpty ? scheduleOptions.first : null);
+
+    if (effectiveValue == null) return const SizedBox.shrink();
+
     return Container(
       padding: const EdgeInsets.symmetric(
         vertical: AppSpacing.xs,
         horizontal: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: _isInteractive ? AppColors.white : AppColors.background,
         borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
         border: Border.all(
           color: AppColors.border,
@@ -93,16 +133,23 @@ class PersonalInfoScheduleCard extends StatelessWidget {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: selectedSchedule,
+          value: effectiveValue,
           isDense: true,
+          disabledHint: Text(
+            // Tampilkan label Indonesia jika tersedia
+            scheduleLabels?[effectiveValue] ?? effectiveValue,
+            style: AppTypography.jobCardCaption.copyWith(
+              color: AppColors.textCaption,
+            ),
+          ),
           icon: Padding(
             padding: const EdgeInsets.only(left: AppSpacing.xs),
             child: SvgPicture.asset(
               AppAssets.iconArrowIosDown,
               width: AppDimensions.iconXxs,
               height: AppDimensions.iconXxs,
-              colorFilter: const ColorFilter.mode(
-                AppColors.textBlack,
+              colorFilter: ColorFilter.mode(
+                _isInteractive ? AppColors.textBlack : AppColors.textCaption,
                 BlendMode.srcIn,
               ),
             ),
@@ -110,22 +157,27 @@ class PersonalInfoScheduleCard extends StatelessWidget {
           style: AppTypography.jobCardCaption.copyWith(
             color: AppColors.textBlack,
           ),
-          items: scheduleOptions.map((option) {
+          // Item: value = API value, child = label Indonesia
+          items: scheduleOptions.map((apiValue) {
+            final label = scheduleLabels?[apiValue] ?? apiValue;
             return DropdownMenuItem<String>(
-              value: option,
+              value: apiValue,
               child: Text(
-                option,
+                label,
                 style: AppTypography.jobCardCaption.copyWith(
                   color: AppColors.textBlack,
                 ),
               ),
             );
           }).toList(),
-          onChanged: (value) {
-            if (value != null) {
-              onScheduleChanged?.call(value);
-            }
-          },
+          // Callback menerima nilai API (bukan label)
+          onChanged: _isInteractive
+              ? (value) {
+                  if (value != null) {
+                    onScheduleChanged?.call(value);
+                  }
+                }
+              : null,
         ),
       ),
     );

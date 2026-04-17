@@ -4,23 +4,35 @@ import 'package:designsystems/designsystems.dart';
 
 /// Personal Info Phone Card
 ///
-/// Displays phone number with visibility toggle switch.
+/// Menampilkan nomor telepon dengan toggle visibilitas.
+/// Jika [isEditable] false, switch di-disable (dikontrol server).
+/// Jika [isUpdating] true, switch di-disable sementara selama request.
 class PersonalInfoPhoneCard extends StatelessWidget {
-  /// Phone number to display
+  /// Nomor telepon yang ditampilkan
   final String phoneNumber;
 
-  /// Whether phone is visible
+  /// Apakah nomor telepon ditampilkan ke publik
   final bool isVisible;
 
-  /// Callback when visibility is toggled
+  /// Callback ketika toggle diubah
   final ValueChanged<bool>? onVisibilityChanged;
+
+  /// Apakah toggle bisa diubah (dikontrol oleh server)
+  final bool isEditable;
+
+  /// True saat sedang request update ke server (disable sementara)
+  final bool isUpdating;
 
   const PersonalInfoPhoneCard({
     super.key,
     required this.phoneNumber,
     this.isVisible = true,
     this.onVisibilityChanged,
+    this.isEditable = true,
+    this.isUpdating = false,
   });
+
+  bool get _isInteractive => isEditable && !isUpdating;
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +50,11 @@ class PersonalInfoPhoneCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Main content row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Left: Icon and phone info
+              // Kiri: Ikon + info telepon
               Expanded(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +73,7 @@ class PersonalInfoPhoneCard extends StatelessWidget {
                           ),
                           const SizedBox(height: AppSpacing.xxs),
                           Text(
-                            phoneNumber,
+                            phoneNumber.isEmpty ? '-' : phoneNumber,
                             style: AppTypography.jobCardCaption.copyWith(
                               color: AppColors.textBlack,
                             ),
@@ -73,17 +84,30 @@ class PersonalInfoPhoneCard extends StatelessWidget {
                   ],
                 ),
               ),
-              // Right: Toggle switch
-              _PhoneVisibilitySwitch(
-                value: isVisible,
-                onChanged: onVisibilityChanged,
-              ),
+              // Kanan: Toggle switch atau loading
+              isUpdating
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.buttonGradientEnd,
+                        ),
+                      ),
+                    )
+                  : _PhoneVisibilitySwitch(
+                      value: isVisible,
+                      isInteractive: _isInteractive,
+                      onChanged: _isInteractive ? onVisibilityChanged : null,
+                    ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
-          // Caption text
           Text(
-            'Kamu bisa menyembunyikan atau menampilkan no telfon.',
+            isEditable
+                ? 'Kamu bisa menyembunyikan atau menampilkan no telfon.'
+                : 'Visibilitas nomor telepon diatur oleh sistem.',
             style: AppTypography.formCaptionSmall.copyWith(
               color: AppColors.textCaption,
             ),
@@ -99,13 +123,13 @@ class PersonalInfoPhoneCard extends StatelessWidget {
       height: AppDimensions.iconSm,
       padding: const EdgeInsets.all(AppSpacing.xs),
       decoration: BoxDecoration(
-        color: AppColors.serviceCardIconBgPurple, // #F8EFFF
+        color: AppColors.serviceCardIconBgPurple,
         borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
       ),
       child: SvgPicture.asset(
         AppAssets.iconCalling,
         colorFilter: const ColorFilter.mode(
-          AppColors.iconPurple, // #AD46FF
+          AppColors.iconPurple,
           BlendMode.srcIn,
         ),
       ),
@@ -113,17 +137,22 @@ class PersonalInfoPhoneCard extends StatelessWidget {
   }
 }
 
-/// Custom switch for phone visibility
+/// Custom animated switch untuk visibilitas telepon.
 class _PhoneVisibilitySwitch extends StatelessWidget {
   final bool value;
+  final bool isInteractive;
   final ValueChanged<bool>? onChanged;
 
-  const _PhoneVisibilitySwitch({required this.value, this.onChanged});
+  const _PhoneVisibilitySwitch({
+    required this.value,
+    required this.isInteractive,
+    this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onChanged?.call(!value),
+      onTap: isInteractive ? () => onChanged?.call(!value) : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: 44,
@@ -131,9 +160,10 @@ class _PhoneVisibilitySwitch extends StatelessWidget {
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(
           color: value
-              ? AppColors
-                    .buttonGradientEnd // #272777 (active)
-              : AppColors.border, // #E2E8F0 (inactive)
+              ? (isInteractive
+                  ? AppColors.buttonGradientEnd
+                  : AppColors.buttonGradientEnd.withAlpha(128))
+              : AppColors.border,
           borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
         ),
         child: AnimatedAlign(

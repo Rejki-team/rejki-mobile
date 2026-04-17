@@ -15,11 +15,17 @@ abstract class ProfileState with _$ProfileState {
     String? errorMessage,
 
     /// True saat upload foto profil sedang berlangsung.
-    /// Digunakan untuk menampilkan loading overlay pada avatar.
     @Default(false) bool isUploadingPhoto,
 
-    /// Pesan error saat upload foto gagal (null jika tidak ada error).
+    /// Pesan error saat upload foto gagal.
     String? uploadPhotoError,
+
+    /// HTTP headers untuk request image ke /helpers/get-image.
+    ///
+    /// Berisi `Authorization: Bearer <token>` agar endpoint tidak reject.
+    /// Diisi oleh [ProfileCubit.loadProfile] setelah membaca token dari
+    /// [SessionStorage].
+    Map<String, String>? imageHeaders,
   }) = _ProfileState;
 
   const ProfileState._();

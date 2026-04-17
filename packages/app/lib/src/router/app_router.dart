@@ -307,15 +307,18 @@ class AppRouter {
               GoRoute(
                 path: 'personal-info',
                 name: 'personalInfo',
-                builder: (context, state) => const PersonalInfoPage(),
-                routes: [
-                  GoRoute(
-                    path: 'edit',
-                    name: 'editPersonalInfo',
-                    parentNavigatorKey: rootNavigatorKey,
-                    builder: (context, state) => const EditPersonalDataPage(),
-                  ),
-                ],
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) => BlocProvider(
+                  create: (_) =>
+                      GetIt.I<PersonalInfoCubit>()..loadProfile(),
+                  child: const PersonalInfoPage(),
+                ),
+              ),
+              GoRoute(
+                path: 'personal-info/edit',
+                name: 'editPersonalInfo',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) => const EditPersonalDataPage(),
               ),
             ],
           ),

@@ -170,10 +170,19 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.ProfileRepository>(),
       ),
     );
-    gh.factory<_i1070.ProfileCubit>(
-      () => registerModule.profileCubit(
-        gh<_i494.GetUserSummaryUseCase>(),
-        gh<_i494.UploadProfilePhotoUseCase>(),
+    gh.lazySingleton<_i494.GetUserFullProfileUseCase>(
+      () => registerModule.getUserFullProfileUseCase(
+        gh<_i494.ProfileRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.UpdateWorkingHoursUseCase>(
+      () => registerModule.updateWorkingHoursUseCase(
+        gh<_i494.ProfileRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.UpdatePhoneVisibilityUseCase>(
+      () => registerModule.updatePhoneVisibilityUseCase(
+        gh<_i494.ProfileRepository>(),
       ),
     );
     gh.lazySingleton<_i494.JobRepository>(
@@ -206,6 +215,20 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.UpdateWorkerProfileUseCase>(
       () => registerModule.updateWorkerProfileUseCase(
         gh<_i494.WorkerRepository>(),
+      ),
+    );
+    gh.factory<_i1070.PersonalInfoCubit>(
+      () => registerModule.personalInfoCubit(
+        gh<_i494.GetUserFullProfileUseCase>(),
+        gh<_i494.UpdateWorkingHoursUseCase>(),
+        gh<_i494.UpdatePhoneVisibilityUseCase>(),
+      ),
+    );
+    gh.factory<_i1070.ProfileCubit>(
+      () => registerModule.profileCubit(
+        gh<_i494.GetUserSummaryUseCase>(),
+        gh<_i494.UploadProfilePhotoUseCase>(),
+        gh<_i960.SessionStorage>(),
       ),
     );
     gh.factory<_i10.LocationBloc>(

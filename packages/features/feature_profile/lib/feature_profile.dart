@@ -9,3 +9,5 @@ export 'src/location/bloc/location_bloc.dart';
 export 'src/cubit/edit_profile_cubit.dart';
 export 'src/cubit/profile_cubit.dart';
 export 'src/cubit/profile_state.dart';
+export 'src/cubit/personal_info_cubit.dart';
+export 'src/cubit/personal_info_state.dart';
