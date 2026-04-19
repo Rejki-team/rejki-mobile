@@ -62,7 +62,7 @@ class _SearchUsedGoodsAdViewState extends State<_SearchUsedGoodsAdView> {
                   return const _EmptyState();
                 }
 
-                return RefreshIndicator(
+                return AppPullToRefresh(
                   onRefresh: () =>
                       context.read<SearchUsedGoodsAdCubit>().loadGoods(),
                   child: ListView.separated(
@@ -443,16 +443,26 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.inventory_2_outlined, size: 64, color: AppColors.textSecondary),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'Belum ada barang bekas',
-            style: AppTypography.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
+    return AppPullToRefresh(
+      onRefresh: () => context.read<SearchUsedGoodsAdCubit>().loadGoods(),
+      child: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.inventory_2_outlined, size: 64, color: AppColors.textSecondary),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    'Belum ada barang bekas',
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

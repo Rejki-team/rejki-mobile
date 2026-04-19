@@ -45,6 +45,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<Either<ProfileFailure, UserInfoEntity>> getProfile() async {
     try {
       final userModel = await _remoteDataSource.getProfile();
+      await _syncSessionCache(userModel);
       return Right(_toUserInfoEntity(userModel));
     } on DioException catch (e) {
       return Left(_mapDioError(e));
@@ -65,6 +66,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
       final userModel = results[0] as UserModel;
       final adsSummary = results[1] as AdsSummaryModel;
 
+      await _syncSessionCache(userModel);
+
       return Right(_toUserProfileSummary(userModel, adsSummary));
     } on DioException catch (e) {
       return Left(_mapDioError(e));
@@ -77,6 +80,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<Either<ProfileFailure, UserProfileEntity>> getUserFullProfile() async {
     try {
       final userModel = await _remoteDataSource.getProfile();
+      await _syncSessionCache(userModel);
       return Right(_toUserProfileEntity(userModel));
     } on DioException catch (e) {
       return Left(_mapDioError(e));
@@ -126,6 +130,23 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   // ============================================================
+  // Helper — Cache Synchronization
+  // ============================================================
+
+  /// Sinkronisasi data sesi lokal setiap kali mendapat profil terbaru.
+  /// Memastikan status verifikasi selalu up-to-date untuk UI.
+  Future<void> _syncSessionCache(UserModel userModel) async {
+    await _sessionStorage.setVerificationStatus(userModel.verificationStatus);
+    await _sessionStorage.saveUserStatus(userModel.status);
+    await _sessionStorage.saveUserData(
+      userId: userModel.id,
+      email: userModel.email,
+      name: userModel.userInfo.fullName,
+      verificationStatus: userModel.verificationStatus,
+    );
+  }
+
+  // ============================================================
   // Mapper — UserModel → UserProfileEntity
   // ============================================================
 
@@ -151,6 +172,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       districts: info.districts,
       city: info.city,
       province: info.province,
+      profilePhotoPath: userModel.profilePhotoPath,
     );
   }
 

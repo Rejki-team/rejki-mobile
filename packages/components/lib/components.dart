@@ -56,3 +56,6 @@ export 'src/fab/fab.dart';
 
 // Guards
 export 'src/guards/guards.dart';
+
+// Indicators
+export 'src/indicators/indicators.dart';

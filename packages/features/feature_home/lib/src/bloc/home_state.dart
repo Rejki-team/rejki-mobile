@@ -30,8 +30,20 @@ sealed class HomeState with _$HomeState {
     /// Pesan error jika status failure
     String? errorMessage,
 
-    /// Nama pengguna untuk header
+    /// Nama pengguna untuk header (dari user_info.full_name)
     @Default('Pengguna') String userName,
+
+    /// Status verifikasi pengguna: 'verified', 'pending', 'not_verified', atau '' jika belum di-load
+    ///
+    /// Digunakan oleh HomeHeader untuk menentukan apakah menampilkan
+    /// avatar + nama, atau tombol "Verifikasi".
+    @Default('') String userVerificationStatus,
+
+    /// Path foto profil pengguna dari API (kosong jika belum upload).
+    ///
+    /// Gunakan [ApiConfig.buildImageUrl] untuk membentuk URL lengkap
+    /// sebelum meneruskan ke [HomeProfileAvatar].
+    @Default('') String userProfilePhotoPath,
 
     /// Jumlah notifikasi yang belum dibaca
     @Default(0) int notificationCount,
@@ -55,4 +67,3 @@ sealed class HomeState with _$HomeState {
     @Default(false) bool hasReachedMax,
   }) = _HomeState;
 }
-

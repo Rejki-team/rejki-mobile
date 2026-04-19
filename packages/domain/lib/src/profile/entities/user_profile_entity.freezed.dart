@@ -36,7 +36,11 @@ mixin _$UserProfileEntity {
  String get village;/// Kecamatan
  String get districts;/// Kota/Kabupaten
  String get city;/// Provinsi
- String get province;
+ String get province;/// Path foto profil di server (kosong jika belum upload atau belum diset)
+///
+/// Contoh: 'storage/uploads/profiles/2026/04/15/xxx.jpg'
+/// Gunakan [ApiConfig.buildImageUrl] untuk membentuk URL lengkap.
+ String get profilePhotoPath;
 /// Create a copy of UserProfileEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -47,16 +51,16 @@ $UserProfileEntityCopyWith<UserProfileEntity> get copyWith => _$UserProfileEntit
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfileEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.workingHoursEditable, workingHoursEditable) || other.workingHoursEditable == workingHoursEditable)&&(identical(other.canUpdateWorkingHours, canUpdateWorkingHours) || other.canUpdateWorkingHours == canUpdateWorkingHours)&&(identical(other.isPhoneVisible, isPhoneVisible) || other.isPhoneVisible == isPhoneVisible)&&(identical(other.phoneVisibleEditable, phoneVisibleEditable) || other.phoneVisibleEditable == phoneVisibleEditable)&&(identical(other.canUpdatePhoneVisibility, canUpdatePhoneVisibility) || other.canUpdatePhoneVisibility == canUpdatePhoneVisibility)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.educationLevel, educationLevel) || other.educationLevel == educationLevel)&&(identical(other.educationFocus, educationFocus) || other.educationFocus == educationFocus)&&(identical(other.workExperience, workExperience) || other.workExperience == workExperience)&&(identical(other.addressKtp, addressKtp) || other.addressKtp == addressKtp)&&(identical(other.village, village) || other.village == village)&&(identical(other.districts, districts) || other.districts == districts)&&(identical(other.city, city) || other.city == city)&&(identical(other.province, province) || other.province == province));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfileEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.workingHoursEditable, workingHoursEditable) || other.workingHoursEditable == workingHoursEditable)&&(identical(other.canUpdateWorkingHours, canUpdateWorkingHours) || other.canUpdateWorkingHours == canUpdateWorkingHours)&&(identical(other.isPhoneVisible, isPhoneVisible) || other.isPhoneVisible == isPhoneVisible)&&(identical(other.phoneVisibleEditable, phoneVisibleEditable) || other.phoneVisibleEditable == phoneVisibleEditable)&&(identical(other.canUpdatePhoneVisibility, canUpdatePhoneVisibility) || other.canUpdatePhoneVisibility == canUpdatePhoneVisibility)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.educationLevel, educationLevel) || other.educationLevel == educationLevel)&&(identical(other.educationFocus, educationFocus) || other.educationFocus == educationFocus)&&(identical(other.workExperience, workExperience) || other.workExperience == workExperience)&&(identical(other.addressKtp, addressKtp) || other.addressKtp == addressKtp)&&(identical(other.village, village) || other.village == village)&&(identical(other.districts, districts) || other.districts == districts)&&(identical(other.city, city) || other.city == city)&&(identical(other.province, province) || other.province == province)&&(identical(other.profilePhotoPath, profilePhotoPath) || other.profilePhotoPath == profilePhotoPath));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,email,phoneNumber,workingHours,verificationStatus,workingHoursEditable,canUpdateWorkingHours,isPhoneVisible,phoneVisibleEditable,canUpdatePhoneVisibility,fullName,educationLevel,educationFocus,workExperience,addressKtp,village,districts,city,province]);
+int get hashCode => Object.hashAll([runtimeType,id,email,phoneNumber,workingHours,verificationStatus,workingHoursEditable,canUpdateWorkingHours,isPhoneVisible,phoneVisibleEditable,canUpdatePhoneVisibility,fullName,educationLevel,educationFocus,workExperience,addressKtp,village,districts,city,province,profilePhotoPath]);
 
 @override
 String toString() {
-  return 'UserProfileEntity(id: $id, email: $email, phoneNumber: $phoneNumber, workingHours: $workingHours, verificationStatus: $verificationStatus, workingHoursEditable: $workingHoursEditable, canUpdateWorkingHours: $canUpdateWorkingHours, isPhoneVisible: $isPhoneVisible, phoneVisibleEditable: $phoneVisibleEditable, canUpdatePhoneVisibility: $canUpdatePhoneVisibility, fullName: $fullName, educationLevel: $educationLevel, educationFocus: $educationFocus, workExperience: $workExperience, addressKtp: $addressKtp, village: $village, districts: $districts, city: $city, province: $province)';
+  return 'UserProfileEntity(id: $id, email: $email, phoneNumber: $phoneNumber, workingHours: $workingHours, verificationStatus: $verificationStatus, workingHoursEditable: $workingHoursEditable, canUpdateWorkingHours: $canUpdateWorkingHours, isPhoneVisible: $isPhoneVisible, phoneVisibleEditable: $phoneVisibleEditable, canUpdatePhoneVisibility: $canUpdatePhoneVisibility, fullName: $fullName, educationLevel: $educationLevel, educationFocus: $educationFocus, workExperience: $workExperience, addressKtp: $addressKtp, village: $village, districts: $districts, city: $city, province: $province, profilePhotoPath: $profilePhotoPath)';
 }
 
 
@@ -67,7 +71,7 @@ abstract mixin class $UserProfileEntityCopyWith<$Res>  {
   factory $UserProfileEntityCopyWith(UserProfileEntity value, $Res Function(UserProfileEntity) _then) = _$UserProfileEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String email, String phoneNumber, String workingHours, String verificationStatus, bool workingHoursEditable, bool canUpdateWorkingHours, bool isPhoneVisible, bool phoneVisibleEditable, bool canUpdatePhoneVisibility, String fullName, String educationLevel, String educationFocus, String workExperience, String addressKtp, String village, String districts, String city, String province
+ String id, String email, String phoneNumber, String workingHours, String verificationStatus, bool workingHoursEditable, bool canUpdateWorkingHours, bool isPhoneVisible, bool phoneVisibleEditable, bool canUpdatePhoneVisibility, String fullName, String educationLevel, String educationFocus, String workExperience, String addressKtp, String village, String districts, String city, String province, String profilePhotoPath
 });
 
 
@@ -84,7 +88,7 @@ class _$UserProfileEntityCopyWithImpl<$Res>
 
 /// Create a copy of UserProfileEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? phoneNumber = null,Object? workingHours = null,Object? verificationStatus = null,Object? workingHoursEditable = null,Object? canUpdateWorkingHours = null,Object? isPhoneVisible = null,Object? phoneVisibleEditable = null,Object? canUpdatePhoneVisibility = null,Object? fullName = null,Object? educationLevel = null,Object? educationFocus = null,Object? workExperience = null,Object? addressKtp = null,Object? village = null,Object? districts = null,Object? city = null,Object? province = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? phoneNumber = null,Object? workingHours = null,Object? verificationStatus = null,Object? workingHoursEditable = null,Object? canUpdateWorkingHours = null,Object? isPhoneVisible = null,Object? phoneVisibleEditable = null,Object? canUpdatePhoneVisibility = null,Object? fullName = null,Object? educationLevel = null,Object? educationFocus = null,Object? workExperience = null,Object? addressKtp = null,Object? village = null,Object? districts = null,Object? city = null,Object? province = null,Object? profilePhotoPath = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -105,6 +109,7 @@ as String,village: null == village ? _self.village : village // ignore: cast_nul
 as String,districts: null == districts ? _self.districts : districts // ignore: cast_nullable_to_non_nullable
 as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String,province: null == province ? _self.province : province // ignore: cast_nullable_to_non_nullable
+as String,profilePhotoPath: null == profilePhotoPath ? _self.profilePhotoPath : profilePhotoPath // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -190,10 +195,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String phoneNumber,  String workingHours,  String verificationStatus,  bool workingHoursEditable,  bool canUpdateWorkingHours,  bool isPhoneVisible,  bool phoneVisibleEditable,  bool canUpdatePhoneVisibility,  String fullName,  String educationLevel,  String educationFocus,  String workExperience,  String addressKtp,  String village,  String districts,  String city,  String province)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String phoneNumber,  String workingHours,  String verificationStatus,  bool workingHoursEditable,  bool canUpdateWorkingHours,  bool isPhoneVisible,  bool phoneVisibleEditable,  bool canUpdatePhoneVisibility,  String fullName,  String educationLevel,  String educationFocus,  String workExperience,  String addressKtp,  String village,  String districts,  String city,  String province,  String profilePhotoPath)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserProfileEntity() when $default != null:
-return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.workingHoursEditable,_that.canUpdateWorkingHours,_that.isPhoneVisible,_that.phoneVisibleEditable,_that.canUpdatePhoneVisibility,_that.fullName,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.village,_that.districts,_that.city,_that.province);case _:
+return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.workingHoursEditable,_that.canUpdateWorkingHours,_that.isPhoneVisible,_that.phoneVisibleEditable,_that.canUpdatePhoneVisibility,_that.fullName,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.village,_that.districts,_that.city,_that.province,_that.profilePhotoPath);case _:
   return orElse();
 
 }
@@ -211,10 +216,10 @@ return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String phoneNumber,  String workingHours,  String verificationStatus,  bool workingHoursEditable,  bool canUpdateWorkingHours,  bool isPhoneVisible,  bool phoneVisibleEditable,  bool canUpdatePhoneVisibility,  String fullName,  String educationLevel,  String educationFocus,  String workExperience,  String addressKtp,  String village,  String districts,  String city,  String province)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String phoneNumber,  String workingHours,  String verificationStatus,  bool workingHoursEditable,  bool canUpdateWorkingHours,  bool isPhoneVisible,  bool phoneVisibleEditable,  bool canUpdatePhoneVisibility,  String fullName,  String educationLevel,  String educationFocus,  String workExperience,  String addressKtp,  String village,  String districts,  String city,  String province,  String profilePhotoPath)  $default,) {final _that = this;
 switch (_that) {
 case _UserProfileEntity():
-return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.workingHoursEditable,_that.canUpdateWorkingHours,_that.isPhoneVisible,_that.phoneVisibleEditable,_that.canUpdatePhoneVisibility,_that.fullName,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.village,_that.districts,_that.city,_that.province);case _:
+return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.workingHoursEditable,_that.canUpdateWorkingHours,_that.isPhoneVisible,_that.phoneVisibleEditable,_that.canUpdatePhoneVisibility,_that.fullName,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.village,_that.districts,_that.city,_that.province,_that.profilePhotoPath);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -231,10 +236,10 @@ return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String phoneNumber,  String workingHours,  String verificationStatus,  bool workingHoursEditable,  bool canUpdateWorkingHours,  bool isPhoneVisible,  bool phoneVisibleEditable,  bool canUpdatePhoneVisibility,  String fullName,  String educationLevel,  String educationFocus,  String workExperience,  String addressKtp,  String village,  String districts,  String city,  String province)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String phoneNumber,  String workingHours,  String verificationStatus,  bool workingHoursEditable,  bool canUpdateWorkingHours,  bool isPhoneVisible,  bool phoneVisibleEditable,  bool canUpdatePhoneVisibility,  String fullName,  String educationLevel,  String educationFocus,  String workExperience,  String addressKtp,  String village,  String districts,  String city,  String province,  String profilePhotoPath)?  $default,) {final _that = this;
 switch (_that) {
 case _UserProfileEntity() when $default != null:
-return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.workingHoursEditable,_that.canUpdateWorkingHours,_that.isPhoneVisible,_that.phoneVisibleEditable,_that.canUpdatePhoneVisibility,_that.fullName,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.village,_that.districts,_that.city,_that.province);case _:
+return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.verificationStatus,_that.workingHoursEditable,_that.canUpdateWorkingHours,_that.isPhoneVisible,_that.phoneVisibleEditable,_that.canUpdatePhoneVisibility,_that.fullName,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.village,_that.districts,_that.city,_that.province,_that.profilePhotoPath);case _:
   return null;
 
 }
@@ -246,7 +251,7 @@ return $default(_that.id,_that.email,_that.phoneNumber,_that.workingHours,_that.
 
 
 class _UserProfileEntity extends UserProfileEntity {
-  const _UserProfileEntity({required this.id, required this.email, required this.phoneNumber, required this.workingHours, required this.verificationStatus, this.workingHoursEditable = true, this.canUpdateWorkingHours = true, this.isPhoneVisible = true, this.phoneVisibleEditable = true, this.canUpdatePhoneVisibility = true, this.fullName = '', this.educationLevel = '', this.educationFocus = '', this.workExperience = '', this.addressKtp = '', this.village = '', this.districts = '', this.city = '', this.province = ''}): super._();
+  const _UserProfileEntity({required this.id, required this.email, required this.phoneNumber, required this.workingHours, required this.verificationStatus, this.workingHoursEditable = true, this.canUpdateWorkingHours = true, this.isPhoneVisible = true, this.phoneVisibleEditable = true, this.canUpdatePhoneVisibility = true, this.fullName = '', this.educationLevel = '', this.educationFocus = '', this.workExperience = '', this.addressKtp = '', this.village = '', this.districts = '', this.city = '', this.province = '', this.profilePhotoPath = ''}): super._();
   
 
 /// ID unik pengguna
@@ -290,6 +295,11 @@ class _UserProfileEntity extends UserProfileEntity {
 @override@JsonKey() final  String city;
 /// Provinsi
 @override@JsonKey() final  String province;
+/// Path foto profil di server (kosong jika belum upload atau belum diset)
+///
+/// Contoh: 'storage/uploads/profiles/2026/04/15/xxx.jpg'
+/// Gunakan [ApiConfig.buildImageUrl] untuk membentuk URL lengkap.
+@override@JsonKey() final  String profilePhotoPath;
 
 /// Create a copy of UserProfileEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -301,16 +311,16 @@ _$UserProfileEntityCopyWith<_UserProfileEntity> get copyWith => __$UserProfileEn
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfileEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.workingHoursEditable, workingHoursEditable) || other.workingHoursEditable == workingHoursEditable)&&(identical(other.canUpdateWorkingHours, canUpdateWorkingHours) || other.canUpdateWorkingHours == canUpdateWorkingHours)&&(identical(other.isPhoneVisible, isPhoneVisible) || other.isPhoneVisible == isPhoneVisible)&&(identical(other.phoneVisibleEditable, phoneVisibleEditable) || other.phoneVisibleEditable == phoneVisibleEditable)&&(identical(other.canUpdatePhoneVisibility, canUpdatePhoneVisibility) || other.canUpdatePhoneVisibility == canUpdatePhoneVisibility)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.educationLevel, educationLevel) || other.educationLevel == educationLevel)&&(identical(other.educationFocus, educationFocus) || other.educationFocus == educationFocus)&&(identical(other.workExperience, workExperience) || other.workExperience == workExperience)&&(identical(other.addressKtp, addressKtp) || other.addressKtp == addressKtp)&&(identical(other.village, village) || other.village == village)&&(identical(other.districts, districts) || other.districts == districts)&&(identical(other.city, city) || other.city == city)&&(identical(other.province, province) || other.province == province));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfileEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.workingHoursEditable, workingHoursEditable) || other.workingHoursEditable == workingHoursEditable)&&(identical(other.canUpdateWorkingHours, canUpdateWorkingHours) || other.canUpdateWorkingHours == canUpdateWorkingHours)&&(identical(other.isPhoneVisible, isPhoneVisible) || other.isPhoneVisible == isPhoneVisible)&&(identical(other.phoneVisibleEditable, phoneVisibleEditable) || other.phoneVisibleEditable == phoneVisibleEditable)&&(identical(other.canUpdatePhoneVisibility, canUpdatePhoneVisibility) || other.canUpdatePhoneVisibility == canUpdatePhoneVisibility)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.educationLevel, educationLevel) || other.educationLevel == educationLevel)&&(identical(other.educationFocus, educationFocus) || other.educationFocus == educationFocus)&&(identical(other.workExperience, workExperience) || other.workExperience == workExperience)&&(identical(other.addressKtp, addressKtp) || other.addressKtp == addressKtp)&&(identical(other.village, village) || other.village == village)&&(identical(other.districts, districts) || other.districts == districts)&&(identical(other.city, city) || other.city == city)&&(identical(other.province, province) || other.province == province)&&(identical(other.profilePhotoPath, profilePhotoPath) || other.profilePhotoPath == profilePhotoPath));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,email,phoneNumber,workingHours,verificationStatus,workingHoursEditable,canUpdateWorkingHours,isPhoneVisible,phoneVisibleEditable,canUpdatePhoneVisibility,fullName,educationLevel,educationFocus,workExperience,addressKtp,village,districts,city,province]);
+int get hashCode => Object.hashAll([runtimeType,id,email,phoneNumber,workingHours,verificationStatus,workingHoursEditable,canUpdateWorkingHours,isPhoneVisible,phoneVisibleEditable,canUpdatePhoneVisibility,fullName,educationLevel,educationFocus,workExperience,addressKtp,village,districts,city,province,profilePhotoPath]);
 
 @override
 String toString() {
-  return 'UserProfileEntity(id: $id, email: $email, phoneNumber: $phoneNumber, workingHours: $workingHours, verificationStatus: $verificationStatus, workingHoursEditable: $workingHoursEditable, canUpdateWorkingHours: $canUpdateWorkingHours, isPhoneVisible: $isPhoneVisible, phoneVisibleEditable: $phoneVisibleEditable, canUpdatePhoneVisibility: $canUpdatePhoneVisibility, fullName: $fullName, educationLevel: $educationLevel, educationFocus: $educationFocus, workExperience: $workExperience, addressKtp: $addressKtp, village: $village, districts: $districts, city: $city, province: $province)';
+  return 'UserProfileEntity(id: $id, email: $email, phoneNumber: $phoneNumber, workingHours: $workingHours, verificationStatus: $verificationStatus, workingHoursEditable: $workingHoursEditable, canUpdateWorkingHours: $canUpdateWorkingHours, isPhoneVisible: $isPhoneVisible, phoneVisibleEditable: $phoneVisibleEditable, canUpdatePhoneVisibility: $canUpdatePhoneVisibility, fullName: $fullName, educationLevel: $educationLevel, educationFocus: $educationFocus, workExperience: $workExperience, addressKtp: $addressKtp, village: $village, districts: $districts, city: $city, province: $province, profilePhotoPath: $profilePhotoPath)';
 }
 
 
@@ -321,7 +331,7 @@ abstract mixin class _$UserProfileEntityCopyWith<$Res> implements $UserProfileEn
   factory _$UserProfileEntityCopyWith(_UserProfileEntity value, $Res Function(_UserProfileEntity) _then) = __$UserProfileEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String email, String phoneNumber, String workingHours, String verificationStatus, bool workingHoursEditable, bool canUpdateWorkingHours, bool isPhoneVisible, bool phoneVisibleEditable, bool canUpdatePhoneVisibility, String fullName, String educationLevel, String educationFocus, String workExperience, String addressKtp, String village, String districts, String city, String province
+ String id, String email, String phoneNumber, String workingHours, String verificationStatus, bool workingHoursEditable, bool canUpdateWorkingHours, bool isPhoneVisible, bool phoneVisibleEditable, bool canUpdatePhoneVisibility, String fullName, String educationLevel, String educationFocus, String workExperience, String addressKtp, String village, String districts, String city, String province, String profilePhotoPath
 });
 
 
@@ -338,7 +348,7 @@ class __$UserProfileEntityCopyWithImpl<$Res>
 
 /// Create a copy of UserProfileEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? phoneNumber = null,Object? workingHours = null,Object? verificationStatus = null,Object? workingHoursEditable = null,Object? canUpdateWorkingHours = null,Object? isPhoneVisible = null,Object? phoneVisibleEditable = null,Object? canUpdatePhoneVisibility = null,Object? fullName = null,Object? educationLevel = null,Object? educationFocus = null,Object? workExperience = null,Object? addressKtp = null,Object? village = null,Object? districts = null,Object? city = null,Object? province = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? phoneNumber = null,Object? workingHours = null,Object? verificationStatus = null,Object? workingHoursEditable = null,Object? canUpdateWorkingHours = null,Object? isPhoneVisible = null,Object? phoneVisibleEditable = null,Object? canUpdatePhoneVisibility = null,Object? fullName = null,Object? educationLevel = null,Object? educationFocus = null,Object? workExperience = null,Object? addressKtp = null,Object? village = null,Object? districts = null,Object? city = null,Object? province = null,Object? profilePhotoPath = null,}) {
   return _then(_UserProfileEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -359,6 +369,7 @@ as String,village: null == village ? _self.village : village // ignore: cast_nul
 as String,districts: null == districts ? _self.districts : districts // ignore: cast_nullable_to_non_nullable
 as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String,province: null == province ? _self.province : province // ignore: cast_nullable_to_non_nullable
+as String,profilePhotoPath: null == profilePhotoPath ? _self.profilePhotoPath : profilePhotoPath // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

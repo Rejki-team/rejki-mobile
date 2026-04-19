@@ -1,6 +1,7 @@
 import 'package:domain/domain.dart';
 import '../models/job_model.dart';
 import '../models/jobs_response_model.dart';
+import '../models/bids_response_model.dart';
 
 /// Shared Job Remote Data Source (Data Layer)
 ///
@@ -13,4 +14,11 @@ abstract class JobRemoteDataSource {
 
   /// Fetch job by ID from API
   Future<JobModel> getJobById(String id);
+
+  /// Fetch user's bids
+  Future<BidsResponseModel> getMyBids({
+    String? status,
+    int page = 1,
+    int limit = 10,
+  });
 }

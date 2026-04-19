@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:local/local.dart';
+import 'package:network/network.dart';
 import 'package:designsystems/designsystems.dart';
 import 'package:components/components.dart';
 import 'package:core/core.dart';
@@ -166,9 +167,12 @@ class _HomeSuccessView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
+    return AppPullToRefresh(
       onRefresh: () async {
-        context.read<HomeBloc>().add(const HomeEvent.refreshRequested());
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (context.mounted) {
+          context.read<HomeBloc>().add(const HomeEvent.refreshRequested());
+        }
       },
       child: const SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
@@ -202,22 +206,54 @@ class _HomeSuccessView extends StatelessWidget {
 
 /// _HomeHeaderSection - Header dengan info user dan notifikasi.
 ///
-/// `context.select` memastikan widget hanya rebuild saat
-/// [userName] atau [notificationCount] berubah.
+/// Menggunakan `context.select` untuk hanya rebuild saat field yang relevan
+/// berubah: [userName], [userVerificationStatus], [userProfilePhotoPath], atau
+/// [notificationCount]. Widget lain tidak ikut rebuild.
 class _HomeHeaderSection extends StatelessWidget {
   const _HomeHeaderSection();
 
   @override
   Widget build(BuildContext context) {
     final userName = context.select((HomeBloc bloc) => bloc.state.userName);
+    final verificationStatus = context.select(
+      (HomeBloc bloc) => bloc.state.userVerificationStatus,
+    );
+    final profilePhotoPath = context.select(
+      (HomeBloc bloc) => bloc.state.userProfilePhotoPath,
+    );
     final notificationCount = context.select(
       (HomeBloc bloc) => bloc.state.notificationCount,
     );
 
+    // Bangun URL lengkap foto profil — kosong jika path kosong
+    final profilePhotoUrl = profilePhotoPath.isNotEmpty
+        ? ApiConfig.buildImageUrl(profilePhotoPath)
+        : '';
+
     return HomeHeader(
       username: userName,
+      verificationStatus: verificationStatus,
+      profilePhotoUrl: profilePhotoUrl,
       notificationCount: notificationCount,
       onNotificationTap: () => context.push(_HomeRoutes.notification),
+      onVerificationTap: () => _onVerificationTap(context),
+    );
+  }
+
+  /// Tampilkan dialog verifikasi sebelum navigasi ke halaman personal-info.
+  ///
+  /// Sesuai task: "Ketika tombol Verifikasi diklik akan terlebih dahulu
+  /// memunculkan dialog."
+  ///
+  /// Menggunakan [showVerificationRequiredDialog] dari package components
+  /// yang sudah memiliki dua tombol: "Kembali" dan "Verifikasi Sekarang".
+  void _onVerificationTap(BuildContext context) {
+    final sessionStorage = GetIt.I<SessionStorage>();
+
+    showVerificationRequiredDialog(
+      context,
+      userStatus: sessionStorage.getUserStatus(),
+      onVerify: () => context.go(_HomeRoutes.personalInfo),
     );
   }
 }

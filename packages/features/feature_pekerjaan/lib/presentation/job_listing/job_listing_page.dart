@@ -288,22 +288,32 @@ class _JobListingView extends StatelessWidget {
         }
 
         if (state.jobs.isEmpty) {
-          return AppEmptyState(
-            icon: SvgPicture.asset(
-              AppAssets.iconWork,
-              width: AppDimensions.iconXxl,
-              height: AppDimensions.iconXxl,
-              colorFilter: const ColorFilter.mode(
-                AppColors.textCaption,
-                BlendMode.srcIn,
-              ),
+          return AppPullToRefresh(
+            onRefresh: () => context.read<JobListingCubit>().refresh(),
+            child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: AppEmptyState(
+                    icon: SvgPicture.asset(
+                      AppAssets.iconWork,
+                      width: AppDimensions.iconXxl,
+                      height: AppDimensions.iconXxl,
+                      colorFilter: const ColorFilter.mode(
+                        AppColors.textCaption,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    title: 'Belum ada pekerjaan tersedia',
+                    description: 'Silahkan coba cari dengan kata kunci atau lokasi lain',
+                  ),
+                ),
+              ],
             ),
-            title: 'Belum ada pekerjaan tersedia',
-            description: 'Silahkan coba cari dengan kata kunci atau lokasi lain',
           );
         }
 
-        return RefreshIndicator(
+        return AppPullToRefresh(
           onRefresh: () => context.read<JobListingCubit>().refresh(),
           child: ListView.separated(
             padding: AppSpacing.paddingAllMd,

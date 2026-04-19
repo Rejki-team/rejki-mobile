@@ -8,8 +8,14 @@ import 'package:designsystems/designsystems.dart';
 class ProfileStatsCard extends StatelessWidget {
   /// Number of ads
   final int adCount;
+  /// Callback when "Iklan Saya" is tapped
+  final VoidCallback? onAdsTap;
 
-  const ProfileStatsCard({super.key, required this.adCount});
+  const ProfileStatsCard({
+    super.key,
+    required this.adCount,
+    this.onAdsTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,35 +40,39 @@ class ProfileStatsCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
 
           // Info box
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            decoration: BoxDecoration(
-              color: AppColors.profileStatsInfoBg,
-              borderRadius: AppDimensions.borderRadiusXs,
-              border: Border.all(
-                color: AppColors.profileStatsInfoBorder,
-                width: AppDimensions.borderThin,
+          InkWell(
+            onTap: onAdsTap,
+            borderRadius: AppDimensions.borderRadiusXs,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              decoration: BoxDecoration(
+                color: AppColors.profileStatsInfoBg,
+                borderRadius: AppDimensions.borderRadiusXs,
+                border: Border.all(
+                  color: AppColors.profileStatsInfoBorder,
+                  width: AppDimensions.borderThin,
+                ),
               ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SvgPicture.asset(
-                  AppAssets.iconInfoLine,
-                  width: 12,
-                  height: 12,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.profileStatsInfoText,
-                    BlendMode.srcIn,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    AppAssets.iconInfoLine,
+                    width: 12,
+                    height: 12,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.profileStatsInfoText,
+                      BlendMode.srcIn,
+                    ),
                   ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Text(
-                  'Iklan Saya ( $adCount )',
-                  style: AppTypography.profileStatsInfo,
-                ),
-              ],
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(
+                    'Iklan Saya ( $adCount )',
+                    style: AppTypography.profileStatsInfo,
+                  ),
+                ],
+              ),
             ),
           ),
         ],

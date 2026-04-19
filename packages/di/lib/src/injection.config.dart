@@ -12,6 +12,7 @@
 import 'package:data/data.dart' as _i437;
 import 'package:domain/domain.dart' as _i494;
 import 'package:feature_barangbekas/feature_barangbekas.dart' as _i685;
+import 'package:feature_history/feature_history.dart' as _i674;
 import 'package:feature_home/feature_home.dart' as _i545;
 import 'package:feature_notification/feature_notification.dart' as _i884;
 import 'package:feature_pekerja/feature_pekerja.dart' as _i950;
@@ -54,6 +55,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i884.NotificationCubit>(
       () => registerModule.notificationCubit(),
     );
+    gh.factory<_i674.HistoryCubit>(() => registerModule.historyCubit());
     gh.singleton<_i558.FlutterSecureStorage>(
       () => registerModule.secureStorage,
     );
@@ -109,6 +111,16 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i494.CreateJobUseCase>(
       () => registerModule.createJobUseCase(gh<_i494.JobMutationRepository>()),
+    );
+    gh.lazySingleton<_i494.UpdateBidStatusUseCase>(
+      () => registerModule.updateBidStatusUseCase(
+        gh<_i494.JobMutationRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.CreateJobReviewUseCase>(
+      () => registerModule.createJobReviewUseCase(
+        gh<_i494.JobMutationRepository>(),
+      ),
     );
     gh.lazySingleton<_i494.ProfileRepository>(
       () => registerModule.profileRepository(
@@ -317,6 +329,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.BidJobUseCase>(
       () => registerModule.bidJobUseCase(gh<_i494.JobRepository>()),
     );
+    gh.lazySingleton<_i494.GetMyBidsUseCase>(
+      () => registerModule.getMyBidsUseCase(gh<_i494.JobRepository>()),
+    );
     gh.lazySingleton<_i494.CreateSecondhandUseCase>(
       () => registerModule.createSecondhandUseCase(
         gh<_i494.SecondhandMutationRepository>(),
@@ -332,6 +347,19 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.CreateSecondhandUseCase>(),
       ),
     );
+    gh.factory<_i545.HomeBloc>(
+      () => registerModule.homeBloc(
+        gh<_i494.GetLatestJobsUseCase>(),
+        gh<_i494.GetUserFullProfileUseCase>(),
+      ),
+    );
+    gh.factory<_i674.HistoryPekerjaanCubit>(
+      () => registerModule.historyPekerjaanCubit(
+        gh<_i494.GetMyBidsUseCase>(),
+        gh<_i494.UpdateBidStatusUseCase>(),
+        gh<_i494.CreateJobReviewUseCase>(),
+      ),
+    );
     gh.factory<_i685.SearchUsedGoodsAdCubit>(
       () => registerModule.searchUsedGoodsAdCubit(
         gh<_i494.GetSecondhandsUseCase>(),
@@ -343,9 +371,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i10.JobDetailCubit>(
       () => registerModule.jobDetailCubit(gh<_i494.GetJobByIdUseCase>()),
-    );
-    gh.factory<_i545.HomeBloc>(
-      () => registerModule.homeBloc(gh<_i494.GetLatestJobsUseCase>()),
     );
     gh.factory<_i806.TakeJobCubit>(
       () => registerModule.takeJobCubit(

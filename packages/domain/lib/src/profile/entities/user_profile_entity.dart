@@ -75,6 +75,12 @@ abstract class UserProfileEntity with _$UserProfileEntity {
 
     /// Provinsi
     @Default('') String province,
+
+    /// Path foto profil di server (kosong jika belum upload atau belum diset)
+    ///
+    /// Contoh: 'storage/uploads/profiles/2026/04/15/xxx.jpg'
+    /// Gunakan [ApiConfig.buildImageUrl] untuk membentuk URL lengkap.
+    @Default('') String profilePhotoPath,
   }) = _UserProfileEntity;
 
   /// Empty state — digunakan sebagai nilai awal sebelum data di-load.

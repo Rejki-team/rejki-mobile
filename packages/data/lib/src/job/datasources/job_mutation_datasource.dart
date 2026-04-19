@@ -11,6 +11,18 @@ import '../models/job_model.dart';
 /// Read operations use shared JobRemoteDataSource from packages/data.
 abstract class JobMutationDataSource {
   Future<JobModel> createJob(CreateJobParams params);
+
+  Future<void> updateBidStatus({
+    required String jobId,
+    required String bidId,
+    required String status,
+  });
+
+  Future<void> createJobReview({
+    required String jobId,
+    required int rating,
+    required String review,
+  });
 }
 
 /// Implementation of JobMutationDataSource
@@ -91,5 +103,50 @@ class JobMutationDataSourceImpl implements JobMutationDataSource {
     debugPrint('✅ [JobMutationDataSource] Parsing job data...');
     // Parse response using shared JobModel
     return JobModel.fromJson(apiResponse.data!);
+  }
+
+  @override
+  Future<void> updateBidStatus({
+    required String jobId,
+    required String bidId,
+    required String status,
+  }) async {
+    final response = await dio.put(
+      '/jobs/$jobId/bids/$bidId/status',
+      data: {'status': status},
+    );
+
+    final apiResponse = ApiResponse<dynamic>.fromJson(
+      response.data as Map<String, dynamic>,
+      fromJsonT: (data) => data,
+    );
+
+    if (apiResponse.hasError) {
+      throw Exception(apiResponse.errorMessage);
+    }
+  }
+
+  @override
+  Future<void> createJobReview({
+    required String jobId,
+    required int rating,
+    required String review,
+  }) async {
+    final response = await dio.post(
+      '/jobs/$jobId/reviews',
+      data: {
+        'rating': rating,
+        'review': review,
+      },
+    );
+
+    final apiResponse = ApiResponse<dynamic>.fromJson(
+      response.data as Map<String, dynamic>,
+      fromJsonT: (data) => data,
+    );
+
+    if (apiResponse.hasError) {
+      throw Exception(apiResponse.errorMessage);
+    }
   }
 }

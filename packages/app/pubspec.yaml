@@ -62,6 +62,8 @@ dependencies:
     path: ../features/feature_barangbekas
   feature_notification:
     path: ../features/feature_notification
+  feature_history:
+    path: ../features/feature_history
 
 dev_dependencies:
   flutter_test:

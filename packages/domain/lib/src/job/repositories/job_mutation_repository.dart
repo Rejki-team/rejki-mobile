@@ -9,7 +9,21 @@ abstract class JobMutationRepository {
   /// Create a new job posting
   Future<Either<JobFailure, JobEntity>> createJob(CreateJobParams params);
 
-  // Future methods for update, delete can be added here
-  // Future<Either<JobFailure, JobEntity>> updateJob(String id, UpdateJobParams params);
-  // Future<Either<JobFailure, Unit>> deleteJob(String id);
+  /// Update Bid Status (e.g., mark as done)
+  ///
+  /// Returns Unit on success or JobFailure on error
+  Future<Either<JobFailure, Unit>> updateBidStatus({
+    required String jobId,
+    required String bidId,
+    required String status,
+  });
+
+  /// Create Job Review
+  ///
+  /// Returns Unit on success or JobFailure on error
+  Future<Either<JobFailure, Unit>> createJobReview({
+    required String jobId,
+    required int rating,
+    required String review,
+  });
 }

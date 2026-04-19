@@ -29,12 +29,16 @@ class AppBarWithSubtitle extends StatelessWidget
   /// Background color (default: #272777)
   final Color? backgroundColor;
 
+  /// Whether to show the back button (default: true)
+  final bool showBackButton;
+
   const AppBarWithSubtitle({
     super.key,
     required this.title,
     required this.subtitle,
     this.onBackPressed,
     this.backgroundColor,
+    this.showBackButton = true,
   });
 
   @override
@@ -50,9 +54,10 @@ class AppBarWithSubtitle extends StatelessWidget
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
-      leading: _buildBackButton(context),
+      automaticallyImplyLeading: showBackButton,
+      leading: showBackButton ? _buildBackButton(context) : null,
       title: _buildTitleSection(),
-      titleSpacing: 0,
+      titleSpacing: showBackButton ? 0 : AppSpacing.md,
     );
   }
 

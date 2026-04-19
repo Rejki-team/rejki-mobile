@@ -45,6 +45,48 @@ class JobMutationRepositoryImpl implements JobMutationRepository {
     }
   }
 
+  @override
+  Future<Either<JobFailure, Unit>> updateBidStatus({
+    required String jobId,
+    required String bidId,
+    required String status,
+  }) async {
+    try {
+      await remoteDataSource.updateBidStatus(
+        jobId: jobId,
+        bidId: bidId,
+        status: status,
+      );
+      return const Right(unit);
+    } on DioException catch (e) {
+      final apiError = ApiError.fromDioException(e);
+      return Left(_mapApiErrorToJobFailure(apiError));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<JobFailure, Unit>> createJobReview({
+    required String jobId,
+    required int rating,
+    required String review,
+  }) async {
+    try {
+      await remoteDataSource.createJobReview(
+        jobId: jobId,
+        rating: rating,
+        review: review,
+      );
+      return const Right(unit);
+    } on DioException catch (e) {
+      final apiError = ApiError.fromDioException(e);
+      return Left(_mapApiErrorToJobFailure(apiError));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
   /// Map ApiError to JobFailure
   JobFailure _mapApiErrorToJobFailure(ApiError error) {
     switch (error.type) {

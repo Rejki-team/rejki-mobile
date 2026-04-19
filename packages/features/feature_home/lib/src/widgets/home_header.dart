@@ -5,81 +5,105 @@ import 'package:components/components.dart';
 
 /// Home Header Widget
 ///
-/// A widget that displays the home page header with:
-/// - User avatar and name
-/// - Notification icon with badge
-/// - Main title and subtitle
+/// Widget yang menampilkan header halaman Home dengan:
+/// - **Jika terverifikasi**: Avatar foto profil (atau fallback ikon user) + nama pengguna
+/// - **Jika belum terverifikasi**: Tombol "Verifikasi" dengan border rounded
+/// - Ikon notifikasi dengan badge
+/// - Judul dan subtitle utama
 /// - Trust badges
 ///
-/// Usage:
+/// Widget ini bersifat stateless — semua data diterima via constructor.
+/// Logic kondisional verifikasi ada di [_buildUserInfo] — tidak di page.
+///
+/// Penggunaan:
 /// ```dart
 /// HomeHeader(
-///   username: 'FUFUFAFA',
+///   username: 'Rachma',
+///   verificationStatus: 'verified',
+///   profilePhotoUrl: 'https://api.example.com/helpers/get-image?value=...',
 ///   notificationCount: 5,
-///   onUserTap: () => print('User tapped'),
-///   onNotificationTap: () => print('Notification tapped'),
+///   onVerificationTap: () => showVerificationDialog(context),
+///   onNotificationTap: () => context.push('/home/notification'),
 /// )
 /// ```
 class HomeHeader extends StatelessWidget {
-  /// User display name
+  /// Nama pengguna yang ditampilkan di header (dari field `full_name` API)
   final String username;
 
-  /// Number of notifications (shows badge if > 0)
+  /// Status verifikasi pengguna: 'verified', 'pending', 'not_verified', atau '' (unknown)
+  ///
+  /// - 'verified' → tampilkan avatar + nama
+  /// - selainnya → tampilkan tombol "Verifikasi"
+  final String verificationStatus;
+
+  /// URL lengkap foto profil (dari [ApiConfig.buildImageUrl]).
+  /// Kosongkan jika belum ada foto — komponen akan menampilkan fallback ikon.
+  final String profilePhotoUrl;
+
+  /// Jumlah notifikasi yang belum dibaca (tampilkan badge jika > 0)
   final int notificationCount;
 
-  /// Custom background image path (defaults to screenHomeHeaderBackground)
+  /// Custom background image path (default: [AppAssets.screenHomeHeaderBackground])
   final String? backgroundImagePath;
 
-  /// Callback when user avatar/name is tapped
+  /// Callback saat avatar/nama pengguna di-tap (jika sudah terverifikasi)
   final VoidCallback? onUserTap;
 
-  /// Callback when notification icon is tapped
+  /// Callback saat tombol "Verifikasi" di-tap (jika belum terverifikasi).
+  /// Biasanya menampilkan dialog konfirmasi sebelum navigasi.
+  final VoidCallback? onVerificationTap;
+
+  /// Callback saat ikon notifikasi di-tap
   final VoidCallback? onNotificationTap;
 
-  /// Main title text (default: "Cari rezekimu hari ini")
+  /// Teks judul utama
   final String title;
 
-  /// Subtitle text (default: "Ekosistem Pekerjaan Kerah Biru")
+  /// Teks subjudul
   final String subtitle;
 
   const HomeHeader({
     super.key,
     required this.username,
+    required this.verificationStatus,
+    this.profilePhotoUrl = '',
     this.notificationCount = 0,
     this.backgroundImagePath,
     this.onUserTap,
+    this.onVerificationTap,
     this.onNotificationTap,
     this.title = 'Cari rezekimu hari ini',
     this.subtitle = 'Ekosistem Pekerjaan Kerah Biru',
   });
 
+  /// Apakah pengguna sudah terverifikasi.
+  bool get _isVerified => verificationStatus == 'verified';
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Background image with color overlay
+        // Background image dengan color overlay
         Positioned.fill(
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Background PNG image - optimized with cache dimensions
+              // Background PNG image — decode pada resolusi lebih kecil untuk hemat memori
               Image.asset(
                 backgroundImagePath ?? AppAssets.screenHomeHeaderBackground,
                 fit: BoxFit.cover,
-                // Decode at smaller resolution to reduce memory and decode time
-                cacheWidth:
-                    720, // Target width for decoding (adjust based on device)
-                cacheHeight: 480, // Target height for decoding
-                gaplessPlayback: true, // Prevent flickering on rebuild
+                cacheWidth: 720,
+                cacheHeight: 480,
+                gaplessPlayback: true,
                 filterQuality: FilterQuality.medium,
               ),
               // Color overlay
-              Container(color: AppColors.homeHeaderOverlay),
+              const ColoredBox(color: AppColors.homeHeaderOverlay),
             ],
           ),
         ),
 
-        // Content
+        // Konten
         SafeArea(
           bottom: false,
           child: Padding(
@@ -88,12 +112,12 @@ class HomeHeader extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Top bar with user info and notification
+                // Top bar: user info + notifikasi
                 _buildTopBar(),
 
                 const SizedBox(height: AppSpacing.xl),
 
-                // Main content with title and trust badges
+                // Konten utama: judul + trust badges
                 _buildMainContent(),
               ],
             ),
@@ -103,94 +127,124 @@ class HomeHeader extends StatelessWidget {
     );
   }
 
-  /// Builds the top bar with user info and notification icon
+  /// Top bar dengan user info di kiri dan notifikasi di kanan.
   Widget _buildTopBar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Left side: User avatar and name
-        _buildUserInfo(),
+        // Kiri: info pengguna atau tombol verifikasi
+        Expanded(child: _buildUserInfo()),
 
-        // Right side: Notification icon with badge
+        const SizedBox(width: AppSpacing.sm),
+
+        // Kanan: ikon notifikasi
         _buildNotificationButton(),
       ],
     );
   }
 
-  /// Builds the user avatar and name section
+  /// Membangun area info pengguna di sisi kiri top bar.
   ///
-  /// Avatar Container:
-  /// - Size: 32x32px (AppDimensions.avatarSm)
-  /// - Border radius: full (AppDimensions.borderRadiusFull)
-  /// - Internal padding: 8px (AppSpacing.sm)
-  /// - Background: AppColors.homeHeaderIconBg
-  /// - Border: 1px AppColors.homeHeaderIconBorder
+  /// - **Terverifikasi**: Avatar foto bulat + nama pengguna
+  /// - **Belum terverifikasi**: Tombol "Verifikasi" dengan border rounded
   Widget _buildUserInfo() {
+    if (_isVerified) {
+      return _buildVerifiedUserInfo();
+    }
+    return _buildVerificationButton();
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Verified State: avatar + nama
+  // ──────────────────────────────────────────────────────────────────────────
+
+  /// Tampilan untuk pengguna yang sudah terverifikasi.
+  ///
+  /// Menampilkan avatar foto profil bulat (atau fallback ikon) + nama pengguna.
+  Widget _buildVerifiedUserInfo() {
     return GestureDetector(
       onTap: onUserTap,
       behavior: HitTestBehavior.opaque,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // User avatar wrapper
-          Container(
-            width: AppDimensions.avatarSm,
-            height: AppDimensions.avatarSm,
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            decoration: BoxDecoration(
-              color: AppColors.homeHeaderIconBg,
-              borderRadius: AppDimensions.borderRadiusFull,
-              border: Border.all(
-                color: AppColors.homeHeaderIconBorder,
-                width: AppDimensions.borderThin,
-              ),
-            ),
-            alignment: Alignment.center,
-            child: SvgPicture.asset(
-              AppAssets.iconUser,
-              width: AppDimensions.iconXs,
-              height: AppDimensions.iconXs,
-              colorFilter: const ColorFilter.mode(
-                AppColors.white,
-                BlendMode.srcIn,
-              ),
-            ),
+          // Avatar profil bulat (dengan fallback ikon jika foto kosong/gagal)
+          HomeProfileAvatar(
+            imageUrl: profilePhotoUrl,
+            size: AppDimensions.avatarSm,
           ),
 
           const SizedBox(width: AppSpacing.sm),
 
-          // Username
-          Text(
-            username,
-            style: AppTypography.homeHeaderUsername,
-            textAlign: TextAlign.center,
+          // Nama pengguna — flexible agar tidak overflow
+          Flexible(
+            child: Text(
+              username,
+              style: AppTypography.homeHeaderUsername,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
     );
   }
 
-  /// Builds the notification icon with badge
+  // ──────────────────────────────────────────────────────────────────────────
+  // Unverified State: tombol Verifikasi
+  // ──────────────────────────────────────────────────────────────────────────
+
+  /// Tombol "Verifikasi" untuk pengguna yang belum terverifikasi.
+  ///
+  /// Spesifikasi visual:
+  /// - Border rounded: [AppDimensions.borderRadiusFull]
+  /// - Background: transparan
+  /// - Border: 1px [AppColors.homeHeaderIconBorder]
+  /// - Teks: "Verifikasi" dalam warna putih
+  /// - Padding: horizontal [AppSpacing.md], vertical [AppSpacing.xs]
+  Widget _buildVerificationButton() {
+    return GestureDetector(
+      onTap: onVerificationTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.transparent,
+          borderRadius: AppDimensions.borderRadiusFull,
+          border: Border.all(
+            color: AppColors.homeHeaderIconBorder,
+            width: AppDimensions.borderThin,
+          ),
+        ),
+        child: Text(
+          'Verifikasi',
+          style: AppTypography.homeHeaderUsername,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Notification Button
+  // ──────────────────────────────────────────────────────────────────────────
+
+  /// Ikon notifikasi dengan badge jumlah notifikasi yang belum dibaca.
   ///
   /// Wrapper Container:
-  /// - Size: 32x32px (AppDimensions.avatarSm)
-  /// - Border radius: 8px (AppDimensions.radiusSm)
-  /// - Internal padding: 8px (AppSpacing.sm)
-  /// - Background: AppColors.homeHeaderIconBg
-  /// - Border: 1px AppColors.homeHeaderIconBorder (inner alignment)
+  /// - Size: [AppDimensions.avatarSm] x [AppDimensions.avatarSm]
+  /// - Border radius: [AppDimensions.borderRadiusSm]
+  /// - Background: [AppColors.homeHeaderIconBg]
+  /// - Border: 1px [AppColors.homeHeaderIconBorder] (inner alignment)
   ///
-  /// Icon:
-  /// - SVG: AppAssets.iconNotification
-  /// - Size: 16x16px (AppDimensions.iconXs)
-  /// - Stroke color: AppColors.white
-  /// - Centered in wrapper
-  ///
-  /// Badge:
-  /// - Position: top-right corner of icon
-  /// - Size: 10x10px (AppDimensions.notificationBadgeSizeSm)
-  /// - Shape: circle
-  /// - Background: AppColors.notificationBadge
-  /// - Border: 1px AppColors.white (inner alignment)
+  /// Badge (jika [notificationCount] > 0):
+  /// - Posisi: top-right corner
+  /// - Ukuran: [AppDimensions.notificationBadgeSizeSm]
+  /// - Background: [AppColors.notificationBadge]
   Widget _buildNotificationButton() {
     return GestureDetector(
       onTap: onNotificationTap,
@@ -208,11 +262,10 @@ class HomeHeader extends StatelessWidget {
             strokeAlign: BorderSide.strokeAlignInside,
           ),
         ),
-        // Stack at icon level so badge is positioned relative to icon
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // Notification Icon (16x16, centered)
+            // Ikon notifikasi (16x16, terpusat)
             Center(
               child: SvgPicture.asset(
                 AppAssets.iconNotification,
@@ -225,7 +278,7 @@ class HomeHeader extends StatelessWidget {
               ),
             ),
 
-            // Notification Badge (positioned at top-right corner of icon)
+            // Badge jumlah notifikasi (hanya jika > 0)
             if (notificationCount > 0)
               Positioned(
                 top: -AppDimensions.notificationBadgeOffset,
@@ -256,39 +309,35 @@ class HomeHeader extends StatelessWidget {
     );
   }
 
-  /// Builds the main content with title, subtitle, and trust badges
+  // ──────────────────────────────────────────────────────────────────────────
+  // Main Content
+  // ──────────────────────────────────────────────────────────────────────────
+
+  /// Konten utama: judul, subtitle, dan trust badges.
   Widget _buildMainContent() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Title and subtitle
         _buildTitleSection(),
-
         const SizedBox(height: AppSpacing.md),
-
-        // Trust badges
         const TrustBadges(),
       ],
     );
   }
 
-  /// Builds the title and subtitle section
+  /// Judul dan subtitle header.
   Widget _buildTitleSection() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Main title
         Text(
           title,
           style: AppTypography.homeHeaderTitle,
           textAlign: TextAlign.center,
         ),
-
         const SizedBox(height: AppSpacing.md),
-
-        // Subtitle
         Text(
           subtitle,
           style: AppTypography.homeHeaderSubtitle,

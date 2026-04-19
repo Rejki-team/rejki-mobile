@@ -18,6 +18,7 @@ import 'package:feature_pekerja/presentation/location/bloc/location_bloc.dart' a
 // ignore: implementation_imports
 import 'package:feature_profile/src/location/bloc/location_bloc.dart' as profile_loc;
 import 'package:feature_profile/feature_profile.dart' hide LocationBloc;
+import 'package:feature_history/feature_history.dart';
 
 /// Register module untuk third-party dependencies
 ///
@@ -138,6 +139,11 @@ abstract class RegisterModule {
   BidJobUseCase bidJobUseCase(JobRepository repository) =>
       BidJobUseCase(repository);
 
+  /// GetMyBidsUseCase - untuk mengambil daftar pekerjaan (bids) user
+  @lazySingleton
+  GetMyBidsUseCase getMyBidsUseCase(JobRepository repository) =>
+      GetMyBidsUseCase(repository);
+
   // ============================================
   // JOB MUTATION (CREATE, UPDATE, DELETE)
   // ============================================
@@ -157,6 +163,16 @@ abstract class RegisterModule {
   @lazySingleton
   CreateJobUseCase createJobUseCase(JobMutationRepository repository) =>
       CreateJobUseCase(repository);
+
+  /// UpdateBidStatusUseCase - untuk mengubah status pekerjaan (mis. selesai)
+  @lazySingleton
+  UpdateBidStatusUseCase updateBidStatusUseCase(JobMutationRepository repository) =>
+      UpdateBidStatusUseCase(repository);
+
+  /// CreateJobReviewUseCase - untuk memberikan rating dan review pada pekerjaan
+  @lazySingleton
+  CreateJobReviewUseCase createJobReviewUseCase(JobMutationRepository repository) =>
+      CreateJobReviewUseCase(repository);
 
   // ============================================
   // LOCATION DATA LAYER
@@ -227,9 +243,16 @@ abstract class RegisterModule {
   // ============================================
 
   /// HomeBloc - for home page
+  ///
+  /// Membutuhkan dua use case yang dijalankan secara paralel:
+  /// - [GetLatestJobsUseCase] untuk load 2 lowongan terbaru
+  /// - [GetUserFullProfileUseCase] untuk load nama, status verifikasi, dan foto profil
   @factoryMethod
-  HomeBloc homeBloc(GetLatestJobsUseCase getLatestJobsUseCase) =>
-      HomeBloc(getLatestJobsUseCase);
+  HomeBloc homeBloc(
+    GetLatestJobsUseCase getLatestJobsUseCase,
+    GetUserFullProfileUseCase getUserFullProfileUseCase,
+  ) =>
+      HomeBloc(getLatestJobsUseCase, getUserFullProfileUseCase);
 
   /// CreateJobBloc - for creating job postings
   @factoryMethod
@@ -582,6 +605,23 @@ abstract class RegisterModule {
   /// NotificationCubit - untuk halaman notifikasi
   @factoryMethod
   NotificationCubit notificationCubit() => NotificationCubit();
+
+  /// HistoryCubit - untuk halaman riwayat
+  @factoryMethod
+  HistoryCubit historyCubit() => HistoryCubit();
+
+  /// HistoryPekerjaanCubit - untuk tab pekerjaan di halaman riwayat
+  @factoryMethod
+  HistoryPekerjaanCubit historyPekerjaanCubit(
+    GetMyBidsUseCase getMyBidsUseCase,
+    UpdateBidStatusUseCase updateBidStatusUseCase,
+    CreateJobReviewUseCase createJobReviewUseCase,
+  ) =>
+      HistoryPekerjaanCubit(
+        getMyBidsUseCase,
+        updateBidStatusUseCase,
+        createJobReviewUseCase,
+      );
 
   /// Configuration should prefer @injectable on source classes.
 }

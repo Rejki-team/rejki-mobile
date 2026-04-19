@@ -3,6 +3,7 @@ import 'package:network/network.dart';
 
 import '../models/job_model.dart';
 import '../models/jobs_response_model.dart';
+import '../models/bids_response_model.dart';
 import 'job_remote_datasource.dart';
 
 /// Implementation of Job Remote Data Source
@@ -29,5 +30,28 @@ class JobRemoteDataSourceImpl implements JobRemoteDataSource {
   Future<JobModel> getJobById(String id) async {
     final response = await _dioClient.get(ApiConfig.jobById(id));
     return JobModel.fromJson(response.data['data']);
+  }
+
+  @override
+  Future<BidsResponseModel> getMyBids({
+    String? status,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'page': page,
+      'limit': limit,
+    };
+    if (status != null && status.isNotEmpty) {
+      queryParams['status'] = status;
+    }
+
+    final response = await _dioClient.get(
+      '/jobs/me/bids',
+      queryParameters: queryParams,
+    );
+
+    final data = response.data['data'] as Map<String, dynamic>;
+    return BidsResponseModel.fromJson(data);
   }
 }

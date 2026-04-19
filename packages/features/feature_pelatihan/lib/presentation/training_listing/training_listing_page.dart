@@ -196,70 +196,83 @@ class _TrainingListSection extends StatelessWidget {
         }
 
         if (state.trainings.isEmpty) {
-          return AppEmptyState(
-            icon: SvgPicture.asset(
-              AppAssets.iconWork,
-              width: AppDimensions.iconXxl,
-              height: AppDimensions.iconXxl,
-              colorFilter: const ColorFilter.mode(
-                AppColors.textCaption,
-                BlendMode.srcIn,
-              ),
+          return AppPullToRefresh(
+            onRefresh: () => context.read<TrainingListingCubit>().loadTrainings(),
+            child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: AppEmptyState(
+                    icon: SvgPicture.asset(
+                      AppAssets.iconWork,
+                      width: AppDimensions.iconXxl,
+                      height: AppDimensions.iconXxl,
+                      colorFilter: const ColorFilter.mode(
+                        AppColors.textCaption,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    title: 'Belum ada pelatihan tersedia',
+                    description: 'Silahkan coba cari dengan kata kunci atau lokasi lain',
+                  ),
+                ),
+              ],
             ),
-            title: 'Belum ada pelatihan tersedia',
-            description: 'Silahkan coba cari dengan kata kunci atau lokasi lain',
           );
         }
 
-        return ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          children: [
-            const _InfoBannerWidget(),
-            const SizedBox(height: AppSpacing.md),
-            ...state.trainings.map((training) {
-              final facilities = [
-                TrainingFacility(
-                  iconAsset: AppAssets.iconPaper,
-                  label: 'Sertifikat Pelatihan',
-                ),
-                TrainingFacility(
-                  iconAsset: AppAssets.iconInfoLine,
-                  label: 'Badge Listrik Madya',
-                ), // close assumption to design
-              ];
+        return AppPullToRefresh(
+          onRefresh: () => context.read<TrainingListingCubit>().loadTrainings(),
+          child: ListView(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            children: [
+              const _InfoBannerWidget(),
+              const SizedBox(height: AppSpacing.md),
+              ...state.trainings.map((training) {
+                final facilities = [
+                  TrainingFacility(
+                    iconAsset: AppAssets.iconPaper,
+                    label: 'Sertifikat Pelatihan',
+                  ),
+                  TrainingFacility(
+                    iconAsset: AppAssets.iconInfoLine,
+                    label: 'Badge Listrik Madya',
+                  ), // close assumption to design
+                ];
 
-              return Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: TrainingCard(
-                  imageUrl: training.imageUrl,
-                  title: training.title,
-                  description: training.description,
-                  date: training.date,
-                  time: training.time,
-                  location: training.location,
-                  facilities: facilities,
-                  fee: training.fee,
-                  feeNotice: training.feeNotice,
-                  onRegisterPressed: () {
-                    // Navigate to detail
-                  },
-                ),
-              );
-            }),
-            const SizedBox(height: AppSpacing.sm),
-            // Example AdCard exactly as mockups layout indicates
-            AdCard(
-              badgeText: 'Iklan',
-              title: 'Pelatihan Gratis + Sertifikasi Resmi',
-              description:
-                  'Pelatihan digital marketinf dan banyak lagi, hanya bayar pendaftaran',
-              ctaText: 'Lihat Pelatihan',
-              imageUrl: '', // optional
-              onCtaPressed: () {
-                // Action Ad View
-              },
-            ),
-          ],
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: TrainingCard(
+                    imageUrl: training.imageUrl,
+                    title: training.title,
+                    description: training.description,
+                    date: training.date,
+                    time: training.time,
+                    location: training.location,
+                    facilities: facilities,
+                    fee: training.fee,
+                    feeNotice: training.feeNotice,
+                    onRegisterPressed: () {
+                      // Navigate to detail
+                    },
+                  ),
+                );
+              }),
+              const SizedBox(height: AppSpacing.sm),
+              // Example AdCard exactly as mockups layout indicates
+              AdCard(
+                badgeText: 'Iklan',
+                title: 'Pelatihan Gratis + Sertifikasi Resmi',
+                description:
+                    'Pelatihan digital marketinf dan banyak lagi, hanya bayar pendaftaran',
+                ctaText: 'Lihat Pelatihan',
+                imageUrl: '', // optional
+                onCtaPressed: () {
+                  // Action Ad View
+                },
+              ),
+            ],
+          ),
         );
       },
     );

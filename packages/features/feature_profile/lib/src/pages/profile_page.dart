@@ -18,6 +18,7 @@ import '../widgets/widgets.dart';
 
 abstract class _ProfileRoutes {
   static const String pekerjaCreate = '/pekerja/create';
+  static const String historyTabIklanSaya = '/history?tab=1';
 }
 
 /// Profile Page
@@ -378,7 +379,10 @@ class _ProfileContent extends StatelessWidget {
                     onRetry: () => context.read<ProfileCubit>().loadProfile(),
                   );
                 }
-                return ProfileStatsCard(adCount: state.summary?.totalAds ?? 0);
+                return ProfileStatsCard(
+                  adCount: state.summary?.totalAds ?? 0,
+                  onAdsTap: () => context.go(_ProfileRoutes.historyTabIklanSaya),
+                );
               },
             ),
 

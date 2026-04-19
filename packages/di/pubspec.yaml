@@ -53,6 +53,8 @@ dependencies:
     path: ../features/feature_forgotpassword
   feature_profile:
     path: ../features/feature_profile
+  feature_history:
+    path: ../features/feature_history
 
 dev_dependencies:
   flutter_test:

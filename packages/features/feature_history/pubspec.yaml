@@ -26,6 +26,8 @@ dependencies:
     path: ../../components
   designsystems:
     path: ../../designsystems
+  domain:
+    path: ../../domain
 
 dev_dependencies:
   flutter_test:

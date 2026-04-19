@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import '../entities/job_entity.dart';
 import '../entities/jobs_result_entity.dart';
+import '../entities/bids_result_entity.dart';
 import '../failures/job_failure.dart';
 import '../params/params.dart';
 
@@ -32,4 +33,13 @@ abstract class JobRepository {
   ///
   /// Returns Unit on success or JobFailure on error
   Future<Either<JobFailure, Unit>> bidJob(BidJobParams params);
+
+  /// Get user's bids (pekerjaan yang diambil)
+  ///
+  /// Returns a paginated result of bids matching the query parameters.
+  Future<Either<JobFailure, BidsResultEntity>> getMyBids({
+    String? status,
+    int page = 1,
+    int limit = 10,
+  });
 }

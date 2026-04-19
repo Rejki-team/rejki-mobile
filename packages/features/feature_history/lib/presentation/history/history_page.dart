@@ -1,21 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
 
 import 'cubit/history_cubit.dart';
 import 'cubit/history_state.dart';
+import 'cubit/history_pekerjaan_cubit.dart';
+import 'cubit/history_pekerjaan_state.dart';
 
 class HistoryPage extends StatelessWidget {
-  const HistoryPage({super.key});
+  final int initialTabIndex;
+
+  const HistoryPage({
+    super.key,
+    this.initialTabIndex = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GetIt.I<HistoryCubit>()..loadHistory(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HistoryCubit>(
+          create: (context) {
+            final cubit = GetIt.I<HistoryCubit>();
+            if (initialTabIndex != 0) {
+              cubit.setTab(initialTabIndex);
+            } else {
+              cubit.loadHistory();
+            }
+            return cubit;
+          },
+        ),
+        BlocProvider<HistoryPekerjaanCubit>(
+          create: (context) => GetIt.I<HistoryPekerjaanCubit>()..loadBids(),
+        ),
+      ],
       child: const _HistoryView(),
     );
   }
@@ -26,74 +46,35 @@ class _HistoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: AppColors.buttonGradientEnd,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: const AppBarWithSubtitle(
+        title: 'Riwayat',
+        subtitle: 'Kelola iklan dan aktifitas lainya',
+        showBackButton: false,
       ),
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: _buildAppBar(),
-        body: Column(
-          children: [
-            const _TopTabs(),
-            const _FilterChips(),
-            Expanded(
-              child: BlocBuilder<HistoryCubit, HistoryState>(
-                builder: (context, state) {
-                  if (state.isLoading) {
-                    return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
-                  }
-                  if (state.errorMessage != null) {
-                    return AppErrorState(
-                      description: state.errorMessage!,
-                      onRetry: () => context.read<HistoryCubit>().loadHistory(),
-                    );
-                  }
-
-                  return _HistoryList(
-                    tabIndex: state.selectedTabIndex,
-                    filter: state.selectedFilter,
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.buttonGradientEnd,
-      elevation: 0,
-      centerTitle: false,
-      leading: IconButton(
-        icon: SvgPicture.asset(
-          AppAssets.iconArrowLeft,
-          colorFilter: const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
-        ),
-        onPressed: () {},
-      ),
-      titleSpacing: 0,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
         children: [
-          Text(
-            'Riwayat',
-            style: AppTypography.titleMedium.copyWith(
-              color: AppColors.white,
-              fontSize: 16,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            'Kelola iklan dan aktifitas lainya',
-            style: AppTypography.bodySmall.copyWith(
-              color: AppColors.white.withValues(alpha: 0.9),
-              fontSize: 11,
+          const _TopTabs(),
+          const _FilterChips(),
+          Expanded(
+            child: BlocBuilder<HistoryCubit, HistoryState>(
+              builder: (context, state) {
+                if (state.isLoading) {
+                  return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
+                }
+                if (state.errorMessage != null) {
+                  return AppErrorState(
+                    description: state.errorMessage!,
+                    onRetry: () => context.read<HistoryCubit>().loadHistory(),
+                  );
+                }
+
+                return _HistoryList(
+                  tabIndex: state.selectedTabIndex,
+                  filter: state.selectedFilter,
+                );
+              },
             ),
           ),
         ],
@@ -107,53 +88,16 @@ class _TopTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.white,
-      child: BlocBuilder<HistoryCubit, HistoryState>(
-        buildWhen: (prev, curr) =>
-            prev.selectedTabIndex != curr.selectedTabIndex,
-        builder: (context, state) {
-          return Row(
-            children: [
-              _buildTab(context, 'Aktifitas', 0, state.selectedTabIndex == 0),
-              _buildTab(context, 'Iklan Saya', 1, state.selectedTabIndex == 1),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildTab(
-    BuildContext context,
-    String title,
-    int index,
-    bool isSelected,
-  ) {
-    return Expanded(
-      child: InkWell(
-        onTap: () => context.read<HistoryCubit>().setTab(index),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: isSelected ? AppColors.primary : AppColors.border,
-                width: isSelected ? 2 : 1,
-              ),
-            ),
-          ),
-          child: Center(
-            child: Text(
-              title,
-              style: AppTypography.labelMedium.copyWith(
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
-      ),
+    return BlocBuilder<HistoryCubit, HistoryState>(
+      buildWhen: (prev, curr) =>
+          prev.selectedTabIndex != curr.selectedTabIndex,
+      builder: (context, state) {
+        return AppTabBar(
+          tabs: const ['Aktifitas', 'Iklan Saya'],
+          selectedIndex: state.selectedTabIndex,
+          onTabChanged: (index) => context.read<HistoryCubit>().setTab(index),
+        );
+      },
     );
   }
 }
@@ -187,32 +131,10 @@ class _FilterChips extends StatelessWidget {
                 final isSelected = state.selectedFilter == filter;
                 return Padding(
                   padding: const EdgeInsets.only(right: AppSpacing.sm),
-                  child: InkWell(
-                    onTap: () => context.read<HistoryCubit>().setFilter(filter),
-                    borderRadius: BorderRadius.circular(4),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.textBlack
-                            : AppColors.border.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        filter,
-                        style: AppTypography.labelMedium.copyWith(
-                          color: isSelected
-                              ? AppColors.white
-                              : AppColors.textPrimary,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                        ),
-                      ),
-                    ),
+                  child: AppFilterChip(
+                    label: filter,
+                    isSelected: isSelected,
+                    onSelected: () => context.read<HistoryCubit>().setFilter(filter),
                   ),
                 );
               }).toList(),
@@ -236,85 +158,222 @@ class _HistoryList extends StatelessWidget {
         ? HistoryTabType.aktifitas
         : HistoryTabType.iklanSaya;
 
+    if (tabIndex == 0 && filter == 'Pekerjaan') {
+      return BlocConsumer<HistoryPekerjaanCubit, HistoryPekerjaanState>(
+        listenWhen: (prev, curr) => prev.mutationStatus != curr.mutationStatus,
+        listener: (context, state) {
+          if (state.mutationStatus == HistoryPekerjaanMutationStatus.success) {
+            showSuccessDialog(
+              context,
+              title: 'Berhasil',
+              message: state.mutationSuccessMessage ?? 'Berhasil!',
+            );
+            context.read<HistoryPekerjaanCubit>().clearMutationState();
+          } else if (state.mutationStatus == HistoryPekerjaanMutationStatus.failure) {
+            showFailedDialog(
+              context,
+              title: 'Gagal',
+              message: state.mutationErrorMessage ?? 'Terjadi kesalahan.',
+            );
+            context.read<HistoryPekerjaanCubit>().clearMutationState();
+          }
+        },
+        builder: (context, state) {
+          if (state.status == HistoryPekerjaanStatus.initial ||
+              state.status == HistoryPekerjaanStatus.loading) {
+            return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
+          }
+
+          if (state.status == HistoryPekerjaanStatus.failure) {
+            return AppErrorState(
+              description: state.errorMessage ?? 'Gagal memuat pekerjaan',
+              onRetry: () => context.read<HistoryPekerjaanCubit>().loadBids(refresh: true),
+            );
+          }
+
+          if (state.bids.isEmpty) {
+            return AppPullToRefresh(
+              onRefresh: () async => context.read<HistoryPekerjaanCubit>().loadBids(refresh: true),
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Text('Belum ada pekerjaan.', style: AppTypography.bodyMedium),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return AppPullToRefresh(
+            onRefresh: () async => context.read<HistoryPekerjaanCubit>().loadBids(refresh: true),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              itemCount: state.bids.length + (state.hasNext ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index >= state.bids.length) {
+                  // Trigger load more
+                  context.read<HistoryPekerjaanCubit>().loadBids();
+                  return const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final bid = state.bids[index];
+                final job = bid.job;
+                
+                HistoryJobStatus mapStatus(String status) {
+                  switch (status.toLowerCase()) {
+                    case 'request':
+                    case 'proses':
+                    case 'approved':
+                    case 'active':
+                      return HistoryJobStatus.proses;
+                    case 'completed':
+                    case 'selesai':
+                      return HistoryJobStatus.selesai;
+                    default:
+                      return HistoryJobStatus.proses;
+                  }
+                }
+
+                return HistoryJobCard(
+                  title: job?.title ?? 'Pekerjaan',
+                  adCode: job?.adCode ?? 'N/A',
+                  dateText: (job?.dateOfJob ?? bid.dateOfJob).toString().split(' ')[0],
+                  priceText: 'Rp. ${job?.salary ?? 0} - ${job?.salaryType ?? 'Borongan'}',
+                  timeText: '11:00', // Mock time as API only has dateOfJob
+                  locationText: job != null ? '${job.village}, ${job.subdistrict}' : 'Lokasi tidak tersedia',
+                  status: mapStatus(bid.status),
+                  tabType: tabType,
+                  onDetailPressed: () {},
+                  onApplicantsPressed: () {},
+                  onMarkDonePressed: bid.status == 'request' || bid.status == 'proses' || bid.status == 'approved' ? () {
+                    showWarningDialog(
+                      context,
+                      title: 'Pekerjaan Selesai?',
+                      message: 'Apakah kamu yakin pekerjaan ini sudah selesai dan dibayar sesuai persetujuan?',
+                      cancelText: 'Batal',
+                      confirmText: 'Ya, Selesai',
+                      onConfirm: () {
+                        context.read<HistoryPekerjaanCubit>().markJobAsDone(
+                          jobId: bid.jobId,
+                          bidId: bid.id,
+                          adCode: job?.adCode ?? 'N/A',
+                        );
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  } : null,
+                  onRatingPressed: bid.status == 'completed' ? () {
+                    AppReviewDialog.show(
+                      context,
+                      adCode: job?.adCode ?? 'N/A',
+                      onSubmit: (rating, review) {
+                        context.read<HistoryPekerjaanCubit>().submitReview(
+                          jobId: bid.jobId,
+                          rating: rating,
+                          review: review,
+                        );
+                      },
+                    );
+                  } : null,
+                );
+              },
+            ),
+          );
+        },
+      );
+    }
+
     // Combining Mock logic based on picture
-    return ListView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.xs,
+    return AppPullToRefresh(
+      onRefresh: () async => await Future.delayed(const Duration(milliseconds: 500)),
+      child: ListView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
+        ),
+        children: [
+          HistoryJobCard(
+            title: 'Angkut Barang',
+            adCode: '24/11/2024/023323111',
+            dateText: '24 November 2025',
+            priceText: 'Rp. 50,000 - Borongan',
+            timeText: '11:00',
+            locationText: 'RW.03, Pisangan baru',
+            status: HistoryJobStatus.baru,
+            tabType: tabType,
+            applicantsCount: tabType == HistoryTabType.iklanSaya ? 5 : 0,
+            postedDate: tabType == HistoryTabType.iklanSaya ? '20 jan 2025' : '',
+            onDetailPressed: () {},
+            onApplicantsPressed: () {},
+          ),
+
+          if (tabType == HistoryTabType.iklanSaya)
+            HistoryAdCard(
+              title: 'Pelatihan Gratis + Sertifikasi Resmi',
+              description:
+                  'Pelatihan digital marketinf dan banyak lagi, hanya bayar pendaftaran',
+              imageUrl: '',
+              onDetailPressed: () {},
+            ),
+
+          HistoryJobCard(
+            title: 'Angkut Barang',
+            adCode: '24/11/2024/023323111',
+            dateText: '24 November 2025',
+            priceText: 'Rp. 50,000 - Borongan',
+            timeText: '11:00',
+            locationText: 'RW.03, Pisangan baru',
+            status: tabType == HistoryTabType.aktifitas
+                ? HistoryJobStatus.selesai
+                : HistoryJobStatus.proses,
+            tabType: tabType,
+            applicantsCount: tabType == HistoryTabType.iklanSaya ? 5 : 0,
+            postedDate: tabType == HistoryTabType.iklanSaya ? '20 jan 2025' : '',
+            onDetailPressed: () {},
+            onRatingPressed: () {},
+            onMarkDonePressed: () {},
+            onApplicantsPressed: () {},
+          ),
+
+          if (tabType == HistoryTabType.aktifitas)
+            HistoryAdCard(
+              title: 'Pelatihan Gratis + Sertifikasi Resmi',
+              description:
+                  'Pelatihan digital marketinf dan banyak lagi, hanya bayar pendaftaran',
+              imageUrl: '',
+              onDetailPressed: () {},
+            ),
+
+          HistoryJobCard(
+            title: 'Angkut Barang',
+            adCode: '24/11/2024/023323111',
+            dateText: '24 November 2025',
+            priceText: 'Rp. 50,000 - Borongan',
+            timeText: '11:00',
+            locationText: 'RW.03, Pisangan baru',
+            status: tabType == HistoryTabType.aktifitas
+                ? HistoryJobStatus.proses
+                : HistoryJobStatus.selesai,
+            tabType: tabType,
+            applicantsCount: tabType == HistoryTabType.iklanSaya ? 5 : 0,
+            onDetailPressed: () {},
+            onRatingPressed: () {},
+            onMarkDonePressed: () {},
+            onApplicantsPressed: () {},
+          ),
+
+          const SizedBox(height: 32),
+        ],
       ),
-      children: [
-        HistoryJobCard(
-          title: 'Angkut Barang',
-          adCode: '24/11/2024/023323111',
-          dateText: '24 November 2025',
-          priceText: 'Rp. 50,000 - Borongan',
-          timeText: '11:00',
-          locationText: 'RW.03, Pisangan baru',
-          status: HistoryJobStatus.baru,
-          tabType: tabType,
-          applicantsCount: tabType == HistoryTabType.iklanSaya ? 5 : 0,
-          postedDate: tabType == HistoryTabType.iklanSaya ? '20 jan 2025' : '',
-          onDetailPressed: () {},
-          onApplicantsPressed: () {},
-        ),
-
-        if (tabType == HistoryTabType.iklanSaya)
-          HistoryAdCard(
-            title: 'Pelatihan Gratis + Sertifikasi Resmi',
-            description:
-                'Pelatihan digital marketinf dan banyak lagi, hanya bayar pendaftaran',
-            imageUrl: '',
-            onDetailPressed: () {},
-          ),
-
-        HistoryJobCard(
-          title: 'Angkut Barang',
-          adCode: '24/11/2024/023323111',
-          dateText: '24 November 2025',
-          priceText: 'Rp. 50,000 - Borongan',
-          timeText: '11:00',
-          locationText: 'RW.03, Pisangan baru',
-          status: tabType == HistoryTabType.aktifitas
-              ? HistoryJobStatus.selesai
-              : HistoryJobStatus.proses,
-          tabType: tabType,
-          applicantsCount: tabType == HistoryTabType.iklanSaya ? 5 : 0,
-          postedDate: tabType == HistoryTabType.iklanSaya ? '20 jan 2025' : '',
-          onDetailPressed: () {},
-          onRatingPressed: () {},
-          onMarkDonePressed: () {},
-          onApplicantsPressed: () {},
-        ),
-
-        if (tabType == HistoryTabType.aktifitas)
-          HistoryAdCard(
-            title: 'Pelatihan Gratis + Sertifikasi Resmi',
-            description:
-                'Pelatihan digital marketinf dan banyak lagi, hanya bayar pendaftaran',
-            imageUrl: '',
-            onDetailPressed: () {},
-          ),
-
-        HistoryJobCard(
-          title: 'Angkut Barang',
-          adCode: '24/11/2024/023323111',
-          dateText: '24 November 2025',
-          priceText: 'Rp. 50,000 - Borongan',
-          timeText: '11:00',
-          locationText: 'RW.03, Pisangan baru',
-          status: tabType == HistoryTabType.aktifitas
-              ? HistoryJobStatus.proses
-              : HistoryJobStatus.selesai,
-          tabType: tabType,
-          applicantsCount: tabType == HistoryTabType.iklanSaya ? 5 : 0,
-          onDetailPressed: () {},
-          onRatingPressed: () {},
-          onMarkDonePressed: () {},
-          onApplicantsPressed: () {},
-        ),
-
-        const SizedBox(height: 32),
-      ],
     );
   }
 }

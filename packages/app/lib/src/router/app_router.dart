@@ -22,6 +22,7 @@ import 'package:feature_notification/feature_notification.dart';
 import 'package:feature_pekerja/feature_pekerja.dart';
 import 'package:feature_pelatihan/feature_pelatihan.dart';
 import 'package:feature_barangbekas/feature_barangbekas.dart';
+import 'package:feature_history/feature_history.dart';
 
 import 'app_routes.dart';
 import '../pages/main_shell.dart';
@@ -256,12 +257,15 @@ class AppRouter {
           GoRoute(
             path: AppRoutes.history,
             name: 'history',
-            pageBuilder: (context, state) => NoTransitionPage(
-              child: VerificationGuard(
-                onVerifyPressed: () => context.go(AppRoutes.personalInfo),
-                child: const PlaceholderPage(title: 'Riwayat'),
-              ),
-            ),
+            pageBuilder: (context, state) {
+              final tabIndex = int.tryParse(state.uri.queryParameters['tab'] ?? '0') ?? 0;
+              return NoTransitionPage(
+                child: VerificationGuard(
+                  onVerifyPressed: () => context.go(AppRoutes.personalInfo),
+                  child: HistoryPage(initialTabIndex: tabIndex),
+                ),
+              );
+            },
             routes: [
               GoRoute(
                 path: ':id',

@@ -278,8 +278,16 @@ mixin _$HomeState {
 
 /// Status loading saat ini
  HomeStatus get status;/// Pesan error jika status failure
- String? get errorMessage;/// Nama pengguna untuk header
- String get userName;/// Jumlah notifikasi yang belum dibaca
+ String? get errorMessage;/// Nama pengguna untuk header (dari user_info.full_name)
+ String get userName;/// Status verifikasi pengguna: 'verified', 'pending', 'not_verified', atau '' jika belum di-load
+///
+/// Digunakan oleh HomeHeader untuk menentukan apakah menampilkan
+/// avatar + nama, atau tombol "Verifikasi".
+ String get userVerificationStatus;/// Path foto profil pengguna dari API (kosong jika belum upload).
+///
+/// Gunakan [ApiConfig.buildImageUrl] untuk membentuk URL lengkap
+/// sebelum meneruskan ke [HomeProfileAvatar].
+ String get userProfilePhotoPath;/// Jumlah notifikasi yang belum dibaca
  int get notificationCount;/// List banner/carousel items
  List<dynamic> get banners;/// List kategori layanan
  List<dynamic> get categories;/// Latest jobs from API (max 2 for home page display)
@@ -297,16 +305,16 @@ $HomeStateCopyWith<HomeState> get copyWith => _$HomeStateCopyWithImpl<HomeState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.status, status) || other.status == status)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.notificationCount, notificationCount) || other.notificationCount == notificationCount)&&const DeepCollectionEquality().equals(other.banners, banners)&&const DeepCollectionEquality().equals(other.categories, categories)&&const DeepCollectionEquality().equals(other.latestJobs, latestJobs)&&const DeepCollectionEquality().equals(other.featuredItems, featuredItems)&&(identical(other.isRefreshing, isRefreshing) || other.isRefreshing == isRefreshing)&&(identical(other.hasReachedMax, hasReachedMax) || other.hasReachedMax == hasReachedMax));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.status, status) || other.status == status)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.userVerificationStatus, userVerificationStatus) || other.userVerificationStatus == userVerificationStatus)&&(identical(other.userProfilePhotoPath, userProfilePhotoPath) || other.userProfilePhotoPath == userProfilePhotoPath)&&(identical(other.notificationCount, notificationCount) || other.notificationCount == notificationCount)&&const DeepCollectionEquality().equals(other.banners, banners)&&const DeepCollectionEquality().equals(other.categories, categories)&&const DeepCollectionEquality().equals(other.latestJobs, latestJobs)&&const DeepCollectionEquality().equals(other.featuredItems, featuredItems)&&(identical(other.isRefreshing, isRefreshing) || other.isRefreshing == isRefreshing)&&(identical(other.hasReachedMax, hasReachedMax) || other.hasReachedMax == hasReachedMax));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,errorMessage,userName,notificationCount,const DeepCollectionEquality().hash(banners),const DeepCollectionEquality().hash(categories),const DeepCollectionEquality().hash(latestJobs),const DeepCollectionEquality().hash(featuredItems),isRefreshing,hasReachedMax);
+int get hashCode => Object.hash(runtimeType,status,errorMessage,userName,userVerificationStatus,userProfilePhotoPath,notificationCount,const DeepCollectionEquality().hash(banners),const DeepCollectionEquality().hash(categories),const DeepCollectionEquality().hash(latestJobs),const DeepCollectionEquality().hash(featuredItems),isRefreshing,hasReachedMax);
 
 @override
 String toString() {
-  return 'HomeState(status: $status, errorMessage: $errorMessage, userName: $userName, notificationCount: $notificationCount, banners: $banners, categories: $categories, latestJobs: $latestJobs, featuredItems: $featuredItems, isRefreshing: $isRefreshing, hasReachedMax: $hasReachedMax)';
+  return 'HomeState(status: $status, errorMessage: $errorMessage, userName: $userName, userVerificationStatus: $userVerificationStatus, userProfilePhotoPath: $userProfilePhotoPath, notificationCount: $notificationCount, banners: $banners, categories: $categories, latestJobs: $latestJobs, featuredItems: $featuredItems, isRefreshing: $isRefreshing, hasReachedMax: $hasReachedMax)';
 }
 
 
@@ -317,7 +325,7 @@ abstract mixin class $HomeStateCopyWith<$Res>  {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) _then) = _$HomeStateCopyWithImpl;
 @useResult
 $Res call({
- HomeStatus status, String? errorMessage, String userName, int notificationCount, List<dynamic> banners, List<dynamic> categories, List<JobEntity> latestJobs, List<dynamic> featuredItems, bool isRefreshing, bool hasReachedMax
+ HomeStatus status, String? errorMessage, String userName, String userVerificationStatus, String userProfilePhotoPath, int notificationCount, List<dynamic> banners, List<dynamic> categories, List<JobEntity> latestJobs, List<dynamic> featuredItems, bool isRefreshing, bool hasReachedMax
 });
 
 
@@ -334,11 +342,13 @@ class _$HomeStateCopyWithImpl<$Res>
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? errorMessage = freezed,Object? userName = null,Object? notificationCount = null,Object? banners = null,Object? categories = null,Object? latestJobs = null,Object? featuredItems = null,Object? isRefreshing = null,Object? hasReachedMax = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? errorMessage = freezed,Object? userName = null,Object? userVerificationStatus = null,Object? userProfilePhotoPath = null,Object? notificationCount = null,Object? banners = null,Object? categories = null,Object? latestJobs = null,Object? featuredItems = null,Object? isRefreshing = null,Object? hasReachedMax = null,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as HomeStatus,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
+as String,userVerificationStatus: null == userVerificationStatus ? _self.userVerificationStatus : userVerificationStatus // ignore: cast_nullable_to_non_nullable
+as String,userProfilePhotoPath: null == userProfilePhotoPath ? _self.userProfilePhotoPath : userProfilePhotoPath // ignore: cast_nullable_to_non_nullable
 as String,notificationCount: null == notificationCount ? _self.notificationCount : notificationCount // ignore: cast_nullable_to_non_nullable
 as int,banners: null == banners ? _self.banners : banners // ignore: cast_nullable_to_non_nullable
 as List<dynamic>,categories: null == categories ? _self.categories : categories // ignore: cast_nullable_to_non_nullable
@@ -428,10 +438,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HomeStatus status,  String? errorMessage,  String userName,  int notificationCount,  List<dynamic> banners,  List<dynamic> categories,  List<JobEntity> latestJobs,  List<dynamic> featuredItems,  bool isRefreshing,  bool hasReachedMax)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HomeStatus status,  String? errorMessage,  String userName,  String userVerificationStatus,  String userProfilePhotoPath,  int notificationCount,  List<dynamic> banners,  List<dynamic> categories,  List<JobEntity> latestJobs,  List<dynamic> featuredItems,  bool isRefreshing,  bool hasReachedMax)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
-return $default(_that.status,_that.errorMessage,_that.userName,_that.notificationCount,_that.banners,_that.categories,_that.latestJobs,_that.featuredItems,_that.isRefreshing,_that.hasReachedMax);case _:
+return $default(_that.status,_that.errorMessage,_that.userName,_that.userVerificationStatus,_that.userProfilePhotoPath,_that.notificationCount,_that.banners,_that.categories,_that.latestJobs,_that.featuredItems,_that.isRefreshing,_that.hasReachedMax);case _:
   return orElse();
 
 }
@@ -449,10 +459,10 @@ return $default(_that.status,_that.errorMessage,_that.userName,_that.notificatio
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HomeStatus status,  String? errorMessage,  String userName,  int notificationCount,  List<dynamic> banners,  List<dynamic> categories,  List<JobEntity> latestJobs,  List<dynamic> featuredItems,  bool isRefreshing,  bool hasReachedMax)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HomeStatus status,  String? errorMessage,  String userName,  String userVerificationStatus,  String userProfilePhotoPath,  int notificationCount,  List<dynamic> banners,  List<dynamic> categories,  List<JobEntity> latestJobs,  List<dynamic> featuredItems,  bool isRefreshing,  bool hasReachedMax)  $default,) {final _that = this;
 switch (_that) {
 case _HomeState():
-return $default(_that.status,_that.errorMessage,_that.userName,_that.notificationCount,_that.banners,_that.categories,_that.latestJobs,_that.featuredItems,_that.isRefreshing,_that.hasReachedMax);}
+return $default(_that.status,_that.errorMessage,_that.userName,_that.userVerificationStatus,_that.userProfilePhotoPath,_that.notificationCount,_that.banners,_that.categories,_that.latestJobs,_that.featuredItems,_that.isRefreshing,_that.hasReachedMax);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -466,10 +476,10 @@ return $default(_that.status,_that.errorMessage,_that.userName,_that.notificatio
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HomeStatus status,  String? errorMessage,  String userName,  int notificationCount,  List<dynamic> banners,  List<dynamic> categories,  List<JobEntity> latestJobs,  List<dynamic> featuredItems,  bool isRefreshing,  bool hasReachedMax)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HomeStatus status,  String? errorMessage,  String userName,  String userVerificationStatus,  String userProfilePhotoPath,  int notificationCount,  List<dynamic> banners,  List<dynamic> categories,  List<JobEntity> latestJobs,  List<dynamic> featuredItems,  bool isRefreshing,  bool hasReachedMax)?  $default,) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
-return $default(_that.status,_that.errorMessage,_that.userName,_that.notificationCount,_that.banners,_that.categories,_that.latestJobs,_that.featuredItems,_that.isRefreshing,_that.hasReachedMax);case _:
+return $default(_that.status,_that.errorMessage,_that.userName,_that.userVerificationStatus,_that.userProfilePhotoPath,_that.notificationCount,_that.banners,_that.categories,_that.latestJobs,_that.featuredItems,_that.isRefreshing,_that.hasReachedMax);case _:
   return null;
 
 }
@@ -481,15 +491,25 @@ return $default(_that.status,_that.errorMessage,_that.userName,_that.notificatio
 
 
 class _HomeState implements HomeState {
-  const _HomeState({this.status = HomeStatus.initial, this.errorMessage, this.userName = 'Pengguna', this.notificationCount = 0, final  List<dynamic> banners = const [], final  List<dynamic> categories = const [], final  List<JobEntity> latestJobs = const [], final  List<dynamic> featuredItems = const [], this.isRefreshing = false, this.hasReachedMax = false}): _banners = banners,_categories = categories,_latestJobs = latestJobs,_featuredItems = featuredItems;
+  const _HomeState({this.status = HomeStatus.initial, this.errorMessage, this.userName = 'Pengguna', this.userVerificationStatus = '', this.userProfilePhotoPath = '', this.notificationCount = 0, final  List<dynamic> banners = const [], final  List<dynamic> categories = const [], final  List<JobEntity> latestJobs = const [], final  List<dynamic> featuredItems = const [], this.isRefreshing = false, this.hasReachedMax = false}): _banners = banners,_categories = categories,_latestJobs = latestJobs,_featuredItems = featuredItems;
   
 
 /// Status loading saat ini
 @override@JsonKey() final  HomeStatus status;
 /// Pesan error jika status failure
 @override final  String? errorMessage;
-/// Nama pengguna untuk header
+/// Nama pengguna untuk header (dari user_info.full_name)
 @override@JsonKey() final  String userName;
+/// Status verifikasi pengguna: 'verified', 'pending', 'not_verified', atau '' jika belum di-load
+///
+/// Digunakan oleh HomeHeader untuk menentukan apakah menampilkan
+/// avatar + nama, atau tombol "Verifikasi".
+@override@JsonKey() final  String userVerificationStatus;
+/// Path foto profil pengguna dari API (kosong jika belum upload).
+///
+/// Gunakan [ApiConfig.buildImageUrl] untuk membentuk URL lengkap
+/// sebelum meneruskan ke [HomeProfileAvatar].
+@override@JsonKey() final  String userProfilePhotoPath;
 /// Jumlah notifikasi yang belum dibaca
 @override@JsonKey() final  int notificationCount;
 /// List banner/carousel items
@@ -543,16 +563,16 @@ _$HomeStateCopyWith<_HomeState> get copyWith => __$HomeStateCopyWithImpl<_HomeSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.status, status) || other.status == status)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.notificationCount, notificationCount) || other.notificationCount == notificationCount)&&const DeepCollectionEquality().equals(other._banners, _banners)&&const DeepCollectionEquality().equals(other._categories, _categories)&&const DeepCollectionEquality().equals(other._latestJobs, _latestJobs)&&const DeepCollectionEquality().equals(other._featuredItems, _featuredItems)&&(identical(other.isRefreshing, isRefreshing) || other.isRefreshing == isRefreshing)&&(identical(other.hasReachedMax, hasReachedMax) || other.hasReachedMax == hasReachedMax));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.status, status) || other.status == status)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.userVerificationStatus, userVerificationStatus) || other.userVerificationStatus == userVerificationStatus)&&(identical(other.userProfilePhotoPath, userProfilePhotoPath) || other.userProfilePhotoPath == userProfilePhotoPath)&&(identical(other.notificationCount, notificationCount) || other.notificationCount == notificationCount)&&const DeepCollectionEquality().equals(other._banners, _banners)&&const DeepCollectionEquality().equals(other._categories, _categories)&&const DeepCollectionEquality().equals(other._latestJobs, _latestJobs)&&const DeepCollectionEquality().equals(other._featuredItems, _featuredItems)&&(identical(other.isRefreshing, isRefreshing) || other.isRefreshing == isRefreshing)&&(identical(other.hasReachedMax, hasReachedMax) || other.hasReachedMax == hasReachedMax));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,errorMessage,userName,notificationCount,const DeepCollectionEquality().hash(_banners),const DeepCollectionEquality().hash(_categories),const DeepCollectionEquality().hash(_latestJobs),const DeepCollectionEquality().hash(_featuredItems),isRefreshing,hasReachedMax);
+int get hashCode => Object.hash(runtimeType,status,errorMessage,userName,userVerificationStatus,userProfilePhotoPath,notificationCount,const DeepCollectionEquality().hash(_banners),const DeepCollectionEquality().hash(_categories),const DeepCollectionEquality().hash(_latestJobs),const DeepCollectionEquality().hash(_featuredItems),isRefreshing,hasReachedMax);
 
 @override
 String toString() {
-  return 'HomeState(status: $status, errorMessage: $errorMessage, userName: $userName, notificationCount: $notificationCount, banners: $banners, categories: $categories, latestJobs: $latestJobs, featuredItems: $featuredItems, isRefreshing: $isRefreshing, hasReachedMax: $hasReachedMax)';
+  return 'HomeState(status: $status, errorMessage: $errorMessage, userName: $userName, userVerificationStatus: $userVerificationStatus, userProfilePhotoPath: $userProfilePhotoPath, notificationCount: $notificationCount, banners: $banners, categories: $categories, latestJobs: $latestJobs, featuredItems: $featuredItems, isRefreshing: $isRefreshing, hasReachedMax: $hasReachedMax)';
 }
 
 
@@ -563,7 +583,7 @@ abstract mixin class _$HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Re
   factory _$HomeStateCopyWith(_HomeState value, $Res Function(_HomeState) _then) = __$HomeStateCopyWithImpl;
 @override @useResult
 $Res call({
- HomeStatus status, String? errorMessage, String userName, int notificationCount, List<dynamic> banners, List<dynamic> categories, List<JobEntity> latestJobs, List<dynamic> featuredItems, bool isRefreshing, bool hasReachedMax
+ HomeStatus status, String? errorMessage, String userName, String userVerificationStatus, String userProfilePhotoPath, int notificationCount, List<dynamic> banners, List<dynamic> categories, List<JobEntity> latestJobs, List<dynamic> featuredItems, bool isRefreshing, bool hasReachedMax
 });
 
 
@@ -580,11 +600,13 @@ class __$HomeStateCopyWithImpl<$Res>
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? errorMessage = freezed,Object? userName = null,Object? notificationCount = null,Object? banners = null,Object? categories = null,Object? latestJobs = null,Object? featuredItems = null,Object? isRefreshing = null,Object? hasReachedMax = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? errorMessage = freezed,Object? userName = null,Object? userVerificationStatus = null,Object? userProfilePhotoPath = null,Object? notificationCount = null,Object? banners = null,Object? categories = null,Object? latestJobs = null,Object? featuredItems = null,Object? isRefreshing = null,Object? hasReachedMax = null,}) {
   return _then(_HomeState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as HomeStatus,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
+as String,userVerificationStatus: null == userVerificationStatus ? _self.userVerificationStatus : userVerificationStatus // ignore: cast_nullable_to_non_nullable
+as String,userProfilePhotoPath: null == userProfilePhotoPath ? _self.userProfilePhotoPath : userProfilePhotoPath // ignore: cast_nullable_to_non_nullable
 as String,notificationCount: null == notificationCount ? _self.notificationCount : notificationCount // ignore: cast_nullable_to_non_nullable
 as int,banners: null == banners ? _self._banners : banners // ignore: cast_nullable_to_non_nullable
 as List<dynamic>,categories: null == categories ? _self._categories : categories // ignore: cast_nullable_to_non_nullable
