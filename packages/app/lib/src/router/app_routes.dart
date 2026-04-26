@@ -35,6 +35,7 @@ abstract class AppRoutes {
   // ==================== PEKERJAAN NESTED ====================
   static const String pekerjaanDetail = '/pekerjaan/:id';
   static const String pekerjaanApply = '/pekerjaan/:id/apply';
+  static const String pelamarPekerjaan = '/pekerjaan/:id/pelamar';
   static const String createJob = '/pekerjaan/create';
 
   // ==================== PELATIHAN NESTED ====================
@@ -71,6 +72,7 @@ abstract class AppRoutes {
   static String newsDetailPath(String id) => '/news/$id';
   static String pekerjaanDetailPath(String id) => '/pekerjaan/$id';
   static String pekerjaanApplyPath(String id) => '/pekerjaan/$id/apply';
+  static String pelamarPekerjaanPath(String id) => '/pekerjaan/$id/pelamar';
   static String pelatihanDetailPath(String id) => '/pelatihan/$id';
   static String pelatihanEnrollPath(String id) => '/pelatihan/$id/enroll';
   static String chatRoomPath(String id) => '/chat/$id';

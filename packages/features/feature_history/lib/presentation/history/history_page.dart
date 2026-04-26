@@ -14,8 +14,11 @@ import 'cubit/history_pelatihan_cubit.dart';
 import 'cubit/history_pelatihan_state.dart';
 import 'cubit/history_barang_bekas_cubit.dart';
 import 'cubit/history_barang_bekas_state.dart';
+import 'cubit/history_iklan_pekerjaan_cubit.dart';
+import 'cubit/history_iklan_pekerjaan_state.dart';
 import 'package:go_router/go_router.dart';
 import 'package:network/network.dart';
+import 'package:core/core.dart';
 
 class HistoryPage extends StatelessWidget {
   final int initialTabIndex;
@@ -51,6 +54,9 @@ class HistoryPage extends StatelessWidget {
         ),
         BlocProvider<HistoryBarangBekasCubit>(
           create: (context) => GetIt.I<HistoryBarangBekasCubit>()..loadClaims(),
+        ),
+        BlocProvider<HistoryIklanPekerjaanCubit>(
+          create: (context) => GetIt.I<HistoryIklanPekerjaanCubit>()..loadMyJobs(),
         ),
       ],
       child: const _HistoryView(),
@@ -614,6 +620,103 @@ class _HistoryList extends StatelessWidget {
                   onDetailPressed: () {
                     context.push('/used-goods/${item.id}');
                   },
+                );
+              },
+            ),
+          );
+        },
+      );
+    }
+
+    // ── Tab Iklan Saya → Filter Pekerjaan (real data) ──────────────────────
+    if (tabIndex == 1 && filter == 'Pekerjaan') {
+      return BlocBuilder<HistoryIklanPekerjaanCubit, HistoryIklanPekerjaanState>(
+        builder: (context, state) {
+          if (state.status == HistoryIklanPekerjaanStatus.initial ||
+              state.status == HistoryIklanPekerjaanStatus.loading) {
+            return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
+          }
+
+          if (state.status == HistoryIklanPekerjaanStatus.failure) {
+            return AppErrorState(
+              description: state.errorMessage ?? 'Gagal memuat iklan pekerjaan',
+              onRetry: () =>
+                  context.read<HistoryIklanPekerjaanCubit>().loadMyJobs(refresh: true),
+            );
+          }
+
+          if (state.jobs.isEmpty) {
+            return AppPullToRefresh(
+              onRefresh: () async =>
+                  context.read<HistoryIklanPekerjaanCubit>().loadMyJobs(refresh: true),
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Text(
+                        'Belum ada iklan pekerjaan.',
+                        style: AppTypography.bodyMedium,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          HistoryJobStatus mapJobStatus(String s) {
+            switch (s.toLowerCase()) {
+              case 'in_progress':
+                return HistoryJobStatus.proses;
+              case 'done':
+              case 'closed':
+              case 'canceled':
+                return HistoryJobStatus.selesai;
+              default:
+                return HistoryJobStatus.baru;
+            }
+          }
+
+          return AppPullToRefresh(
+            onRefresh: () async =>
+                context.read<HistoryIklanPekerjaanCubit>().loadMyJobs(refresh: true),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              itemCount: state.jobs.length + (state.hasNext ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index >= state.jobs.length) {
+                  context.read<HistoryIklanPekerjaanCubit>().loadMyJobs();
+                  return const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final job = state.jobs[index];
+                return HistoryJobCard(
+                  title: job.title,
+                  adCode: job.adCode,
+                  dateText: JobFormatter.formatDate(job.dateOfJob),
+                  timeText: JobFormatter.formatTime(job.dateOfJob),
+                  priceText: JobFormatter.formatSalary(job.salary, job.salaryType),
+                  locationText: JobFormatter.formatLocation(job.address, job.village),
+                  status: mapJobStatus(job.status),
+                  tabType: HistoryTabType.iklanSaya,
+                  applicantsCount: job.bidCount ?? 0,
+                  onDetailPressed: () {},
+                  onApplicantsPressed: () => context.push(
+                    '/pekerjaan/${job.id}/pelamar',
+                    extra: {
+                      'jobId': job.id,
+                      'jobTitle': job.title,
+                      'adCode': job.adCode,
+                      'jobStatus': job.status,
+                    },
+                  ),
                 );
               },
             ),

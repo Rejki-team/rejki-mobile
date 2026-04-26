@@ -78,6 +78,10 @@ abstract class JobEntity with _$JobEntity {
 
     /// Employer phone number from user.phone_number
     @Default('') String employerPhone,
+
+    /// Total number of bids/applicants for this job.
+    /// Populated from the bids array length in API response.
+    int? bidCount,
   }) = _JobEntity;
 
   /// Get first image URL or null

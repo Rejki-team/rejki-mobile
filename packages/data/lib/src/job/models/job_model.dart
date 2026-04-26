@@ -6,6 +6,10 @@ import 'user_job_model.dart';
 part 'job_model.freezed.dart';
 part 'job_model.g.dart';
 
+/// Parses bid count from the raw bids array in the API response.
+/// Avoids importing BidModel to prevent a circular dependency with job_model.
+int? _parseBidCount(dynamic json) => json is List ? json.length : null;
+
 /// Shared Job Model (Data Layer)
 ///
 /// This model is used for deserializing API responses for READ operations
@@ -71,6 +75,10 @@ abstract class JobModel with _$JobModel {
     /// List of job images
     @Default([]) List<JobImageModel> images,
 
+    /// Count of bids derived from the bids array in the API response.
+    @JsonKey(name: 'bids', fromJson: _parseBidCount, includeToJson: false)
+    int? bidCount,
+
     /// Job created at
     @JsonKey(name: 'created_at') String? createdAt,
 
@@ -102,9 +110,9 @@ abstract class JobModel with _$JobModel {
       village: village,
       status: status,
       images: images.map((img) => img.toEntity()).toList(),
+      bidCount: bidCount,
       createdAt: createdAt != null ? DateTime.parse(createdAt!) : null,
       updatedAt: updatedAt != null ? DateTime.parse(updatedAt!) : null,
-      // Employer info from nested user object
       employerName: user?.userInfo?.fullName ?? '',
       employerPhone: user?.phoneNumber ?? '',
     );

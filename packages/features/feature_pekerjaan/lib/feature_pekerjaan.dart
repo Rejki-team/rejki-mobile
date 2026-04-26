@@ -10,3 +10,7 @@ export 'presentation/job_detail/cubit/job_detail_cubit.dart';
 export 'presentation/job_detail/cubit/job_detail_state.dart';
 export 'presentation/job_detail/widgets/job_detail_bottom_sheet.dart';
 export 'presentation/location/bloc/location_bloc.dart';
+export 'presentation/daftar_pelamar/daftar_pelamar_page.dart';
+export 'presentation/daftar_pelamar/daftar_pelamar_args.dart';
+export 'presentation/daftar_pelamar/cubit/daftar_pelamar_cubit.dart';
+export 'presentation/daftar_pelamar/cubit/daftar_pelamar_state.dart';

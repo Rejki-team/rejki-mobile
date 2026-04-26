@@ -18,6 +18,8 @@ import 'package:feature_forgotpassword/feature_forgotpassword.dart';
 import 'package:feature_register/feature_register.dart';
 import 'package:feature_profile/feature_profile.dart';
 import 'package:feature_pekerjaan/feature_pekerjaan.dart';
+import 'package:feature_pekerjaan/presentation/daftar_pelamar/daftar_pelamar_page.dart';
+import 'package:feature_pekerjaan/presentation/daftar_pelamar/daftar_pelamar_args.dart';
 import 'package:feature_notification/feature_notification.dart';
 import 'package:feature_pekerja/feature_pekerja.dart';
 import 'package:feature_pelatihan/feature_pelatihan.dart';
@@ -362,6 +364,26 @@ class AppRouter {
                 ),
               );
             },
+            routes: [
+              GoRoute(
+                path: 'pelamar',
+                name: 'pelamarPekerjaan',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) {
+                  final jobId = state.pathParameters['id']!;
+                  final extra =
+                      state.extra as Map<String, dynamic>? ?? {};
+                  return DaftarPelamarPage(
+                    args: DaftarPelamarArgs(
+                      jobId: jobId,
+                      jobTitle: extra['jobTitle'] as String? ?? '',
+                      adCode: extra['adCode'] as String? ?? '',
+                      jobStatus: extra['jobStatus'] as String? ?? '',
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),

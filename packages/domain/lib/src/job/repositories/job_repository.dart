@@ -42,4 +42,24 @@ abstract class JobRepository {
     int page = 1,
     int limit = 10,
   });
+
+  /// Get incoming bids for jobs posted by the current user (employer view)
+  ///
+  /// Returns a paginated list of bids received on the user's own job listings.
+  /// [jobId] optionally filters bids to a specific job.
+  /// [status] optionally filters by bid status (request, approve, decline).
+  Future<Either<JobFailure, BidsResultEntity>> getIncomingBids({
+    String? jobId,
+    String? status,
+    int page = 1,
+    int limit = 10,
+  });
+
+  /// Get jobs posted by the current user
+  ///
+  /// Returns a paginated result of jobs created by the authenticated user.
+  Future<Either<JobFailure, JobsResultEntity>> getMyJobs({
+    int page = 1,
+    int limit = 10,
+  });
 }

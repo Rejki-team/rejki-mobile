@@ -69,6 +69,46 @@ class JobRepositoryImpl extends JobRepository {
     }
   }
 
+  @override
+  Future<Either<JobFailure, BidsResultEntity>> getIncomingBids({
+    String? jobId,
+    String? status,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await _remoteDataSource.getIncomingBids(
+        jobId: jobId,
+        status: status,
+        page: page,
+        limit: limit,
+      );
+      return Right(response.toEntity());
+    } on DioException catch (e) {
+      return Left(_handleDioException(e));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<JobFailure, JobsResultEntity>> getMyJobs({
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await _remoteDataSource.getMyJobs(
+        page: page,
+        limit: limit,
+      );
+      return Right(response.toEntity());
+    } on DioException catch (e) {
+      return Left(_handleDioException(e));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
   /// Handle DioException and map to JobFailure
   JobFailure _handleDioException(DioException e) {
     if (e.response?.statusCode == 401) {

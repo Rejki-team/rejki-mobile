@@ -21,4 +21,18 @@ abstract class JobRemoteDataSource {
     int page = 1,
     int limit = 10,
   });
+
+  /// Fetch incoming bids for jobs posted by the current user (employer view)
+  Future<BidsResponseModel> getIncomingBids({
+    String? jobId,
+    String? status,
+    int page = 1,
+    int limit = 10,
+  });
+
+  /// Fetch jobs posted by the current user
+  Future<JobsResponseModel> getMyJobs({
+    int page = 1,
+    int limit = 10,
+  });
 }

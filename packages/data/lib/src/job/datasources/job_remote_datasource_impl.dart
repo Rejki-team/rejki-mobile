@@ -54,4 +54,50 @@ class JobRemoteDataSourceImpl implements JobRemoteDataSource {
     final data = response.data['data'] as Map<String, dynamic>;
     return BidsResponseModel.fromJson(data);
   }
+
+  @override
+  Future<BidsResponseModel> getIncomingBids({
+    String? jobId,
+    String? status,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'page': page,
+      'limit': limit,
+    };
+    if (jobId != null && jobId.isNotEmpty) {
+      queryParams['job_id'] = jobId;
+    }
+    if (status != null && status.isNotEmpty) {
+      queryParams['status'] = status;
+    }
+
+    final response = await _dioClient.get(
+      '/jobs/me/incoming-bids',
+      queryParameters: queryParams,
+    );
+
+    final data = response.data['data'] as Map<String, dynamic>;
+    return BidsResponseModel.fromJson(data);
+  }
+
+  @override
+  Future<JobsResponseModel> getMyJobs({
+    int page = 1,
+    int limit = 10,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'page': page,
+      'limit': limit,
+    };
+
+    final response = await _dioClient.get(
+      '/jobs/me',
+      queryParameters: queryParams,
+    );
+
+    final data = response.data['data'] as Map<String, dynamic>;
+    return JobsResponseModel.fromJson(data);
+  }
 }

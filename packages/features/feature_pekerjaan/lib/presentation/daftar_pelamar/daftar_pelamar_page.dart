@@ -1,0 +1,418 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:components/components.dart';
+import 'package:designsystems/designsystems.dart';
+import 'package:domain/domain.dart';
+import 'package:core/core.dart';
+
+import 'cubit/daftar_pelamar_cubit.dart';
+import 'cubit/daftar_pelamar_state.dart';
+import 'daftar_pelamar_args.dart';
+import 'widgets/pelamar_card.dart';
+
+class DaftarPelamarPage extends StatefulWidget {
+  final DaftarPelamarArgs args;
+
+  const DaftarPelamarPage({super.key, required this.args});
+
+  @override
+  State<DaftarPelamarPage> createState() => _DaftarPelamarPageState();
+}
+
+class _DaftarPelamarPageState extends State<DaftarPelamarPage>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+  late final DaftarPelamarCubit _cubit;
+  final ScrollController _pelamarScroll = ScrollController();
+  final ScrollController _diterimaScroll = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _cubit = GetIt.I<DaftarPelamarCubit>();
+
+    _cubit.loadPelamar(jobId: widget.args.jobId);
+
+    _tabController.addListener(_onTabChanged);
+    _pelamarScroll.addListener(_onPelamarScroll);
+    _diterimaScroll.addListener(_onDiterimaScroll);
+  }
+
+  @override
+  void dispose() {
+    _tabController
+      ..removeListener(_onTabChanged)
+      ..dispose();
+    _pelamarScroll.dispose();
+    _diterimaScroll.dispose();
+    _cubit.close();
+    super.dispose();
+  }
+
+  void _onTabChanged() {
+    if (_tabController.indexIsChanging) return;
+    if (_tabController.index == 1 &&
+        _cubit.state.diterimaStatus == DaftarPelamarStatus.initial) {
+      _cubit.loadPelamarDiterima(jobId: widget.args.jobId);
+    }
+  }
+
+  void _onPelamarScroll() {
+    if (_pelamarScroll.position.pixels >=
+        _pelamarScroll.position.maxScrollExtent - 200) {
+      _cubit.loadPelamar(jobId: widget.args.jobId);
+    }
+  }
+
+  void _onDiterimaScroll() {
+    if (_diterimaScroll.position.pixels >=
+        _diterimaScroll.position.maxScrollExtent - 200) {
+      _cubit.loadPelamarDiterima(jobId: widget.args.jobId);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider.value(
+      value: _cubit,
+      child: BlocListener<DaftarPelamarCubit, DaftarPelamarState>(
+        listenWhen:
+            (prev, curr) => prev.mutationStatus != curr.mutationStatus,
+        listener: (context, state) {
+          if (state.mutationStatus == DaftarPelamarMutationStatus.success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.mutationSuccessMessage ?? 'Berhasil'),
+                backgroundColor: AppColors.chatButtonGreen,
+              ),
+            );
+            _cubit.clearMutationState();
+          } else if (state.mutationStatus ==
+              DaftarPelamarMutationStatus.failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.mutationErrorMessage ?? 'Terjadi kesalahan',
+                ),
+                backgroundColor: AppColors.error,
+              ),
+            );
+            _cubit.clearMutationState();
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: _buildAppBar(context),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              _PelamarTab(
+                args: widget.args,
+                scrollController: _pelamarScroll,
+                cubit: _cubit,
+              ),
+              _PelamarDiterimaTab(
+                args: widget.args,
+                scrollController: _diterimaScroll,
+                cubit: _cubit,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final bgColor = AppColors.buttonGradientEnd;
+    return AppBar(
+      backgroundColor: bgColor,
+      elevation: 0,
+      leading: IconButton(
+        onPressed: () => context.pop(),
+        icon: SvgPicture.asset(
+          AppAssets.iconArrowLeft,
+          width: 20,
+          height: 20,
+          colorFilter: const ColorFilter.mode(
+            AppColors.white,
+            BlendMode.srcIn,
+          ),
+        ),
+      ),
+      titleSpacing: 0,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Daftar Pelamar',
+            style: AppTypography.titleSmall.copyWith(color: AppColors.white),
+          ),
+          Text(
+            widget.args.jobTitle,
+            style: AppTypography.appBarSubtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+      bottom: TabBar(
+        controller: _tabController,
+        labelColor: AppColors.white,
+        unselectedLabelColor: AppColors.white.withValues(alpha: 0.6),
+        indicatorColor: AppColors.primary,
+        indicatorWeight: 3,
+        labelStyle: AppTypography.labelMedium,
+        unselectedLabelStyle: AppTypography.labelMedium,
+        tabs: const [
+          Tab(text: 'Pelamar'),
+          Tab(text: 'Pelamar diterima'),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Tab Pelamar (status = request) ─────────────────────────────────────────
+
+class _PelamarTab extends StatelessWidget {
+  final DaftarPelamarArgs args;
+  final ScrollController scrollController;
+  final DaftarPelamarCubit cubit;
+
+  const _PelamarTab({
+    required this.args,
+    required this.scrollController,
+    required this.cubit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<DaftarPelamarCubit, DaftarPelamarState>(
+      buildWhen: (prev, curr) =>
+          prev.pelamarStatus != curr.pelamarStatus ||
+          prev.pelamarList != curr.pelamarList,
+      builder: (context, state) {
+        if (state.pelamarStatus == DaftarPelamarStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state.pelamarStatus == DaftarPelamarStatus.failure) {
+          return _ErrorView(
+            message: state.pelamarError ?? 'Terjadi kesalahan',
+            onRetry: () => cubit.loadPelamar(
+              jobId: args.jobId,
+              refresh: true,
+            ),
+          );
+        }
+
+        if (state.pelamarStatus == DaftarPelamarStatus.success &&
+            state.pelamarList.isEmpty) {
+          return const _EmptyView(message: 'Belum ada pelamar');
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => cubit.loadPelamar(
+            jobId: args.jobId,
+            refresh: true,
+          ),
+          child: ListView.builder(
+            controller: scrollController,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            itemCount:
+                state.pelamarList.length +
+                (state.pelamarStatus == DaftarPelamarStatus.loadingMore
+                    ? 1
+                    : 0),
+            itemBuilder: (context, index) {
+              if (index == state.pelamarList.length) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              final bid = state.pelamarList[index];
+              return PelamarCard(
+                bid: bid,
+                adCode: args.adCode,
+                showActionButtons: true,
+                onDetailPekerjaPressed: () =>
+                    _navigateToWorkerDetail(context, bid),
+                onTolakPressed: () => cubit.tolak(
+                  jobId: args.jobId,
+                  bidId: bid.id,
+                ),
+                onTerimaPressed: () => cubit.terima(
+                  jobId: args.jobId,
+                  bidId: bid.id,
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  void _navigateToWorkerDetail(BuildContext context, BidEntity bid) {
+    final workerId = bid.worker?.id ?? bid.workerId;
+    if (workerId.isNotEmpty) {
+      context.push('/pekerja/$workerId');
+    }
+  }
+}
+
+// ── Tab Pelamar Diterima (status = approve) ────────────────────────────────
+
+class _PelamarDiterimaTab extends StatelessWidget {
+  final DaftarPelamarArgs args;
+  final ScrollController scrollController;
+  final DaftarPelamarCubit cubit;
+
+  const _PelamarDiterimaTab({
+    required this.args,
+    required this.scrollController,
+    required this.cubit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<DaftarPelamarCubit, DaftarPelamarState>(
+      buildWhen: (prev, curr) =>
+          prev.diterimaStatus != curr.diterimaStatus ||
+          prev.diterimaList != curr.diterimaList,
+      builder: (context, state) {
+        if (state.diterimaStatus == DaftarPelamarStatus.initial ||
+            state.diterimaStatus == DaftarPelamarStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state.diterimaStatus == DaftarPelamarStatus.failure) {
+          return _ErrorView(
+            message: state.diterimaError ?? 'Terjadi kesalahan',
+            onRetry: () => cubit.loadPelamarDiterima(
+              jobId: args.jobId,
+              refresh: true,
+            ),
+          );
+        }
+
+        if (state.diterimaStatus == DaftarPelamarStatus.success &&
+            state.diterimaList.isEmpty) {
+          return const _EmptyView(message: 'Belum ada pelamar yang diterima');
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => cubit.loadPelamarDiterima(
+            jobId: args.jobId,
+            refresh: true,
+          ),
+          child: ListView.builder(
+            controller: scrollController,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            itemCount:
+                state.diterimaList.length +
+                (state.diterimaStatus == DaftarPelamarStatus.loadingMore
+                    ? 1
+                    : 0),
+            itemBuilder: (context, index) {
+              if (index == state.diterimaList.length) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              final bid = state.diterimaList[index];
+              return PelamarCard(
+                bid: bid,
+                adCode: args.adCode,
+                showActionButtons: false,
+                onDetailPekerjaPressed: () =>
+                    _navigateToWorkerDetail(context, bid),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  void _navigateToWorkerDetail(BuildContext context, BidEntity bid) {
+    final workerId = bid.worker?.id ?? bid.workerId;
+    if (workerId.isNotEmpty) {
+      context.push('/pekerja/$workerId');
+    }
+  }
+}
+
+// ── Shared UI helpers ──────────────────────────────────────────────────────
+
+class _EmptyView extends StatelessWidget {
+  final String message;
+
+  const _EmptyView({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.people_outline,
+            size: 64,
+            color: AppColors.textTertiary,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            message,
+            style: AppTypography.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _ErrorView({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: AppColors.error),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              message,
+              style: AppTypography.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            ElevatedButton(
+              onPressed: onRetry,
+              child: const Text('Coba lagi'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -71,7 +71,9 @@ class JobFormatter {
   ///
   /// - `'open'` → `'Tersedia'`
   /// - `'in_progress'` → `'Dalam Proses'`
-  /// - `'closed'` → `'Selesai'`
+  /// - `'done'` → `'Selesai'`
+  /// - `'canceled'` → `'Dibatalkan'`
+  /// - `'closed'` → `'Selesai'` (legacy)
   /// - otherwise → `'Tersedia'`
   static String getStatusLabel(String status) {
     switch (status.toLowerCase()) {
@@ -79,29 +81,56 @@ class JobFormatter {
         return 'Tersedia';
       case 'in_progress':
         return 'Dalam Proses';
+      case 'done':
       case 'closed':
         return 'Selesai';
+      case 'canceled':
+        return 'Dibatalkan';
       default:
         return 'Tersedia';
     }
   }
 
-  /// Maps job status string for listing view (shorter label).
+  /// Maps job status string to short UI badge label.
   ///
   /// - `'open'` → `'Baru'`
-  /// - `'in_progress'` → `'Dalam Proses'`
-  /// - `'closed'` → `'Selesai'`
+  /// - `'in_progress'` → `'Progress'`
+  /// - `'done'` → `'Selesai'`
+  /// - `'canceled'` → `'Dibatalkan'`
+  /// - `'closed'` → `'Selesai'` (legacy)
   /// - otherwise → `'Baru'`
   static String getStatusLabelShort(String status) {
     switch (status.toLowerCase()) {
       case 'open':
         return 'Baru';
       case 'in_progress':
-        return 'Dalam Proses';
+        return 'Progress';
+      case 'done':
       case 'closed':
         return 'Selesai';
+      case 'canceled':
+        return 'Dibatalkan';
       default:
         return 'Baru';
+    }
+  }
+
+  /// Maps bid status string to UI label.
+  ///
+  /// - `'request'` → `'Melamar'`
+  /// - `'approve'` → `'Diterima'`
+  /// - `'decline'` → `'Ditolak'`
+  /// - otherwise → `'Melamar'`
+  static String getBidStatusLabel(String status) {
+    switch (status.toLowerCase()) {
+      case 'request':
+        return 'Melamar';
+      case 'approve':
+        return 'Diterima';
+      case 'decline':
+        return 'Ditolak';
+      default:
+        return 'Melamar';
     }
   }
 
