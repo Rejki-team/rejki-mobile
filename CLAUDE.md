@@ -122,3 +122,38 @@ See `.claude/skills/flutter-freezed/SKILL.md` for the complete reference.
 5. Export public API through barrel file (`feature_<name>.dart`)
 
 See `docs/JOB_FEATURE_IMPLEMENTATION_GUIDE.md` for step-by-step walkthrough.
+
+---
+
+## Quality Rules
+
+### Wajib Pada Setiap Perubahan
+- **Jangan over-engineering** — implementasikan hanya yang diminta.
+- **Freezed + abstract class** — selalu gunakan `abstract class` saat mendefinisikan model/union dengan Freezed:
+  ```dart
+  @freezed
+  abstract class MyModel with _$MyModel { ... }
+  ```
+- **Safe rebuild** — gunakan `BlocSelector` atau `context.select()` untuk membatasi rebuild hanya pada state yang berubah. Hindari `BlocBuilder` yang listen ke seluruh state jika hanya sebagian field yang dibutuhkan.
+- **Test** — wajib buat atau perbarui test yang relevan dan pastikan lolos (`melos test`).
+- **Referensi feature lain** — sebelum membuat komponen atau pola baru, cek apakah ada design yang sama di feature lain dan referensikan.
+
+### Code Quality (Non-Negotiable)
+- **No ANR** — semua operasi I/O, database, dan network harus di luar main isolate atau dibungkus `async/await`.
+- **No Memory Leak** — dispose semua `StreamSubscription`, `AnimationController`, `ScrollController`, dan `TextEditingController` di `dispose()`.
+- **No Race Condition** — jangan emit state dari multiple async calls tanpa guard. Gunakan `isClosed` check sebelum emit di BLoC/Cubit.
+- **No God Class / God Function** — satu file tidak boleh melebihi ~300 baris; pisahkan BLoC/Cubit per domain.
+- **No Code Smell** — tidak ada dead code, commented-out code, atau magic numbers.
+- **No Hardcoded Styling** — semua warna, ukuran, font, dan spacing dari `packages/designsystems`. Tidak ada hex literal, `Colors.xxx`, atau pixel value inline.
+- **No Deprecated Code** — tidak ada API Flutter/Dart deprecated. Cek dengan `melos analyze`.
+- **No Experimental Code** — tidak ada `@experimental` API di production code.
+- **No Circular Dependency** — patuhi: `feature_*` → `domain/data` → `core`. Tidak ada referensi balik.
+- **No Injection Duplication** — setiap class hanya diregister satu kali di `packages/di`.
+- **Thread Safe** — akses storage hanya melalui abstraksi `packages/local`.
+- **Safe Navigation** — semua navigasi via `go_router` (`context.go()` / `context.push()`). Tidak ada `Navigator.of(context)` langsung.
+- **Clean Code + SOLID** — setiap class memiliki satu tanggung jawab; abstraksi via repository interface di `packages/domain`.
+
+### Reusable Components
+- Widget dipakai di 2+ feature → `packages/components`.
+- Widget utility/helper yang bukan design system → `packages/shared_widgets`.
+- Jangan duplikasi widget yang sudah ada di packages tersebut.
