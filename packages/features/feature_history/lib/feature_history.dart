@@ -11,3 +11,5 @@ export 'presentation/history/cubit/history_barang_bekas_cubit.dart';
 export 'presentation/history/cubit/history_barang_bekas_state.dart';
 export 'presentation/history/cubit/history_iklan_pekerjaan_cubit.dart';
 export 'presentation/history/cubit/history_iklan_pekerjaan_state.dart';
+export 'presentation/history/cubit/history_iklan_pekerja_cubit.dart';
+export 'presentation/history/cubit/history_iklan_pekerja_state.dart';

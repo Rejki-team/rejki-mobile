@@ -42,6 +42,13 @@ class ApiConfig {
   /// Endpoint untuk mendapatkan daftar pekerja yang pernah dihubungi user
   static const String workerMeContacts = '/workers/me/contacts';
 
+  /// Endpoint untuk mendapatkan daftar permintaan kontak masuk ke profil pekerja milik user
+  static const String workerMeIncomingContacts = '/workers/me/incoming-contacts';
+
+  /// Endpoint untuk mengubah status kontak (approve/decline) pada profil pekerja
+  static String workerContactStatus(String workerId, String contactId) =>
+      '/workers/$workerId/contacts/$contactId/status';
+
   /// Endpoint untuk memberikan review kepada pekerja
   static String workerReview(String id) => '/workers/$id/reviews';
 

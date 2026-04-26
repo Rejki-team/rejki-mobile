@@ -16,6 +16,9 @@ import 'cubit/history_barang_bekas_cubit.dart';
 import 'cubit/history_barang_bekas_state.dart';
 import 'cubit/history_iklan_pekerjaan_cubit.dart';
 import 'cubit/history_iklan_pekerjaan_state.dart';
+import 'cubit/history_iklan_pekerja_cubit.dart';
+import 'cubit/history_iklan_pekerja_state.dart';
+import 'widgets/history_iklan_pekerja_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:network/network.dart';
 import 'package:core/core.dart';
@@ -57,6 +60,10 @@ class HistoryPage extends StatelessWidget {
         ),
         BlocProvider<HistoryIklanPekerjaanCubit>(
           create: (context) => GetIt.I<HistoryIklanPekerjaanCubit>()..loadMyJobs(),
+        ),
+        BlocProvider<HistoryIklanPekerjaCubit>(
+          create: (context) =>
+              GetIt.I<HistoryIklanPekerjaCubit>()..loadMyWorkerProfile(),
         ),
       ],
       child: const _HistoryView(),
@@ -719,6 +726,110 @@ class _HistoryList extends StatelessWidget {
                   ),
                 );
               },
+            ),
+          );
+        },
+      );
+    }
+
+    // ── Tab Iklan Saya → Filter Pekerja (real data) ────────────────────────
+    if (tabIndex == 1 && filter == 'Pekerja') {
+      return BlocBuilder<HistoryIklanPekerjaCubit, HistoryIklanPekerjaState>(
+        builder: (context, state) {
+          if (state.status == HistoryIklanPekerjaStatus.initial ||
+              state.status == HistoryIklanPekerjaStatus.loading) {
+            return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
+          }
+
+          if (state.status == HistoryIklanPekerjaStatus.failure) {
+            return AppErrorState(
+              description: state.errorMessage ?? 'Gagal memuat profil pekerja',
+              onRetry: () => context
+                  .read<HistoryIklanPekerjaCubit>()
+                  .loadMyWorkerProfile(refresh: true),
+            );
+          }
+
+          if (state.workerProfile == null) {
+            return AppPullToRefresh(
+              onRefresh: () async => context
+                  .read<HistoryIklanPekerjaCubit>()
+                  .loadMyWorkerProfile(refresh: true),
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Belum ada iklan pekerja.',
+                            style: AppTypography.bodyMedium,
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          ElevatedButton(
+                            onPressed: () =>
+                                context.push('/pekerja/create'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.buttonGradientEnd,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              'Buat Iklan Pekerja',
+                              style: AppTypography.labelMedium
+                                  .copyWith(color: AppColors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final worker = state.workerProfile!;
+          return AppPullToRefresh(
+            onRefresh: () async => context
+                .read<HistoryIklanPekerjaCubit>()
+                .loadMyWorkerProfile(refresh: true),
+            child: ListView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              children: [
+                HistoryIklanPekerjaCard(
+                  avatarUrl: worker.avatarUrl != null
+                      ? ApiConfig.buildImageUrl(worker.avatarUrl!)
+                      : null,
+                  name: worker.name,
+                  adCode: worker.adCode,
+                  ageText: '${worker.age} Tahun',
+                  ratingText: worker.rating.toStringAsFixed(1),
+                  reviewCountText: worker.reviewCount.toString(),
+                  wageText:
+                      'Rp ${worker.wage.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]}.')} / Jam',
+                  isActive:
+                      worker.statusLabel?.toLowerCase() == 'active',
+                  onDetailPressed: () =>
+                      context.push('/pekerja/${worker.id}'),
+                  onEditPressed: () =>
+                      context.push('/pekerja/create?useProfile=true'),
+                  onContactRequestsPressed: () => context.push(
+                    '/pekerja/${worker.id}/contact-requests',
+                    extra: {
+                      'workerName': worker.name,
+                      'adCode': worker.adCode,
+                    },
+                  ),
+                ),
+              ],
             ),
           );
         },

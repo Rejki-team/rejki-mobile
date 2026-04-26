@@ -170,6 +170,81 @@ class WorkerRepositoryImpl implements WorkerRepository {
   }
 
   @override
+  Future<Either<WorkerFailure, IncomingContactsResultEntity>> getIncomingContacts({
+    String? status,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await _remoteDataSource.getIncomingContacts(
+        status: status,
+        page: page,
+        limit: limit,
+      );
+
+      final map = response.data as Map<String, dynamic>? ?? {};
+      final List<dynamic> rawContacts = map['contacts'] as List<dynamic>? ?? [];
+      final pagination = map['pagination'] as Map<String, dynamic>? ?? {};
+
+      final contacts = rawContacts.map((item) {
+        final c = item as Map<String, dynamic>;
+        final employer = c['employer'] as Map<String, dynamic>? ?? {};
+        return IncomingContactEntity(
+          id: c['id']?.toString() ?? '',
+          workerId: c['worker_id']?.toString() ?? '',
+          status: c['status']?.toString() ?? '',
+          createdAt: c['created_at']?.toString() ?? '',
+          updatedAt: c['updated_at']?.toString() ?? '',
+          employer: IncomingContactEmployerEntity(
+            id: employer['id']?.toString() ?? '',
+            fullName: employer['full_name']?.toString() ?? '',
+          ),
+        );
+      }).toList();
+
+      return right(IncomingContactsResultEntity(
+        contacts: contacts,
+        totalRows: pagination['total_rows'] as int? ?? 0,
+        totalPages: pagination['total_pages'] as int? ?? 0,
+        currentPage: pagination['current_page'] as int? ?? page,
+        hasNext: pagination['has_next'] as bool? ?? false,
+      ));
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        return left(const WorkerFailure.networkError());
+      }
+      return left(WorkerFailure.serverError(e.message));
+    } catch (e) {
+      return left(const WorkerFailure.unknown());
+    }
+  }
+
+  @override
+  Future<Either<WorkerFailure, Unit>> updateWorkerContactStatus({
+    required String workerId,
+    required String contactId,
+    required String status,
+  }) async {
+    try {
+      await _remoteDataSource.updateWorkerContactStatus(
+        workerId: workerId,
+        contactId: contactId,
+        status: status,
+      );
+      return right(unit);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        return left(const WorkerFailure.networkError());
+      }
+      return left(WorkerFailure.serverError(e.message));
+    } catch (e) {
+      return left(const WorkerFailure.unknown());
+    }
+  }
+
+  @override
   Future<Either<WorkerFailure, Unit>> submitWorkerReview({
     required String workerId,
     required int rating,

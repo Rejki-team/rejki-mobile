@@ -3,6 +3,7 @@ import '../failures/worker_failure.dart';
 import '../entities/worker_entity.dart';
 import '../entities/create_worker_params.dart';
 import '../entities/worker_contact_entity.dart';
+import '../entities/incoming_contact_entity.dart';
 
 /// Worker Repository Interface
 abstract class WorkerRepository {
@@ -42,6 +43,20 @@ abstract class WorkerRepository {
     String? status,
     int? page,
     int? limit,
+  });
+
+  /// Fetches paginated incoming contact requests targeting worker profiles owned by the user
+  Future<Either<WorkerFailure, IncomingContactsResultEntity>> getIncomingContacts({
+    String? status,
+    int page = 1,
+    int limit = 10,
+  });
+
+  /// Updates the status of a contact request (approve/decline) on a worker profile owned by the user
+  Future<Either<WorkerFailure, Unit>> updateWorkerContactStatus({
+    required String workerId,
+    required String contactId,
+    required String status,
   });
 
   /// Submits a review for a specific worker

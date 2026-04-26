@@ -450,6 +450,24 @@ class AppRouter {
               final id = state.pathParameters['id']!;
               return WorkerDetailPage(workerId: id);
             },
+            routes: [
+              GoRoute(
+                path: 'contact-requests',
+                name: 'pekerjaContactRequest',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) {
+                  final workerId = state.pathParameters['id']!;
+                  final extra = state.extra as Map<String, dynamic>? ?? {};
+                  return ContactRequestPage(
+                    args: ContactRequestArgs(
+                      workerId: workerId,
+                      workerName: extra['workerName'] as String? ?? '',
+                      adCode: extra['adCode'] as String? ?? '',
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),

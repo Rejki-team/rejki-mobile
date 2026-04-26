@@ -416,6 +416,20 @@ abstract class RegisterModule {
   ) =>
       GetWorkerContactsUseCase(repository);
 
+  /// GetIncomingContactsUseCase - untuk mendapatkan permintaan kontak masuk ke profil pekerja
+  @lazySingleton
+  GetIncomingContactsUseCase getIncomingContactsUseCase(
+    WorkerRepository repository,
+  ) =>
+      GetIncomingContactsUseCase(repository);
+
+  /// UpdateWorkerContactStatusUseCase - untuk terima/tolak permintaan kontak pekerja
+  @lazySingleton
+  UpdateWorkerContactStatusUseCase updateWorkerContactStatusUseCase(
+    WorkerRepository repository,
+  ) =>
+      UpdateWorkerContactStatusUseCase(repository);
+
   /// SubmitWorkerReviewUseCase - untuk memberikan rating kepada pekerja
   @lazySingleton
   SubmitWorkerReviewUseCase submitWorkerReviewUseCase(
@@ -713,6 +727,24 @@ abstract class RegisterModule {
     GetMyJobsUseCase getMyJobsUseCase,
   ) =>
       HistoryIklanPekerjaanCubit(getMyJobsUseCase);
+
+  /// HistoryIklanPekerjaCubit - untuk tab Iklan Saya > Pekerja di halaman riwayat
+  @factoryMethod
+  HistoryIklanPekerjaCubit historyIklanPekerjaCubit(
+    GetMyWorkerProfileUseCase getMyWorkerProfileUseCase,
+  ) =>
+      HistoryIklanPekerjaCubit(getMyWorkerProfileUseCase);
+
+  /// ContactRequestCubit - untuk halaman permintaan kontak masuk ke profil pekerja
+  @factoryMethod
+  ContactRequestCubit contactRequestCubit(
+    GetIncomingContactsUseCase getIncomingContactsUseCase,
+    UpdateWorkerContactStatusUseCase updateWorkerContactStatusUseCase,
+  ) =>
+      ContactRequestCubit(
+        getIncomingContactsUseCase,
+        updateWorkerContactStatusUseCase,
+      );
 
   /// Configuration should prefer @injectable on source classes.
 }

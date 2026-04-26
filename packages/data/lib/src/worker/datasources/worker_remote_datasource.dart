@@ -38,6 +38,20 @@ abstract class WorkerRemoteDataSource {
     int? limit,
   });
 
+  /// Fetches paginated incoming contact requests targeting worker profiles owned by the user
+  Future<ApiResponse<dynamic>> getIncomingContacts({
+    String? status,
+    int page = 1,
+    int limit = 10,
+  });
+
+  /// Updates the status of a contact request (approve/decline)
+  Future<ApiResponse<dynamic>> updateWorkerContactStatus({
+    required String workerId,
+    required String contactId,
+    required String status,
+  });
+
   /// Submits a review for a specific worker
   Future<ApiResponse<dynamic>> submitWorkerReview({
     required String workerId,
@@ -226,6 +240,54 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
           final map = json as Map<String, dynamic>;
           return map['contacts'] as List<dynamic>? ?? [];
         },
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ApiResponse<dynamic>> getIncomingContacts({
+    String? status,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final Map<String, dynamic> queryParams = {
+        'page': page,
+        'limit': limit,
+      };
+      if (status != null && status.isNotEmpty) queryParams['status'] = status;
+
+      final response = await _dioClient.get(
+        ApiConfig.workerMeIncomingContacts,
+        queryParameters: queryParams,
+      );
+
+      return ApiResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        fromJsonT: (json) => json,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ApiResponse<dynamic>> updateWorkerContactStatus({
+    required String workerId,
+    required String contactId,
+    required String status,
+  }) async {
+    try {
+      final response = await _dioClient.put(
+        ApiConfig.workerContactStatus(workerId, contactId),
+        data: {'status': status},
+      );
+
+      return ApiResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        fromJsonT: (json) => json,
       );
     } catch (e) {
       rethrow;

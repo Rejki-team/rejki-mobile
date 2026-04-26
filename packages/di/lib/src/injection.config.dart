@@ -241,6 +241,16 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           registerModule.getWorkerContactsUseCase(gh<_i494.WorkerRepository>()),
     );
+    gh.lazySingleton<_i494.GetIncomingContactsUseCase>(
+      () => registerModule.getIncomingContactsUseCase(
+        gh<_i494.WorkerRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.UpdateWorkerContactStatusUseCase>(
+      () => registerModule.updateWorkerContactStatusUseCase(
+        gh<_i494.WorkerRepository>(),
+      ),
+    );
     gh.lazySingleton<_i494.SubmitWorkerReviewUseCase>(
       () => registerModule.submitWorkerReviewUseCase(
         gh<_i494.WorkerRepository>(),
@@ -251,6 +261,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetUserFullProfileUseCase>(),
         gh<_i494.UpdateWorkingHoursUseCase>(),
         gh<_i494.UpdatePhoneVisibilityUseCase>(),
+      ),
+    );
+    gh.factory<_i950.ContactRequestCubit>(
+      () => registerModule.contactRequestCubit(
+        gh<_i494.GetIncomingContactsUseCase>(),
+        gh<_i494.UpdateWorkerContactStatusUseCase>(),
       ),
     );
     gh.factory<_i1070.ProfileCubit>(
@@ -331,6 +347,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i1070.EditProfileCubit>(
       () => registerModule.editProfileCubit(gh<_i494.UpdateProfileUseCase>()),
+    );
+    gh.factory<_i674.HistoryIklanPekerjaCubit>(
+      () => registerModule.historyIklanPekerjaCubit(
+        gh<_i494.GetMyWorkerProfileUseCase>(),
+      ),
     );
     gh.factory<_i685.DetailUsedGoodsAdCubit>(
       () => registerModule.detailUsedGoodsAdCubit(

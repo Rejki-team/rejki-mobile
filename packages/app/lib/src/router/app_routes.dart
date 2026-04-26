@@ -60,6 +60,7 @@ abstract class AppRoutes {
   static const String pekerja = '/pekerja';
   static const String pekerjaDetail = '/pekerja/:id';
   static const String pekerjaCreate = '/pekerja/create';
+  static const String pekerjaContactRequest = '/pekerja/:id/contact-requests';
 
   // ==================== BARANG BEKAS (TOP LEVEL) ====================
   static const String barangBekasRoot = '/barang-bekas';
@@ -78,5 +79,7 @@ abstract class AppRoutes {
   static String chatRoomPath(String id) => '/chat/$id';
   static String historyDetailPath(String id) => '/history/$id';
   static String pekerjaDetailPath(String id) => '/pekerja/$id';
+  static String pekerjaContactRequestPath(String id) =>
+      '/pekerja/$id/contact-requests';
   static String barangBekasDetailPath(String id) => '/barang-bekas/$id';
 }

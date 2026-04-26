@@ -11,3 +11,8 @@ export 'presentation/worker_detail/worker_detail_page.dart';
 export 'presentation/worker_detail/cubit/worker_detail_cubit.dart';
 export 'presentation/worker_detail/cubit/worker_detail_state.dart';
 export 'presentation/worker_detail/models/worker_detail_model.dart';
+
+export 'presentation/contact_request/contact_request_page.dart';
+export 'presentation/contact_request/contact_request_args.dart';
+export 'presentation/contact_request/cubit/contact_request_cubit.dart';
+export 'presentation/contact_request/cubit/contact_request_state.dart';
