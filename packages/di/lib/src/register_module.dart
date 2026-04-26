@@ -399,6 +399,20 @@ abstract class RegisterModule {
   ) =>
       UpdateWorkerProfileUseCase(repository);
 
+  /// GetWorkerContactsUseCase - untuk mendapatkan daftar pekerja yang dihubungi
+  @lazySingleton
+  GetWorkerContactsUseCase getWorkerContactsUseCase(
+    WorkerRepository repository,
+  ) =>
+      GetWorkerContactsUseCase(repository);
+
+  /// SubmitWorkerReviewUseCase - untuk memberikan rating kepada pekerja
+  @lazySingleton
+  SubmitWorkerReviewUseCase submitWorkerReviewUseCase(
+    WorkerRepository repository,
+  ) =>
+      SubmitWorkerReviewUseCase(repository);
+
   // ============================================
   // FEATURE PEKERJA CUBITS
   // ============================================
@@ -434,8 +448,34 @@ abstract class RegisterModule {
   );
 
   // ============================================
-  // FEATURE PELATIHAN CUBITS
+  // FEATURE PELATIHAN CUBITS & DOMAIN/DATA
   // ============================================
+
+  /// TrainingRemoteDataSource
+  @lazySingleton
+  TrainingRemoteDataSource trainingRemoteDataSource(DioClient dioClient) =>
+      TrainingRemoteDataSourceImpl(dioClient);
+
+  /// TrainingRepository
+  @LazySingleton(as: TrainingRepository)
+  TrainingRepositoryImpl trainingRepository(
+    TrainingRemoteDataSource remoteDataSource,
+  ) => TrainingRepositoryImpl(remoteDataSource);
+
+  /// GetMyTrainingEnrollmentsUseCase
+  @lazySingleton
+  GetMyTrainingEnrollmentsUseCase getMyTrainingEnrollmentsUseCase(TrainingRepository repository) =>
+      GetMyTrainingEnrollmentsUseCase(repository);
+
+  /// GetTrainingDetailUseCase
+  @lazySingleton
+  GetTrainingDetailUseCase getTrainingDetailUseCase(TrainingRepository repository) =>
+      GetTrainingDetailUseCase(repository);
+
+  /// HistoryPelatihanCubit
+  @factoryMethod
+  HistoryPelatihanCubit historyPelatihanCubit(GetMyTrainingEnrollmentsUseCase useCase) =>
+      HistoryPelatihanCubit(useCase);
 
   /// TrainingListingCubit - untuk halaman daftar pelatihan
   @factoryMethod
@@ -498,7 +538,15 @@ abstract class RegisterModule {
   @lazySingleton
   ClaimSecondhandUseCase claimSecondhandUseCase(
     SecondhandMutationRepository repository,
-  ) => ClaimSecondhandUseCase(repository);
+  ) =>
+      ClaimSecondhandUseCase(repository);
+
+  /// GetMyClaimedSecondhandsUseCase - untuk mendapatkan daftar barang bekas yang di-claim user
+  @lazySingleton
+  GetMyClaimedSecondhandsUseCase getMyClaimedSecondhandsUseCase(
+    SecondhandRepository repository,
+  ) =>
+      GetMyClaimedSecondhandsUseCase(repository);
 
   /// GetUserProfileUseCase - untuk mendapatkan profil user (radius filter)
   @lazySingleton
@@ -622,6 +670,24 @@ abstract class RegisterModule {
         updateBidStatusUseCase,
         createJobReviewUseCase,
       );
+
+  /// HistoryPekerjaCubit - untuk tab pekerja di halaman riwayat
+  @factoryMethod
+  HistoryPekerjaCubit historyPekerjaCubit(
+    GetWorkerContactsUseCase getWorkerContactsUseCase,
+    SubmitWorkerReviewUseCase submitWorkerReviewUseCase,
+  ) =>
+      HistoryPekerjaCubit(
+        getWorkerContactsUseCase,
+        submitWorkerReviewUseCase,
+      );
+
+  /// HistoryBarangBekasCubit - untuk tab barang bekas di halaman riwayat
+  @factoryMethod
+  HistoryBarangBekasCubit historyBarangBekasCubit(
+    GetMyClaimedSecondhandsUseCase getMyClaimedSecondhandsUseCase,
+  ) =>
+      HistoryBarangBekasCubit(getMyClaimedSecondhandsUseCase);
 
   /// Configuration should prefer @injectable on source classes.
 }

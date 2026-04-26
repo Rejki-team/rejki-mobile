@@ -28,6 +28,9 @@ dependencies:
     path: ../../designsystems
   domain:
     path: ../../domain
+  network:
+    path: ../../network
+  go_router: ^17.0.1
 
 dev_dependencies:
   flutter_test:

@@ -30,6 +30,20 @@ abstract class WorkerRemoteDataSource {
     String id,
     CreateWorkerParams params,
   );
+
+  /// Fetches the list of workers contacted by the user
+  Future<ApiResponse<List<dynamic>>> getWorkerContacts({
+    String? status,
+    int? page,
+    int? limit,
+  });
+
+  /// Submits a review for a specific worker
+  Future<ApiResponse<dynamic>> submitWorkerReview({
+    required String workerId,
+    required int rating,
+    required String review,
+  });
 }
 
 
@@ -187,5 +201,58 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
       response.data as Map<String, dynamic>,
       fromJsonT: (data) => data,
     );
+  }
+
+  @override
+  Future<ApiResponse<List<dynamic>>> getWorkerContacts({
+    String? status,
+    int? page,
+    int? limit,
+  }) async {
+    try {
+      final Map<String, dynamic> queryParams = {};
+      if (status != null && status.isNotEmpty) queryParams['status'] = status;
+      if (page != null) queryParams['page'] = page;
+      if (limit != null) queryParams['limit'] = limit;
+
+      final response = await _dioClient.get(
+        ApiConfig.workerMeContacts,
+        queryParameters: queryParams,
+      );
+
+      return ApiResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        fromJsonT: (json) {
+          final map = json as Map<String, dynamic>;
+          return map['contacts'] as List<dynamic>? ?? [];
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ApiResponse<dynamic>> submitWorkerReview({
+    required String workerId,
+    required int rating,
+    required String review,
+  }) async {
+    try {
+      final response = await _dioClient.post(
+        ApiConfig.workerReview(workerId),
+        data: {
+          'rating': rating,
+          'review': review,
+        },
+      );
+
+      return ApiResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        fromJsonT: (json) => json,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 }

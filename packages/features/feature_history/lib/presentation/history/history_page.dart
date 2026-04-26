@@ -8,6 +8,14 @@ import 'cubit/history_cubit.dart';
 import 'cubit/history_state.dart';
 import 'cubit/history_pekerjaan_cubit.dart';
 import 'cubit/history_pekerjaan_state.dart';
+import 'cubit/history_pekerja_cubit.dart';
+import 'cubit/history_pekerja_state.dart';
+import 'cubit/history_pelatihan_cubit.dart';
+import 'cubit/history_pelatihan_state.dart';
+import 'cubit/history_barang_bekas_cubit.dart';
+import 'cubit/history_barang_bekas_state.dart';
+import 'package:go_router/go_router.dart';
+import 'package:network/network.dart';
 
 class HistoryPage extends StatelessWidget {
   final int initialTabIndex;
@@ -34,6 +42,15 @@ class HistoryPage extends StatelessWidget {
         ),
         BlocProvider<HistoryPekerjaanCubit>(
           create: (context) => GetIt.I<HistoryPekerjaanCubit>()..loadBids(),
+        ),
+        BlocProvider<HistoryPekerjaCubit>(
+          create: (context) => GetIt.I<HistoryPekerjaCubit>()..loadContacts(),
+        ),
+        BlocProvider<HistoryPelatihanCubit>(
+          create: (context) => GetIt.I<HistoryPelatihanCubit>()..loadEnrollments(),
+        ),
+        BlocProvider<HistoryBarangBekasCubit>(
+          create: (context) => GetIt.I<HistoryBarangBekasCubit>()..loadClaims(),
         ),
       ],
       child: const _HistoryView(),
@@ -284,6 +301,319 @@ class _HistoryList extends StatelessWidget {
                       },
                     );
                   } : null,
+                );
+              },
+            ),
+          );
+        },
+      );
+    }
+
+    if (tabIndex == 0 && filter == 'Pekerja') {
+      return BlocConsumer<HistoryPekerjaCubit, HistoryPekerjaState>(
+        listenWhen: (prev, curr) => prev.mutationStatus != curr.mutationStatus,
+        listener: (context, state) {
+          if (state.mutationStatus == HistoryPekerjaMutationStatus.success) {
+            showSuccessDialog(
+              context,
+              title: 'Berhasil',
+              message: state.mutationSuccessMessage ?? 'Berhasil!',
+            );
+            context.read<HistoryPekerjaCubit>().clearMutationState();
+          } else if (state.mutationStatus == HistoryPekerjaMutationStatus.failure) {
+            showFailedDialog(
+              context,
+              title: 'Gagal',
+              message: state.mutationErrorMessage ?? 'Terjadi kesalahan.',
+            );
+            context.read<HistoryPekerjaCubit>().clearMutationState();
+          }
+        },
+        builder: (context, state) {
+          if (state.status == HistoryPekerjaStatus.initial ||
+              state.status == HistoryPekerjaStatus.loading) {
+            return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
+          }
+
+          if (state.status == HistoryPekerjaStatus.failure) {
+            return AppErrorState(
+              description: state.errorMessage ?? 'Gagal memuat daftar pekerja',
+              onRetry: () => context.read<HistoryPekerjaCubit>().loadContacts(refresh: true),
+            );
+          }
+
+          if (state.contacts.isEmpty) {
+            return AppPullToRefresh(
+              onRefresh: () async => context.read<HistoryPekerjaCubit>().loadContacts(refresh: true),
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Text('Belum ada pekerja yang dihubungi.', style: AppTypography.bodyMedium),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return AppPullToRefresh(
+            onRefresh: () async => context.read<HistoryPekerjaCubit>().loadContacts(refresh: true),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              itemCount: state.contacts.length + (state.hasNext ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index >= state.contacts.length) {
+                  context.read<HistoryPekerjaCubit>().loadContacts();
+                  return const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final contact = state.contacts[index];
+                final worker = contact.worker;
+
+                // Mengkategorikan status, completed -> selesai, sisanya proses
+                final isCompleted = contact.status.toLowerCase() == 'completed' || contact.status.toLowerCase() == 'selesai';
+                final cardStatus = isCompleted ? HistoryPekerjaCardStatus.selesai : HistoryPekerjaCardStatus.proses;
+
+                return HistoryPekerjaCard(
+                  avatarUrl: worker.avatarUrl != null ? ApiConfig.buildImageUrl(worker.avatarUrl!) : null,
+                  name: worker.name,
+                  adCode: worker.adCode,
+                  ageText: '${worker.age} Tahun',
+                  ratingText: worker.rating.toString(),
+                  reviewCountText: worker.reviewCount.toString(),
+                  status: cardStatus,
+                  onDetailPressed: () {
+                    context.push('/worker-detail/${worker.id}');
+                  },
+                  onRatingPressed: isCompleted ? () {
+                    AppReviewDialog.show(
+                      context,
+                      adCode: worker.adCode,
+                      onSubmit: (rating, review) {
+                        context.read<HistoryPekerjaCubit>().submitReview(
+                          workerId: worker.id,
+                          rating: rating,
+                          review: review,
+                        );
+                      },
+                    );
+                  } : null,
+                );
+              },
+            ),
+          );
+        },
+      );
+    }
+
+    if (tabIndex == 0 && filter == 'Pelatihan') {
+      return BlocConsumer<HistoryPelatihanCubit, HistoryPelatihanState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          if (state.status == HistoryPelatihanStatus.initial ||
+              state.status == HistoryPelatihanStatus.loading) {
+            return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
+          }
+
+          if (state.status == HistoryPelatihanStatus.failure) {
+            return AppErrorState(
+              description: state.errorMessage ?? 'Gagal memuat daftar pelatihan',
+              onRetry: () => context.read<HistoryPelatihanCubit>().loadEnrollments(refresh: true),
+            );
+          }
+
+          if (state.enrollments.isEmpty) {
+            return AppPullToRefresh(
+              onRefresh: () async => context.read<HistoryPelatihanCubit>().loadEnrollments(refresh: true),
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Text('Belum ada pelatihan yang diikuti.', style: AppTypography.bodyMedium),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return AppPullToRefresh(
+            onRefresh: () async => context.read<HistoryPelatihanCubit>().loadEnrollments(refresh: true),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              itemCount: state.enrollments.length + (state.hasNext ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index >= state.enrollments.length) {
+                  context.read<HistoryPelatihanCubit>().loadEnrollments();
+                  return const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final enrollment = state.enrollments[index];
+                final training = enrollment.training;
+
+                HistoryPelatihanCardStatus mapStatus(String status) {
+                  switch (status.toLowerCase()) {
+                    case 'pending':
+                      return HistoryPelatihanCardStatus.pending;
+                    case 'payment_uploaded':
+                      return HistoryPelatihanCardStatus.paymentUploaded;
+                    case 'approved':
+                      return HistoryPelatihanCardStatus.approved;
+                    case 'in_progress':
+                      return HistoryPelatihanCardStatus.inProgress;
+                    case 'completed':
+                      return HistoryPelatihanCardStatus.completed;
+                    case 'rejected':
+                      return HistoryPelatihanCardStatus.rejected;
+                    default:
+                      return HistoryPelatihanCardStatus.pending;
+                  }
+                }
+
+                final cardStatus = mapStatus(enrollment.status);
+
+                return HistoryPelatihanCard(
+                  title: training?.title ?? 'Pelatihan',
+                  companyName: training?.companyName ?? '',
+                  dateText: training?.dateOfTraining.split(' ')[0] ?? '-',
+                  priceText: training?.formattedFee ?? 'Gratis',
+                  locationText: training?.locationAddress ?? '-',
+                  status: cardStatus,
+                  rejectionReason: enrollment.rejectionReason,
+                  onDetailPressed: () {
+                    if (training != null) {
+                      context.push('/training-detail/${training.id}');
+                    }
+                  },
+                  onProcessPressed: () {
+                    switch (cardStatus) {
+                      case HistoryPelatihanCardStatus.pending:
+                        if (training != null) {
+                          // TODO: Verify if payment route is correct. Using generic dialog or route for now.
+                          context.push('/payment');
+                        }
+                        break;
+                      case HistoryPelatihanCardStatus.paymentUploaded:
+                        showInfoDialog(
+                          context,
+                          title: 'Verifikasi Pembayaran',
+                          message: 'Proses Verifikasi Pembayaran Sedang dilakukan.',
+                        );
+                        break;
+                      case HistoryPelatihanCardStatus.approved:
+                      case HistoryPelatihanCardStatus.inProgress:
+                      case HistoryPelatihanCardStatus.completed:
+                        if (training != null) {
+                          context.push('/training-detail/${training.id}');
+                        }
+                        break;
+                      case HistoryPelatihanCardStatus.rejected:
+                        // Do nothing or show info
+                        break;
+                    }
+                  },
+                );
+              },
+            ),
+          );
+        },
+      );
+    }
+
+    if (tabIndex == 0 && filter == 'Barang Bekas') {
+      return BlocBuilder<HistoryBarangBekasCubit, HistoryBarangBekasState>(
+        builder: (context, state) {
+          if (state.status == HistoryBarangBekasStatus.initial ||
+              state.status == HistoryBarangBekasStatus.loading) {
+            return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
+          }
+
+          if (state.status == HistoryBarangBekasStatus.failure) {
+            return AppErrorState(
+              description: state.errorMessage ?? 'Gagal memuat daftar barang bekas',
+              onRetry: () => context.read<HistoryBarangBekasCubit>().loadClaims(refresh: true),
+            );
+          }
+
+          if (state.claims.isEmpty) {
+            return AppPullToRefresh(
+              onRefresh: () async =>
+                  context.read<HistoryBarangBekasCubit>().loadClaims(refresh: true),
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Text(
+                        'Belum ada barang bekas yang di-claim.',
+                        style: AppTypography.bodyMedium,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return AppPullToRefresh(
+            onRefresh: () async =>
+                context.read<HistoryBarangBekasCubit>().loadClaims(refresh: true),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              itemCount: state.claims.length + (state.hasNext ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index >= state.claims.length) {
+                  // Trigger load more
+                  context.read<HistoryBarangBekasCubit>().loadClaims();
+                  return const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final item = state.claims[index];
+
+                HistoryBarangBekasCardStatus mapStatus(String status) {
+                  switch (status.toLowerCase()) {
+                    case 'pending':
+                      return HistoryBarangBekasCardStatus.pending;
+                    case 'sold':
+                      return HistoryBarangBekasCardStatus.sold;
+                    default:
+                      return HistoryBarangBekasCardStatus.available;
+                  }
+                }
+
+                return HistoryBarangBekasCard(
+                  imageUrl: item.firstImageUri != null
+                      ? ApiConfig.buildImageUrl(item.firstImageUri!)
+                      : null,
+                  title: item.title,
+                  adCode: item.adCode,
+                  condition: item.condition,
+                  locationText: '${item.village}, ${item.subdistrict}',
+                  status: mapStatus(item.status),
+                  onDetailPressed: () {
+                    context.push('/used-goods/${item.id}');
+                  },
                 );
               },
             ),

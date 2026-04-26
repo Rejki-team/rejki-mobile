@@ -131,6 +131,73 @@ class WorkerRepositoryImpl implements WorkerRepository {
     }
   }
 
+  @override
+  Future<Either<WorkerFailure, List<WorkerContactEntity>>> getWorkerContacts({
+    String? status,
+    int? page,
+    int? limit,
+  }) async {
+    try {
+      final response = await _remoteDataSource.getWorkerContacts(
+        status: status,
+        page: page,
+        limit: limit,
+      );
+
+      final List<dynamic> data = response.data ?? [];
+      final List<WorkerContactEntity> contacts = data.map((item) {
+        final map = item as Map<String, dynamic>;
+        return WorkerContactEntity(
+          id: map['id']?.toString() ?? '',
+          status: map['status']?.toString() ?? '',
+          workerId: map['worker_id']?.toString() ?? '',
+          worker: _mapToEntity(map['worker'] as Map<String, dynamic>? ?? {}),
+          createdAt: map['created_at']?.toString() ?? '',
+          updatedAt: map['updated_at']?.toString() ?? '',
+        );
+      }).toList();
+
+      return right(contacts);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        return left(const WorkerFailure.networkError());
+      }
+      return left(WorkerFailure.serverError(e.message));
+    } catch (e) {
+      return left(const WorkerFailure.unknown());
+    }
+  }
+
+  @override
+  Future<Either<WorkerFailure, Unit>> submitWorkerReview({
+    required String workerId,
+    required int rating,
+    required String review,
+  }) async {
+    try {
+      final response = await _remoteDataSource.submitWorkerReview(
+        workerId: workerId,
+        rating: rating,
+        review: review,
+      );
+
+      if (response.success == false) {
+        return left(WorkerFailure.serverError(response.message));
+      }
+
+      return right(unit);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        return left(const WorkerFailure.networkError());
+      }
+      return left(WorkerFailure.serverError(e.message));
+    } catch (e) {
+      return left(const WorkerFailure.unknown());
+    }
+  }
+
   WorkerEntity _mapToEntity(Map<String, dynamic> json) {
     return WorkerEntity(
       id: json['id']?.toString() ?? '',

@@ -39,10 +39,19 @@ class ApiConfig {
   /// Response: data.workers[] — kosong jika belum punya profil
   static const String workerMe = '/workers/me';
 
+  /// Endpoint untuk mendapatkan daftar pekerja yang pernah dihubungi user
+  static const String workerMeContacts = '/workers/me/contacts';
+
+  /// Endpoint untuk memberikan review kepada pekerja
+  static String workerReview(String id) => '/workers/$id/reviews';
+
   /// API Endpoints - Secondhand (Barang Bekas)
   static const String secondhands = '/secondhands';
   static String secondhandById(String id) => '/secondhands/$id';
   static String secondhandClaim(String id) => '/secondhands/$id/claim';
+
+  /// Endpoint untuk mendapatkan daftar barang bekas yang telah di-claim oleh user
+  static const String secondhandMyClaims = '/secondhands/me/claims';
 
   /// API Endpoints - Location Helpers
   static const String provinces = '/helpers/provinsi';
@@ -56,6 +65,10 @@ class ApiConfig {
 
   /// API Endpoints - Image Helpers
   static const String getImage = '/helpers/get-image';
+
+  /// API Endpoints - Training
+  static const String trainingEnrollments = '/trainings/me/enrollments';
+  static String trainingById(String id) => '/trainings/$id';
 
   /// Builds full image URL from uri_path
   ///

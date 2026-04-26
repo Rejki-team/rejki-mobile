@@ -9,6 +9,12 @@ abstract class SecondhandRemoteDataSource {
 
   /// Fetch a single secondhand ad by [id].
   Future<SecondhandModel> getSecondhandById(String id);
+
+  /// Fetch a paginated list of secondhand ads claimed by the current user.
+  Future<SecondhandsResponseModel> getMyClaimedSecondhand({
+    required int page,
+    required int limit,
+  });
 }
 
 /// Implementation using [DioClient].
@@ -45,5 +51,21 @@ class SecondhandRemoteDataSourceImpl implements SecondhandRemoteDataSource {
     final response = await _dioClient.get(ApiConfig.secondhandById(id));
     final data = response.data['data'] as Map<String, dynamic>;
     return SecondhandModel.fromJson(data);
+  }
+
+  @override
+  Future<SecondhandsResponseModel> getMyClaimedSecondhand({
+    required int page,
+    required int limit,
+  }) async {
+    final response = await _dioClient.get(
+      ApiConfig.secondhandMyClaims,
+      queryParameters: <String, dynamic>{
+        'page': page,
+        'limit': limit,
+      },
+    );
+    final data = response.data['data'] as Map<String, dynamic>;
+    return SecondhandsResponseModel.fromJson(data);
   }
 }

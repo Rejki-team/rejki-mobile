@@ -22,3 +22,6 @@ export 'src/profile/profile.dart';
 
 // Secondhand (Barang Bekas) Module
 export 'src/secondhand/secondhand.dart';
+
+// Training Module
+export 'src/training/training.dart';

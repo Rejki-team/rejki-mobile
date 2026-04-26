@@ -14,4 +14,10 @@ abstract class SecondhandRepository {
   Future<Either<SecondhandFailure, SecondhandEntity>> getSecondhandById(
     String id,
   );
+
+  /// Fetch a paginated list of secondhand ads claimed by the current user.
+  Future<Either<SecondhandFailure, SecondhandsResultEntity>> getMyClaimedSecondhand({
+    required int page,
+    required int limit,
+  });
 }

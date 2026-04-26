@@ -95,8 +95,8 @@ class _HomeProfileAvatarState extends State<HomeProfileAvatar> {
       imageUrl: widget.imageUrl,
       fit: BoxFit.cover,
       httpHeaders: {'Authorization': 'Bearer $_accessToken'},
-      placeholder: (_, __) => _buildLoadingPlaceholder(),
-      errorWidget: (_, __, ___) => _buildFallbackIcon(),
+      placeholder: (context, url) => _buildLoadingPlaceholder(),
+      errorWidget: (context, url, error) => _buildFallbackIcon(),
     );
   }
 

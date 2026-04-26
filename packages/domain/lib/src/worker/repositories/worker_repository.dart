@@ -2,6 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import '../failures/worker_failure.dart';
 import '../entities/worker_entity.dart';
 import '../entities/create_worker_params.dart';
+import '../entities/worker_contact_entity.dart';
 
 /// Worker Repository Interface
 abstract class WorkerRepository {
@@ -35,4 +36,18 @@ abstract class WorkerRepository {
     String id,
     CreateWorkerParams params,
   );
+
+  /// Fetches the list of workers contacted by the user
+  Future<Either<WorkerFailure, List<WorkerContactEntity>>> getWorkerContacts({
+    String? status,
+    int? page,
+    int? limit,
+  });
+
+  /// Submits a review for a specific worker
+  Future<Either<WorkerFailure, Unit>> submitWorkerReview({
+    required String workerId,
+    required int rating,
+    required String review,
+  });
 }

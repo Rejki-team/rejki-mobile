@@ -37,6 +37,24 @@ class SecondhandRepositoryImpl implements SecondhandRepository {
     }
   }
 
+  @override
+  Future<Either<SecondhandFailure, SecondhandsResultEntity>> getMyClaimedSecondhand({
+    required int page,
+    required int limit,
+  }) async {
+    try {
+      final response = await _remoteDataSource.getMyClaimedSecondhand(
+        page: page,
+        limit: limit,
+      );
+      return Right(response.toEntity());
+    } on DioException catch (e) {
+      return Left(_handleDioException(e));
+    } catch (e) {
+      return Left(SecondhandFailure.serverError(e.toString()));
+    }
+  }
+
   SecondhandFailure _handleDioException(DioException e) {
     if (e.response?.statusCode == 401) {
       return const SecondhandFailure.unauthorized();
