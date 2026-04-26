@@ -77,6 +77,13 @@ class ApiConfig {
   static const String trainingEnrollments = '/trainings/me/enrollments';
   static String trainingById(String id) => '/trainings/$id';
 
+  /// API Endpoints - Notifications
+  static const String notifications = '/notifications';
+  static String notificationById(String id) => '/notifications/$id/read';
+  static const String notificationsReadAll = '/notifications/read-all';
+  static const String notificationsUnreadCount = '/notifications/unread-count';
+  static const String userDeviceToken = '/users/device-token';
+
   /// Builds full image URL from uri_path
   ///
   /// Takes the uri_path from API response and returns the complete URL

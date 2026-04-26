@@ -15,17 +15,24 @@ class BottomNavItem {
   /// Label text for the navigation item
   final String label;
 
+  /// Optional badge count — shown as a red dot/counter above the icon
+  final int badgeCount;
+
   const BottomNavItem({
     required this.activeIcon,
     required this.inactiveIcon,
     required this.label,
+    this.badgeCount = 0,
   });
 
   /// Creates a nav item with the same icon for both states
   /// (uses color tint to differentiate)
-  const BottomNavItem.sameIcon({required String icon, required this.label})
-    : activeIcon = icon,
-      inactiveIcon = icon;
+  const BottomNavItem.sameIcon({
+    required String icon,
+    required this.label,
+    this.badgeCount = 0,
+  }) : activeIcon = icon,
+       inactiveIcon = icon;
 }
 
 /// Default navigation items for the app
@@ -165,6 +172,44 @@ class _BottomNavItemWidget extends StatelessWidget {
     this.onTap,
   });
 
+  Widget _buildIconWithBadge(String iconPath, Color iconColor) {
+    final icon = SvgPicture.asset(
+      iconPath,
+      width: AppDimensions.bottomNavIconSize,
+      height: AppDimensions.bottomNavIconSize,
+      theme: SvgTheme(currentColor: iconColor),
+    );
+    if (item.badgeCount <= 0) return icon;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        icon,
+        Positioned(
+          top: -4,
+          right: -4,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+            decoration: BoxDecoration(
+              color: AppColors.error,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            constraints: const BoxConstraints(minWidth: 12, minHeight: 12),
+            child: Text(
+              item.badgeCount > 99 ? '99+' : '${item.badgeCount}',
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 8,
+                fontWeight: FontWeight.w700,
+                height: 1,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final iconPath = isActive ? item.activeIcon : item.inactiveIcon;
@@ -185,14 +230,8 @@ class _BottomNavItemWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Icon - filled for active, outlined for inactive
-            // Using theme to replace currentColor only, preserving other colors like white
-            SvgPicture.asset(
-              iconPath,
-              width: AppDimensions.bottomNavIconSize,
-              height: AppDimensions.bottomNavIconSize,
-              theme: SvgTheme(currentColor: iconColor),
-            ),
+            // Icon with optional badge overlay
+            _buildIconWithBadge(iconPath, iconColor),
 
             const SizedBox(height: AppSpacing.xxs),
 

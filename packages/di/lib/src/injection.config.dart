@@ -52,9 +52,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i216.CreateTrainingAdCubit>(
       () => registerModule.createTrainingAdCubit(),
     );
-    gh.factory<_i884.NotificationCubit>(
-      () => registerModule.notificationCubit(),
-    );
     gh.factory<_i674.HistoryCubit>(() => registerModule.historyCubit());
     gh.singleton<_i558.FlutterSecureStorage>(
       () => registerModule.secureStorage,
@@ -106,6 +103,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i437.SecondhandMutationDataSource>(
       () => registerModule.secondhandMutationDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i437.NotificationRemoteDataSource>(
+      () => registerModule.notificationRemoteDataSource(gh<_i372.DioClient>()),
     );
     gh.lazySingleton<_i494.JobMutationRepository>(
       () => registerModule.jobMutationRepository(
@@ -169,6 +169,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.SecondhandRepository>(
       () => registerModule.secondhandRepository(
         gh<_i437.SecondhandRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i494.NotificationRepository>(
+      () => registerModule.notificationRepository(
+        gh<_i437.NotificationRemoteDataSource>(),
       ),
     );
     gh.lazySingleton<_i494.UpdateProfileUseCase>(
@@ -321,6 +326,31 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i950.WorkerDetailCubit>(
       () => registerModule.workerDetailCubit(gh<_i494.GetWorkerByIdUseCase>()),
     );
+    gh.lazySingleton<_i494.GetNotificationsUseCase>(
+      () => registerModule.getNotificationsUseCase(
+        gh<_i494.NotificationRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.MarkNotificationReadUseCase>(
+      () => registerModule.markNotificationReadUseCase(
+        gh<_i494.NotificationRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.MarkAllNotificationsReadUseCase>(
+      () => registerModule.markAllNotificationsReadUseCase(
+        gh<_i494.NotificationRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.GetUnreadCountUseCase>(
+      () => registerModule.getUnreadCountUseCase(
+        gh<_i494.NotificationRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.RegisterDeviceTokenUseCase>(
+      () => registerModule.registerDeviceTokenUseCase(
+        gh<_i494.NotificationRepository>(),
+      ),
+    );
     gh.lazySingleton<_i494.LoginUseCase>(
       () => registerModule.loginUseCase(gh<_i494.AuthRepository>()),
     );
@@ -420,6 +450,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i685.CreateUsedGoodsAdCubit>(
       () => registerModule.createUsedGoodsAdCubit(
         gh<_i494.CreateSecondhandUseCase>(),
+      ),
+    );
+    gh.factory<_i884.NotificationCubit>(
+      () => registerModule.notificationCubit(
+        gh<_i494.GetNotificationsUseCase>(),
+        gh<_i494.MarkNotificationReadUseCase>(),
+        gh<_i494.MarkAllNotificationsReadUseCase>(),
+        gh<_i494.GetUnreadCountUseCase>(),
       ),
     );
     gh.factory<_i545.HomeBloc>(

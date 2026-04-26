@@ -1,24 +1,43 @@
+import 'package:components/components.dart';
+import 'package:designsystems/designsystems.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:components/components.dart';
-import 'package:designsystems/designsystems.dart';
-
 import 'cubit/notification_cubit.dart';
 import 'cubit/notification_state.dart';
 
-class NotificationPage extends StatelessWidget {
+class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const _NotificationView();
-  }
+  State<NotificationPage> createState() => _NotificationPageState();
 }
 
-class _NotificationView extends StatelessWidget {
-  const _NotificationView();
+class _NotificationPageState extends State<NotificationPage> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<NotificationCubit>().loadNotifications(refresh: true);
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<NotificationCubit>().loadMore();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,88 +49,62 @@ class _NotificationView extends StatelessWidget {
       ),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: _buildAppBar(),
+        appBar: _buildAppBar(context),
         body: BlocBuilder<NotificationCubit, NotificationState>(
           builder: (context, state) {
-            if (state.isLoading) {
-              return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
-            }
-            if (state.errorMessage != null) {
-              return AppErrorState(
-                description: state.errorMessage!,
-                onRetry: () {}, // Cubit method for reload isn't apparent in View
+            if (state.status == NotificationStatus.loading) {
+              return const AppCustomShimmerList(
+                style: ShimmerCardStyle.textOnly,
               );
             }
-            return ListView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.lg,
+            if (state.status == NotificationStatus.failure &&
+                state.notifications.isEmpty) {
+              return AppErrorState(
+                description: state.errorMessage ?? 'Gagal memuat notifikasi.',
+                onRetry: () => context
+                    .read<NotificationCubit>()
+                    .loadNotifications(refresh: true),
+              );
+            }
+            if (state.status == NotificationStatus.success &&
+                state.notifications.isEmpty) {
+              return const AppEmptyState(
+                title: 'Belum Ada Notifikasi',
+                description: 'Notifikasi akan muncul di sini.',
+              );
+            }
+            return RefreshIndicator(
+              onRefresh: () => context
+                  .read<NotificationCubit>()
+                  .loadNotifications(refresh: true),
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.lg,
+                ),
+                itemCount: state.notifications.length +
+                    (state.hasNext ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == state.notifications.length) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final notification = state.notifications[index];
+                  return NotificationCard(
+                    title: notification.title,
+                    description: notification.body,
+                    timeText: _formatTime(notification.createdAt),
+                    type: notificationTypeFromString(notification.type),
+                    isUnread: !notification.isRead,
+                    onTap: () => context
+                        .read<NotificationCubit>()
+                        .markAsRead(notification.id),
+                  );
+                },
               ),
-              children: [
-                NotificationCard(
-                  title: 'Lamaran baru di terima',
-                  description:
-                      'Rizki mengambil pekerjaan dari id iklan 24/11/2024/023 323111',
-                  timeText: '04:00-11:00',
-                  type: NotificationType.applicationAccepted, // Purple user
-                  isUnread: true,
-                  onTap: () {},
-                ),
-                NotificationCard(
-                  title: 'Lamaran baru di terima',
-                  description:
-                      'Rizki mengambil pekerjaan dari id iklan 24/11/2024/023 323111',
-                  timeText: '04:00-11:00',
-                  type: NotificationType.jobApplication, // Green briefcase
-                  isUnread: true,
-                  onTap: () {},
-                ),
-                NotificationCard(
-                  title: 'Barang Bekas',
-                  description:
-                      'Rizki mengikuti pekerjaan dari id iklan 24/11/2024/023 323111',
-                  timeText: '04:00-11:00',
-                  type: NotificationType.usedGoods, // Pink/purple archive
-                  isUnread: false,
-                  onTap: () {},
-                ),
-                NotificationCard(
-                  title: 'Pelatihan terbaru',
-                  description:
-                      'Rizki mengambil pekerjaan dari id iklan 24/11/2024/023 323111',
-                  timeText: '04:00-11:00',
-                  type: NotificationType.training, // Blue document
-                  isUnread: false,
-                  onTap: () {},
-                ),
-                NotificationCard(
-                  title: 'Lamaran baru di terima',
-                  description:
-                      'Rizki mengambil pekerjaan dari id iklan 24/11/2024/023 323111',
-                  timeText: '04:00-11:00',
-                  type: NotificationType.jobApplication,
-                  isUnread: false,
-                  onTap: () {},
-                ),
-                NotificationCard(
-                  title: 'Pekerja',
-                  description:
-                      'Rizki merekrut pekerja dari id iklan 24/11/2024/023 323111',
-                  timeText: '04:00-11:00',
-                  type: NotificationType.worker,
-                  isUnread: false,
-                  onTap: () {},
-                ),
-                NotificationCard(
-                  title: 'Pekerja',
-                  description:
-                      'Rizki merekrut pekerja dari id iklan 24/11/2024/023 323111',
-                  timeText: '04:00-11:00',
-                  type: NotificationType.worker,
-                  isUnread: false,
-                  onTap: () {},
-                ),
-              ],
             );
           },
         ),
@@ -119,19 +112,45 @@ class _NotificationView extends StatelessWidget {
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
       backgroundColor: AppColors.buttonGradientEnd,
       elevation: 0,
       centerTitle: false,
       title: Text(
-        'Notifikasi', // Changed from News to Notifikasi based on user feedback
+        'Notifikasi',
         style: AppTypography.titleMedium.copyWith(
           color: AppColors.white,
           fontSize: 16,
         ),
       ),
       automaticallyImplyLeading: false,
+      actions: [
+        BlocSelector<NotificationCubit, NotificationState, int>(
+          selector: (state) => state.unreadCount,
+          builder: (context, unreadCount) {
+            if (unreadCount == 0) return const SizedBox.shrink();
+            return TextButton(
+              onPressed: () =>
+                  context.read<NotificationCubit>().markAllAsRead(),
+              child: Text(
+                'Tandai Semua',
+                style: AppTypography.labelSmall.copyWith(
+                  color: AppColors.white,
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
+  }
+
+  String _formatTime(DateTime dt) {
+    final now = DateTime.now();
+    final diff = now.difference(dt);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m lalu';
+    if (diff.inHours < 24) return '${diff.inHours}j lalu';
+    return '${diff.inDays}h lalu';
   }
 }

@@ -19,8 +19,11 @@ dependencies:
   injectable: ^2.4.1
   flutter_svg: ^2.0.10+1
   
+  fpdart: ^1.1.0
   core:
     path: ../../core
+  domain:
+    path: ../../domain
   components:
     path: ../../components
   designsystems:

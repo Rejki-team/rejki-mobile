@@ -24,3 +24,6 @@ export 'src/secondhand/secondhand.dart';
 
 // Training Module
 export 'src/training/training.dart';
+
+// Notification Module
+export 'src/notification/notification.dart';

@@ -671,12 +671,50 @@ abstract class RegisterModule {
   );
 
   // ============================================
-  // FEATURE NOTIFICATION CUBITS
+  // FEATURE NOTIFICATION DATA/DOMAIN/CUBIT
   // ============================================
 
-  /// NotificationCubit - untuk halaman notifikasi
+  @lazySingleton
+  NotificationRemoteDataSource notificationRemoteDataSource(DioClient dioClient) =>
+      NotificationRemoteDataSourceImpl(dioClient);
+
+  @LazySingleton(as: NotificationRepository)
+  NotificationRepositoryImpl notificationRepository(
+    NotificationRemoteDataSource remoteDataSource,
+  ) => NotificationRepositoryImpl(remoteDataSource);
+
+  @lazySingleton
+  GetNotificationsUseCase getNotificationsUseCase(NotificationRepository repository) =>
+      GetNotificationsUseCase(repository);
+
+  @lazySingleton
+  MarkNotificationReadUseCase markNotificationReadUseCase(NotificationRepository repository) =>
+      MarkNotificationReadUseCase(repository);
+
+  @lazySingleton
+  MarkAllNotificationsReadUseCase markAllNotificationsReadUseCase(NotificationRepository repository) =>
+      MarkAllNotificationsReadUseCase(repository);
+
+  @lazySingleton
+  GetUnreadCountUseCase getUnreadCountUseCase(NotificationRepository repository) =>
+      GetUnreadCountUseCase(repository);
+
+  @lazySingleton
+  RegisterDeviceTokenUseCase registerDeviceTokenUseCase(NotificationRepository repository) =>
+      RegisterDeviceTokenUseCase(repository);
+
   @factoryMethod
-  NotificationCubit notificationCubit() => NotificationCubit();
+  NotificationCubit notificationCubit(
+    GetNotificationsUseCase getNotificationsUseCase,
+    MarkNotificationReadUseCase markNotificationReadUseCase,
+    MarkAllNotificationsReadUseCase markAllNotificationsReadUseCase,
+    GetUnreadCountUseCase getUnreadCountUseCase,
+  ) => NotificationCubit(
+    getNotificationsUseCase,
+    markNotificationReadUseCase,
+    markAllNotificationsReadUseCase,
+    getUnreadCountUseCase,
+  );
 
   /// HistoryCubit - untuk halaman riwayat
   @factoryMethod
