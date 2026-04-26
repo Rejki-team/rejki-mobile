@@ -144,6 +144,16 @@ abstract class RegisterModule {
   GetMyBidsUseCase getMyBidsUseCase(JobRepository repository) =>
       GetMyBidsUseCase(repository);
 
+  /// GetIncomingBidsUseCase - untuk mengambil daftar pelamar masuk ke job milik user
+  @lazySingleton
+  GetIncomingBidsUseCase getIncomingBidsUseCase(JobRepository repository) =>
+      GetIncomingBidsUseCase(repository);
+
+  /// GetMyJobsUseCase - untuk mengambil daftar job yang dipasang user
+  @lazySingleton
+  GetMyJobsUseCase getMyJobsUseCase(JobRepository repository) =>
+      GetMyJobsUseCase(repository);
+
   // ============================================
   // JOB MUTATION (CREATE, UPDATE, DELETE)
   // ============================================
@@ -688,6 +698,21 @@ abstract class RegisterModule {
     GetMyClaimedSecondhandsUseCase getMyClaimedSecondhandsUseCase,
   ) =>
       HistoryBarangBekasCubit(getMyClaimedSecondhandsUseCase);
+
+  /// DaftarPelamarCubit - untuk halaman daftar pelamar iklan pekerjaan
+  @factoryMethod
+  DaftarPelamarCubit daftarPelamarCubit(
+    GetIncomingBidsUseCase getIncomingBidsUseCase,
+    UpdateBidStatusUseCase updateBidStatusUseCase,
+  ) =>
+      DaftarPelamarCubit(getIncomingBidsUseCase, updateBidStatusUseCase);
+
+  /// HistoryIklanPekerjaanCubit - untuk tab Iklan Saya di halaman riwayat
+  @factoryMethod
+  HistoryIklanPekerjaanCubit historyIklanPekerjaanCubit(
+    GetMyJobsUseCase getMyJobsUseCase,
+  ) =>
+      HistoryIklanPekerjaanCubit(getMyJobsUseCase);
 
   /// Configuration should prefer @injectable on source classes.
 }

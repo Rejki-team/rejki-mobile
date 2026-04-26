@@ -380,6 +380,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.GetMyBidsUseCase>(
       () => registerModule.getMyBidsUseCase(gh<_i494.JobRepository>()),
     );
+    gh.lazySingleton<_i494.GetIncomingBidsUseCase>(
+      () => registerModule.getIncomingBidsUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.lazySingleton<_i494.GetMyJobsUseCase>(
+      () => registerModule.getMyJobsUseCase(gh<_i494.JobRepository>()),
+    );
     gh.lazySingleton<_i494.CreateSecondhandUseCase>(
       () => registerModule.createSecondhandUseCase(
         gh<_i494.SecondhandMutationRepository>(),
@@ -419,6 +425,17 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i10.JobDetailCubit>(
       () => registerModule.jobDetailCubit(gh<_i494.GetJobByIdUseCase>()),
+    );
+    gh.factory<_i674.HistoryIklanPekerjaanCubit>(
+      () => registerModule.historyIklanPekerjaanCubit(
+        gh<_i494.GetMyJobsUseCase>(),
+      ),
+    );
+    gh.factory<_i10.DaftarPelamarCubit>(
+      () => registerModule.daftarPelamarCubit(
+        gh<_i494.GetIncomingBidsUseCase>(),
+        gh<_i494.UpdateBidStatusUseCase>(),
+      ),
     );
     gh.factory<_i806.TakeJobCubit>(
       () => registerModule.takeJobCubit(

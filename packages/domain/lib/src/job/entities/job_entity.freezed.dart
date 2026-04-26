@@ -37,7 +37,9 @@ mixin _$JobEntity {
  DateTime? get updatedAt;/// Employer full name from user.user_info.full_name
 /// Empty string if user hasn't filled in their profile yet.
  String get employerName;/// Employer phone number from user.phone_number
- String get employerPhone;
+ String get employerPhone;/// Total number of bids/applicants for this job.
+/// Populated from the bids array length in API response.
+ int? get bidCount;
 /// Create a copy of JobEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,16 +50,16 @@ $JobEntityCopyWith<JobEntity> get copyWith => _$JobEntityCopyWithImpl<JobEntity>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is JobEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.requirements, requirements) || other.requirements == requirements)&&(identical(other.salary, salary) || other.salary == salary)&&(identical(other.salaryType, salaryType) || other.salaryType == salaryType)&&(identical(other.workerCount, workerCount) || other.workerCount == workerCount)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.employerName, employerName) || other.employerName == employerName)&&(identical(other.employerPhone, employerPhone) || other.employerPhone == employerPhone));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is JobEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.requirements, requirements) || other.requirements == requirements)&&(identical(other.salary, salary) || other.salary == salary)&&(identical(other.salaryType, salaryType) || other.salaryType == salaryType)&&(identical(other.workerCount, workerCount) || other.workerCount == workerCount)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.employerName, employerName) || other.employerName == employerName)&&(identical(other.employerPhone, employerPhone) || other.employerPhone == employerPhone)&&(identical(other.bidCount, bidCount) || other.bidCount == bidCount));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,adCode,userId,title,description,requirements,salary,salaryType,workerCount,dateOfJob,address,province,city,subdistrict,ward,village,status,const DeepCollectionEquality().hash(images),createdAt,updatedAt,employerName,employerPhone]);
+int get hashCode => Object.hashAll([runtimeType,id,adCode,userId,title,description,requirements,salary,salaryType,workerCount,dateOfJob,address,province,city,subdistrict,ward,village,status,const DeepCollectionEquality().hash(images),createdAt,updatedAt,employerName,employerPhone,bidCount]);
 
 @override
 String toString() {
-  return 'JobEntity(id: $id, adCode: $adCode, userId: $userId, title: $title, description: $description, requirements: $requirements, salary: $salary, salaryType: $salaryType, workerCount: $workerCount, dateOfJob: $dateOfJob, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, status: $status, images: $images, createdAt: $createdAt, updatedAt: $updatedAt, employerName: $employerName, employerPhone: $employerPhone)';
+  return 'JobEntity(id: $id, adCode: $adCode, userId: $userId, title: $title, description: $description, requirements: $requirements, salary: $salary, salaryType: $salaryType, workerCount: $workerCount, dateOfJob: $dateOfJob, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, status: $status, images: $images, createdAt: $createdAt, updatedAt: $updatedAt, employerName: $employerName, employerPhone: $employerPhone, bidCount: $bidCount)';
 }
 
 
@@ -68,7 +70,7 @@ abstract mixin class $JobEntityCopyWith<$Res>  {
   factory $JobEntityCopyWith(JobEntity value, $Res Function(JobEntity) _then) = _$JobEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String adCode, String userId, String title, String description, String? requirements, int salary, String salaryType, int workerCount, DateTime dateOfJob, String address, String province, String city, String subdistrict, String ward, String? village, String status, List<JobImageEntity> images, DateTime? createdAt, DateTime? updatedAt, String employerName, String employerPhone
+ String id, String adCode, String userId, String title, String description, String? requirements, int salary, String salaryType, int workerCount, DateTime dateOfJob, String address, String province, String city, String subdistrict, String ward, String? village, String status, List<JobImageEntity> images, DateTime? createdAt, DateTime? updatedAt, String employerName, String employerPhone, int? bidCount
 });
 
 
@@ -85,7 +87,7 @@ class _$JobEntityCopyWithImpl<$Res>
 
 /// Create a copy of JobEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? title = null,Object? description = null,Object? requirements = freezed,Object? salary = null,Object? salaryType = null,Object? workerCount = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = freezed,Object? status = null,Object? images = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? employerName = null,Object? employerPhone = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? title = null,Object? description = null,Object? requirements = freezed,Object? salary = null,Object? salaryType = null,Object? workerCount = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = freezed,Object? status = null,Object? images = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? employerName = null,Object? employerPhone = null,Object? bidCount = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,adCode: null == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
@@ -109,7 +111,8 @@ as List<JobImageEntity>,createdAt: freezed == createdAt ? _self.createdAt : crea
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,employerName: null == employerName ? _self.employerName : employerName // ignore: cast_nullable_to_non_nullable
 as String,employerPhone: null == employerPhone ? _self.employerPhone : employerPhone // ignore: cast_nullable_to_non_nullable
-as String,
+as String,bidCount: freezed == bidCount ? _self.bidCount : bidCount // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -194,10 +197,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone,  int? bidCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _JobEntity() when $default != null:
-return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description,_that.requirements,_that.salary,_that.salaryType,_that.workerCount,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt,_that.employerName,_that.employerPhone);case _:
+return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description,_that.requirements,_that.salary,_that.salaryType,_that.workerCount,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt,_that.employerName,_that.employerPhone,_that.bidCount);case _:
   return orElse();
 
 }
@@ -215,10 +218,10 @@ return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone,  int? bidCount)  $default,) {final _that = this;
 switch (_that) {
 case _JobEntity():
-return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description,_that.requirements,_that.salary,_that.salaryType,_that.workerCount,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt,_that.employerName,_that.employerPhone);case _:
+return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description,_that.requirements,_that.salary,_that.salaryType,_that.workerCount,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt,_that.employerName,_that.employerPhone,_that.bidCount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -235,10 +238,10 @@ return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone,  int? bidCount)?  $default,) {final _that = this;
 switch (_that) {
 case _JobEntity() when $default != null:
-return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description,_that.requirements,_that.salary,_that.salaryType,_that.workerCount,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt,_that.employerName,_that.employerPhone);case _:
+return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description,_that.requirements,_that.salary,_that.salaryType,_that.workerCount,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt,_that.employerName,_that.employerPhone,_that.bidCount);case _:
   return null;
 
 }
@@ -250,7 +253,7 @@ return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description
 
 
 class _JobEntity extends JobEntity {
-  const _JobEntity({required this.id, required this.adCode, required this.userId, required this.title, required this.description, this.requirements, required this.salary, required this.salaryType, required this.workerCount, required this.dateOfJob, required this.address, required this.province, required this.city, required this.subdistrict, required this.ward, this.village, required this.status, final  List<JobImageEntity> images = const [], this.createdAt, this.updatedAt, this.employerName = '', this.employerPhone = ''}): _images = images,super._();
+  const _JobEntity({required this.id, required this.adCode, required this.userId, required this.title, required this.description, this.requirements, required this.salary, required this.salaryType, required this.workerCount, required this.dateOfJob, required this.address, required this.province, required this.city, required this.subdistrict, required this.ward, this.village, required this.status, final  List<JobImageEntity> images = const [], this.createdAt, this.updatedAt, this.employerName = '', this.employerPhone = '', this.bidCount}): _images = images,super._();
   
 
 /// Unique job identifier
@@ -305,6 +308,9 @@ class _JobEntity extends JobEntity {
 @override@JsonKey() final  String employerName;
 /// Employer phone number from user.phone_number
 @override@JsonKey() final  String employerPhone;
+/// Total number of bids/applicants for this job.
+/// Populated from the bids array length in API response.
+@override final  int? bidCount;
 
 /// Create a copy of JobEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -316,16 +322,16 @@ _$JobEntityCopyWith<_JobEntity> get copyWith => __$JobEntityCopyWithImpl<_JobEnt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _JobEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.requirements, requirements) || other.requirements == requirements)&&(identical(other.salary, salary) || other.salary == salary)&&(identical(other.salaryType, salaryType) || other.salaryType == salaryType)&&(identical(other.workerCount, workerCount) || other.workerCount == workerCount)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.employerName, employerName) || other.employerName == employerName)&&(identical(other.employerPhone, employerPhone) || other.employerPhone == employerPhone));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _JobEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.requirements, requirements) || other.requirements == requirements)&&(identical(other.salary, salary) || other.salary == salary)&&(identical(other.salaryType, salaryType) || other.salaryType == salaryType)&&(identical(other.workerCount, workerCount) || other.workerCount == workerCount)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.employerName, employerName) || other.employerName == employerName)&&(identical(other.employerPhone, employerPhone) || other.employerPhone == employerPhone)&&(identical(other.bidCount, bidCount) || other.bidCount == bidCount));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,adCode,userId,title,description,requirements,salary,salaryType,workerCount,dateOfJob,address,province,city,subdistrict,ward,village,status,const DeepCollectionEquality().hash(_images),createdAt,updatedAt,employerName,employerPhone]);
+int get hashCode => Object.hashAll([runtimeType,id,adCode,userId,title,description,requirements,salary,salaryType,workerCount,dateOfJob,address,province,city,subdistrict,ward,village,status,const DeepCollectionEquality().hash(_images),createdAt,updatedAt,employerName,employerPhone,bidCount]);
 
 @override
 String toString() {
-  return 'JobEntity(id: $id, adCode: $adCode, userId: $userId, title: $title, description: $description, requirements: $requirements, salary: $salary, salaryType: $salaryType, workerCount: $workerCount, dateOfJob: $dateOfJob, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, status: $status, images: $images, createdAt: $createdAt, updatedAt: $updatedAt, employerName: $employerName, employerPhone: $employerPhone)';
+  return 'JobEntity(id: $id, adCode: $adCode, userId: $userId, title: $title, description: $description, requirements: $requirements, salary: $salary, salaryType: $salaryType, workerCount: $workerCount, dateOfJob: $dateOfJob, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, status: $status, images: $images, createdAt: $createdAt, updatedAt: $updatedAt, employerName: $employerName, employerPhone: $employerPhone, bidCount: $bidCount)';
 }
 
 
@@ -336,7 +342,7 @@ abstract mixin class _$JobEntityCopyWith<$Res> implements $JobEntityCopyWith<$Re
   factory _$JobEntityCopyWith(_JobEntity value, $Res Function(_JobEntity) _then) = __$JobEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String adCode, String userId, String title, String description, String? requirements, int salary, String salaryType, int workerCount, DateTime dateOfJob, String address, String province, String city, String subdistrict, String ward, String? village, String status, List<JobImageEntity> images, DateTime? createdAt, DateTime? updatedAt, String employerName, String employerPhone
+ String id, String adCode, String userId, String title, String description, String? requirements, int salary, String salaryType, int workerCount, DateTime dateOfJob, String address, String province, String city, String subdistrict, String ward, String? village, String status, List<JobImageEntity> images, DateTime? createdAt, DateTime? updatedAt, String employerName, String employerPhone, int? bidCount
 });
 
 
@@ -353,7 +359,7 @@ class __$JobEntityCopyWithImpl<$Res>
 
 /// Create a copy of JobEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? title = null,Object? description = null,Object? requirements = freezed,Object? salary = null,Object? salaryType = null,Object? workerCount = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = freezed,Object? status = null,Object? images = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? employerName = null,Object? employerPhone = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? title = null,Object? description = null,Object? requirements = freezed,Object? salary = null,Object? salaryType = null,Object? workerCount = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = freezed,Object? status = null,Object? images = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? employerName = null,Object? employerPhone = null,Object? bidCount = freezed,}) {
   return _then(_JobEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,adCode: null == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
@@ -377,7 +383,8 @@ as List<JobImageEntity>,createdAt: freezed == createdAt ? _self.createdAt : crea
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,employerName: null == employerName ? _self.employerName : employerName // ignore: cast_nullable_to_non_nullable
 as String,employerPhone: null == employerPhone ? _self.employerPhone : employerPhone // ignore: cast_nullable_to_non_nullable
-as String,
+as String,bidCount: freezed == bidCount ? _self.bidCount : bidCount // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

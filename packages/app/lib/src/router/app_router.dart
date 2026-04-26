@@ -18,8 +18,6 @@ import 'package:feature_forgotpassword/feature_forgotpassword.dart';
 import 'package:feature_register/feature_register.dart';
 import 'package:feature_profile/feature_profile.dart';
 import 'package:feature_pekerjaan/feature_pekerjaan.dart';
-import 'package:feature_pekerjaan/presentation/daftar_pelamar/daftar_pelamar_page.dart';
-import 'package:feature_pekerjaan/presentation/daftar_pelamar/daftar_pelamar_args.dart';
 import 'package:feature_notification/feature_notification.dart';
 import 'package:feature_pekerja/feature_pekerja.dart';
 import 'package:feature_pelatihan/feature_pelatihan.dart';

@@ -16,6 +16,9 @@ _BidModel _$BidModelFromJson(Map<String, dynamic> json) => _BidModel(
   job: json['job'] == null
       ? null
       : JobModel.fromJson(json['job'] as Map<String, dynamic>),
+  worker: json['worker'] == null
+      ? null
+      : WorkerBidModel.fromJson(json['worker'] as Map<String, dynamic>),
   createdAt: json['created_at'] as String?,
   updatedAt: json['updated_at'] as String?,
 );
@@ -28,6 +31,7 @@ Map<String, dynamic> _$BidModelToJson(_BidModel instance) => <String, dynamic>{
   'status': instance.status,
   'date_of_job': instance.dateOfJob,
   'job': instance.job,
+  'worker': instance.worker,
   'created_at': instance.createdAt,
   'updated_at': instance.updatedAt,
 };

@@ -32,6 +32,7 @@ _JobModel _$JobModelFromJson(Map<String, dynamic> json) => _JobModel(
           ?.map((e) => JobImageModel.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  bidCount: _parseBidCount(json['bids']),
   createdAt: json['created_at'] as String?,
   updatedAt: json['updated_at'] as String?,
 );

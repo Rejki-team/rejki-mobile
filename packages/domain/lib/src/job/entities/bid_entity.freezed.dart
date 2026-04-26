@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BidEntity {
 
- String get id; String get jobId; String get workerId; String get userId; String get status; DateTime get dateOfJob; JobEntity? get job; DateTime? get createdAt; DateTime? get updatedAt;
+ String get id; String get jobId; String get workerId; String get userId; String get status; DateTime get dateOfJob; JobEntity? get job; WorkerEntity? get worker; DateTime? get createdAt; DateTime? get updatedAt;
 /// Create a copy of BidEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $BidEntityCopyWith<BidEntity> get copyWith => _$BidEntityCopyWithImpl<BidEntity>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BidEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BidEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'BidEntity(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'BidEntity(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $BidEntityCopyWith<$Res>  {
   factory $BidEntityCopyWith(BidEntity value, $Res Function(BidEntity) _then) = _$BidEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String jobId, String workerId, String userId, String status, DateTime dateOfJob, JobEntity? job, DateTime? createdAt, DateTime? updatedAt
+ String id, String jobId, String workerId, String userId, String status, DateTime dateOfJob, JobEntity? job, WorkerEntity? worker, DateTime? createdAt, DateTime? updatedAt
 });
 
 
-$JobEntityCopyWith<$Res>? get job;
+$JobEntityCopyWith<$Res>? get job;$WorkerEntityCopyWith<$Res>? get worker;
 
 }
 /// @nodoc
@@ -62,7 +62,7 @@ class _$BidEntityCopyWithImpl<$Res>
 
 /// Create a copy of BidEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jobId = null,Object? workerId = null,Object? userId = null,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jobId = null,Object? workerId = null,Object? userId = null,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,jobId: null == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
@@ -71,7 +71,8 @@ as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullabl
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,dateOfJob: null == dateOfJob ? _self.dateOfJob : dateOfJob // ignore: cast_nullable_to_non_nullable
 as DateTime,job: freezed == job ? _self.job : job // ignore: cast_nullable_to_non_nullable
-as JobEntity?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as JobEntity?,worker: freezed == worker ? _self.worker : worker // ignore: cast_nullable_to_non_nullable
+as WorkerEntity?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -87,6 +88,18 @@ $JobEntityCopyWith<$Res>? get job {
 
   return $JobEntityCopyWith<$Res>(_self.job!, (value) {
     return _then(_self.copyWith(job: value));
+  });
+}/// Create a copy of BidEntity
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WorkerEntityCopyWith<$Res>? get worker {
+    if (_self.worker == null) {
+    return null;
+  }
+
+  return $WorkerEntityCopyWith<$Res>(_self.worker!, (value) {
+    return _then(_self.copyWith(worker: value));
   });
 }
 }
@@ -170,10 +183,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  WorkerEntity? worker,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BidEntity() when $default != null:
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -191,10 +204,10 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  WorkerEntity? worker,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _BidEntity():
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -211,10 +224,10 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  WorkerEntity? worker,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _BidEntity() when $default != null:
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -226,7 +239,7 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 
 
 class _BidEntity extends BidEntity {
-  const _BidEntity({required this.id, required this.jobId, required this.workerId, required this.userId, required this.status, required this.dateOfJob, this.job, this.createdAt, this.updatedAt}): super._();
+  const _BidEntity({required this.id, required this.jobId, required this.workerId, required this.userId, required this.status, required this.dateOfJob, this.job, this.worker, this.createdAt, this.updatedAt}): super._();
   
 
 @override final  String id;
@@ -236,6 +249,7 @@ class _BidEntity extends BidEntity {
 @override final  String status;
 @override final  DateTime dateOfJob;
 @override final  JobEntity? job;
+@override final  WorkerEntity? worker;
 @override final  DateTime? createdAt;
 @override final  DateTime? updatedAt;
 
@@ -249,16 +263,16 @@ _$BidEntityCopyWith<_BidEntity> get copyWith => __$BidEntityCopyWithImpl<_BidEnt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BidEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BidEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'BidEntity(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'BidEntity(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -269,11 +283,11 @@ abstract mixin class _$BidEntityCopyWith<$Res> implements $BidEntityCopyWith<$Re
   factory _$BidEntityCopyWith(_BidEntity value, $Res Function(_BidEntity) _then) = __$BidEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String jobId, String workerId, String userId, String status, DateTime dateOfJob, JobEntity? job, DateTime? createdAt, DateTime? updatedAt
+ String id, String jobId, String workerId, String userId, String status, DateTime dateOfJob, JobEntity? job, WorkerEntity? worker, DateTime? createdAt, DateTime? updatedAt
 });
 
 
-@override $JobEntityCopyWith<$Res>? get job;
+@override $JobEntityCopyWith<$Res>? get job;@override $WorkerEntityCopyWith<$Res>? get worker;
 
 }
 /// @nodoc
@@ -286,7 +300,7 @@ class __$BidEntityCopyWithImpl<$Res>
 
 /// Create a copy of BidEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jobId = null,Object? workerId = null,Object? userId = null,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jobId = null,Object? workerId = null,Object? userId = null,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_BidEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,jobId: null == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
@@ -295,7 +309,8 @@ as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullabl
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,dateOfJob: null == dateOfJob ? _self.dateOfJob : dateOfJob // ignore: cast_nullable_to_non_nullable
 as DateTime,job: freezed == job ? _self.job : job // ignore: cast_nullable_to_non_nullable
-as JobEntity?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as JobEntity?,worker: freezed == worker ? _self.worker : worker // ignore: cast_nullable_to_non_nullable
+as WorkerEntity?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -312,6 +327,18 @@ $JobEntityCopyWith<$Res>? get job {
 
   return $JobEntityCopyWith<$Res>(_self.job!, (value) {
     return _then(_self.copyWith(job: value));
+  });
+}/// Create a copy of BidEntity
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WorkerEntityCopyWith<$Res>? get worker {
+    if (_self.worker == null) {
+    return null;
+  }
+
+  return $WorkerEntityCopyWith<$Res>(_self.worker!, (value) {
+    return _then(_self.copyWith(worker: value));
   });
 }
 }

@@ -3,10 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
 import 'package:domain/domain.dart';
-import 'package:core/core.dart';
 
 import 'cubit/daftar_pelamar_cubit.dart';
 import 'cubit/daftar_pelamar_state.dart';
