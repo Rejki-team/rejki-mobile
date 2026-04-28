@@ -42,6 +42,9 @@ abstract class AppRoutes {
   static const String pelatihanDetail = '/pelatihan/:id';
   static const String pelatihanEnroll = '/pelatihan/:id/enroll';
   static const String pelatihanCreate = '/pelatihan/create';
+  static const String pelatihanPayment = '/pelatihan/:id/payment/:enrollmentId';
+  static const String pelatihanPendaftar = '/pelatihan/:id/pendaftar';
+  static const String pelatihanBadge = '/pelatihan/:id/badge';
 
   // ==================== CHAT NESTED ====================
   static const String chatRoom = '/chat/:id';
@@ -76,6 +79,10 @@ abstract class AppRoutes {
   static String pelamarPekerjaanPath(String id) => '/pekerjaan/$id/pelamar';
   static String pelatihanDetailPath(String id) => '/pelatihan/$id';
   static String pelatihanEnrollPath(String id) => '/pelatihan/$id/enroll';
+  static String pelatihanPaymentPath(String id, String enrollmentId) =>
+      '/pelatihan/$id/payment/$enrollmentId';
+  static String pelatihanPendaftarPath(String id) => '/pelatihan/$id/pendaftar';
+  static String pelatihanBadgePath(String id) => '/pelatihan/$id/badge';
   static String chatRoomPath(String id) => '/chat/$id';
   static String historyDetailPath(String id) => '/history/$id';
   static String pekerjaDetailPath(String id) => '/pekerja/$id';

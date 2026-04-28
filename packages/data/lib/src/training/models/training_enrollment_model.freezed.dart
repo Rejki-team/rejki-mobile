@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TrainingEnrollmentModel {
 
- String get id;@JsonKey(name: 'training_id') String get trainingId;@JsonKey(name: 'user_id') String get userId; String get status;@JsonKey(name: 'rejection_reason') String? get rejectionReason;@JsonKey(name: 'payment_proof_url') String? get paymentProofUrl; TrainingModel? get training;@JsonKey(name: 'created_at') DateTime? get createdAt;@JsonKey(name: 'updated_at') DateTime? get updatedAt;
+ String get id;@JsonKey(name: 'training_id') String get trainingId;@JsonKey(name: 'user_id') String get userId; String get status;@JsonKey(name: 'rejection_reason') String? get rejectionReason;@JsonKey(name: 'payment_proof_url') String? get paymentProofUrl;@JsonKey(name: 'payment_deadline') DateTime? get paymentDeadline; TrainingModel? get training;@JsonKey(name: 'created_at') DateTime? get createdAt;@JsonKey(name: 'updated_at') DateTime? get updatedAt;
 /// Create a copy of TrainingEnrollmentModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $TrainingEnrollmentModelCopyWith<TrainingEnrollmentModel> get copyWith => _$Trai
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrainingEnrollmentModel&&(identical(other.id, id) || other.id == id)&&(identical(other.trainingId, trainingId) || other.trainingId == trainingId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.paymentProofUrl, paymentProofUrl) || other.paymentProofUrl == paymentProofUrl)&&(identical(other.training, training) || other.training == training)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrainingEnrollmentModel&&(identical(other.id, id) || other.id == id)&&(identical(other.trainingId, trainingId) || other.trainingId == trainingId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.paymentProofUrl, paymentProofUrl) || other.paymentProofUrl == paymentProofUrl)&&(identical(other.paymentDeadline, paymentDeadline) || other.paymentDeadline == paymentDeadline)&&(identical(other.training, training) || other.training == training)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,trainingId,userId,status,rejectionReason,paymentProofUrl,training,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,trainingId,userId,status,rejectionReason,paymentProofUrl,paymentDeadline,training,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'TrainingEnrollmentModel(id: $id, trainingId: $trainingId, userId: $userId, status: $status, rejectionReason: $rejectionReason, paymentProofUrl: $paymentProofUrl, training: $training, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'TrainingEnrollmentModel(id: $id, trainingId: $trainingId, userId: $userId, status: $status, rejectionReason: $rejectionReason, paymentProofUrl: $paymentProofUrl, paymentDeadline: $paymentDeadline, training: $training, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $TrainingEnrollmentModelCopyWith<$Res>  {
   factory $TrainingEnrollmentModelCopyWith(TrainingEnrollmentModel value, $Res Function(TrainingEnrollmentModel) _then) = _$TrainingEnrollmentModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'training_id') String trainingId,@JsonKey(name: 'user_id') String userId, String status,@JsonKey(name: 'rejection_reason') String? rejectionReason,@JsonKey(name: 'payment_proof_url') String? paymentProofUrl, TrainingModel? training,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt
+ String id,@JsonKey(name: 'training_id') String trainingId,@JsonKey(name: 'user_id') String userId, String status,@JsonKey(name: 'rejection_reason') String? rejectionReason,@JsonKey(name: 'payment_proof_url') String? paymentProofUrl,@JsonKey(name: 'payment_deadline') DateTime? paymentDeadline, TrainingModel? training,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt
 });
 
 
@@ -65,7 +65,7 @@ class _$TrainingEnrollmentModelCopyWithImpl<$Res>
 
 /// Create a copy of TrainingEnrollmentModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? trainingId = null,Object? userId = null,Object? status = null,Object? rejectionReason = freezed,Object? paymentProofUrl = freezed,Object? training = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? trainingId = null,Object? userId = null,Object? status = null,Object? rejectionReason = freezed,Object? paymentProofUrl = freezed,Object? paymentDeadline = freezed,Object? training = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,trainingId: null == trainingId ? _self.trainingId : trainingId // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,8 @@ as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullabl
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
 as String?,paymentProofUrl: freezed == paymentProofUrl ? _self.paymentProofUrl : paymentProofUrl // ignore: cast_nullable_to_non_nullable
-as String?,training: freezed == training ? _self.training : training // ignore: cast_nullable_to_non_nullable
+as String?,paymentDeadline: freezed == paymentDeadline ? _self.paymentDeadline : paymentDeadline // ignore: cast_nullable_to_non_nullable
+as DateTime?,training: freezed == training ? _self.training : training // ignore: cast_nullable_to_non_nullable
 as TrainingModel?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
@@ -98,17 +99,6 @@ $TrainingModelCopyWith<$Res>? get training {
 /// Adds pattern-matching-related methods to [TrainingEnrollmentModel].
 extension TrainingEnrollmentModelPatterns on TrainingEnrollmentModel {
 /// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
 @optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TrainingEnrollmentModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
@@ -119,18 +109,6 @@ return $default(_that);case _:
 }
 }
 /// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
 @optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TrainingEnrollmentModel value)  $default,){
 final _that = this;
 switch (_that) {
@@ -141,17 +119,6 @@ return $default(_that);case _:
 }
 }
 /// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
 @optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TrainingEnrollmentModel value)?  $default,){
 final _that = this;
 switch (_that) {
@@ -162,62 +129,28 @@ return $default(_that);case _:
 }
 }
 /// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'training_id')  String trainingId, @JsonKey(name: 'user_id')  String userId,  String status, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'payment_proof_url')  String? paymentProofUrl,  TrainingModel? training, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'training_id')  String trainingId, @JsonKey(name: 'user_id')  String userId,  String status, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'payment_proof_url')  String? paymentProofUrl, @JsonKey(name: 'payment_deadline')  DateTime? paymentDeadline,  TrainingModel? training, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TrainingEnrollmentModel() when $default != null:
-return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.training,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.paymentDeadline,_that.training,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
 }
 /// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'training_id')  String trainingId, @JsonKey(name: 'user_id')  String userId,  String status, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'payment_proof_url')  String? paymentProofUrl,  TrainingModel? training, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'training_id')  String trainingId, @JsonKey(name: 'user_id')  String userId,  String status, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'payment_proof_url')  String? paymentProofUrl, @JsonKey(name: 'payment_deadline')  DateTime? paymentDeadline,  TrainingModel? training, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _TrainingEnrollmentModel():
-return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.training,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.paymentDeadline,_that.training,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
 }
 /// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'training_id')  String trainingId, @JsonKey(name: 'user_id')  String userId,  String status, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'payment_proof_url')  String? paymentProofUrl,  TrainingModel? training, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'training_id')  String trainingId, @JsonKey(name: 'user_id')  String userId,  String status, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'payment_proof_url')  String? paymentProofUrl, @JsonKey(name: 'payment_deadline')  DateTime? paymentDeadline,  TrainingModel? training, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _TrainingEnrollmentModel() when $default != null:
-return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.training,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.paymentDeadline,_that.training,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -229,7 +162,7 @@ return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.reject
 @JsonSerializable()
 
 class _TrainingEnrollmentModel extends TrainingEnrollmentModel {
-  const _TrainingEnrollmentModel({required this.id, @JsonKey(name: 'training_id') required this.trainingId, @JsonKey(name: 'user_id') required this.userId, required this.status, @JsonKey(name: 'rejection_reason') this.rejectionReason, @JsonKey(name: 'payment_proof_url') this.paymentProofUrl, this.training, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt}): super._();
+  const _TrainingEnrollmentModel({required this.id, @JsonKey(name: 'training_id') required this.trainingId, @JsonKey(name: 'user_id') required this.userId, required this.status, @JsonKey(name: 'rejection_reason') this.rejectionReason, @JsonKey(name: 'payment_proof_url') this.paymentProofUrl, @JsonKey(name: 'payment_deadline') this.paymentDeadline, this.training, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt}): super._();
   factory _TrainingEnrollmentModel.fromJson(Map<String, dynamic> json) => _$TrainingEnrollmentModelFromJson(json);
 
 @override final  String id;
@@ -238,6 +171,7 @@ class _TrainingEnrollmentModel extends TrainingEnrollmentModel {
 @override final  String status;
 @override@JsonKey(name: 'rejection_reason') final  String? rejectionReason;
 @override@JsonKey(name: 'payment_proof_url') final  String? paymentProofUrl;
+@override@JsonKey(name: 'payment_deadline') final  DateTime? paymentDeadline;
 @override final  TrainingModel? training;
 @override@JsonKey(name: 'created_at') final  DateTime? createdAt;
 @override@JsonKey(name: 'updated_at') final  DateTime? updatedAt;
@@ -255,16 +189,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrainingEnrollmentModel&&(identical(other.id, id) || other.id == id)&&(identical(other.trainingId, trainingId) || other.trainingId == trainingId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.paymentProofUrl, paymentProofUrl) || other.paymentProofUrl == paymentProofUrl)&&(identical(other.training, training) || other.training == training)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrainingEnrollmentModel&&(identical(other.id, id) || other.id == id)&&(identical(other.trainingId, trainingId) || other.trainingId == trainingId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.paymentProofUrl, paymentProofUrl) || other.paymentProofUrl == paymentProofUrl)&&(identical(other.paymentDeadline, paymentDeadline) || other.paymentDeadline == paymentDeadline)&&(identical(other.training, training) || other.training == training)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,trainingId,userId,status,rejectionReason,paymentProofUrl,training,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,trainingId,userId,status,rejectionReason,paymentProofUrl,paymentDeadline,training,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'TrainingEnrollmentModel(id: $id, trainingId: $trainingId, userId: $userId, status: $status, rejectionReason: $rejectionReason, paymentProofUrl: $paymentProofUrl, training: $training, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'TrainingEnrollmentModel(id: $id, trainingId: $trainingId, userId: $userId, status: $status, rejectionReason: $rejectionReason, paymentProofUrl: $paymentProofUrl, paymentDeadline: $paymentDeadline, training: $training, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -275,7 +209,7 @@ abstract mixin class _$TrainingEnrollmentModelCopyWith<$Res> implements $Trainin
   factory _$TrainingEnrollmentModelCopyWith(_TrainingEnrollmentModel value, $Res Function(_TrainingEnrollmentModel) _then) = __$TrainingEnrollmentModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'training_id') String trainingId,@JsonKey(name: 'user_id') String userId, String status,@JsonKey(name: 'rejection_reason') String? rejectionReason,@JsonKey(name: 'payment_proof_url') String? paymentProofUrl, TrainingModel? training,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt
+ String id,@JsonKey(name: 'training_id') String trainingId,@JsonKey(name: 'user_id') String userId, String status,@JsonKey(name: 'rejection_reason') String? rejectionReason,@JsonKey(name: 'payment_proof_url') String? paymentProofUrl,@JsonKey(name: 'payment_deadline') DateTime? paymentDeadline, TrainingModel? training,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt
 });
 
 
@@ -292,7 +226,7 @@ class __$TrainingEnrollmentModelCopyWithImpl<$Res>
 
 /// Create a copy of TrainingEnrollmentModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? trainingId = null,Object? userId = null,Object? status = null,Object? rejectionReason = freezed,Object? paymentProofUrl = freezed,Object? training = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? trainingId = null,Object? userId = null,Object? status = null,Object? rejectionReason = freezed,Object? paymentProofUrl = freezed,Object? paymentDeadline = freezed,Object? training = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_TrainingEnrollmentModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,trainingId: null == trainingId ? _self.trainingId : trainingId // ignore: cast_nullable_to_non_nullable
@@ -300,7 +234,8 @@ as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullabl
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
 as String?,paymentProofUrl: freezed == paymentProofUrl ? _self.paymentProofUrl : paymentProofUrl // ignore: cast_nullable_to_non_nullable
-as String?,training: freezed == training ? _self.training : training // ignore: cast_nullable_to_non_nullable
+as String?,paymentDeadline: freezed == paymentDeadline ? _self.paymentDeadline : paymentDeadline // ignore: cast_nullable_to_non_nullable
+as DateTime?,training: freezed == training ? _self.training : training // ignore: cast_nullable_to_non_nullable
 as TrainingModel?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,

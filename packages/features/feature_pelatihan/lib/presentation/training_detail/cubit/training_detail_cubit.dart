@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
+import 'package:network/network.dart';
 import 'package:designsystems/designsystems.dart';
 
 import 'training_detail_state.dart';
@@ -7,69 +9,110 @@ import '../models/training_detail_model.dart';
 
 @injectable
 class TrainingDetailCubit extends Cubit<TrainingDetailState> {
-  TrainingDetailCubit() : super(const TrainingDetailState());
+  final GetTrainingDetailUseCase _getTrainingDetailUseCase;
+  final EnrollTrainingUseCase _enrollTrainingUseCase;
+
+  TrainingDetailCubit(
+    this._getTrainingDetailUseCase,
+    this._enrollTrainingUseCase,
+  ) : super(const TrainingDetailState());
 
   Future<void> loadTraining(String id) async {
     emit(state.copyWith(isLoading: true, isFailure: false, errorMessage: null));
 
-    try {
-      // Async op mocking networking call
-      await Future.delayed(const Duration(seconds: 1));
+    final result = await _getTrainingDetailUseCase(id);
 
-      // Check closed bounds avoiding late memory leaks and ANR from Race Conditions
-      if (isClosed) return;
+    if (isClosed) return;
 
-      final mockData = TrainingDetailModel(
-        id: id,
-        imageUrl: '', // fallback to generic widget design
-        title: 'Tukang Listrik Madya Bawah (1)',
-        badge: 'Gratis',
-        description:
-            'Pelatihan ini bertujuan untuk mengajarkan keterampilan teknikal kelistrikan tingkat madya, mencakup pemahaman dasar hingga penerapan praktis dalam instalasi listrik, perawatan sistem kelistrikan, serta penerapan prosedur kesel...',
-        date: '25 November 2025',
-        time: '11:00',
-        location: 'Gedung Pertemuan RW Jl Pisang BAru RT 01 RW 03',
-        facilities: [
-          TrainingFacilityModel(
-            iconAsset: AppAssets.iconPaper,
-            label: 'Sertifikat Pelatihan',
-          ),
-          TrainingFacilityModel(
-            iconAsset: AppAssets.iconInfoLine,
-            label: 'Badge Listrik Madya',
-          ),
-        ],
-        requirements: ['Pria / Wanita', 'Minimal SMK / SMU /Aliyah'],
-        fee: 'Rp 20.000',
-        feeNotice: 'Pelatihan 100% Gratis!',
-      );
-
-      emit(state.copyWith(isLoading: false, training: mockData));
-    } catch (e) {
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          isLoading: false,
-          isFailure: true,
-          errorMessage: 'Gagal memuat detail pelatihan.',
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isLoading: false,
+        isFailure: true,
+        errorMessage: failure.maybeWhen(
+          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+          orElse: () => 'Gagal memuat detail pelatihan.',
         ),
-      );
-    }
+      )),
+      (entity) => emit(state.copyWith(
+        isLoading: false,
+        training: _entityToModel(entity),
+      )),
+    );
   }
 
   Future<void> registerTraining() async {
-    if (state.isRegistering) return; // Debounce block
+    if (state.isRegistering || state.training == null) return;
     emit(state.copyWith(isRegistering: true));
 
+    final result = await _enrollTrainingUseCase(state.training!.id);
+
+    if (isClosed) return;
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isRegistering: false,
+        errorMessage: failure.maybeWhen(
+          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+          orElse: () => 'Gagal mendaftar pelatihan.',
+        ),
+      )),
+      (_) => emit(state.copyWith(
+        isRegistering: false,
+        isRegistrationSuccess: true,
+      )),
+    );
+  }
+
+  TrainingDetailModel _entityToModel(TrainingEntity entity) {
+    final imageUrl = entity.images.isNotEmpty
+        ? ApiConfig.buildImageUrl(entity.images.first.uriPath)
+        : null;
+
+    final facilities = entity.facilities
+        .map((f) => TrainingFacilityModel(
+              iconAsset: AppAssets.iconPaper,
+              label: f,
+            ))
+        .toList();
+
+    return TrainingDetailModel(
+      id: entity.id,
+      imageUrl: imageUrl,
+      title: entity.title,
+      badge: entity.certificate ??
+          (entity.feePerPerson == 0 ? 'Gratis' : 'Berbayar'),
+      description: entity.description,
+      date: _formatDate(entity.dateOfTraining),
+      time: _formatTime(entity.dateOfTraining),
+      location: entity.locationAddress,
+      facilities: facilities,
+      requirements: const [],
+      fee: entity.formattedFee,
+      feeNotice: entity.feePerPerson == 0 ? 'Pelatihan 100% Gratis!' : '',
+    );
+  }
+
+  static String _formatDate(String raw) {
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      final dt = DateTime.parse(raw);
+      const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+      ];
+      return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
+    } catch (_) {
+      return raw;
+    }
+  }
 
-      if (isClosed) return;
-
-      emit(state.copyWith(isRegistering: false, isRegistrationSuccess: true));
-    } catch (e) {
-      if (isClosed) return;
-      emit(state.copyWith(isRegistering: false));
+  static String _formatTime(String raw) {
+    try {
+      final dt = DateTime.parse(raw);
+      final h = dt.hour.toString().padLeft(2, '0');
+      final m = dt.minute.toString().padLeft(2, '0');
+      return '$h:$m';
+    } catch (_) {
+      return '';
     }
   }
 }

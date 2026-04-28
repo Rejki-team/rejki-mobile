@@ -18,10 +18,13 @@ import 'cubit/history_iklan_pekerjaan_cubit.dart';
 import 'cubit/history_iklan_pekerjaan_state.dart';
 import 'cubit/history_iklan_pekerja_cubit.dart';
 import 'cubit/history_iklan_pekerja_state.dart';
+import 'cubit/history_iklan_pelatihan_cubit.dart';
+import 'cubit/history_iklan_pelatihan_state.dart';
 import 'widgets/history_iklan_pekerja_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:network/network.dart';
 import 'package:core/core.dart';
+import 'package:domain/domain.dart';
 
 class HistoryPage extends StatelessWidget {
   final int initialTabIndex;
@@ -64,6 +67,10 @@ class HistoryPage extends StatelessWidget {
         BlocProvider<HistoryIklanPekerjaCubit>(
           create: (context) =>
               GetIt.I<HistoryIklanPekerjaCubit>()..loadMyWorkerProfile(),
+        ),
+        BlocProvider<HistoryIklanPelatihanCubit>(
+          create: (context) =>
+              GetIt.I<HistoryIklanPelatihanCubit>()..loadMyTrainings(),
         ),
       ],
       child: const _HistoryView(),
@@ -516,10 +523,10 @@ class _HistoryList extends StatelessWidget {
                   onProcessPressed: () {
                     switch (cardStatus) {
                       case HistoryPelatihanCardStatus.pending:
-                        if (training != null) {
-                          // TODO: Verify if payment route is correct. Using generic dialog or route for now.
-                          context.push('/payment');
-                        }
+                        context.push(
+                          '/pelatihan/${enrollment.trainingId}/payment/${enrollment.id}',
+                          extra: enrollment,
+                        );
                         break;
                       case HistoryPelatihanCardStatus.paymentUploaded:
                         showInfoDialog(
@@ -836,7 +843,90 @@ class _HistoryList extends StatelessWidget {
       );
     }
 
-    // Combining Mock logic based on picture
+    // ── Tab Iklan Saya → Filter Pelatihan (real data) ──────────────────────
+    if (tabIndex == 1 && filter == 'Pelatihan') {
+      return BlocBuilder<HistoryIklanPelatihanCubit, HistoryIklanPelatihanState>(
+        builder: (context, state) {
+          if (state.status == HistoryIklanPelatihanStatus.initial ||
+              state.status == HistoryIklanPelatihanStatus.loading) {
+            return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
+          }
+
+          if (state.status == HistoryIklanPelatihanStatus.failure) {
+            return AppErrorState(
+              description: state.errorMessage ?? 'Gagal memuat iklan pelatihan',
+              onRetry: () => context
+                  .read<HistoryIklanPelatihanCubit>()
+                  .loadMyTrainings(refresh: true),
+            );
+          }
+
+          if (state.trainings.isEmpty) {
+            return AppPullToRefresh(
+              onRefresh: () async => context
+                  .read<HistoryIklanPelatihanCubit>()
+                  .loadMyTrainings(refresh: true),
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Text(
+                        'Belum ada iklan pelatihan.',
+                        style: AppTypography.bodyMedium,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return AppPullToRefresh(
+            onRefresh: () async => context
+                .read<HistoryIklanPelatihanCubit>()
+                .loadMyTrainings(refresh: true),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              itemCount:
+                  state.trainings.length + (state.hasNext ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index >= state.trainings.length) {
+                  context
+                      .read<HistoryIklanPelatihanCubit>()
+                      .loadMyTrainings();
+                  return const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final training = state.trainings[index];
+
+                return _TrainingIklanCard(
+                  training: training,
+                  onDetailPressed: () =>
+                      context.push('/pelatihan/${training.id}'),
+                  onPendaftarPressed: () => context.push(
+                    '/pelatihan/${training.id}/pendaftar',
+                    extra: {'title': training.title},
+                  ),
+                  onBadgePressed: () => context.push(
+                    '/pelatihan/${training.id}/badge',
+                    extra: {'title': training.title},
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      );
+    }
+
+    // Combining Mock logic based on picture (Barang Bekas + remaining filters)
     return AppPullToRefresh(
       onRefresh: () async => await Future.delayed(const Duration(milliseconds: 500)),
       child: ListView(
@@ -916,6 +1006,121 @@ class _HistoryList extends StatelessWidget {
           ),
 
           const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+}
+
+class _TrainingIklanCard extends StatelessWidget {
+  final TrainingEntity training;
+  final VoidCallback onDetailPressed;
+  final VoidCallback onPendaftarPressed;
+  final VoidCallback onBadgePressed;
+
+  const _TrainingIklanCard({
+    required this.training,
+    required this.onDetailPressed,
+    required this.onPendaftarPressed,
+    required this.onBadgePressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            training.title,
+            style: AppTypography.labelMedium.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textBlack,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            training.companyName,
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            '${training.totalApprovedEnrollees} pendaftar disetujui',
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: onDetailPressed,
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.border),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: Text(
+                    'Detail',
+                    style: AppTypography.labelSmall.copyWith(
+                      color: AppColors.textBlack,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: onPendaftarPressed,
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.border),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: Text(
+                    'Pendaftar',
+                    style: AppTypography.labelSmall.copyWith(
+                      color: AppColors.textBlack,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: onBadgePressed,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.buttonGradientEnd,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: Text(
+                    'Badge',
+                    style: AppTypography.labelSmall.copyWith(
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

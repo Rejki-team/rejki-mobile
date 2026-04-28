@@ -3,26 +3,32 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
+import 'package:domain/domain.dart';
 
 import 'cubit/submit_training_ad_cubit.dart';
 import 'cubit/submit_training_ad_state.dart';
 
 class SubmitTrainingAdPage extends StatelessWidget {
-  const SubmitTrainingAdPage({super.key});
+  final CreateTrainingParams params;
+
+  const SubmitTrainingAdPage({super.key, required this.params});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => GetIt.I<SubmitTrainingAdCubit>(),
-      child: const _SubmitTrainingAdView(),
+      child: _SubmitTrainingAdView(params: params),
     );
   }
 }
 
 class _SubmitTrainingAdView extends StatelessWidget {
-  const _SubmitTrainingAdView();
+  final CreateTrainingParams params;
+
+  const _SubmitTrainingAdView({required this.params});
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +41,34 @@ class _SubmitTrainingAdView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: _buildAppBar(context),
-        body: const SingleChildScrollView(
-          padding: EdgeInsets.all(AppSpacing.md),
-          child: _MainAdContentCard(),
+        body: BlocListener<SubmitTrainingAdCubit, SubmitTrainingAdState>(
+          listenWhen: (prev, curr) =>
+              prev.isSuccess != curr.isSuccess ||
+              prev.errorMessage != curr.errorMessage,
+          listener: (context, state) {
+            if (state.isSuccess) {
+              showSuccessDialog(
+                context,
+                title: 'Berhasil',
+                message:
+                    'Proposal pelatihan berhasil dikirim ke admin.',
+              ).then((_) {
+                if (context.mounted) context.go('/pelatihan');
+              });
+            } else if (state.errorMessage != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.errorMessage!)),
+              );
+            }
+          },
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              children: [
+                _MainAdContentCard(params: params),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -50,9 +81,10 @@ class _SubmitTrainingAdView extends StatelessWidget {
       leading: IconButton(
         icon: SvgPicture.asset(
           AppAssets.iconArrowLeft,
-          colorFilter: const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
+          colorFilter:
+              const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
         ),
-        onPressed: () => Navigator.of(context).pop(),
+        onPressed: () => context.pop(),
       ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,9 +106,10 @@ class _SubmitTrainingAdView extends StatelessWidget {
   }
 }
 
-/// Prevents God Class by housing the main wrapper
 class _MainAdContentCard extends StatelessWidget {
-  const _MainAdContentCard();
+  final CreateTrainingParams params;
+
+  const _MainAdContentCard({required this.params});
 
   @override
   Widget build(BuildContext context) {
@@ -88,34 +121,144 @@ class _MainAdContentCard extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(24), // Mockup design specific
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: AppColors.border,
           width: AppDimensions.borderThin,
         ),
       ),
-      child: const Column(
+      child: Column(
         children: [
-          _EnvelopeGraphic(),
-          SizedBox(height: AppSpacing.xl),
-
-          _HeaderInformation(),
-          SizedBox(height: AppSpacing.xl),
-
-          _InformationNoticeBox(),
-          SizedBox(height: AppSpacing.xl),
-
-          _SubmitRequestButton(),
-          SizedBox(height: AppSpacing.xxl),
-
-          _BottomAdvertisingSection(),
+          const _EnvelopeGraphic(),
+          const SizedBox(height: AppSpacing.xl),
+          const _HeaderInformation(),
+          const SizedBox(height: AppSpacing.xl),
+          _TrainingPreviewCard(params: params),
+          const SizedBox(height: AppSpacing.xl),
+          const _InformationNoticeBox(),
+          const SizedBox(height: AppSpacing.xl),
+          _SubmitRequestButton(params: params),
+          const SizedBox(height: AppSpacing.xxl),
+          const _BottomAdvertisingSection(),
         ],
       ),
     );
   }
 }
 
-/// Displays the envelope and badge without using experimental code
+class _TrainingPreviewCard extends StatelessWidget {
+  final CreateTrainingParams params;
+
+  const _TrainingPreviewCard({required this.params});
+
+  String _formatFee(int fee) {
+    if (fee == 0) return 'Gratis';
+    final formatted = fee.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]}.',
+    );
+    return 'Rp $formatted';
+  }
+
+  String _formatDate(DateTime dt) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des',
+    ];
+    return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Ringkasan Pelatihan',
+            style: AppTypography.labelLarge.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textBlack,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          _PreviewRow(label: 'Judul', value: params.title),
+          _PreviewRow(label: 'Perusahaan', value: params.companyName),
+          _PreviewRow(label: 'Lokasi', value: params.locationAddress),
+          _PreviewRow(
+            label: 'Tanggal',
+            value: _formatDate(params.dateOfTraining),
+          ),
+          _PreviewRow(
+            label: 'Biaya',
+            value: _formatFee(params.feePerPerson),
+          ),
+          const Divider(height: AppSpacing.lg),
+          Text(
+            'Informasi Pembayaran',
+            style: AppTypography.labelMedium.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textBlack,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          _PreviewRow(label: 'Bank', value: params.bankName),
+          _PreviewRow(label: 'No. Rekening', value: params.bankAccountNumber),
+          _PreviewRow(
+            label: 'Atas Nama',
+            value: params.bankAccountHolderName,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PreviewRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _PreviewRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(
+              label,
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          const Text(': '),
+          Expanded(
+            child: Text(
+              value,
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textBlack,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _EnvelopeGraphic extends StatelessWidget {
   const _EnvelopeGraphic();
 
@@ -127,7 +270,6 @@ class _EnvelopeGraphic extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Base envelope silhouette
           Container(
             width: 100,
             height: 70,
@@ -148,7 +290,6 @@ class _EnvelopeGraphic extends StatelessWidget {
             ),
             child: CustomPaint(painter: _EnvelopeLinesPainter()),
           ),
-          // Notification badge '3'
           Positioned(
             top: 2,
             right: 0,
@@ -156,7 +297,7 @@ class _EnvelopeGraphic extends StatelessWidget {
               width: 26,
               height: 26,
               decoration: const BoxDecoration(
-                color: Color(0xFFEAB308), // Yellow-orange notice
+                color: Color(0xFFEAB308),
                 shape: BoxShape.circle,
               ),
               child: const Center(
@@ -177,7 +318,6 @@ class _EnvelopeGraphic extends StatelessWidget {
   }
 }
 
-/// Draws interior lines mock-envelope flap to be visually identical
 class _EnvelopeLinesPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -281,7 +421,9 @@ class _InformationNoticeBox extends StatelessWidget {
 }
 
 class _SubmitRequestButton extends StatelessWidget {
-  const _SubmitRequestButton();
+  final CreateTrainingParams params;
+
+  const _SubmitRequestButton({required this.params});
 
   @override
   Widget build(BuildContext context) {
@@ -294,12 +436,12 @@ class _SubmitRequestButton extends StatelessWidget {
             onPressed: state.isRequesting
                 ? null
                 : () {
-                    context.read<SubmitTrainingAdCubit>().submitRequest();
+                    context
+                        .read<SubmitTrainingAdCubit>()
+                        .submitRequest(params);
                   },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(
-                0xFF28256F,
-              ), // Dark purple/blue matching exact mockup design
+              backgroundColor: const Color(0xFF28256F),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -348,12 +490,10 @@ class _BottomAdvertisingSection extends StatelessWidget {
       badgeText: 'Iklan',
       title: 'Pelatihan Gratis + Sertifikasi Resmi',
       description:
-          'Pelatihan digital marketinf dan banyak lagi, hanya bayar pendaftaran',
+          'Pelatihan digital marketing dan banyak lagi, hanya bayar pendaftaran',
       ctaText: 'Lihat Pelatihan ↗',
-      imageUrl: '', // Optional per component definition
-      onCtaPressed: () {
-        // Safe rebuild integration
-      },
+      imageUrl: '',
+      onCtaPressed: () {},
     );
   }
 }

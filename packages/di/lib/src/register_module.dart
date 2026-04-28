@@ -496,6 +496,41 @@ abstract class RegisterModule {
   GetTrainingDetailUseCase getTrainingDetailUseCase(TrainingRepository repository) =>
       GetTrainingDetailUseCase(repository);
 
+  /// GetTrainingsUseCase - untuk daftar pelatihan publik
+  @lazySingleton
+  GetTrainingsUseCase getTrainingsUseCase(TrainingRepository repository) =>
+      GetTrainingsUseCase(repository);
+
+  /// GetMyTrainingsUseCase - untuk daftar pelatihan milik user
+  @lazySingleton
+  GetMyTrainingsUseCase getMyTrainingsUseCase(TrainingRepository repository) =>
+      GetMyTrainingsUseCase(repository);
+
+  /// CreateTrainingUseCase - untuk membuat iklan pelatihan
+  @lazySingleton
+  CreateTrainingUseCase createTrainingUseCase(TrainingRepository repository) =>
+      CreateTrainingUseCase(repository);
+
+  /// EnrollTrainingUseCase - untuk mendaftar pelatihan
+  @lazySingleton
+  EnrollTrainingUseCase enrollTrainingUseCase(TrainingRepository repository) =>
+      EnrollTrainingUseCase(repository);
+
+  /// UploadPaymentProofUseCase - untuk upload bukti pembayaran
+  @lazySingleton
+  UploadPaymentProofUseCase uploadPaymentProofUseCase(TrainingRepository repository) =>
+      UploadPaymentProofUseCase(repository);
+
+  /// GetEnrollmentsByTrainingUseCase - untuk daftar pendaftar pelatihan milik user
+  @lazySingleton
+  GetEnrollmentsByTrainingUseCase getEnrollmentsByTrainingUseCase(TrainingRepository repository) =>
+      GetEnrollmentsByTrainingUseCase(repository);
+
+  /// SubmitTrainingBadgeUseCase - untuk upload badge pelatihan
+  @lazySingleton
+  SubmitTrainingBadgeUseCase submitTrainingBadgeUseCase(TrainingRepository repository) =>
+      SubmitTrainingBadgeUseCase(repository);
+
   /// HistoryPelatihanCubit
   @factoryMethod
   HistoryPelatihanCubit historyPelatihanCubit(GetMyTrainingEnrollmentsUseCase useCase) =>
@@ -503,11 +538,41 @@ abstract class RegisterModule {
 
   /// TrainingListingCubit - untuk halaman daftar pelatihan
   @factoryMethod
-  TrainingListingCubit trainingListingCubit() => TrainingListingCubit();
+  TrainingListingCubit trainingListingCubit(GetTrainingsUseCase getTrainingsUseCase) =>
+      TrainingListingCubit(getTrainingsUseCase);
 
-  /// CreateTrainingAdCubit - untuk membuat iklan pelatihan
+  /// CreateTrainingAdCubit - untuk membuat iklan pelatihan (form only, navigates to preview)
   @factoryMethod
   CreateTrainingAdCubit createTrainingAdCubit() => CreateTrainingAdCubit();
+
+  /// SubmitTrainingAdCubit - untuk preview dan submit iklan pelatihan ke API
+  @factoryMethod
+  SubmitTrainingAdCubit submitTrainingAdCubit(
+    CreateTrainingUseCase createTrainingUseCase,
+  ) => SubmitTrainingAdCubit(createTrainingUseCase);
+
+  /// TrainingDetailCubit - untuk halaman detail pelatihan
+  @factoryMethod
+  TrainingDetailCubit trainingDetailCubit(
+    GetTrainingDetailUseCase getTrainingDetailUseCase,
+    EnrollTrainingUseCase enrollTrainingUseCase,
+  ) => TrainingDetailCubit(getTrainingDetailUseCase, enrollTrainingUseCase);
+
+  /// PaymentCubit - untuk halaman pembayaran pelatihan
+  @factoryMethod
+  PaymentCubit paymentCubit(UploadPaymentProofUseCase uploadPaymentProofUseCase) =>
+      PaymentCubit(uploadPaymentProofUseCase);
+
+  /// DaftarPendaftarCubit - untuk halaman daftar pendaftar pelatihan
+  @factoryMethod
+  DaftarPendaftarCubit daftarPendaftarCubit(
+    GetEnrollmentsByTrainingUseCase getEnrollmentsByTrainingUseCase,
+  ) => DaftarPendaftarCubit(getEnrollmentsByTrainingUseCase);
+
+  /// BadgeUploadCubit - untuk halaman upload badge pelatihan
+  @factoryMethod
+  BadgeUploadCubit badgeUploadCubit(SubmitTrainingBadgeUseCase submitTrainingBadgeUseCase) =>
+      BadgeUploadCubit(submitTrainingBadgeUseCase);
 
   // ============================================
   // SECONDHAND DATA LAYER
@@ -772,6 +837,13 @@ abstract class RegisterModule {
     GetMyWorkerProfileUseCase getMyWorkerProfileUseCase,
   ) =>
       HistoryIklanPekerjaCubit(getMyWorkerProfileUseCase);
+
+  /// HistoryIklanPelatihanCubit - untuk tab Iklan Saya > Pelatihan di halaman riwayat
+  @factoryMethod
+  HistoryIklanPelatihanCubit historyIklanPelatihanCubit(
+    GetMyTrainingsUseCase getMyTrainingsUseCase,
+  ) =>
+      HistoryIklanPelatihanCubit(getMyTrainingsUseCase);
 
   /// ContactRequestCubit - untuk halaman permintaan kontak masuk ke profil pekerja
   @factoryMethod

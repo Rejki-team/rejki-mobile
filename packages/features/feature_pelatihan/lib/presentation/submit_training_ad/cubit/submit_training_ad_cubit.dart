@@ -1,33 +1,34 @@
 import 'package:bloc/bloc.dart';
+import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 
 import 'submit_training_ad_state.dart';
 
 @injectable
 class SubmitTrainingAdCubit extends Cubit<SubmitTrainingAdState> {
-  SubmitTrainingAdCubit() : super(const SubmitTrainingAdState());
+  final CreateTrainingUseCase _createTrainingUseCase;
 
-  Future<void> submitRequest() async {
+  SubmitTrainingAdCubit(this._createTrainingUseCase)
+      : super(const SubmitTrainingAdState());
+
+  Future<void> submitRequest(CreateTrainingParams params) async {
     emit(
       state.copyWith(isRequesting: true, isSuccess: false, errorMessage: null),
     );
 
-    try {
-      // Async operation free from ANR
-      await Future.delayed(const Duration(seconds: 1));
+    final result = await _createTrainingUseCase(params);
 
-      // Check to prevent Race conditions & memory leak exceptions
-      if (isClosed) return;
+    if (isClosed) return;
 
-      emit(state.copyWith(isRequesting: false, isSuccess: true));
-    } catch (e) {
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          isRequesting: false,
-          errorMessage: 'Terjadi kesalahan saat mengirim pengajuan.',
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isRequesting: false,
+        errorMessage: failure.maybeWhen(
+          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+          orElse: () => 'Gagal mengirim proposal. Silakan coba lagi.',
         ),
-      );
-    }
+      )),
+      (_) => emit(state.copyWith(isRequesting: false, isSuccess: true)),
+    );
   }
 }

@@ -20,6 +20,21 @@ _TrainingModel _$TrainingModelFromJson(Map<String, dynamic> json) =>
       adCode: json['ad_code'] as String?,
       email: json['email'] as String?,
       role: json['role'] as String?,
+      province: json['province'] as String?,
+      city: json['city'] as String?,
+      district: json['district'] as String?,
+      village: json['village'] as String?,
+      certificate: json['certificate'] as String?,
+      bankName: json['bank_name'] as String? ?? '',
+      bankAccountNumber: json['bank_account_number'] as String? ?? '',
+      bankAccountHolderName:
+          json['bank_account_holder_name'] as String? ?? '',
+      facilities: (json['facilities'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      totalApprovedEnrollees:
+          (json['total_approved_enrollees'] as num?)?.toInt() ?? 0,
       images:
           (json['images'] as List<dynamic>?)
               ?.map(
@@ -49,6 +64,16 @@ Map<String, dynamic> _$TrainingModelToJson(_TrainingModel instance) =>
       'ad_code': instance.adCode,
       'email': instance.email,
       'role': instance.role,
+      'province': instance.province,
+      'city': instance.city,
+      'district': instance.district,
+      'village': instance.village,
+      'certificate': instance.certificate,
+      'bank_name': instance.bankName,
+      'bank_account_number': instance.bankAccountNumber,
+      'bank_account_holder_name': instance.bankAccountHolderName,
+      'facilities': instance.facilities,
+      'total_approved_enrollees': instance.totalApprovedEnrollees,
       'images': instance.images,
       'created_at': instance.createdAt?.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),

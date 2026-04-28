@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TrainingEnrollmentEntity {
 
- String get id; String get trainingId; String get userId; String get status; String? get rejectionReason; String? get paymentProofUrl; TrainingEntity? get training; DateTime? get createdAt; DateTime? get updatedAt;
+ String get id; String get trainingId; String get userId; String get status; String? get rejectionReason; String? get paymentProofUrl; TrainingEntity? get training; DateTime? get paymentDeadline; DateTime? get createdAt; DateTime? get updatedAt;
 /// Create a copy of TrainingEnrollmentEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $TrainingEnrollmentEntityCopyWith<TrainingEnrollmentEntity> get copyWith => _$Tr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrainingEnrollmentEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.trainingId, trainingId) || other.trainingId == trainingId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.paymentProofUrl, paymentProofUrl) || other.paymentProofUrl == paymentProofUrl)&&(identical(other.training, training) || other.training == training)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrainingEnrollmentEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.trainingId, trainingId) || other.trainingId == trainingId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.paymentProofUrl, paymentProofUrl) || other.paymentProofUrl == paymentProofUrl)&&(identical(other.training, training) || other.training == training)&&(identical(other.paymentDeadline, paymentDeadline) || other.paymentDeadline == paymentDeadline)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,trainingId,userId,status,rejectionReason,paymentProofUrl,training,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,trainingId,userId,status,rejectionReason,paymentProofUrl,training,paymentDeadline,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'TrainingEnrollmentEntity(id: $id, trainingId: $trainingId, userId: $userId, status: $status, rejectionReason: $rejectionReason, paymentProofUrl: $paymentProofUrl, training: $training, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'TrainingEnrollmentEntity(id: $id, trainingId: $trainingId, userId: $userId, status: $status, rejectionReason: $rejectionReason, paymentProofUrl: $paymentProofUrl, training: $training, paymentDeadline: $paymentDeadline, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $TrainingEnrollmentEntityCopyWith<$Res>  {
   factory $TrainingEnrollmentEntityCopyWith(TrainingEnrollmentEntity value, $Res Function(TrainingEnrollmentEntity) _then) = _$TrainingEnrollmentEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String trainingId, String userId, String status, String? rejectionReason, String? paymentProofUrl, TrainingEntity? training, DateTime? createdAt, DateTime? updatedAt
+ String id, String trainingId, String userId, String status, String? rejectionReason, String? paymentProofUrl, TrainingEntity? training, DateTime? paymentDeadline, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -62,7 +62,7 @@ class _$TrainingEnrollmentEntityCopyWithImpl<$Res>
 
 /// Create a copy of TrainingEnrollmentEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? trainingId = null,Object? userId = null,Object? status = null,Object? rejectionReason = freezed,Object? paymentProofUrl = freezed,Object? training = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? trainingId = null,Object? userId = null,Object? status = null,Object? rejectionReason = freezed,Object? paymentProofUrl = freezed,Object? training = freezed,Object? paymentDeadline = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,trainingId: null == trainingId ? _self.trainingId : trainingId // ignore: cast_nullable_to_non_nullable
@@ -71,7 +71,8 @@ as String,status: null == status ? _self.status : status // ignore: cast_nullabl
 as String,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
 as String?,paymentProofUrl: freezed == paymentProofUrl ? _self.paymentProofUrl : paymentProofUrl // ignore: cast_nullable_to_non_nullable
 as String?,training: freezed == training ? _self.training : training // ignore: cast_nullable_to_non_nullable
-as TrainingEntity?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as TrainingEntity?,paymentDeadline: freezed == paymentDeadline ? _self.paymentDeadline : paymentDeadline // ignore: cast_nullable_to_non_nullable
+as DateTime?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -94,18 +95,6 @@ $TrainingEntityCopyWith<$Res>? get training {
 
 /// Adds pattern-matching-related methods to [TrainingEnrollmentEntity].
 extension TrainingEnrollmentEntityPatterns on TrainingEnrollmentEntity {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
 @optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TrainingEnrollmentEntity value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
@@ -115,19 +104,6 @@ return $default(_that);case _:
 
 }
 }
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
 @optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TrainingEnrollmentEntity value)  $default,){
 final _that = this;
 switch (_that) {
@@ -137,18 +113,6 @@ return $default(_that);case _:
 
 }
 }
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
 @optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TrainingEnrollmentEntity value)?  $default,){
 final _that = this;
 switch (_that) {
@@ -158,63 +122,26 @@ return $default(_that);case _:
 
 }
 }
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String trainingId,  String userId,  String status,  String? rejectionReason,  String? paymentProofUrl,  TrainingEntity? training,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String trainingId,  String userId,  String status,  String? rejectionReason,  String? paymentProofUrl,  TrainingEntity? training,  DateTime? paymentDeadline,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TrainingEnrollmentEntity() when $default != null:
-return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.training,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.training,_that.paymentDeadline,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
 }
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String trainingId,  String userId,  String status,  String? rejectionReason,  String? paymentProofUrl,  TrainingEntity? training,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String trainingId,  String userId,  String status,  String? rejectionReason,  String? paymentProofUrl,  TrainingEntity? training,  DateTime? paymentDeadline,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _TrainingEnrollmentEntity():
-return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.training,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.training,_that.paymentDeadline,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
 }
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String trainingId,  String userId,  String status,  String? rejectionReason,  String? paymentProofUrl,  TrainingEntity? training,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String trainingId,  String userId,  String status,  String? rejectionReason,  String? paymentProofUrl,  TrainingEntity? training,  DateTime? paymentDeadline,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _TrainingEnrollmentEntity() when $default != null:
-return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.training,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.rejectionReason,_that.paymentProofUrl,_that.training,_that.paymentDeadline,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -226,8 +153,8 @@ return $default(_that.id,_that.trainingId,_that.userId,_that.status,_that.reject
 
 
 class _TrainingEnrollmentEntity implements TrainingEnrollmentEntity {
-  const _TrainingEnrollmentEntity({required this.id, required this.trainingId, required this.userId, required this.status, this.rejectionReason, this.paymentProofUrl, this.training, this.createdAt, this.updatedAt});
-  
+  const _TrainingEnrollmentEntity({required this.id, required this.trainingId, required this.userId, required this.status, this.rejectionReason, this.paymentProofUrl, this.training, this.paymentDeadline, this.createdAt, this.updatedAt});
+
 
 @override final  String id;
 @override final  String trainingId;
@@ -236,6 +163,7 @@ class _TrainingEnrollmentEntity implements TrainingEnrollmentEntity {
 @override final  String? rejectionReason;
 @override final  String? paymentProofUrl;
 @override final  TrainingEntity? training;
+@override final  DateTime? paymentDeadline;
 @override final  DateTime? createdAt;
 @override final  DateTime? updatedAt;
 
@@ -249,16 +177,16 @@ _$TrainingEnrollmentEntityCopyWith<_TrainingEnrollmentEntity> get copyWith => __
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrainingEnrollmentEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.trainingId, trainingId) || other.trainingId == trainingId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.paymentProofUrl, paymentProofUrl) || other.paymentProofUrl == paymentProofUrl)&&(identical(other.training, training) || other.training == training)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrainingEnrollmentEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.trainingId, trainingId) || other.trainingId == trainingId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.paymentProofUrl, paymentProofUrl) || other.paymentProofUrl == paymentProofUrl)&&(identical(other.training, training) || other.training == training)&&(identical(other.paymentDeadline, paymentDeadline) || other.paymentDeadline == paymentDeadline)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,trainingId,userId,status,rejectionReason,paymentProofUrl,training,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,trainingId,userId,status,rejectionReason,paymentProofUrl,training,paymentDeadline,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'TrainingEnrollmentEntity(id: $id, trainingId: $trainingId, userId: $userId, status: $status, rejectionReason: $rejectionReason, paymentProofUrl: $paymentProofUrl, training: $training, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'TrainingEnrollmentEntity(id: $id, trainingId: $trainingId, userId: $userId, status: $status, rejectionReason: $rejectionReason, paymentProofUrl: $paymentProofUrl, training: $training, paymentDeadline: $paymentDeadline, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -269,7 +197,7 @@ abstract mixin class _$TrainingEnrollmentEntityCopyWith<$Res> implements $Traini
   factory _$TrainingEnrollmentEntityCopyWith(_TrainingEnrollmentEntity value, $Res Function(_TrainingEnrollmentEntity) _then) = __$TrainingEnrollmentEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String trainingId, String userId, String status, String? rejectionReason, String? paymentProofUrl, TrainingEntity? training, DateTime? createdAt, DateTime? updatedAt
+ String id, String trainingId, String userId, String status, String? rejectionReason, String? paymentProofUrl, TrainingEntity? training, DateTime? paymentDeadline, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -286,7 +214,7 @@ class __$TrainingEnrollmentEntityCopyWithImpl<$Res>
 
 /// Create a copy of TrainingEnrollmentEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? trainingId = null,Object? userId = null,Object? status = null,Object? rejectionReason = freezed,Object? paymentProofUrl = freezed,Object? training = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? trainingId = null,Object? userId = null,Object? status = null,Object? rejectionReason = freezed,Object? paymentProofUrl = freezed,Object? training = freezed,Object? paymentDeadline = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_TrainingEnrollmentEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,trainingId: null == trainingId ? _self.trainingId : trainingId // ignore: cast_nullable_to_non_nullable
@@ -295,7 +223,8 @@ as String,status: null == status ? _self.status : status // ignore: cast_nullabl
 as String,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
 as String?,paymentProofUrl: freezed == paymentProofUrl ? _self.paymentProofUrl : paymentProofUrl // ignore: cast_nullable_to_non_nullable
 as String?,training: freezed == training ? _self.training : training // ignore: cast_nullable_to_non_nullable
-as TrainingEntity?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as TrainingEntity?,paymentDeadline: freezed == paymentDeadline ? _self.paymentDeadline : paymentDeadline // ignore: cast_nullable_to_non_nullable
+as DateTime?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));

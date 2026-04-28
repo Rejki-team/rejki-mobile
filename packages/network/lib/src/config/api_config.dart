@@ -74,8 +74,15 @@ class ApiConfig {
   static const String getImage = '/helpers/get-image';
 
   /// API Endpoints - Training
+  static const String trainings = '/trainings';
+  static const String myTrainings = '/trainings/me';
   static const String trainingEnrollments = '/trainings/me/enrollments';
   static String trainingById(String id) => '/trainings/$id';
+  static String trainingEnroll(String id) => '/trainings/$id/enrollments';
+  static String trainingPaymentProof(String trainingId, String enrollmentId) =>
+      '/trainings/$trainingId/enrollments/$enrollmentId/payment';
+  static const String myTrainingBadges = '/trainings/me/badges';
+  static String trainingBadgeSubmit(String id) => '/trainings/$id/badges';
 
   /// API Endpoints - Notifications
   static const String notifications = '/notifications';

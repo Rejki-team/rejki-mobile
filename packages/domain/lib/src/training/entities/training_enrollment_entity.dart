@@ -13,6 +13,7 @@ abstract class TrainingEnrollmentEntity with _$TrainingEnrollmentEntity {
     String? rejectionReason,
     String? paymentProofUrl,
     TrainingEntity? training,
+    DateTime? paymentDeadline,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _TrainingEnrollmentEntity;

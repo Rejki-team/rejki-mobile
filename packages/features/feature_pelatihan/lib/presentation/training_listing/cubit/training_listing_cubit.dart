@@ -1,52 +1,89 @@
 import 'package:bloc/bloc.dart';
+import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
+import 'package:network/network.dart';
 
 import 'training_listing_state.dart';
 import '../training_model.dart';
 
 @injectable
 class TrainingListingCubit extends Cubit<TrainingListingState> {
-  TrainingListingCubit() : super(const TrainingListingState());
+  final GetTrainingsUseCase _getTrainingsUseCase;
 
-  Future<void> loadTrainings() async {
+  TrainingListingCubit(this._getTrainingsUseCase)
+      : super(const TrainingListingState());
+
+  Future<void> loadTrainings({String? search}) async {
     emit(state.copyWith(isLoading: true, isFailure: false));
 
-    try {
-      // Simulate network wait (async to prevent ANR)
-      await Future.delayed(const Duration(seconds: 1));
+    final result = await _getTrainingsUseCase(search: search);
 
-      // Check if closed to prevent memory leaks throwing state errors
-      if (isClosed) return;
+    if (isClosed) return;
 
-      final mockData = [
-        const TrainingModel(
-          id: '1',
-          title: 'Tukang Listrik Madya Bawah (1)',
-          description:
-              'Pelatihan ini bertujuan untuk mengajarkan keterampilan teknikal kelistrikan tingkat madya,...',
-          date: '25 November 2025',
-          time: '11:00',
-          location: 'Gedung Pertemuan RW Jl Pisang BAru RT 01 RW 03',
-          facilities: ['Sertifikat Pelatihan', 'Badge Listrik Madya'],
-          fee: 'Rp 20.000',
-          feeNotice: 'Pelatihan 100% Gratis!',
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isLoading: false,
+        isFailure: true,
+        errorMessage: failure.maybeWhen(
+          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+          orElse: () => 'Gagal memuat daftar pelatihan.',
         ),
-      ];
-
-      emit(state.copyWith(isLoading: false, trainings: mockData));
-    } catch (e) {
-      if (isClosed) return;
-      emit(
-        state.copyWith(
+      )),
+      (entities) {
+        final models = entities.map(_entityToModel).toList();
+        emit(state.copyWith(
           isLoading: false,
-          isFailure: true,
-          errorMessage: 'Gagal memuat daftar pelatihan.',
-        ),
-      );
-    }
+          trainings: models,
+          summaryDisplayText: '${models.length} Pelatihan tersedia',
+        ));
+      },
+    );
   }
 
   void updateSearchQuery(String query) {
-    // Apply local filter debounce logic avoiding Race conditions
+    loadTrainings(search: query.isEmpty ? null : query);
+  }
+
+  TrainingModel _entityToModel(TrainingEntity entity) {
+    final imageUrl = entity.images.isNotEmpty
+        ? ApiConfig.buildImageUrl(entity.images.first.uriPath)
+        : null;
+
+    return TrainingModel(
+      id: entity.id,
+      imageUrl: imageUrl,
+      title: entity.title,
+      description: entity.description,
+      date: _formatDate(entity.dateOfTraining),
+      time: _formatTime(entity.dateOfTraining),
+      location: entity.locationAddress,
+      facilities: entity.facilities,
+      fee: entity.formattedFee,
+      feeNotice: entity.feePerPerson == 0 ? 'Pelatihan 100% Gratis!' : '',
+    );
+  }
+
+  static String _formatDate(String raw) {
+    try {
+      final dt = DateTime.parse(raw);
+      const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+      ];
+      return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
+    } catch (_) {
+      return raw;
+    }
+  }
+
+  static String _formatTime(String raw) {
+    try {
+      final dt = DateTime.parse(raw);
+      final h = dt.hour.toString().padLeft(2, '0');
+      final m = dt.minute.toString().padLeft(2, '0');
+      return '$h:$m';
+    } catch (_) {
+      return '';
+    }
   }
 }

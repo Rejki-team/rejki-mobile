@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
 
@@ -37,45 +38,28 @@ class _CreateTrainingAdView extends StatelessWidget {
         appBar: AppBarWithSubtitle(
           title: 'Buat Iklan Pelatihan',
           subtitle: 'Isi data sesuai form yang disediakan',
-          onBackPressed: () => Navigator.of(context).pop(),
+          onBackPressed: () => context.pop(),
         ),
-        body: BlocListener<CreateTrainingAdCubit, CreateTrainingAdState>(
-          listenWhen: (prev, curr) =>
-              prev.isSuccess != curr.isSuccess ||
-              prev.errorMessage != curr.errorMessage,
-          listener: (context, state) {
-            if (state.isSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Proposal Pelatihan Berhasil Dibuat!'),
-                ),
-              );
-              Navigator.of(context).pop();
-            } else if (state.errorMessage != null) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
-            }
-          },
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: AppSpacing.paddingAllMd,
-                  child: Column(
-                    children: [
-                      _CompanyInfoSection(),
-                      const SizedBox(height: AppSpacing.md),
-                      _TrainingInfoSection(),
-                      const SizedBox(height: AppSpacing.md),
-                      _LocationAndCostSection(),
-                    ],
-                  ),
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: AppSpacing.paddingAllMd,
+                child: Column(
+                  children: [
+                    _CompanyInfoSection(),
+                    const SizedBox(height: AppSpacing.md),
+                    _TrainingInfoSection(),
+                    const SizedBox(height: AppSpacing.md),
+                    _LocationAndCostSection(),
+                    const SizedBox(height: AppSpacing.md),
+                    _BankInfoSection(),
+                  ],
                 ),
               ),
-              const _BottomActionSection(),
-            ],
-          ),
+            ),
+            const _BottomActionSection(),
+          ],
         ),
       ),
     );
@@ -83,7 +67,7 @@ class _CreateTrainingAdView extends StatelessWidget {
 }
 
 // ==========================
-// Sections: Splitting to Avoid God Class & God Function
+// Sections
 // ==========================
 
 class _CompanyInfoSection extends StatelessWidget {
@@ -289,6 +273,52 @@ class _LocationAndCostSection extends StatelessWidget {
               maxLines: 3,
               onChanged: cubit.costChanged,
             ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _BankInfoSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<CreateTrainingAdCubit>();
+    return BlocBuilder<CreateTrainingAdCubit, CreateTrainingAdState>(
+      buildWhen: (prev, curr) =>
+          prev.bankName != curr.bankName ||
+          prev.bankAccountNumber != curr.bankAccountNumber ||
+          prev.bankAccountHolderName != curr.bankAccountHolderName,
+      builder: (context, state) {
+        return Column(
+          children: [
+            LabeledTextField(
+              number: '10',
+              label: 'Nama Bank',
+              isMandatory: true,
+              hint: 'Contoh: BCA, BNI, Mandiri',
+              initialValue: state.bankName,
+              onChanged: cubit.bankNameChanged,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            LabeledTextField(
+              number: '11',
+              label: 'Nomor Rekening',
+              isMandatory: true,
+              hint: '',
+              initialValue: state.bankAccountNumber,
+              onChanged: cubit.bankAccountNumberChanged,
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            LabeledTextField(
+              number: '12',
+              label: 'Nama Pemilik Rekening',
+              isMandatory: true,
+              hint: '',
+              initialValue: state.bankAccountHolderName,
+              onChanged: cubit.bankAccountHolderNameChanged,
+            ),
             const SizedBox(height: AppSpacing.xl),
           ],
         );
@@ -319,18 +349,21 @@ class _BottomActionSection extends StatelessWidget {
           width: double.infinity,
           height: 48,
           child: BlocBuilder<CreateTrainingAdCubit, CreateTrainingAdState>(
-            buildWhen: (prev, curr) =>
-                prev.isFormValid != curr.isFormValid ||
-                prev.isSubmitting != curr.isSubmitting,
+            buildWhen: (prev, curr) => prev.isFormValid != curr.isFormValid,
             builder: (context, state) {
               return ElevatedButton(
-                onPressed: state.isFormValid && !state.isSubmitting
-                    ? () => context.read<CreateTrainingAdCubit>().submit()
+                onPressed: state.isFormValid
+                    ? () {
+                        final params =
+                            context.read<CreateTrainingAdCubit>().buildParams();
+                        context.push(
+                          '/pelatihan/create/review',
+                          extra: params,
+                        );
+                      }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(
-                    0xFF0A0A0A,
-                  ), // Solid black according to mockup
+                  backgroundColor: const Color(0xFF0A0A0A),
                   disabledBackgroundColor: AppColors.border,
                   shape: RoundedRectangleBorder(
                     borderRadius: AppDimensions.borderRadiusSm,
@@ -338,32 +371,23 @@ class _BottomActionSection extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   elevation: 0,
                 ),
-                child: state.isSubmitting
-                    ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(
-                          color: AppColors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Kirim Proposal ke Admin',
-                            style: AppTypography.buttonRegularSmall.copyWith(
-                              color: AppColors.white,
-                            ),
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          const Icon(
-                            Icons.arrow_forward,
-                            size: AppDimensions.iconXs,
-                            color: AppColors.white,
-                          ),
-                        ],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Lanjut',
+                      style: AppTypography.buttonRegularSmall.copyWith(
+                        color: AppColors.white,
                       ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    const Icon(
+                      Icons.arrow_forward,
+                      size: AppDimensions.iconXs,
+                      color: AppColors.white,
+                    ),
+                  ],
+                ),
               );
             },
           ),

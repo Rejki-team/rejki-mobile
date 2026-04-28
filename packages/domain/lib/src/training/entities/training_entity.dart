@@ -20,6 +20,16 @@ abstract class TrainingEntity with _$TrainingEntity {
     String? adCode,
     String? email,
     String? role,
+    String? province,
+    String? city,
+    String? district,
+    String? village,
+    String? certificate,
+    @Default('') String bankName,
+    @Default('') String bankAccountNumber,
+    @Default('') String bankAccountHolderName,
+    @Default([]) List<String> facilities,
+    @Default(0) int totalApprovedEnrollees,
     @Default([]) List<TrainingImageEntity> images,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -28,6 +38,7 @@ abstract class TrainingEntity with _$TrainingEntity {
   String? get firstImageUrl => images.isNotEmpty ? images.first.uriPath : null;
 
   String get formattedFee {
+    if (feePerPerson == 0) return 'Gratis';
     final formatted = feePerPerson.toString().replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
       (match) => '${match[1]}.',

@@ -47,10 +47,23 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.factory<_i216.TrainingListingCubit>(
-      () => registerModule.trainingListingCubit(),
+      () => registerModule.trainingListingCubit(
+        gh<_i494.GetTrainingsUseCase>(),
+      ),
     );
     gh.factory<_i216.CreateTrainingAdCubit>(
       () => registerModule.createTrainingAdCubit(),
+    );
+    gh.factory<_i216.SubmitTrainingAdCubit>(
+      () => registerModule.submitTrainingAdCubit(
+        gh<_i494.CreateTrainingUseCase>(),
+      ),
+    );
+    gh.factory<_i216.TrainingDetailCubit>(
+      () => registerModule.trainingDetailCubit(
+        gh<_i494.GetTrainingDetailUseCase>(),
+        gh<_i494.EnrollTrainingUseCase>(),
+      ),
     );
     gh.factory<_i674.HistoryCubit>(() => registerModule.historyCubit());
     gh.singleton<_i558.FlutterSecureStorage>(
@@ -291,6 +304,23 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.TrainingRepository>(),
       ),
     );
+    gh.lazySingleton<_i494.GetTrainingsUseCase>(
+      () => registerModule.getTrainingsUseCase(gh<_i494.TrainingRepository>()),
+    );
+    gh.lazySingleton<_i494.GetMyTrainingsUseCase>(
+      () => registerModule.getMyTrainingsUseCase(gh<_i494.TrainingRepository>()),
+    );
+    gh.lazySingleton<_i494.CreateTrainingUseCase>(
+      () => registerModule.createTrainingUseCase(gh<_i494.TrainingRepository>()),
+    );
+    gh.lazySingleton<_i494.EnrollTrainingUseCase>(
+      () => registerModule.enrollTrainingUseCase(gh<_i494.TrainingRepository>()),
+    );
+    gh.lazySingleton<_i494.UploadPaymentProofUseCase>(
+      () => registerModule.uploadPaymentProofUseCase(
+        gh<_i494.TrainingRepository>(),
+      ),
+    );
     gh.factory<_i10.LocationBloc>(
       () => registerModule.locationBloc(
         gh<_i494.GetProvincesUseCase>(),
@@ -511,6 +541,36 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.jobListingCubit(
         gh<_i494.GetJobsUseCase>(),
         gh<_i494.SyncEnumsUseCase>(),
+      ),
+    );
+    gh.lazySingleton<_i494.GetEnrollmentsByTrainingUseCase>(
+      () => registerModule.getEnrollmentsByTrainingUseCase(
+        gh<_i494.TrainingRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.SubmitTrainingBadgeUseCase>(
+      () => registerModule.submitTrainingBadgeUseCase(
+        gh<_i494.TrainingRepository>(),
+      ),
+    );
+    gh.factory<_i216.PaymentCubit>(
+      () => registerModule.paymentCubit(
+        gh<_i494.UploadPaymentProofUseCase>(),
+      ),
+    );
+    gh.factory<_i216.DaftarPendaftarCubit>(
+      () => registerModule.daftarPendaftarCubit(
+        gh<_i494.GetEnrollmentsByTrainingUseCase>(),
+      ),
+    );
+    gh.factory<_i216.BadgeUploadCubit>(
+      () => registerModule.badgeUploadCubit(
+        gh<_i494.SubmitTrainingBadgeUseCase>(),
+      ),
+    );
+    gh.factory<_i674.HistoryIklanPelatihanCubit>(
+      () => registerModule.historyIklanPelatihanCubit(
+        gh<_i494.GetMyTrainingsUseCase>(),
       ),
     );
     return this;

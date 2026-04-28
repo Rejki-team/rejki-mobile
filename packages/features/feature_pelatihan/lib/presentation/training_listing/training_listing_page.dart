@@ -229,16 +229,12 @@ class _TrainingListSection extends StatelessWidget {
               const _InfoBannerWidget(),
               const SizedBox(height: AppSpacing.md),
               ...state.trainings.map((training) {
-                final facilities = [
-                  TrainingFacility(
-                    iconAsset: AppAssets.iconPaper,
-                    label: 'Sertifikat Pelatihan',
-                  ),
-                  TrainingFacility(
-                    iconAsset: AppAssets.iconInfoLine,
-                    label: 'Badge Listrik Madya',
-                  ), // close assumption to design
-                ];
+                final facilities = training.facilities
+                    .map((f) => TrainingFacility(
+                          iconAsset: AppAssets.iconInfoLine,
+                          label: f,
+                        ))
+                    .toList();
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -252,9 +248,8 @@ class _TrainingListSection extends StatelessWidget {
                     facilities: facilities,
                     fee: training.fee,
                     feeNotice: training.feeNotice,
-                    onRegisterPressed: () {
-                      // Navigate to detail
-                    },
+                    onRegisterPressed: () =>
+                        context.push('/pelatihan/${training.id}'),
                   ),
                 );
               }),

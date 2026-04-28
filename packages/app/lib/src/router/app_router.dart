@@ -401,10 +401,18 @@ class AppRouter {
             path: 'create',
             name: 'createTraining',
             parentNavigatorKey: rootNavigatorKey,
-            builder: (context, state) => BlocProvider(
-              create: (context) => GetIt.I<CreateTrainingAdCubit>(),
-              child: const CreateTrainingAdPage(),
-            ),
+            builder: (context, state) => const CreateTrainingAdPage(),
+            routes: [
+              GoRoute(
+                path: 'review',
+                name: 'createTrainingReview',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) {
+                  final params = state.extra as CreateTrainingParams;
+                  return SubmitTrainingAdPage(params: params);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: ':id',
@@ -412,8 +420,85 @@ class AppRouter {
             parentNavigatorKey: rootNavigatorKey,
             builder: (context, state) {
               final id = state.pathParameters['id']!;
-              return PlaceholderPage(title: 'Detail Pelatihan: $id');
+              return TrainingDetailPage(trainingId: id);
             },
+            routes: [
+              GoRoute(
+                path: 'payment/:enrollmentId',
+                name: 'pelatihanPayment',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) {
+                  final trainingId = state.pathParameters['id']!;
+                  final enrollmentId = state.pathParameters['enrollmentId']!;
+                  final enrollment =
+                      state.extra as TrainingEnrollmentEntity?;
+                  return BlocProvider(
+                    create: (context) {
+                      final cubit = GetIt.I<PaymentCubit>();
+                      cubit.initialize(
+                        trainingId: trainingId,
+                        enrollmentId: enrollmentId,
+                        status: enrollment?.status ?? 'pending',
+                        trainingTitle:
+                            enrollment?.training?.title ?? '',
+                        fee: enrollment?.training?.feePerPerson
+                                .toString() ??
+                            '',
+                        bankName:
+                            enrollment?.training?.bankName ?? '',
+                        bankAccountNumber:
+                            enrollment?.training?.bankAccountNumber ?? '',
+                        bankAccountHolderName:
+                            enrollment?.training?.bankAccountHolderName ?? '',
+                        paymentDeadline: enrollment?.paymentDeadline,
+                      );
+                      return cubit;
+                    },
+                    child: const PaymentPage(),
+                  );
+                },
+              ),
+              GoRoute(
+                path: 'pendaftar',
+                name: 'pelatihanPendaftar',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) {
+                  final trainingId = state.pathParameters['id']!;
+                  final extra =
+                      state.extra as Map<String, dynamic>? ?? {};
+                  final trainingTitle =
+                      extra['title'] as String? ?? '';
+                  return BlocProvider(
+                    create: (context) =>
+                        GetIt.I<DaftarPendaftarCubit>()
+                          ..loadEnrollments(trainingId),
+                    child: DaftarPendaftarPage(
+                      trainingId: trainingId,
+                      trainingTitle: trainingTitle,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                path: 'badge',
+                name: 'pelatihanBadge',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) {
+                  final trainingId = state.pathParameters['id']!;
+                  final extra =
+                      state.extra as Map<String, dynamic>? ?? {};
+                  final trainingTitle =
+                      extra['title'] as String? ?? '';
+                  return BlocProvider(
+                    create: (context) => GetIt.I<BadgeUploadCubit>(),
+                    child: BadgeUploadPage(
+                      trainingId: trainingId,
+                      trainingTitle: trainingTitle,
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
