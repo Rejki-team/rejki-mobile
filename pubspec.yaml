@@ -226,4 +226,43 @@ melos:
       run: melos exec -- "dart fix --apply"
       description: Apply dart fix to all packages
 
-    
+    # ==========================================
+    # FLAVOR SCRIPTS (dev / prod)
+    # ==========================================
+    # Dev  → API_BASE_URL=https://api.greengrasst.id
+    # Prod → API_BASE_URL=https://api.PROD.id (ganti saat URL prod tersedia)
+    # ==========================================
+
+    run:dev:
+      run: flutter run --flavor dev --dart-define=API_BASE_URL=https://api.greengrasst.id
+      description: Run app with dev flavor (api.greengrasst.id)
+
+    run:prod:
+      run: flutter run --flavor prod --dart-define=API_BASE_URL=https://api.greengrasst.id
+      description: Run app with prod flavor (ganti URL saat prod tersedia)
+
+    build:apk:dev:
+      run: flutter build apk --flavor dev --dart-define=API_BASE_URL=https://api.greengrasst.id
+      description: Build APK dev flavor
+
+    build:apk:prod:
+      run: flutter build apk --flavor prod --dart-define=API_BASE_URL=https://api.greengrasst.id
+      description: Build APK prod flavor (ganti URL saat prod tersedia)
+
+    build:aab:dev:
+      run: flutter build appbundle --flavor dev --dart-define=API_BASE_URL=https://api.greengrasst.id
+      description: Build App Bundle dev flavor (Play Store)
+
+    build:aab:prod:
+      run: flutter build appbundle --flavor prod --dart-define=API_BASE_URL=https://api.greengrasst.id
+      description: Build App Bundle prod flavor (Play Store, ganti URL saat prod tersedia)
+
+    build:ios:dev:
+      run: flutter build ios --flavor dev --dart-define=API_BASE_URL=https://api.greengrasst.id --no-codesign
+      description: Build iOS dev flavor (butuh setup Xcode manual — lihat docs/task-flutter-flavors.md)
+
+    build:ios:prod:
+      run: flutter build ios --flavor prod --dart-define=API_BASE_URL=https://api.greengrasst.id --no-codesign
+      description: Build iOS prod flavor (butuh setup Xcode manual — lihat docs/task-flutter-flavors.md)
+
+

@@ -1,7 +1,12 @@
 /// Konfigurasi API
 class ApiConfig {
-  /// Base URL API
-  static const String baseUrl = 'https://api.greengrasst.id';
+  /// Base URL API — dibaca dari dart-define saat compile time.
+  /// Dev: --dart-define=API_BASE_URL=https://api.greengrasst.id
+  /// Prod: --dart-define=API_BASE_URL=https://api.PROD.id
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'https://api.greengrasst.id',
+  );
 
   /// Timeout untuk koneksi
   static const Duration connectTimeout = Duration(seconds: 30);
