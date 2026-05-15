@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "652211461281",
+    "project_id": "rejki-dev",
+    "storage_bucket": "rejki-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652211461281:android:dcf9b201d6d6a31d2664e0",
+        "android_client_info": {
+          "package_name": "id.greengrasst.rejki"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB266dXmHxNr1YgP83z37fKKMYRBS80OZ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

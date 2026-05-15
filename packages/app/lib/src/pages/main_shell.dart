@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:feature_notification/feature_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
 
 import '../router/app_routes.dart';
+import '../services/fcm_notification_service.dart';
 
 enum NavTab { home, news, chat, history, profile }
 
@@ -21,12 +24,26 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   late final NotificationCubit _notificationCubit;
+  StreamSubscription<dynamic>? _fcmSubscription;
 
   @override
   void initState() {
     super.initState();
     _notificationCubit = GetIt.I<NotificationCubit>();
     _notificationCubit.refreshUnreadCount();
+
+    // Listen foreground FCM messages → refresh unread count badge
+    if (GetIt.I.isRegistered<FcmNotificationService>()) {
+      _fcmSubscription = GetIt.I<FcmNotificationService>()
+          .foregroundMessageStream
+          .listen((_) => _notificationCubit.refreshUnreadCount());
+    }
+  }
+
+  @override
+  void dispose() {
+    _fcmSubscription?.cancel();
+    super.dispose();
   }
 
   @override

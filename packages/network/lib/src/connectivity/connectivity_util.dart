@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 /// Tipe koneksi yang didukung
-enum ConnectionType { wifi, mobile, ethernet, vpn, bluetooth, other, none }
+enum ConnectionType { wifi, mobile, ethernet, vpn, bluetooth, satellite, other, none }
 
 /// Status koneksi
 class ConnectionStatus {
@@ -102,6 +102,9 @@ class ConnectivityUtil {
         case ConnectivityResult.bluetooth:
           types.add(ConnectionType.bluetooth);
           descriptions.add('Bluetooth');
+        case ConnectivityResult.satellite:
+          types.add(ConnectionType.satellite);
+          descriptions.add('Satelit');
         case ConnectivityResult.other:
           types.add(ConnectionType.other);
           descriptions.add('Lainnya');

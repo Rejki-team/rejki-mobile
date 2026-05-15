@@ -2,12 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:di/di.dart';
 import 'package:domain/domain.dart';
 import 'package:data/data.dart';
 import 'package:network/network.dart';
 import 'package:local/local.dart';
 import 'package:app/app.dart';
+
+import 'firebase_options.dart';
+
+/// Background message handler — wajib top-level function (bukan method class).
+/// Dipanggil di isolate terpisah saat app terminated/background.
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Notifikasi otomatis ditampilkan oleh FCM SDK — tidak perlu kode tambahan.
+}
 
 /// Entry point aplikasi Rejki
 void main() async {
@@ -24,6 +36,12 @@ void main() async {
   // Initialize date formatting for Indonesian locale
   await initializeDateFormatting('id_ID', null);
 
+  // Inisialisasi Firebase — wajib sebelum runApp dan sebelum onBackgroundMessage
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Daftarkan background message handler — wajib sebelum runApp
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   // Inisialisasi Dependency Injection
   await configureDependencies();
 
@@ -33,6 +51,11 @@ void main() async {
     // Token expired akan di-handle oleh SplashPage
     // yang akan redirect ke login
   };
+
+  // Inisialisasi FCM service — token registration (fail silently jika belum login)
+  final fcmService = FcmNotificationService(getIt<RegisterDeviceTokenUseCase>());
+  getIt.registerSingleton<FcmNotificationService>(fcmService);
+  unawaited(fcmService.initialize());
 
   runApp(const RejkiApp());
 }
@@ -73,6 +96,12 @@ class _RejkiAppState extends State<RejkiApp> {
   }
 
   @override
+  void dispose() {
+    getIt<FcmNotificationService>().dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Rejki',
@@ -97,3 +126,6 @@ class _RejkiAppState extends State<RejkiApp> {
     );
   }
 }
+
+// Suppress unawaited_futures lint untuk fire-and-forget async calls.
+void unawaited(Future<void> future) {}
