@@ -101,9 +101,3 @@ app.*.map.json
 .claude/
 docs/
 
-# Firebase credentials — JANGAN COMMIT ke repository
-google-services.json
-**/google-services.json
-GoogleService-Info.plist
-**/GoogleService-Info.plist
-lib/firebase_options.dart
