@@ -25,6 +25,7 @@ _TrainingModel _$TrainingModelFromJson(Map<String, dynamic> json) =>
       district: json['district'] as String?,
       village: json['village'] as String?,
       certificate: json['certificate'] as String?,
+      rejectionReason: json['rejection_reason'] as String?,
       bankName: json['bank_name'] as String? ?? '',
       bankAccountNumber: json['bank_account_number'] as String? ?? '',
       bankAccountHolderName:
@@ -69,6 +70,7 @@ Map<String, dynamic> _$TrainingModelToJson(_TrainingModel instance) =>
       'district': instance.district,
       'village': instance.village,
       'certificate': instance.certificate,
+      'rejection_reason': instance.rejectionReason,
       'bank_name': instance.bankName,
       'bank_account_number': instance.bankAccountNumber,
       'bank_account_holder_name': instance.bankAccountHolderName,

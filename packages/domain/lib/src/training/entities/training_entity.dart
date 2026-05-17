@@ -25,6 +25,7 @@ abstract class TrainingEntity with _$TrainingEntity {
     String? district,
     String? village,
     String? certificate,
+    String? rejectionReason,
     @Default('') String bankName,
     @Default('') String bankAccountNumber,
     @Default('') String bankAccountHolderName,
