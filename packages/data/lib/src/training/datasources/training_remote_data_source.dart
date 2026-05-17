@@ -97,7 +97,7 @@ class TrainingRemoteDataSourceImpl implements TrainingRemoteDataSource {
       queryParameters: queryParameters,
     );
 
-    final data = response.data['data']['data'] as List;
+    final data = response.data['data']['trainings'] as List;
     return data.map((json) => TrainingModel.fromJson(json)).toList();
   }
 
@@ -111,7 +111,7 @@ class TrainingRemoteDataSourceImpl implements TrainingRemoteDataSource {
       queryParameters: {'page': page, 'limit': limit},
     );
 
-    final data = response.data['data']['data'] as List;
+    final data = response.data['data']['trainings'] as List;
     return data.map((json) => TrainingModel.fromJson(json)).toList();
   }
 
