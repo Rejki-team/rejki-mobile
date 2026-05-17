@@ -558,7 +558,8 @@ abstract class RegisterModule {
   TrainingDetailCubit trainingDetailCubit(
     GetTrainingDetailUseCase getTrainingDetailUseCase,
     EnrollTrainingUseCase enrollTrainingUseCase,
-  ) => TrainingDetailCubit(getTrainingDetailUseCase, enrollTrainingUseCase);
+    SessionStorage sessionStorage,
+  ) => TrainingDetailCubit(getTrainingDetailUseCase, enrollTrainingUseCase, sessionStorage);
 
   /// PaymentCubit - untuk halaman pembayaran pelatihan
   @factoryMethod
