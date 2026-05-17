@@ -117,7 +117,7 @@ class TrainingRemoteDataSourceImpl implements TrainingRemoteDataSource {
 
   @override
   Future<TrainingModel> createTraining(CreateTrainingParams params) async {
-    final dt = params.dateOfTraining;
+    final dt = params.dateOfTraining.toUtc();
     final dateStr =
         '${dt.year.toString().padLeft(4, '0')}'
         '-${dt.month.toString().padLeft(2, '0')}'
