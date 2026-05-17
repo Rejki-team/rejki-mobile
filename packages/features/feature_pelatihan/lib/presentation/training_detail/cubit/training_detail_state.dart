@@ -13,5 +13,6 @@ abstract class TrainingDetailState with _$TrainingDetailState {
     String? errorMessage,
     @Default(false) bool isRegistering,
     @Default(false) bool isRegistrationSuccess,
+    @Default(false) bool isOwner,
   }) = _TrainingDetailState;
 }

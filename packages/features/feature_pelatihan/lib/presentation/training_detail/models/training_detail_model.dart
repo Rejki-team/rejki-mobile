@@ -17,6 +17,18 @@ abstract class TrainingDetailModel with _$TrainingDetailModel {
     @Default([]) List<String> requirements,
     required String fee,
     required String feeNotice,
+    // Extended info
+    required String companyName,
+    required String status,
+    String? adCode,
+    String? rejectionReason,
+    @Default(0) int totalApprovedEnrollees,
+    String? contactEmail,
+    String? contactRole,
+    String? region,
+    String? bankName,
+    String? bankAccountNumber,
+    String? bankAccountHolderName,
   }) = _TrainingDetailModel;
 }
 

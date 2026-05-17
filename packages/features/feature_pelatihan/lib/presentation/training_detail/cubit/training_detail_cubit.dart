@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
+import 'package:local/local.dart';
 import 'package:network/network.dart';
 import 'package:designsystems/designsystems.dart';
 
@@ -11,10 +12,12 @@ import '../models/training_detail_model.dart';
 class TrainingDetailCubit extends Cubit<TrainingDetailState> {
   final GetTrainingDetailUseCase _getTrainingDetailUseCase;
   final EnrollTrainingUseCase _enrollTrainingUseCase;
+  final SessionStorage _sessionStorage;
 
   TrainingDetailCubit(
     this._getTrainingDetailUseCase,
     this._enrollTrainingUseCase,
+    this._sessionStorage,
   ) : super(const TrainingDetailState());
 
   Future<void> loadTraining(String id) async {
@@ -33,10 +36,15 @@ class TrainingDetailCubit extends Cubit<TrainingDetailState> {
           orElse: () => 'Gagal memuat detail pelatihan.',
         ),
       )),
-      (entity) => emit(state.copyWith(
-        isLoading: false,
-        training: _entityToModel(entity),
-      )),
+      (entity) {
+        final currentUserId = _sessionStorage.getUserId();
+        final isOwner = currentUserId != null && entity.userId == currentUserId;
+        emit(state.copyWith(
+          isLoading: false,
+          training: _entityToModel(entity),
+          isOwner: isOwner,
+        ));
+      },
     );
   }
 
@@ -75,6 +83,14 @@ class TrainingDetailCubit extends Cubit<TrainingDetailState> {
             ))
         .toList();
 
+    final regionParts = <String>[
+      if (entity.village != null && entity.village!.isNotEmpty) entity.village!,
+      if (entity.district != null && entity.district!.isNotEmpty) entity.district!,
+      if (entity.city != null && entity.city!.isNotEmpty) entity.city!,
+      if (entity.province != null && entity.province!.isNotEmpty) entity.province!,
+    ];
+    final region = regionParts.isNotEmpty ? regionParts.join(', ') : null;
+
     return TrainingDetailModel(
       id: entity.id,
       imageUrl: imageUrl,
@@ -89,6 +105,17 @@ class TrainingDetailCubit extends Cubit<TrainingDetailState> {
       requirements: const [],
       fee: entity.formattedFee,
       feeNotice: entity.feePerPerson == 0 ? 'Pelatihan 100% Gratis!' : '',
+      companyName: entity.companyName,
+      status: entity.status,
+      adCode: entity.adCode,
+      rejectionReason: entity.rejectionReason,
+      totalApprovedEnrollees: entity.totalApprovedEnrollees,
+      contactEmail: entity.email,
+      contactRole: entity.role,
+      region: region,
+      bankName: entity.bankName.isEmpty ? null : entity.bankName,
+      bankAccountNumber: entity.bankAccountNumber.isEmpty ? null : entity.bankAccountNumber,
+      bankAccountHolderName: entity.bankAccountHolderName.isEmpty ? null : entity.bankAccountHolderName,
     );
   }
 

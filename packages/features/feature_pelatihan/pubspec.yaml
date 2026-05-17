@@ -36,6 +36,8 @@ dependencies:
     path: ../../domain
   network:
     path: ../../network
+  local:
+    path: ../../local
 
 dev_dependencies:
   flutter_test:

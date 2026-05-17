@@ -62,10 +62,7 @@ class _TrainingDetailView extends StatelessWidget {
                 SliverToBoxAdapter(
                   child: Column(
                     children: [
-                      // Header Graphic Image
                       _HeroHeaderGraphic(imageUrl: data.imageUrl),
-
-                      // Body content container
                       Container(
                         color: AppColors.white,
                         padding: const EdgeInsets.symmetric(
@@ -75,33 +72,128 @@ class _TrainingDetailView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _TitleAndBadgeRow(
-                              title: data.title,
-                              badge: data.badge,
+                            _StatusAndCodeRow(
+                              status: data.status,
+                              adCode: data.adCode,
                             ),
-                            const SizedBox(height: AppSpacing.md),
-
-                            _DescriptionText(text: data.description),
-                            const SizedBox(height: AppSpacing.xl),
-
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              data.title,
+                              style: AppTypography.titleLarge.copyWith(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textBlack,
+                                height: 1.3,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            _IconText(
+                              icon: AppAssets.iconWork,
+                              color: AppColors.textSecondary,
+                              text: data.companyName,
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            const Divider(color: AppColors.border, thickness: 1),
+                            const SizedBox(height: AppSpacing.lg),
                             _DateAndTimeRow(date: data.date, time: data.time),
                             const SizedBox(height: AppSpacing.sm),
-
-                            _LocationRow(location: data.location),
-                            const SizedBox(height: AppSpacing.xl),
-
-                            _FacilitiesSection(facilities: data.facilities),
-                            const SizedBox(height: AppSpacing.xl),
-
-                            const Divider(
-                              color: AppColors.border,
-                              thickness: 1,
+                            _IconText(
+                              icon: AppAssets.iconLocation,
+                              color: const Color(0xFF9333EA),
+                              text: data.location,
                             ),
-                            const SizedBox(height: AppSpacing.xl),
-
-                            _RequirementsSection(
-                              requirements: data.requirements,
+                            if (data.region != null) ...[
+                              const SizedBox(height: AppSpacing.sm),
+                              _IconText(
+                                icon: AppAssets.iconDiscovery,
+                                color: const Color(0xFF0EA5E9),
+                                text: data.region!,
+                              ),
+                            ],
+                            const SizedBox(height: AppSpacing.sm),
+                            _IconText(
+                              icon: AppAssets.iconTwoUser,
+                              color: const Color(0xFF6366F1),
+                              text: '${data.totalApprovedEnrollees} peserta disetujui',
                             ),
+                            if (data.contactEmail != null ||
+                                data.contactRole != null) ...[
+                              const SizedBox(height: AppSpacing.lg),
+                              const Divider(color: AppColors.border, thickness: 1),
+                              const SizedBox(height: AppSpacing.lg),
+                              Text(
+                                'Kontak',
+                                style: AppTypography.labelMedium.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textBlack,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.sm),
+                              if (data.contactEmail != null)
+                                _IconText(
+                                  icon: AppAssets.iconMessage,
+                                  color: const Color(0xFF3B82F6),
+                                  text: data.contactEmail!,
+                                ),
+                              if (data.contactRole != null) ...[
+                                const SizedBox(height: AppSpacing.xs),
+                                _IconText(
+                                  icon: AppAssets.iconUser,
+                                  color: AppColors.textSecondary,
+                                  text: data.contactRole!,
+                                ),
+                              ],
+                            ],
+                            const SizedBox(height: AppSpacing.lg),
+                            const Divider(color: AppColors.border, thickness: 1),
+                            const SizedBox(height: AppSpacing.lg),
+                            Text(
+                              'Deskripsi',
+                              style: AppTypography.labelMedium.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textBlack,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              data.description,
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                                height: 1.6,
+                                fontSize: 13,
+                              ),
+                            ),
+                            if (data.facilities.isNotEmpty) ...[
+                              const SizedBox(height: AppSpacing.xl),
+                              const Divider(color: AppColors.border, thickness: 1),
+                              const SizedBox(height: AppSpacing.xl),
+                              _FacilitiesSection(facilities: data.facilities),
+                            ],
+                            if (data.requirements.isNotEmpty) ...[
+                              const SizedBox(height: AppSpacing.xl),
+                              const Divider(color: AppColors.border, thickness: 1),
+                              const SizedBox(height: AppSpacing.xl),
+                              _RequirementsSection(requirements: data.requirements),
+                            ],
+                            if (data.bankName != null &&
+                                data.bankName!.isNotEmpty) ...[
+                              const SizedBox(height: AppSpacing.lg),
+                              const Divider(color: AppColors.border, thickness: 1),
+                              const SizedBox(height: AppSpacing.lg),
+                              _BankInfoSection(
+                                bankName: data.bankName!,
+                                accountNumber: data.bankAccountNumber,
+                                accountHolder: data.bankAccountHolderName,
+                              ),
+                            ],
+                            if (data.status == 'rejected' &&
+                                data.rejectionReason != null &&
+                                data.rejectionReason!.isNotEmpty) ...[
+                              const SizedBox(height: AppSpacing.lg),
+                              _RejectionReasonBox(reason: data.rejectionReason!),
+                            ],
                             const SizedBox(height: AppSpacing.xl),
                           ],
                         ),
@@ -113,7 +205,7 @@ class _TrainingDetailView extends StatelessWidget {
             );
           },
         ),
-        bottomNavigationBar: const _StickyBottomBar(),
+        bottomNavigationBar: _StickyBottomBar(trainingId: trainingId),
       ),
     );
   }
@@ -130,7 +222,7 @@ class _TrainingDetailView extends StatelessWidget {
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: Text(
-        'Daftar Pelatihan',
+        'Detail Pelatihan',
         style: AppTypography.titleMedium.copyWith(color: AppColors.white),
       ),
     );
@@ -147,10 +239,7 @@ class _HeroHeaderGraphic extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 180,
-      decoration: const BoxDecoration(
-        color: AppColors.buttonGradientEnd, // fallback
-      ),
-      // Fallback graphic for now if empty network image string
+      decoration: const BoxDecoration(color: AppColors.buttonGradientEnd),
       child: imageUrl == null || imageUrl!.isEmpty
           ? Image.asset(AppAssets.baseBackground, fit: BoxFit.cover)
           : CachedNetworkImage(imageUrl: imageUrl!, fit: BoxFit.cover),
@@ -158,64 +247,47 @@ class _HeroHeaderGraphic extends StatelessWidget {
   }
 }
 
-class _TitleAndBadgeRow extends StatelessWidget {
-  final String title;
-  final String badge;
+class _StatusAndCodeRow extends StatelessWidget {
+  final String status;
+  final String? adCode;
 
-  const _TitleAndBadgeRow({required this.title, required this.badge});
+  const _StatusAndCodeRow({required this.status, this.adCode});
 
   @override
   Widget build(BuildContext context) {
+    final (bgColor, textColor, label) = switch (status) {
+      'approved' => (const Color(0xFFDCFCE7), const Color(0xFF16A34A), 'Disetujui'),
+      'pending' => (const Color(0xFFFEF3C7), const Color(0xFFD97706), 'Menunggu'),
+      'rejected' => (const Color(0xFFFEE2E2), const Color(0xFFDC2626), 'Ditolak'),
+      _ => (const Color(0xFFF1F5F9), AppColors.textSecondary, status),
+    };
+
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Text(
-            title,
-            style: AppTypography.titleLarge.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textBlack,
-              height: 1.4,
-            ),
-          ),
-        ),
-        const SizedBox(width: AppSpacing.md),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: const Color(
-              0xFFDCFCE7,
-            ), // AppColors light green success palette logic per designsystem
+            color: bgColor,
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
-            badge,
+            label,
             style: AppTypography.labelSmall.copyWith(
-              color: const Color(0xFF16A34A), // Solid dark green from mockup
+              color: textColor,
               fontWeight: FontWeight.w600,
             ),
           ),
         ),
+        const Spacer(),
+        if (adCode != null && adCode!.isNotEmpty)
+          Text(
+            'Kode: $adCode',
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+              fontSize: 11,
+            ),
+          ),
       ],
-    );
-  }
-}
-
-class _DescriptionText extends StatelessWidget {
-  final String text;
-
-  const _DescriptionText({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: AppTypography.bodySmall.copyWith(
-        color: AppColors.textSecondary,
-        height: 1.6,
-        fontSize: 13,
-      ),
     );
   }
 }
@@ -232,31 +304,16 @@ class _DateAndTimeRow extends StatelessWidget {
       children: [
         _IconText(
           icon: AppAssets.iconCalendar,
-          color: const Color(0xFF3B82F6), // blue calendar
+          color: const Color(0xFF3B82F6),
           text: date,
         ),
         const SizedBox(width: AppSpacing.lg),
         _IconText(
           icon: AppAssets.iconClock,
-          color: const Color(0xFFF97316), // orange clock
+          color: const Color(0xFFF97316),
           text: time,
         ),
       ],
-    );
-  }
-}
-
-class _LocationRow extends StatelessWidget {
-  final String location;
-
-  const _LocationRow({required this.location});
-
-  @override
-  Widget build(BuildContext context) {
-    return _IconText(
-      icon: AppAssets.iconLocation,
-      color: const Color(0xFF9333EA), // purple location
-      text: location,
     );
   }
 }
@@ -268,16 +325,15 @@ class _FacilitiesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (facilities.isEmpty) return const SizedBox.shrink();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Fasilitas :',
+          'Fasilitas',
           style: AppTypography.labelMedium.copyWith(
             fontWeight: FontWeight.w600,
             color: AppColors.textBlack,
+            fontSize: 14,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
@@ -322,8 +378,6 @@ class _RequirementsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (requirements.isEmpty) return const SizedBox.shrink();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -337,8 +391,8 @@ class _RequirementsSection extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.sm),
         ...requirements.asMap().entries.map((entry) {
-          int index = entry.key + 1;
-          String text = entry.value;
+          final index = entry.key + 1;
+          final text = entry.value;
           return Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: Row(
@@ -371,6 +425,148 @@ class _RequirementsSection extends StatelessWidget {
   }
 }
 
+class _BankInfoSection extends StatelessWidget {
+  final String bankName;
+  final String? accountNumber;
+  final String? accountHolder;
+
+  const _BankInfoSection({
+    required this.bankName,
+    this.accountNumber,
+    this.accountHolder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Informasi Pembayaran',
+          style: AppTypography.labelMedium.copyWith(
+            fontWeight: FontWeight.w600,
+            color: AppColors.textBlack,
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8FAFC),
+            border: Border.all(color: AppColors.border),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                AppAssets.iconCard,
+                width: 18,
+                height: 18,
+                colorFilter: const ColorFilter.mode(
+                  Color(0xFF6366F1),
+                  BlendMode.srcIn,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      bankName.toUpperCase(),
+                      style: AppTypography.labelMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textBlack,
+                        fontSize: 13,
+                      ),
+                    ),
+                    if (accountNumber != null && accountNumber!.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'No. $accountNumber',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                    if (accountHolder != null && accountHolder!.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'a.n. $accountHolder',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RejectionReasonBox extends StatelessWidget {
+  final String reason;
+
+  const _RejectionReasonBox({required this.reason});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFEF2F2),
+        border: Border.all(color: const Color(0xFFFCA5A5)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SvgPicture.asset(
+                AppAssets.iconDangerCircle,
+                width: 16,
+                height: 16,
+                colorFilter: const ColorFilter.mode(
+                  Color(0xFFDC2626),
+                  BlendMode.srcIn,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                'Alasan Penolakan',
+                style: AppTypography.labelSmall.copyWith(
+                  color: const Color(0xFFDC2626),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            reason,
+            style: AppTypography.bodySmall.copyWith(
+              color: const Color(0xFF991B1B),
+              fontSize: 12,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _IconText extends StatelessWidget {
   final String icon;
   final Color color;
@@ -395,11 +591,13 @@ class _IconText extends StatelessWidget {
           colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
         ),
         const SizedBox(width: 6),
-        Text(
-          text,
-          style: AppTypography.bodySmall.copyWith(
-            color: AppColors.textSecondary,
-            fontSize: 12,
+        Flexible(
+          child: Text(
+            text,
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+            ),
           ),
         ),
       ],
@@ -408,136 +606,198 @@ class _IconText extends StatelessWidget {
 }
 
 class _StickyBottomBar extends StatelessWidget {
-  const _StickyBottomBar();
+  final String trainingId;
+
+  const _StickyBottomBar({required this.trainingId});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TrainingDetailCubit, TrainingDetailState>(
       buildWhen: (prev, curr) =>
           prev.training != curr.training ||
+          prev.isOwner != curr.isOwner ||
           prev.isRegistering != curr.isRegistering ||
           prev.isRegistrationSuccess != curr.isRegistrationSuccess,
       builder: (context, state) {
         if (state.training == null) return const SizedBox.shrink();
 
-        final data = state.training!;
+        if (state.isOwner) {
+          return _OwnerBottomBar();
+        }
 
-        return Container(
-          padding: EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            AppSpacing.md,
-            AppSpacing.md,
-            MediaQuery.of(context).padding.bottom + AppSpacing.md,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            border: const Border(
-              top: BorderSide(color: AppColors.border, width: 1),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, -4),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Biaya Pendaftaran',
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textBlack,
-                        fontSize: 11,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      data.fee,
-                      style: AppTypography.titleMedium.copyWith(
-                        fontSize: 16,
-                        color: AppColors.textBlack,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      data.feeNotice,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: const Color(
-                          0xFF22C55E,
-                        ), // Match exact design green notice
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              SizedBox(
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: state.isRegistering
-                      ? null
-                      : () {
-                          context
-                              .read<TrainingDetailCubit>()
-                              .registerTraining();
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(
-                      0xFF312E81,
-                    ), // exact visual slate blue
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: state.isRegistering
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: AppColors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              state.isRegistrationSuccess
-                                  ? 'Terdaftar'
-                                  : 'Daftar',
-                              style: AppTypography.buttonRegularSmall.copyWith(
-                                color: AppColors.white,
-                                fontSize: 13,
-                              ),
-                            ),
-                            if (!state.isRegistrationSuccess) ...[
-                              const SizedBox(width: AppSpacing.xs),
-                              const Icon(
-                                Icons.arrow_forward,
-                                color: AppColors.white,
-                                size: 16,
-                              ),
-                            ],
-                          ],
-                        ),
-                ),
-              ),
-            ],
-          ),
+        return _RegisterBottomBar(
+          training: state.training!,
+          isRegistering: state.isRegistering,
+          isRegistrationSuccess: state.isRegistrationSuccess,
+          onRegister: () =>
+              context.read<TrainingDetailCubit>().registerTraining(),
         );
       },
+    );
+  }
+}
+
+class _OwnerBottomBar extends StatelessWidget {
+  const _OwnerBottomBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        MediaQuery.of(context).padding.bottom + AppSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0F9FF),
+        border: const Border(top: BorderSide(color: Color(0xFFBAE6FD), width: 1)),
+      ),
+      child: Row(
+        children: [
+          SvgPicture.asset(
+            AppAssets.iconInfoLine,
+            width: 18,
+            height: 18,
+            colorFilter: const ColorFilter.mode(
+              Color(0xFF0284C7),
+              BlendMode.srcIn,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              'Anda adalah penyelenggara iklan pelatihan ini',
+              style: AppTypography.bodySmall.copyWith(
+                color: const Color(0xFF0369A1),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RegisterBottomBar extends StatelessWidget {
+  final TrainingDetailModel training;
+  final bool isRegistering;
+  final bool isRegistrationSuccess;
+  final VoidCallback onRegister;
+
+  const _RegisterBottomBar({
+    required this.training,
+    required this.isRegistering,
+    required this.isRegistrationSuccess,
+    required this.onRegister,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        MediaQuery.of(context).padding.bottom + AppSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        border: const Border(top: BorderSide(color: AppColors.border, width: 1)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Biaya Pendaftaran',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textBlack,
+                    fontSize: 11,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  training.fee,
+                  style: AppTypography.titleMedium.copyWith(
+                    fontSize: 16,
+                    color: AppColors.textBlack,
+                  ),
+                ),
+                if (training.feeNotice.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    training.feeNotice,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: const Color(0xFF22C55E),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          SizedBox(
+            height: 48,
+            child: ElevatedButton(
+              onPressed: isRegistering ? null : onRegister,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF312E81),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 0,
+              ),
+              child: isRegistering
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: AppColors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          isRegistrationSuccess ? 'Terdaftar' : 'Daftar',
+                          style: AppTypography.buttonRegularSmall.copyWith(
+                            color: AppColors.white,
+                            fontSize: 13,
+                          ),
+                        ),
+                        if (!isRegistrationSuccess) ...[
+                          const SizedBox(width: AppSpacing.xs),
+                          const Icon(
+                            Icons.arrow_forward,
+                            color: AppColors.white,
+                            size: 16,
+                          ),
+                        ],
+                      ],
+                    ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

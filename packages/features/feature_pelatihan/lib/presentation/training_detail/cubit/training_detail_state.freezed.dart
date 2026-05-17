@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TrainingDetailState {
 
- TrainingDetailModel? get training; bool get isLoading; bool get isFailure; String? get errorMessage; bool get isRegistering; bool get isRegistrationSuccess;
+ TrainingDetailModel? get training; bool get isLoading; bool get isFailure; String? get errorMessage; bool get isRegistering; bool get isRegistrationSuccess; bool get isOwner;
 /// Create a copy of TrainingDetailState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $TrainingDetailStateCopyWith<TrainingDetailState> get copyWith => _$TrainingDeta
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrainingDetailState&&(identical(other.training, training) || other.training == training)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isFailure, isFailure) || other.isFailure == isFailure)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isRegistering, isRegistering) || other.isRegistering == isRegistering)&&(identical(other.isRegistrationSuccess, isRegistrationSuccess) || other.isRegistrationSuccess == isRegistrationSuccess));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrainingDetailState&&(identical(other.training, training) || other.training == training)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isFailure, isFailure) || other.isFailure == isFailure)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isRegistering, isRegistering) || other.isRegistering == isRegistering)&&(identical(other.isRegistrationSuccess, isRegistrationSuccess) || other.isRegistrationSuccess == isRegistrationSuccess)&&(identical(other.isOwner, isOwner) || other.isOwner == isOwner));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,training,isLoading,isFailure,errorMessage,isRegistering,isRegistrationSuccess);
+int get hashCode => Object.hash(runtimeType,training,isLoading,isFailure,errorMessage,isRegistering,isRegistrationSuccess,isOwner);
 
 @override
 String toString() {
-  return 'TrainingDetailState(training: $training, isLoading: $isLoading, isFailure: $isFailure, errorMessage: $errorMessage, isRegistering: $isRegistering, isRegistrationSuccess: $isRegistrationSuccess)';
+  return 'TrainingDetailState(training: $training, isLoading: $isLoading, isFailure: $isFailure, errorMessage: $errorMessage, isRegistering: $isRegistering, isRegistrationSuccess: $isRegistrationSuccess, isOwner: $isOwner)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $TrainingDetailStateCopyWith<$Res>  {
   factory $TrainingDetailStateCopyWith(TrainingDetailState value, $Res Function(TrainingDetailState) _then) = _$TrainingDetailStateCopyWithImpl;
 @useResult
 $Res call({
- TrainingDetailModel? training, bool isLoading, bool isFailure, String? errorMessage, bool isRegistering, bool isRegistrationSuccess
+ TrainingDetailModel? training, bool isLoading, bool isFailure, String? errorMessage, bool isRegistering, bool isRegistrationSuccess, bool isOwner
 });
 
 
@@ -62,7 +62,7 @@ class _$TrainingDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of TrainingDetailState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? training = freezed,Object? isLoading = null,Object? isFailure = null,Object? errorMessage = freezed,Object? isRegistering = null,Object? isRegistrationSuccess = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? training = freezed,Object? isLoading = null,Object? isFailure = null,Object? errorMessage = freezed,Object? isRegistering = null,Object? isRegistrationSuccess = null,Object? isOwner = null,}) {
   return _then(_self.copyWith(
 training: freezed == training ? _self.training : training // ignore: cast_nullable_to_non_nullable
 as TrainingDetailModel?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
@@ -70,6 +70,7 @@ as bool,isFailure: null == isFailure ? _self.isFailure : isFailure // ignore: ca
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,isRegistering: null == isRegistering ? _self.isRegistering : isRegistering // ignore: cast_nullable_to_non_nullable
 as bool,isRegistrationSuccess: null == isRegistrationSuccess ? _self.isRegistrationSuccess : isRegistrationSuccess // ignore: cast_nullable_to_non_nullable
+as bool,isOwner: null == isOwner ? _self.isOwner : isOwner // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -167,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TrainingDetailModel? training,  bool isLoading,  bool isFailure,  String? errorMessage,  bool isRegistering,  bool isRegistrationSuccess)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TrainingDetailModel? training,  bool isLoading,  bool isFailure,  String? errorMessage,  bool isRegistering,  bool isRegistrationSuccess,  bool isOwner)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TrainingDetailState() when $default != null:
-return $default(_that.training,_that.isLoading,_that.isFailure,_that.errorMessage,_that.isRegistering,_that.isRegistrationSuccess);case _:
+return $default(_that.training,_that.isLoading,_that.isFailure,_that.errorMessage,_that.isRegistering,_that.isRegistrationSuccess,_that.isOwner);case _:
   return orElse();
 
 }
@@ -188,10 +189,10 @@ return $default(_that.training,_that.isLoading,_that.isFailure,_that.errorMessag
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TrainingDetailModel? training,  bool isLoading,  bool isFailure,  String? errorMessage,  bool isRegistering,  bool isRegistrationSuccess)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TrainingDetailModel? training,  bool isLoading,  bool isFailure,  String? errorMessage,  bool isRegistering,  bool isRegistrationSuccess,  bool isOwner)  $default,) {final _that = this;
 switch (_that) {
 case _TrainingDetailState():
-return $default(_that.training,_that.isLoading,_that.isFailure,_that.errorMessage,_that.isRegistering,_that.isRegistrationSuccess);case _:
+return $default(_that.training,_that.isLoading,_that.isFailure,_that.errorMessage,_that.isRegistering,_that.isRegistrationSuccess,_that.isOwner);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +209,10 @@ return $default(_that.training,_that.isLoading,_that.isFailure,_that.errorMessag
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TrainingDetailModel? training,  bool isLoading,  bool isFailure,  String? errorMessage,  bool isRegistering,  bool isRegistrationSuccess)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TrainingDetailModel? training,  bool isLoading,  bool isFailure,  String? errorMessage,  bool isRegistering,  bool isRegistrationSuccess,  bool isOwner)?  $default,) {final _that = this;
 switch (_that) {
 case _TrainingDetailState() when $default != null:
-return $default(_that.training,_that.isLoading,_that.isFailure,_that.errorMessage,_that.isRegistering,_that.isRegistrationSuccess);case _:
+return $default(_that.training,_that.isLoading,_that.isFailure,_that.errorMessage,_that.isRegistering,_that.isRegistrationSuccess,_that.isOwner);case _:
   return null;
 
 }
@@ -223,8 +224,8 @@ return $default(_that.training,_that.isLoading,_that.isFailure,_that.errorMessag
 
 
 class _TrainingDetailState implements TrainingDetailState {
-  const _TrainingDetailState({this.training, this.isLoading = true, this.isFailure = false, this.errorMessage, this.isRegistering = false, this.isRegistrationSuccess = false});
-  
+  const _TrainingDetailState({this.training, this.isLoading = true, this.isFailure = false, this.errorMessage, this.isRegistering = false, this.isRegistrationSuccess = false, this.isOwner = false});
+
 
 @override final  TrainingDetailModel? training;
 @override@JsonKey() final  bool isLoading;
@@ -232,6 +233,7 @@ class _TrainingDetailState implements TrainingDetailState {
 @override final  String? errorMessage;
 @override@JsonKey() final  bool isRegistering;
 @override@JsonKey() final  bool isRegistrationSuccess;
+@override@JsonKey() final  bool isOwner;
 
 /// Create a copy of TrainingDetailState
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +245,16 @@ _$TrainingDetailStateCopyWith<_TrainingDetailState> get copyWith => __$TrainingD
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrainingDetailState&&(identical(other.training, training) || other.training == training)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isFailure, isFailure) || other.isFailure == isFailure)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isRegistering, isRegistering) || other.isRegistering == isRegistering)&&(identical(other.isRegistrationSuccess, isRegistrationSuccess) || other.isRegistrationSuccess == isRegistrationSuccess));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrainingDetailState&&(identical(other.training, training) || other.training == training)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isFailure, isFailure) || other.isFailure == isFailure)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isRegistering, isRegistering) || other.isRegistering == isRegistering)&&(identical(other.isRegistrationSuccess, isRegistrationSuccess) || other.isRegistrationSuccess == isRegistrationSuccess)&&(identical(other.isOwner, isOwner) || other.isOwner == isOwner));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,training,isLoading,isFailure,errorMessage,isRegistering,isRegistrationSuccess);
+int get hashCode => Object.hash(runtimeType,training,isLoading,isFailure,errorMessage,isRegistering,isRegistrationSuccess,isOwner);
 
 @override
 String toString() {
-  return 'TrainingDetailState(training: $training, isLoading: $isLoading, isFailure: $isFailure, errorMessage: $errorMessage, isRegistering: $isRegistering, isRegistrationSuccess: $isRegistrationSuccess)';
+  return 'TrainingDetailState(training: $training, isLoading: $isLoading, isFailure: $isFailure, errorMessage: $errorMessage, isRegistering: $isRegistering, isRegistrationSuccess: $isRegistrationSuccess, isOwner: $isOwner)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$TrainingDetailStateCopyWith<$Res> implements $TrainingDet
   factory _$TrainingDetailStateCopyWith(_TrainingDetailState value, $Res Function(_TrainingDetailState) _then) = __$TrainingDetailStateCopyWithImpl;
 @override @useResult
 $Res call({
- TrainingDetailModel? training, bool isLoading, bool isFailure, String? errorMessage, bool isRegistering, bool isRegistrationSuccess
+ TrainingDetailModel? training, bool isLoading, bool isFailure, String? errorMessage, bool isRegistering, bool isRegistrationSuccess, bool isOwner
 });
 
 
@@ -280,7 +282,7 @@ class __$TrainingDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of TrainingDetailState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? training = freezed,Object? isLoading = null,Object? isFailure = null,Object? errorMessage = freezed,Object? isRegistering = null,Object? isRegistrationSuccess = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? training = freezed,Object? isLoading = null,Object? isFailure = null,Object? errorMessage = freezed,Object? isRegistering = null,Object? isRegistrationSuccess = null,Object? isOwner = null,}) {
   return _then(_TrainingDetailState(
 training: freezed == training ? _self.training : training // ignore: cast_nullable_to_non_nullable
 as TrainingDetailModel?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
@@ -288,6 +290,7 @@ as bool,isFailure: null == isFailure ? _self.isFailure : isFailure // ignore: ca
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,isRegistering: null == isRegistering ? _self.isRegistering : isRegistering // ignore: cast_nullable_to_non_nullable
 as bool,isRegistrationSuccess: null == isRegistrationSuccess ? _self.isRegistrationSuccess : isRegistrationSuccess // ignore: cast_nullable_to_non_nullable
+as bool,isOwner: null == isOwner ? _self.isOwner : isOwner // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

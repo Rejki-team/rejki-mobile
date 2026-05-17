@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TrainingDetailModel {
 
- String get id; String? get imageUrl; String get title; String get badge; String get description; String get date; String get time; String get location; List<TrainingFacilityModel> get facilities; List<String> get requirements; String get fee; String get feeNotice;
+ String get id; String? get imageUrl; String get title; String get badge; String get description; String get date; String get time; String get location; List<TrainingFacilityModel> get facilities; List<String> get requirements; String get fee; String get feeNotice; String get companyName; String get status; String? get adCode; String? get rejectionReason; int get totalApprovedEnrollees; String? get contactEmail; String? get contactRole; String? get region; String? get bankName; String? get bankAccountNumber; String? get bankAccountHolderName;
 /// Create a copy of TrainingDetailModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $TrainingDetailModelCopyWith<TrainingDetailModel> get copyWith => _$TrainingDeta
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrainingDetailModel&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.title, title) || other.title == title)&&(identical(other.badge, badge) || other.badge == badge)&&(identical(other.description, description) || other.description == description)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.location, location) || other.location == location)&&const DeepCollectionEquality().equals(other.facilities, facilities)&&const DeepCollectionEquality().equals(other.requirements, requirements)&&(identical(other.fee, fee) || other.fee == fee)&&(identical(other.feeNotice, feeNotice) || other.feeNotice == feeNotice));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrainingDetailModel&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.title, title) || other.title == title)&&(identical(other.badge, badge) || other.badge == badge)&&(identical(other.description, description) || other.description == description)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.location, location) || other.location == location)&&const DeepCollectionEquality().equals(other.facilities, facilities)&&const DeepCollectionEquality().equals(other.requirements, requirements)&&(identical(other.fee, fee) || other.fee == fee)&&(identical(other.feeNotice, feeNotice) || other.feeNotice == feeNotice)&&(identical(other.companyName, companyName) || other.companyName == companyName)&&(identical(other.status, status) || other.status == status)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.totalApprovedEnrollees, totalApprovedEnrollees) || other.totalApprovedEnrollees == totalApprovedEnrollees)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactRole, contactRole) || other.contactRole == contactRole)&&(identical(other.region, region) || other.region == region)&&(identical(other.bankName, bankName) || other.bankName == bankName)&&(identical(other.bankAccountNumber, bankAccountNumber) || other.bankAccountNumber == bankAccountNumber)&&(identical(other.bankAccountHolderName, bankAccountHolderName) || other.bankAccountHolderName == bankAccountHolderName));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,imageUrl,title,badge,description,date,time,location,const DeepCollectionEquality().hash(facilities),const DeepCollectionEquality().hash(requirements),fee,feeNotice);
+int get hashCode => Object.hashAll([runtimeType,id,imageUrl,title,badge,description,date,time,location,const DeepCollectionEquality().hash(facilities),const DeepCollectionEquality().hash(requirements),fee,feeNotice,companyName,status,adCode,rejectionReason,totalApprovedEnrollees,contactEmail,contactRole,region,bankName,bankAccountNumber,bankAccountHolderName]);
 
 @override
 String toString() {
-  return 'TrainingDetailModel(id: $id, imageUrl: $imageUrl, title: $title, badge: $badge, description: $description, date: $date, time: $time, location: $location, facilities: $facilities, requirements: $requirements, fee: $fee, feeNotice: $feeNotice)';
+  return 'TrainingDetailModel(id: $id, imageUrl: $imageUrl, title: $title, badge: $badge, description: $description, date: $date, time: $time, location: $location, facilities: $facilities, requirements: $requirements, fee: $fee, feeNotice: $feeNotice, companyName: $companyName, status: $status, adCode: $adCode, rejectionReason: $rejectionReason, totalApprovedEnrollees: $totalApprovedEnrollees, contactEmail: $contactEmail, contactRole: $contactRole, region: $region, bankName: $bankName, bankAccountNumber: $bankAccountNumber, bankAccountHolderName: $bankAccountHolderName)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $TrainingDetailModelCopyWith<$Res>  {
   factory $TrainingDetailModelCopyWith(TrainingDetailModel value, $Res Function(TrainingDetailModel) _then) = _$TrainingDetailModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String? imageUrl, String title, String badge, String description, String date, String time, String location, List<TrainingFacilityModel> facilities, List<String> requirements, String fee, String feeNotice
+ String id, String? imageUrl, String title, String badge, String description, String date, String time, String location, List<TrainingFacilityModel> facilities, List<String> requirements, String fee, String feeNotice, String companyName, String status, String? adCode, String? rejectionReason, int totalApprovedEnrollees, String? contactEmail, String? contactRole, String? region, String? bankName, String? bankAccountNumber, String? bankAccountHolderName
 });
 
 
@@ -62,7 +62,7 @@ class _$TrainingDetailModelCopyWithImpl<$Res>
 
 /// Create a copy of TrainingDetailModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? imageUrl = freezed,Object? title = null,Object? badge = null,Object? description = null,Object? date = null,Object? time = null,Object? location = null,Object? facilities = null,Object? requirements = null,Object? fee = null,Object? feeNotice = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? imageUrl = freezed,Object? title = null,Object? badge = null,Object? description = null,Object? date = null,Object? time = null,Object? location = null,Object? facilities = null,Object? requirements = null,Object? fee = null,Object? feeNotice = null,Object? companyName = null,Object? status = null,Object? adCode = freezed,Object? rejectionReason = freezed,Object? totalApprovedEnrollees = null,Object? contactEmail = freezed,Object? contactRole = freezed,Object? region = freezed,Object? bankName = freezed,Object? bankAccountNumber = freezed,Object? bankAccountHolderName = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -76,7 +76,18 @@ as String,facilities: null == facilities ? _self.facilities : facilities // igno
 as List<TrainingFacilityModel>,requirements: null == requirements ? _self.requirements : requirements // ignore: cast_nullable_to_non_nullable
 as List<String>,fee: null == fee ? _self.fee : fee // ignore: cast_nullable_to_non_nullable
 as String,feeNotice: null == feeNotice ? _self.feeNotice : feeNotice // ignore: cast_nullable_to_non_nullable
-as String,
+as String,companyName: null == companyName ? _self.companyName : companyName // ignore: cast_nullable_to_non_nullable
+as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,adCode: freezed == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
+as String?,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
+as String?,totalApprovedEnrollees: null == totalApprovedEnrollees ? _self.totalApprovedEnrollees : totalApprovedEnrollees // ignore: cast_nullable_to_non_nullable
+as int,contactEmail: freezed == contactEmail ? _self.contactEmail : contactEmail // ignore: cast_nullable_to_non_nullable
+as String?,contactRole: freezed == contactRole ? _self.contactRole : contactRole // ignore: cast_nullable_to_non_nullable
+as String?,region: freezed == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
+as String?,bankName: freezed == bankName ? _self.bankName : bankName // ignore: cast_nullable_to_non_nullable
+as String?,bankAccountNumber: freezed == bankAccountNumber ? _self.bankAccountNumber : bankAccountNumber // ignore: cast_nullable_to_non_nullable
+as String?,bankAccountHolderName: freezed == bankAccountHolderName ? _self.bankAccountHolderName : bankAccountHolderName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -161,10 +172,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? imageUrl,  String title,  String badge,  String description,  String date,  String time,  String location,  List<TrainingFacilityModel> facilities,  List<String> requirements,  String fee,  String feeNotice)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? imageUrl,  String title,  String badge,  String description,  String date,  String time,  String location,  List<TrainingFacilityModel> facilities,  List<String> requirements,  String fee,  String feeNotice,  String companyName,  String status,  String? adCode,  String? rejectionReason,  int totalApprovedEnrollees,  String? contactEmail,  String? contactRole,  String? region,  String? bankName,  String? bankAccountNumber,  String? bankAccountHolderName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TrainingDetailModel() when $default != null:
-return $default(_that.id,_that.imageUrl,_that.title,_that.badge,_that.description,_that.date,_that.time,_that.location,_that.facilities,_that.requirements,_that.fee,_that.feeNotice);case _:
+return $default(_that.id,_that.imageUrl,_that.title,_that.badge,_that.description,_that.date,_that.time,_that.location,_that.facilities,_that.requirements,_that.fee,_that.feeNotice,_that.companyName,_that.status,_that.adCode,_that.rejectionReason,_that.totalApprovedEnrollees,_that.contactEmail,_that.contactRole,_that.region,_that.bankName,_that.bankAccountNumber,_that.bankAccountHolderName);case _:
   return orElse();
 
 }
@@ -182,10 +193,10 @@ return $default(_that.id,_that.imageUrl,_that.title,_that.badge,_that.descriptio
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? imageUrl,  String title,  String badge,  String description,  String date,  String time,  String location,  List<TrainingFacilityModel> facilities,  List<String> requirements,  String fee,  String feeNotice)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? imageUrl,  String title,  String badge,  String description,  String date,  String time,  String location,  List<TrainingFacilityModel> facilities,  List<String> requirements,  String fee,  String feeNotice,  String companyName,  String status,  String? adCode,  String? rejectionReason,  int totalApprovedEnrollees,  String? contactEmail,  String? contactRole,  String? region,  String? bankName,  String? bankAccountNumber,  String? bankAccountHolderName)  $default,) {final _that = this;
 switch (_that) {
 case _TrainingDetailModel():
-return $default(_that.id,_that.imageUrl,_that.title,_that.badge,_that.description,_that.date,_that.time,_that.location,_that.facilities,_that.requirements,_that.fee,_that.feeNotice);case _:
+return $default(_that.id,_that.imageUrl,_that.title,_that.badge,_that.description,_that.date,_that.time,_that.location,_that.facilities,_that.requirements,_that.fee,_that.feeNotice,_that.companyName,_that.status,_that.adCode,_that.rejectionReason,_that.totalApprovedEnrollees,_that.contactEmail,_that.contactRole,_that.region,_that.bankName,_that.bankAccountNumber,_that.bankAccountHolderName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +213,10 @@ return $default(_that.id,_that.imageUrl,_that.title,_that.badge,_that.descriptio
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? imageUrl,  String title,  String badge,  String description,  String date,  String time,  String location,  List<TrainingFacilityModel> facilities,  List<String> requirements,  String fee,  String feeNotice)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? imageUrl,  String title,  String badge,  String description,  String date,  String time,  String location,  List<TrainingFacilityModel> facilities,  List<String> requirements,  String fee,  String feeNotice,  String companyName,  String status,  String? adCode,  String? rejectionReason,  int totalApprovedEnrollees,  String? contactEmail,  String? contactRole,  String? region,  String? bankName,  String? bankAccountNumber,  String? bankAccountHolderName)?  $default,) {final _that = this;
 switch (_that) {
 case _TrainingDetailModel() when $default != null:
-return $default(_that.id,_that.imageUrl,_that.title,_that.badge,_that.description,_that.date,_that.time,_that.location,_that.facilities,_that.requirements,_that.fee,_that.feeNotice);case _:
+return $default(_that.id,_that.imageUrl,_that.title,_that.badge,_that.description,_that.date,_that.time,_that.location,_that.facilities,_that.requirements,_that.fee,_that.feeNotice,_that.companyName,_that.status,_that.adCode,_that.rejectionReason,_that.totalApprovedEnrollees,_that.contactEmail,_that.contactRole,_that.region,_that.bankName,_that.bankAccountNumber,_that.bankAccountHolderName);case _:
   return null;
 
 }
@@ -217,8 +228,8 @@ return $default(_that.id,_that.imageUrl,_that.title,_that.badge,_that.descriptio
 
 
 class _TrainingDetailModel implements TrainingDetailModel {
-  const _TrainingDetailModel({required this.id, this.imageUrl, required this.title, this.badge = 'Gratis', required this.description, required this.date, required this.time, required this.location, final  List<TrainingFacilityModel> facilities = const [], final  List<String> requirements = const [], required this.fee, required this.feeNotice}): _facilities = facilities,_requirements = requirements;
-  
+  const _TrainingDetailModel({required this.id, this.imageUrl, required this.title, this.badge = 'Gratis', required this.description, required this.date, required this.time, required this.location, final  List<TrainingFacilityModel> facilities = const [], final  List<String> requirements = const [], required this.fee, required this.feeNotice, required this.companyName, required this.status, this.adCode, this.rejectionReason, this.totalApprovedEnrollees = 0, this.contactEmail, this.contactRole, this.region, this.bankName, this.bankAccountNumber, this.bankAccountHolderName}): _facilities = facilities,_requirements = requirements;
+
 
 @override final  String id;
 @override final  String? imageUrl;
@@ -244,6 +255,17 @@ class _TrainingDetailModel implements TrainingDetailModel {
 
 @override final  String fee;
 @override final  String feeNotice;
+@override final  String companyName;
+@override final  String status;
+@override final  String? adCode;
+@override final  String? rejectionReason;
+@override@JsonKey() final  int totalApprovedEnrollees;
+@override final  String? contactEmail;
+@override final  String? contactRole;
+@override final  String? region;
+@override final  String? bankName;
+@override final  String? bankAccountNumber;
+@override final  String? bankAccountHolderName;
 
 /// Create a copy of TrainingDetailModel
 /// with the given fields replaced by the non-null parameter values.
@@ -255,16 +277,16 @@ _$TrainingDetailModelCopyWith<_TrainingDetailModel> get copyWith => __$TrainingD
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrainingDetailModel&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.title, title) || other.title == title)&&(identical(other.badge, badge) || other.badge == badge)&&(identical(other.description, description) || other.description == description)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.location, location) || other.location == location)&&const DeepCollectionEquality().equals(other._facilities, _facilities)&&const DeepCollectionEquality().equals(other._requirements, _requirements)&&(identical(other.fee, fee) || other.fee == fee)&&(identical(other.feeNotice, feeNotice) || other.feeNotice == feeNotice));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrainingDetailModel&&(identical(other.id, id) || other.id == id)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.title, title) || other.title == title)&&(identical(other.badge, badge) || other.badge == badge)&&(identical(other.description, description) || other.description == description)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.location, location) || other.location == location)&&const DeepCollectionEquality().equals(other._facilities, _facilities)&&const DeepCollectionEquality().equals(other._requirements, _requirements)&&(identical(other.fee, fee) || other.fee == fee)&&(identical(other.feeNotice, feeNotice) || other.feeNotice == feeNotice)&&(identical(other.companyName, companyName) || other.companyName == companyName)&&(identical(other.status, status) || other.status == status)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.totalApprovedEnrollees, totalApprovedEnrollees) || other.totalApprovedEnrollees == totalApprovedEnrollees)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactRole, contactRole) || other.contactRole == contactRole)&&(identical(other.region, region) || other.region == region)&&(identical(other.bankName, bankName) || other.bankName == bankName)&&(identical(other.bankAccountNumber, bankAccountNumber) || other.bankAccountNumber == bankAccountNumber)&&(identical(other.bankAccountHolderName, bankAccountHolderName) || other.bankAccountHolderName == bankAccountHolderName));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,imageUrl,title,badge,description,date,time,location,const DeepCollectionEquality().hash(_facilities),const DeepCollectionEquality().hash(_requirements),fee,feeNotice);
+int get hashCode => Object.hashAll([runtimeType,id,imageUrl,title,badge,description,date,time,location,const DeepCollectionEquality().hash(_facilities),const DeepCollectionEquality().hash(_requirements),fee,feeNotice,companyName,status,adCode,rejectionReason,totalApprovedEnrollees,contactEmail,contactRole,region,bankName,bankAccountNumber,bankAccountHolderName]);
 
 @override
 String toString() {
-  return 'TrainingDetailModel(id: $id, imageUrl: $imageUrl, title: $title, badge: $badge, description: $description, date: $date, time: $time, location: $location, facilities: $facilities, requirements: $requirements, fee: $fee, feeNotice: $feeNotice)';
+  return 'TrainingDetailModel(id: $id, imageUrl: $imageUrl, title: $title, badge: $badge, description: $description, date: $date, time: $time, location: $location, facilities: $facilities, requirements: $requirements, fee: $fee, feeNotice: $feeNotice, companyName: $companyName, status: $status, adCode: $adCode, rejectionReason: $rejectionReason, totalApprovedEnrollees: $totalApprovedEnrollees, contactEmail: $contactEmail, contactRole: $contactRole, region: $region, bankName: $bankName, bankAccountNumber: $bankAccountNumber, bankAccountHolderName: $bankAccountHolderName)';
 }
 
 
@@ -275,7 +297,7 @@ abstract mixin class _$TrainingDetailModelCopyWith<$Res> implements $TrainingDet
   factory _$TrainingDetailModelCopyWith(_TrainingDetailModel value, $Res Function(_TrainingDetailModel) _then) = __$TrainingDetailModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? imageUrl, String title, String badge, String description, String date, String time, String location, List<TrainingFacilityModel> facilities, List<String> requirements, String fee, String feeNotice
+ String id, String? imageUrl, String title, String badge, String description, String date, String time, String location, List<TrainingFacilityModel> facilities, List<String> requirements, String fee, String feeNotice, String companyName, String status, String? adCode, String? rejectionReason, int totalApprovedEnrollees, String? contactEmail, String? contactRole, String? region, String? bankName, String? bankAccountNumber, String? bankAccountHolderName
 });
 
 
@@ -292,7 +314,7 @@ class __$TrainingDetailModelCopyWithImpl<$Res>
 
 /// Create a copy of TrainingDetailModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? imageUrl = freezed,Object? title = null,Object? badge = null,Object? description = null,Object? date = null,Object? time = null,Object? location = null,Object? facilities = null,Object? requirements = null,Object? fee = null,Object? feeNotice = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? imageUrl = freezed,Object? title = null,Object? badge = null,Object? description = null,Object? date = null,Object? time = null,Object? location = null,Object? facilities = null,Object? requirements = null,Object? fee = null,Object? feeNotice = null,Object? companyName = null,Object? status = null,Object? adCode = freezed,Object? rejectionReason = freezed,Object? totalApprovedEnrollees = null,Object? contactEmail = freezed,Object? contactRole = freezed,Object? region = freezed,Object? bankName = freezed,Object? bankAccountNumber = freezed,Object? bankAccountHolderName = freezed,}) {
   return _then(_TrainingDetailModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -306,7 +328,18 @@ as String,facilities: null == facilities ? _self._facilities : facilities // ign
 as List<TrainingFacilityModel>,requirements: null == requirements ? _self._requirements : requirements // ignore: cast_nullable_to_non_nullable
 as List<String>,fee: null == fee ? _self.fee : fee // ignore: cast_nullable_to_non_nullable
 as String,feeNotice: null == feeNotice ? _self.feeNotice : feeNotice // ignore: cast_nullable_to_non_nullable
-as String,
+as String,companyName: null == companyName ? _self.companyName : companyName // ignore: cast_nullable_to_non_nullable
+as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,adCode: freezed == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
+as String?,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
+as String?,totalApprovedEnrollees: null == totalApprovedEnrollees ? _self.totalApprovedEnrollees : totalApprovedEnrollees // ignore: cast_nullable_to_non_nullable
+as int,contactEmail: freezed == contactEmail ? _self.contactEmail : contactEmail // ignore: cast_nullable_to_non_nullable
+as String?,contactRole: freezed == contactRole ? _self.contactRole : contactRole // ignore: cast_nullable_to_non_nullable
+as String?,region: freezed == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
+as String?,bankName: freezed == bankName ? _self.bankName : bankName // ignore: cast_nullable_to_non_nullable
+as String?,bankAccountNumber: freezed == bankAccountNumber ? _self.bankAccountNumber : bankAccountNumber // ignore: cast_nullable_to_non_nullable
+as String?,bankAccountHolderName: freezed == bankAccountHolderName ? _self.bankAccountHolderName : bankAccountHolderName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
