@@ -1,3 +1,5 @@
+export 'presentation/location/bloc/location_bloc.dart';
+
 export 'presentation/create_training_ad/create_training_ad_page.dart';
 export 'presentation/create_training_ad/cubit/create_training_ad_cubit.dart';
 export 'presentation/create_training_ad/cubit/create_training_ad_state.dart';

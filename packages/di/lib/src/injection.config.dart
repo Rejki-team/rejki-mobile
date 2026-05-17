@@ -54,6 +54,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i216.CreateTrainingAdCubit>(
       () => registerModule.createTrainingAdCubit(),
     );
+    gh.factory<_i216.LocationBloc>(
+      () => registerModule.locationBlocPelatihan(
+        gh<_i494.GetProvincesUseCase>(),
+        gh<_i494.GetRegenciesUseCase>(),
+        gh<_i494.GetDistrictsUseCase>(),
+        gh<_i494.GetVillagesUseCase>(),
+      ),
+    );
     gh.factory<_i216.SubmitTrainingAdCubit>(
       () => registerModule.submitTrainingAdCubit(
         gh<_i494.CreateTrainingUseCase>(),
@@ -482,7 +490,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.CreateSecondhandUseCase>(),
       ),
     );
-    gh.factory<_i884.NotificationCubit>(
+    gh.lazySingleton<_i884.NotificationCubit>(
       () => registerModule.notificationCubit(
         gh<_i494.GetNotificationsUseCase>(),
         gh<_i494.MarkNotificationReadUseCase>(),

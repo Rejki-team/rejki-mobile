@@ -59,7 +59,7 @@ abstract class NotificationPaginationModel with _$NotificationPaginationModel {
   const factory NotificationPaginationModel({
     required int page,
     required int limit,
-    required int total,
+    @JsonKey(name: 'total_rows') required int total,
   }) = _NotificationPaginationModel;
 
   factory NotificationPaginationModel.fromJson(Map<String, dynamic> json) =>

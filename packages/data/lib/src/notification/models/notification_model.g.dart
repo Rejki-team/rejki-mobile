@@ -53,7 +53,7 @@ _NotificationPaginationModel _$NotificationPaginationModelFromJson(
 ) => _NotificationPaginationModel(
   page: (json['page'] as num).toInt(),
   limit: (json['limit'] as num).toInt(),
-  total: (json['total'] as num).toInt(),
+  total: (json['total_rows'] as num).toInt(),
 );
 
 Map<String, dynamic> _$NotificationPaginationModelToJson(

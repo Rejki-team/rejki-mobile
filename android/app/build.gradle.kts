@@ -47,6 +47,14 @@ android {
         }
     }
 
+    packaging {
+        jniLibs {
+            // Paksa ekstrak libflutter.so ke filesystem saat install — diperlukan agar
+            // Samsung One UI (SM G990E) bisa load native library Flutter Engine.
+            useLegacyPackaging = true
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

@@ -28,6 +28,8 @@ dependencies:
     path: ../../components
   designsystems:
     path: ../../designsystems
+  shared_widgets:
+    path: ../../shared_widgets
   core:
     path: ../../core
   domain:

@@ -8,7 +8,9 @@ import 'package:data/data.dart';
 import 'package:feature_home/feature_home.dart';
 import 'package:feature_pekerjaan/feature_pekerjaan.dart';
 import 'package:feature_pekerja/feature_pekerja.dart';
-import 'package:feature_pelatihan/feature_pelatihan.dart';
+import 'package:feature_pelatihan/feature_pelatihan.dart' hide LocationBloc;
+// ignore: implementation_imports
+import 'package:feature_pelatihan/presentation/location/bloc/location_bloc.dart' as pelatihan_loc;
 import 'package:feature_barangbekas/feature_barangbekas.dart' hide LocationBloc;
 import 'package:feature_barangbekas/presentation/location/bloc/location_bloc.dart' as barangbekas_loc;
 import 'package:feature_notification/feature_notification.dart';
@@ -721,6 +723,20 @@ abstract class RegisterModule {
     ClaimSecondhandUseCase claimSecondhandUseCase,
   ) => ClaimSecondhandCubit(claimSecondhandUseCase);
 
+  /// LocationBloc - for cascading location selection (Pelatihan)
+  @factoryMethod
+  pelatihan_loc.LocationBloc locationBlocPelatihan(
+    GetProvincesUseCase getProvincesUseCase,
+    GetRegenciesUseCase getRegenciesUseCase,
+    GetDistrictsUseCase getDistrictsUseCase,
+    GetVillagesUseCase getVillagesUseCase,
+  ) => pelatihan_loc.LocationBloc(
+    getProvincesUseCase: getProvincesUseCase,
+    getRegenciesUseCase: getRegenciesUseCase,
+    getDistrictsUseCase: getDistrictsUseCase,
+    getVillagesUseCase: getVillagesUseCase,
+  );
+
   /// LocationBloc - for cascading location selection (BarangBekas)
   @factoryMethod
   barangbekas_loc.LocationBloc locationBlocBarangBekas(
@@ -768,7 +784,7 @@ abstract class RegisterModule {
   RegisterDeviceTokenUseCase registerDeviceTokenUseCase(NotificationRepository repository) =>
       RegisterDeviceTokenUseCase(repository);
 
-  @factoryMethod
+  @lazySingleton
   NotificationCubit notificationCubit(
     GetNotificationsUseCase getNotificationsUseCase,
     MarkNotificationReadUseCase markNotificationReadUseCase,

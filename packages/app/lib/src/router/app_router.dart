@@ -203,7 +203,7 @@ class AppRouter {
                 name: 'notification',
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) => BlocProvider.value(
-                  value: context.read<NotificationCubit>()
+                  value: GetIt.I<NotificationCubit>()
                     ..loadNotifications(refresh: true),
                   child: const NotificationPage(),
                 ),

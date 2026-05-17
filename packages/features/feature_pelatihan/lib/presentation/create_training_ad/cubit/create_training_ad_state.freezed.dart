@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CreateTrainingAdState {
 
- String get email; String get companyName; String get position; String get title; String get description; String get date; String get time; String get location; String get country; String get cost; String get bankName; String get bankAccountNumber; String get bankAccountHolderName; List<String> get facilities; bool get isSubmitting; bool get isSuccess; String? get errorMessage;
+ String get email; String get companyName; String get position; String get title; String get description; String get date; String get time; String get address; String get province; String get city; String get district; String get village; String get location; String get cost; String get bankName; String get bankAccountNumber; String get bankAccountHolderName; List<String> get facilities; bool get isSubmitting; bool get isSuccess; String? get errorMessage;
 /// Create a copy of CreateTrainingAdState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $CreateTrainingAdStateCopyWith<CreateTrainingAdState> get copyWith => _$CreateTr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateTrainingAdState&&(identical(other.email, email) || other.email == email)&&(identical(other.companyName, companyName) || other.companyName == companyName)&&(identical(other.position, position) || other.position == position)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.location, location) || other.location == location)&&(identical(other.country, country) || other.country == country)&&(identical(other.cost, cost) || other.cost == cost)&&(identical(other.bankName, bankName) || other.bankName == bankName)&&(identical(other.bankAccountNumber, bankAccountNumber) || other.bankAccountNumber == bankAccountNumber)&&(identical(other.bankAccountHolderName, bankAccountHolderName) || other.bankAccountHolderName == bankAccountHolderName)&&const DeepCollectionEquality().equals(other.facilities, facilities)&&(identical(other.isSubmitting, isSubmitting) || other.isSubmitting == isSubmitting)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateTrainingAdState&&(identical(other.email, email) || other.email == email)&&(identical(other.companyName, companyName) || other.companyName == companyName)&&(identical(other.position, position) || other.position == position)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.district, district) || other.district == district)&&(identical(other.village, village) || other.village == village)&&(identical(other.location, location) || other.location == location)&&(identical(other.cost, cost) || other.cost == cost)&&(identical(other.bankName, bankName) || other.bankName == bankName)&&(identical(other.bankAccountNumber, bankAccountNumber) || other.bankAccountNumber == bankAccountNumber)&&(identical(other.bankAccountHolderName, bankAccountHolderName) || other.bankAccountHolderName == bankAccountHolderName)&&const DeepCollectionEquality().equals(other.facilities, facilities)&&(identical(other.isSubmitting, isSubmitting) || other.isSubmitting == isSubmitting)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,email,companyName,position,title,description,date,time,location,country,cost,bankName,bankAccountNumber,bankAccountHolderName,const DeepCollectionEquality().hash(facilities),isSubmitting,isSuccess,errorMessage);
+int get hashCode => Object.hashAll([runtimeType,email,companyName,position,title,description,date,time,address,province,city,district,village,location,cost,bankName,bankAccountNumber,bankAccountHolderName,const DeepCollectionEquality().hash(facilities),isSubmitting,isSuccess,errorMessage]);
 
 @override
 String toString() {
-  return 'CreateTrainingAdState(email: $email, companyName: $companyName, position: $position, title: $title, description: $description, date: $date, time: $time, location: $location, country: $country, cost: $cost, bankName: $bankName, bankAccountNumber: $bankAccountNumber, bankAccountHolderName: $bankAccountHolderName, facilities: $facilities, isSubmitting: $isSubmitting, isSuccess: $isSuccess, errorMessage: $errorMessage)';
+  return 'CreateTrainingAdState(email: $email, companyName: $companyName, position: $position, title: $title, description: $description, date: $date, time: $time, address: $address, province: $province, city: $city, district: $district, village: $village, location: $location, cost: $cost, bankName: $bankName, bankAccountNumber: $bankAccountNumber, bankAccountHolderName: $bankAccountHolderName, facilities: $facilities, isSubmitting: $isSubmitting, isSuccess: $isSuccess, errorMessage: $errorMessage)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $CreateTrainingAdStateCopyWith<$Res>  {
   factory $CreateTrainingAdStateCopyWith(CreateTrainingAdState value, $Res Function(CreateTrainingAdState) _then) = _$CreateTrainingAdStateCopyWithImpl;
 @useResult
 $Res call({
- String email, String companyName, String position, String title, String description, String date, String time, String location, String country, String cost, String bankName, String bankAccountNumber, String bankAccountHolderName, List<String> facilities, bool isSubmitting, bool isSuccess, String? errorMessage
+ String email, String companyName, String position, String title, String description, String date, String time, String address, String province, String city, String district, String village, String location, String cost, String bankName, String bankAccountNumber, String bankAccountHolderName, List<String> facilities, bool isSubmitting, bool isSuccess, String? errorMessage
 });
 
 
@@ -62,7 +62,7 @@ class _$CreateTrainingAdStateCopyWithImpl<$Res>
 
 /// Create a copy of CreateTrainingAdState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? companyName = null,Object? position = null,Object? title = null,Object? description = null,Object? date = null,Object? time = null,Object? location = null,Object? country = null,Object? cost = null,Object? bankName = null,Object? bankAccountNumber = null,Object? bankAccountHolderName = null,Object? facilities = null,Object? isSubmitting = null,Object? isSuccess = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? companyName = null,Object? position = null,Object? title = null,Object? description = null,Object? date = null,Object? time = null,Object? address = null,Object? province = null,Object? city = null,Object? district = null,Object? village = null,Object? location = null,Object? cost = null,Object? bankName = null,Object? bankAccountNumber = null,Object? bankAccountHolderName = null,Object? facilities = null,Object? isSubmitting = null,Object? isSuccess = null,Object? errorMessage = freezed,}) {
   return _then(_self.copyWith(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,companyName: null == companyName ? _self.companyName : companyName // ignore: cast_nullable_to_non_nullable
@@ -71,8 +71,12 @@ as String,title: null == title ? _self.title : title // ignore: cast_nullable_to
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String,province: null == province ? _self.province : province // ignore: cast_nullable_to_non_nullable
+as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as String,district: null == district ? _self.district : district // ignore: cast_nullable_to_non_nullable
+as String,village: null == village ? _self.village : village // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
-as String,country: null == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
 as String,cost: null == cost ? _self.cost : cost // ignore: cast_nullable_to_non_nullable
 as String,bankName: null == bankName ? _self.bankName : bankName // ignore: cast_nullable_to_non_nullable
 as String,bankAccountNumber: null == bankAccountNumber ? _self.bankAccountNumber : bankAccountNumber // ignore: cast_nullable_to_non_nullable
@@ -117,26 +121,26 @@ return $default(_that);case _:
 
 }
 }
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String companyName,  String position,  String title,  String description,  String date,  String time,  String location,  String country,  String cost,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  bool isSubmitting,  bool isSuccess,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String companyName,  String position,  String title,  String description,  String date,  String time,  String address,  String province,  String city,  String district,  String village,  String location,  String cost,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  bool isSubmitting,  bool isSuccess,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CreateTrainingAdState() when $default != null:
-return $default(_that.email,_that.companyName,_that.position,_that.title,_that.description,_that.date,_that.time,_that.location,_that.country,_that.cost,_that.bankName,_that.bankAccountNumber,_that.bankAccountHolderName,_that.facilities,_that.isSubmitting,_that.isSuccess,_that.errorMessage);case _:
+return $default(_that.email,_that.companyName,_that.position,_that.title,_that.description,_that.date,_that.time,_that.address,_that.province,_that.city,_that.district,_that.village,_that.location,_that.cost,_that.bankName,_that.bankAccountNumber,_that.bankAccountHolderName,_that.facilities,_that.isSubmitting,_that.isSuccess,_that.errorMessage);case _:
   return orElse();
 
 }
 }
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String companyName,  String position,  String title,  String description,  String date,  String time,  String location,  String country,  String cost,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  bool isSubmitting,  bool isSuccess,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String companyName,  String position,  String title,  String description,  String date,  String time,  String address,  String province,  String city,  String district,  String village,  String location,  String cost,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  bool isSubmitting,  bool isSuccess,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _CreateTrainingAdState():
-return $default(_that.email,_that.companyName,_that.position,_that.title,_that.description,_that.date,_that.time,_that.location,_that.country,_that.cost,_that.bankName,_that.bankAccountNumber,_that.bankAccountHolderName,_that.facilities,_that.isSubmitting,_that.isSuccess,_that.errorMessage);case _:
+return $default(_that.email,_that.companyName,_that.position,_that.title,_that.description,_that.date,_that.time,_that.address,_that.province,_that.city,_that.district,_that.village,_that.location,_that.cost,_that.bankName,_that.bankAccountNumber,_that.bankAccountHolderName,_that.facilities,_that.isSubmitting,_that.isSuccess,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
 }
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String companyName,  String position,  String title,  String description,  String date,  String time,  String location,  String country,  String cost,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  bool isSubmitting,  bool isSuccess,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String companyName,  String position,  String title,  String description,  String date,  String time,  String address,  String province,  String city,  String district,  String village,  String location,  String cost,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  bool isSubmitting,  bool isSuccess,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _CreateTrainingAdState() when $default != null:
-return $default(_that.email,_that.companyName,_that.position,_that.title,_that.description,_that.date,_that.time,_that.location,_that.country,_that.cost,_that.bankName,_that.bankAccountNumber,_that.bankAccountHolderName,_that.facilities,_that.isSubmitting,_that.isSuccess,_that.errorMessage);case _:
+return $default(_that.email,_that.companyName,_that.position,_that.title,_that.description,_that.date,_that.time,_that.address,_that.province,_that.city,_that.district,_that.village,_that.location,_that.cost,_that.bankName,_that.bankAccountNumber,_that.bankAccountHolderName,_that.facilities,_that.isSubmitting,_that.isSuccess,_that.errorMessage);case _:
   return null;
 
 }
@@ -148,7 +152,7 @@ return $default(_that.email,_that.companyName,_that.position,_that.title,_that.d
 
 
 class _CreateTrainingAdState extends CreateTrainingAdState {
-  const _CreateTrainingAdState({this.email = '', this.companyName = '', this.position = '', this.title = '', this.description = '', this.date = '', this.time = '', this.location = '', this.country = '', this.cost = '', this.bankName = '', this.bankAccountNumber = '', this.bankAccountHolderName = '', final List<String> facilities = const [], this.isSubmitting = false, this.isSuccess = false, this.errorMessage}): _facilities = facilities, super._();
+  const _CreateTrainingAdState({this.email = '', this.companyName = '', this.position = '', this.title = '', this.description = '', this.date = '', this.time = '', this.address = '', this.province = '', this.city = '', this.district = '', this.village = '', this.location = '', this.cost = '', this.bankName = '', this.bankAccountNumber = '', this.bankAccountHolderName = '', final List<String> facilities = const [], this.isSubmitting = false, this.isSuccess = false, this.errorMessage}): _facilities = facilities, super._();
 
 
 @override@JsonKey() final  String email;
@@ -158,8 +162,12 @@ class _CreateTrainingAdState extends CreateTrainingAdState {
 @override@JsonKey() final  String description;
 @override@JsonKey() final  String date;
 @override@JsonKey() final  String time;
+@override@JsonKey() final  String address;
+@override@JsonKey() final  String province;
+@override@JsonKey() final  String city;
+@override@JsonKey() final  String district;
+@override@JsonKey() final  String village;
 @override@JsonKey() final  String location;
-@override@JsonKey() final  String country;
 @override@JsonKey() final  String cost;
 @override@JsonKey() final  String bankName;
 @override@JsonKey() final  String bankAccountNumber;
@@ -185,16 +193,16 @@ _$CreateTrainingAdStateCopyWith<_CreateTrainingAdState> get copyWith => __$Creat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateTrainingAdState&&(identical(other.email, email) || other.email == email)&&(identical(other.companyName, companyName) || other.companyName == companyName)&&(identical(other.position, position) || other.position == position)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.location, location) || other.location == location)&&(identical(other.country, country) || other.country == country)&&(identical(other.cost, cost) || other.cost == cost)&&(identical(other.bankName, bankName) || other.bankName == bankName)&&(identical(other.bankAccountNumber, bankAccountNumber) || other.bankAccountNumber == bankAccountNumber)&&(identical(other.bankAccountHolderName, bankAccountHolderName) || other.bankAccountHolderName == bankAccountHolderName)&&const DeepCollectionEquality().equals(other._facilities, _facilities)&&(identical(other.isSubmitting, isSubmitting) || other.isSubmitting == isSubmitting)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateTrainingAdState&&(identical(other.email, email) || other.email == email)&&(identical(other.companyName, companyName) || other.companyName == companyName)&&(identical(other.position, position) || other.position == position)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.district, district) || other.district == district)&&(identical(other.village, village) || other.village == village)&&(identical(other.location, location) || other.location == location)&&(identical(other.cost, cost) || other.cost == cost)&&(identical(other.bankName, bankName) || other.bankName == bankName)&&(identical(other.bankAccountNumber, bankAccountNumber) || other.bankAccountNumber == bankAccountNumber)&&(identical(other.bankAccountHolderName, bankAccountHolderName) || other.bankAccountHolderName == bankAccountHolderName)&&const DeepCollectionEquality().equals(other._facilities, _facilities)&&(identical(other.isSubmitting, isSubmitting) || other.isSubmitting == isSubmitting)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,email,companyName,position,title,description,date,time,location,country,cost,bankName,bankAccountNumber,bankAccountHolderName,const DeepCollectionEquality().hash(_facilities),isSubmitting,isSuccess,errorMessage);
+int get hashCode => Object.hashAll([runtimeType,email,companyName,position,title,description,date,time,address,province,city,district,village,location,cost,bankName,bankAccountNumber,bankAccountHolderName,const DeepCollectionEquality().hash(_facilities),isSubmitting,isSuccess,errorMessage]);
 
 @override
 String toString() {
-  return 'CreateTrainingAdState(email: $email, companyName: $companyName, position: $position, title: $title, description: $description, date: $date, time: $time, location: $location, country: $country, cost: $cost, bankName: $bankName, bankAccountNumber: $bankAccountNumber, bankAccountHolderName: $bankAccountHolderName, facilities: $facilities, isSubmitting: $isSubmitting, isSuccess: $isSuccess, errorMessage: $errorMessage)';
+  return 'CreateTrainingAdState(email: $email, companyName: $companyName, position: $position, title: $title, description: $description, date: $date, time: $time, address: $address, province: $province, city: $city, district: $district, village: $village, location: $location, cost: $cost, bankName: $bankName, bankAccountNumber: $bankAccountNumber, bankAccountHolderName: $bankAccountHolderName, facilities: $facilities, isSubmitting: $isSubmitting, isSuccess: $isSuccess, errorMessage: $errorMessage)';
 }
 
 
@@ -205,7 +213,7 @@ abstract mixin class _$CreateTrainingAdStateCopyWith<$Res> implements $CreateTra
   factory _$CreateTrainingAdStateCopyWith(_CreateTrainingAdState value, $Res Function(_CreateTrainingAdState) _then) = __$CreateTrainingAdStateCopyWithImpl;
 @override @useResult
 $Res call({
- String email, String companyName, String position, String title, String description, String date, String time, String location, String country, String cost, String bankName, String bankAccountNumber, String bankAccountHolderName, List<String> facilities, bool isSubmitting, bool isSuccess, String? errorMessage
+ String email, String companyName, String position, String title, String description, String date, String time, String address, String province, String city, String district, String village, String location, String cost, String bankName, String bankAccountNumber, String bankAccountHolderName, List<String> facilities, bool isSubmitting, bool isSuccess, String? errorMessage
 });
 
 
@@ -222,7 +230,7 @@ class __$CreateTrainingAdStateCopyWithImpl<$Res>
 
 /// Create a copy of CreateTrainingAdState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? companyName = null,Object? position = null,Object? title = null,Object? description = null,Object? date = null,Object? time = null,Object? location = null,Object? country = null,Object? cost = null,Object? bankName = null,Object? bankAccountNumber = null,Object? bankAccountHolderName = null,Object? facilities = null,Object? isSubmitting = null,Object? isSuccess = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? companyName = null,Object? position = null,Object? title = null,Object? description = null,Object? date = null,Object? time = null,Object? address = null,Object? province = null,Object? city = null,Object? district = null,Object? village = null,Object? location = null,Object? cost = null,Object? bankName = null,Object? bankAccountNumber = null,Object? bankAccountHolderName = null,Object? facilities = null,Object? isSubmitting = null,Object? isSuccess = null,Object? errorMessage = freezed,}) {
   return _then(_CreateTrainingAdState(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,companyName: null == companyName ? _self.companyName : companyName // ignore: cast_nullable_to_non_nullable
@@ -231,8 +239,12 @@ as String,title: null == title ? _self.title : title // ignore: cast_nullable_to
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String,province: null == province ? _self.province : province // ignore: cast_nullable_to_non_nullable
+as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as String,district: null == district ? _self.district : district // ignore: cast_nullable_to_non_nullable
+as String,village: null == village ? _self.village : village // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
-as String,country: null == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
 as String,cost: null == cost ? _self.cost : cost // ignore: cast_nullable_to_non_nullable
 as String,bankName: null == bankName ? _self.bankName : bankName // ignore: cast_nullable_to_non_nullable
 as String,bankAccountNumber: null == bankAccountNumber ? _self.bankAccountNumber : bankAccountNumber // ignore: cast_nullable_to_non_nullable

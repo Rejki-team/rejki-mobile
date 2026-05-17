@@ -117,13 +117,31 @@ class TrainingRemoteDataSourceImpl implements TrainingRemoteDataSource {
 
   @override
   Future<TrainingModel> createTraining(CreateTrainingParams params) async {
+    final dt = params.dateOfTraining;
+    final dateStr =
+        '${dt.year.toString().padLeft(4, '0')}'
+        '-${dt.month.toString().padLeft(2, '0')}'
+        '-${dt.day.toString().padLeft(2, '0')}'
+        ' ${dt.hour.toString().padLeft(2, '0')}'
+        ':${dt.minute.toString().padLeft(2, '0')}'
+        ':${dt.second.toString().padLeft(2, '0')}';
+
     final formFields = <String, dynamic>{
+      'email': params.email,
+      'company_name': params.companyName,
+      'role': params.role,
       'title': params.title,
       'description': params.description,
-      'company_name': params.companyName,
+      'date_of_training': dateStr,
       'location_address': params.locationAddress,
-      'date_of_training': params.dateOfTraining.toIso8601String(),
+      'province': params.province,
+      'city': params.city,
+      'district': params.district,
+      'village': params.village,
       'fee_per_person': params.feePerPerson.toString(),
+      'bank_name': params.bankName,
+      'bank_account_number': params.bankAccountNumber,
+      'bank_account_holder_name': params.bankAccountHolderName,
     };
 
     for (final facility in params.facilities) {

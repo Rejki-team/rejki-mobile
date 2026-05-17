@@ -9,22 +9,33 @@ class CreateTrainingAdCubit extends Cubit<CreateTrainingAdState> {
   CreateTrainingAdCubit() : super(const CreateTrainingAdState());
 
   void emailChanged(String value) => emit(state.copyWith(email: value));
-  void companyNameChanged(String value) =>
-      emit(state.copyWith(companyName: value));
+  void companyNameChanged(String value) => emit(state.copyWith(companyName: value));
   void positionChanged(String value) => emit(state.copyWith(position: value));
   void titleChanged(String value) => emit(state.copyWith(title: value));
-  void descriptionChanged(String value) =>
-      emit(state.copyWith(description: value));
+  void descriptionChanged(String value) => emit(state.copyWith(description: value));
   void dateChanged(String value) => emit(state.copyWith(date: value));
   void timeChanged(String value) => emit(state.copyWith(time: value));
+  void addressChanged(String value) => emit(state.copyWith(address: value));
+
+  void provinceChanged(String value) => emit(
+    state.copyWith(province: value, city: '', district: '', village: '', location: ''),
+  );
+
+  void cityChanged(String value) => emit(
+    state.copyWith(city: value, district: '', village: '', location: ''),
+  );
+
+  void districtChanged(String value) => emit(
+    state.copyWith(district: value, village: '', location: ''),
+  );
+
+  void villageChanged(String value) => emit(state.copyWith(village: value));
+
   void locationChanged(String value) => emit(state.copyWith(location: value));
-  void countryChanged(String value) => emit(state.copyWith(country: value));
   void costChanged(String value) => emit(state.copyWith(cost: value));
   void bankNameChanged(String value) => emit(state.copyWith(bankName: value));
-  void bankAccountNumberChanged(String value) =>
-      emit(state.copyWith(bankAccountNumber: value));
-  void bankAccountHolderNameChanged(String value) =>
-      emit(state.copyWith(bankAccountHolderName: value));
+  void bankAccountNumberChanged(String value) => emit(state.copyWith(bankAccountNumber: value));
+  void bankAccountHolderNameChanged(String value) => emit(state.copyWith(bankAccountHolderName: value));
 
   void facilityAdded(String facility) {
     final trimmed = facility.trim();
@@ -41,11 +52,22 @@ class CreateTrainingAdCubit extends Cubit<CreateTrainingAdState> {
     final dateOfTraining = _parseDateTime(state.date, state.time);
     final feePerPerson =
         int.tryParse(state.cost.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+    final fullAddress = state.address.isNotEmpty && state.location.isNotEmpty
+        ? '${state.address}, ${state.location}'
+        : state.address.isNotEmpty
+            ? state.address
+            : state.location;
     return CreateTrainingParams(
+      email: state.email,
+      role: state.position,
       title: state.title,
       description: state.description,
       companyName: state.companyName,
-      locationAddress: state.location,
+      locationAddress: fullAddress,
+      province: state.province,
+      city: state.city,
+      district: state.district,
+      village: state.village,
       dateOfTraining: dateOfTraining,
       feePerPerson: feePerPerson,
       bankName: state.bankName,

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
+import 'package:domain/domain.dart';
+import 'package:shared_widgets/shared_widgets.dart';
 
+import '../location/bloc/location_bloc.dart';
 import 'cubit/create_training_ad_cubit.dart';
 import 'cubit/create_training_ad_state.dart';
 
@@ -15,15 +17,37 @@ class CreateTrainingAdPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GetIt.I<CreateTrainingAdCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => GetIt.I<CreateTrainingAdCubit>()),
+        BlocProvider(
+          create: (_) =>
+              GetIt.I<LocationBloc>()..add(const LocationEvent.loadProvinces()),
+        ),
+      ],
       child: const _CreateTrainingAdView(),
     );
   }
 }
 
-class _CreateTrainingAdView extends StatelessWidget {
+class _CreateTrainingAdView extends StatefulWidget {
   const _CreateTrainingAdView();
+
+  @override
+  State<_CreateTrainingAdView> createState() => _CreateTrainingAdViewState();
+}
+
+class _CreateTrainingAdViewState extends State<_CreateTrainingAdView> {
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
+  final _costController = TextEditingController();
+  String? _costPeriod;
+
+  @override
+  void dispose() {
+    _costController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +73,28 @@ class _CreateTrainingAdView extends StatelessWidget {
                   children: [
                     _CompanyInfoSection(),
                     const SizedBox(height: AppSpacing.md),
-                    _TrainingInfoSection(),
+                    _TrainingInfoSection(
+                      selectedDate: _selectedDate,
+                      selectedTime: _selectedTime,
+                      onDateChanged: (date) {
+                        setState(() => _selectedDate = date);
+                        context.read<CreateTrainingAdCubit>().dateChanged(
+                          '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}',
+                        );
+                      },
+                      onTimeChanged: (time) {
+                        setState(() => _selectedTime = time);
+                        context.read<CreateTrainingAdCubit>().timeChanged(
+                          '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
+                        );
+                      },
+                    ),
                     const SizedBox(height: AppSpacing.md),
-                    _LocationAndCostSection(),
+                    _LocationAndCostSection(
+                      costController: _costController,
+                      costPeriod: _costPeriod,
+                      onCostPeriodChanged: (v) => setState(() => _costPeriod = v),
+                    ),
                     const SizedBox(height: AppSpacing.md),
                     _BankInfoSection(),
                   ],
@@ -104,6 +147,7 @@ class _CompanyInfoSection extends StatelessWidget {
             LabeledTextField(
               number: '3',
               label: 'Jabatan',
+              isMandatory: true,
               hint: '',
               initialValue: state.position,
               onChanged: cubit.positionChanged,
@@ -116,15 +160,24 @@ class _CompanyInfoSection extends StatelessWidget {
 }
 
 class _TrainingInfoSection extends StatelessWidget {
+  final DateTime? selectedDate;
+  final TimeOfDay? selectedTime;
+  final ValueChanged<DateTime> onDateChanged;
+  final ValueChanged<TimeOfDay> onTimeChanged;
+
+  const _TrainingInfoSection({
+    required this.selectedDate,
+    required this.selectedTime,
+    required this.onDateChanged,
+    required this.onTimeChanged,
+  });
+
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<CreateTrainingAdCubit>();
     return BlocBuilder<CreateTrainingAdCubit, CreateTrainingAdState>(
       buildWhen: (prev, curr) =>
-          prev.title != curr.title ||
-          prev.description != curr.description ||
-          prev.date != curr.date ||
-          prev.time != curr.time,
+          prev.title != curr.title || prev.description != curr.description,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,6 +185,7 @@ class _TrainingInfoSection extends StatelessWidget {
             LabeledTextArea(
               number: '4',
               label: 'Judul Pelatihan',
+              isMandatory: true,
               hint: '',
               initialValue: state.title,
               minLines: 1,
@@ -142,136 +196,176 @@ class _TrainingInfoSection extends StatelessWidget {
             LabeledTextArea(
               number: '5',
               label: 'Keterangan tentang pelatihan',
+              isMandatory: true,
               hint: '',
               initialValue: state.description,
               maxLines: 4,
               onChanged: cubit.descriptionChanged,
             ),
             const SizedBox(height: AppSpacing.md),
-
-            // 6. Waktu Pelatihan Header
-            Text(
-              '6. Waktu Pelatihan',
-              style: AppTypography.labelMedium.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textBlack,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppDimensions.inputPaddingVerticalSm,
-                      horizontal: AppSpacing.md,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: AppDimensions.borderRadiusSm,
-                      border: Border.all(
-                        color: AppColors.border,
-                        width: AppDimensions.borderThin,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          state.date,
-                          style: AppTypography.formHint.copyWith(
-                            color: AppColors.textBlack,
-                          ),
-                        ),
-                        SvgPicture.asset(
-                          AppAssets.iconCalendar,
-                          width: AppDimensions.iconXxs14,
-                          height: AppDimensions.iconXxs14,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppDimensions.inputPaddingVerticalSm,
-                      horizontal: AppSpacing.md,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: AppDimensions.borderRadiusSm,
-                      border: Border.all(
-                        color: AppColors.border,
-                        width: AppDimensions.borderThin,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          state.time,
-                          style: AppTypography.formHint.copyWith(
-                            color: AppColors.textBlack,
-                          ),
-                        ),
-                        SvgPicture.asset(
-                          AppAssets.iconClock,
-                          width: AppDimensions.iconXxs14,
-                          height: AppDimensions.iconXxs14,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            _buildDateTimeHeader(context),
+            const SizedBox(height: AppSpacing.xs),
+            LabeledDateTimeField(
+              selectedDate: selectedDate,
+              selectedTime: selectedTime,
+              onDateChanged: onDateChanged,
+              onTimeChanged: onTimeChanged,
+              maxDaysAhead: 365,
+              allowPastDates: false,
             ),
           ],
         );
       },
     );
   }
+
+  Widget _buildDateTimeHeader(BuildContext context) {
+    return Row(
+      children: [
+        Text('6.', style: AppTypography.formLabel),
+        const SizedBox(width: AppSpacing.xxs),
+        Text('Waktu Pelatihan', style: AppTypography.formLabel),
+        const SizedBox(width: AppSpacing.xxs),
+        Text(
+          '*',
+          style: AppTypography.formLabel.copyWith(color: AppColors.error),
+        ),
+      ],
+    );
+  }
 }
 
 class _LocationAndCostSection extends StatelessWidget {
+  final TextEditingController costController;
+  final String? costPeriod;
+  final ValueChanged<String?> onCostPeriodChanged;
+
+  const _LocationAndCostSection({
+    required this.costController,
+    required this.costPeriod,
+    required this.onCostPeriodChanged,
+  });
+
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<CreateTrainingAdCubit>();
     return BlocBuilder<CreateTrainingAdCubit, CreateTrainingAdState>(
       buildWhen: (prev, curr) =>
+          prev.address != curr.address ||
           prev.location != curr.location ||
-          prev.country != curr.country ||
           prev.cost != curr.cost,
       builder: (context, state) {
         return Column(
           children: [
-            LabeledTextArea(
-              number: '7',
-              label: 'Lokasi Pelatihan',
-              hint: '',
-              initialValue: state.location,
-              minLines: 1,
-              maxLines: 2,
-              onChanged: cubit.locationChanged,
-            ),
-            const SizedBox(height: AppSpacing.md),
             LabeledTextField(
-              number: '8',
-              label: 'Negara',
-              hint: '',
-              initialValue: state.country,
-              onChanged: cubit.countryChanged,
+              number: '7',
+              label: 'Detail Alamat',
+              isMandatory: true,
+              hint: 'Contoh: Jl. Sudirman No. 1, Lt. 5',
+              initialValue: state.address,
+              onChanged: cubit.addressChanged,
             ),
             const SizedBox(height: AppSpacing.md),
-            LabeledTextArea(
+            BlocBuilder<LocationBloc, LocationState>(
+              builder: (context, locState) {
+                final indonesia = LocationEntity(id: 'ID', name: 'Indonesia');
+                final selectedCountry =
+                    locState.selectedCountry is LocationEntity
+                        ? locState.selectedCountry as LocationEntity
+                        : indonesia;
+
+                return CascadingLocationField(
+                  number: '8',
+                  label: 'Lokasi',
+                  isMandatory: true,
+                  selectedCountry: selectedCountry,
+                  selectedProvince: locState.selectedProvince,
+                  selectedCity: locState.selectedRegency,
+                  selectedDistrict: locState.selectedDistrict,
+                  selectedVillage: locState.selectedVillage,
+                  countryItems: [indonesia],
+                  provinceItems: locState.provinces,
+                  cityItems: locState.regencies,
+                  districtItems: locState.districts,
+                  villageItems: locState.villages,
+                  isLoadingCountries: false,
+                  isLoadingProvinces: locState.isLoadingProvinces,
+                  isLoadingCities: locState.isLoadingRegencies,
+                  isLoadingDistricts: locState.isLoadingDistricts,
+                  isLoadingVillages: locState.isLoadingVillages,
+                  onCountryChanged: (entity) {
+                    if (entity != null) {
+                      context.read<LocationBloc>().add(
+                        LocationEvent.selectCountry(entity),
+                      );
+                      context.read<LocationBloc>().add(
+                        const LocationEvent.loadProvinces(),
+                      );
+                    }
+                  },
+                  onProvinceChanged: (province) {
+                    if (province != null) {
+                      context
+                          .read<LocationBloc>()
+                          .add(LocationEvent.selectProvince(province));
+                      cubit.provinceChanged(province.name);
+                    } else {
+                      context
+                          .read<LocationBloc>()
+                          .add(const LocationEvent.reset());
+                      cubit.provinceChanged('');
+                    }
+                  },
+                  onCityChanged: (city) {
+                    if (city != null) {
+                      context
+                          .read<LocationBloc>()
+                          .add(LocationEvent.selectRegency(city));
+                      cubit.cityChanged(city.name);
+                    }
+                  },
+                  onDistrictChanged: (district) {
+                    if (district != null) {
+                      context
+                          .read<LocationBloc>()
+                          .add(LocationEvent.selectDistrict(district));
+                      cubit.districtChanged(district.name);
+                    }
+                  },
+                  onVillageChanged: (village) {
+                    if (village != null) {
+                      context
+                          .read<LocationBloc>()
+                          .add(LocationEvent.selectVillage(village));
+                      cubit.villageChanged(village.name);
+                      final loc = context.read<LocationBloc>().state;
+                      final parts = [
+                        village.name,
+                        if (loc.selectedDistrict != null)
+                          loc.selectedDistrict!.name,
+                        if (loc.selectedRegency != null)
+                          loc.selectedRegency!.name,
+                        if (loc.selectedProvince != null)
+                          loc.selectedProvince!.name,
+                      ].join(', ');
+                      cubit.locationChanged(parts);
+                    }
+                  },
+                );
+              },
+            ),
+            const SizedBox(height: AppSpacing.md),
+            LabeledCurrencyDropdownField(
               number: '9',
               label: 'Biaya Pelatihan',
               isMandatory: true,
-              hint: '',
-              initialValue: state.cost,
-              maxLines: 3,
-              onChanged: cubit.costChanged,
+              currencyHint: 'Cth. 500.000',
+              dropdownHint: '-Pilih-',
+              dropdownItems: const ['Per Orang', 'Per Sesi', 'Paket'],
+              selectedDropdownValue: costPeriod,
+              currencyController: costController,
+              onCurrencyChanged: cubit.costChanged,
+              onDropdownChanged: onCostPeriodChanged,
             ),
           ],
         );

@@ -4,7 +4,7 @@ import 'package:injectable/injectable.dart';
 
 import 'notification_state.dart';
 
-@injectable
+@lazySingleton
 class NotificationCubit extends Cubit<NotificationState> {
   final GetNotificationsUseCase _getNotifications;
   final MarkNotificationReadUseCase _markAsRead;
