@@ -1025,8 +1025,91 @@ class _TrainingIklanCard extends StatelessWidget {
     required this.onBadgePressed,
   });
 
+  static const _activeStatuses = {'approved', 'in_progress', 'completed'};
+
+  Widget _buildStatusBadge() {
+    final Color bgColor;
+    final Color textColor;
+    final String text;
+
+    switch (training.status) {
+      case 'approved':
+      case 'in_progress':
+        bgColor = AppColors.serviceCardIconBgGreen;
+        textColor = AppColors.chatButtonGreen;
+        text = training.status == 'approved' ? 'Disetujui' : 'Berlangsung';
+      case 'completed':
+        bgColor = AppColors.serviceCardIconBgGreen;
+        textColor = AppColors.chatButtonGreen;
+        text = 'Selesai';
+      case 'rejected':
+        bgColor = const Color(0xFFFEE2E2);
+        textColor = AppColors.error;
+        text = 'Ditolak';
+      default:
+        bgColor = AppColors.jobStatusBadgeBg;
+        textColor = AppColors.buttonGradientEnd;
+        text = 'Menunggu Review';
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        text,
+        style: AppTypography.labelSmall.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRejectedBox() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFEF2F2),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.error),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.error_outline, color: AppColors.error, size: 16),
+              const SizedBox(width: 8),
+              Text(
+                'Iklan Pelatihan Ditolak',
+                style: AppTypography.labelMedium.copyWith(
+                  color: AppColors.error,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            training.rejectionReason ?? 'Iklan pelatihan tidak disetujui.',
+            style: AppTypography.caption.copyWith(
+              color: AppColors.error,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isActive = _activeStatuses.contains(training.status);
+    final isRejected = training.status == 'rejected';
+
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -1038,12 +1121,21 @@ class _TrainingIklanCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            training.title,
-            style: AppTypography.labelMedium.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppColors.textBlack,
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  training.title,
+                  style: AppTypography.labelMedium.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textBlack,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              _buildStatusBadge(),
+            ],
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
@@ -1052,13 +1144,19 @@ class _TrainingIklanCard extends StatelessWidget {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            '${training.totalApprovedEnrollees} pendaftar disetujui',
-            style: AppTypography.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+          if (isActive) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              '${training.totalApprovedEnrollees} pendaftar disetujui',
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
-          ),
+          ],
+          if (isRejected && training.rejectionReason != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            _buildRejectedBox(),
+          ],
           const SizedBox(height: AppSpacing.md),
           Row(
             children: [
@@ -1080,45 +1178,47 @@ class _TrainingIklanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: onPendaftarPressed,
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.border),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+              if (isActive) ...[
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onPendaftarPressed,
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AppColors.border),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                  ),
-                  child: Text(
-                    'Pendaftar',
-                    style: AppTypography.labelSmall.copyWith(
-                      color: AppColors.textBlack,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onBadgePressed,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.buttonGradientEnd,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                  ),
-                  child: Text(
-                    'Badge',
-                    style: AppTypography.labelSmall.copyWith(
-                      color: AppColors.white,
+                    child: Text(
+                      'Pendaftar',
+                      style: AppTypography.labelSmall.copyWith(
+                        color: AppColors.textBlack,
+                      ),
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: onBadgePressed,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.buttonGradientEnd,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                    child: Text(
+                      'Badge',
+                      style: AppTypography.labelSmall.copyWith(
+                        color: AppColors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ],
