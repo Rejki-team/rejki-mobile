@@ -71,6 +71,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.trainingDetailCubit(
         gh<_i494.GetTrainingDetailUseCase>(),
         gh<_i494.EnrollTrainingUseCase>(),
+        gh<_i960.SessionStorage>(),
       ),
     );
     gh.factory<_i674.HistoryCubit>(() => registerModule.historyCubit());
