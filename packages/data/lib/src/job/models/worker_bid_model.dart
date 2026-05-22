@@ -15,9 +15,11 @@ abstract class WorkerBidModel with _$WorkerBidModel {
   const factory WorkerBidModel({
     required String id,
     @JsonKey(name: 'user_id') String? userId,
+    @JsonKey(name: 'full_name') String? fullName,
+    int? age,
     double? rating,
     @JsonKey(name: 'review_count') int? reviewCount,
-    int? wage,
+    @JsonKey(name: 'desired_salary') double? desiredSalary,
     @JsonKey(name: 'salary_type') String? salaryType,
     WorkerUserBidModel? user,
     @Default([]) List<WorkerImageBidModel> images,
@@ -27,18 +29,24 @@ abstract class WorkerBidModel with _$WorkerBidModel {
       _$WorkerBidModelFromJson(json);
 
   WorkerEntity toWorkerEntity() {
-    final name = user?.userInfo?.fullName ?? '';
-    final dobStr = user?.userInfo?.dob;
+    // Prefer worker's direct full_name; fall back to user_info.full_name
+    final name = fullName ?? user?.userInfo?.fullName ?? '';
 
-    int age = 0;
-    if (dobStr != null && dobStr.isNotEmpty) {
-      final dob = DateTime.tryParse(dobStr);
-      if (dob != null) {
-        final now = DateTime.now();
-        age = now.year - dob.year;
-        if (now.month < dob.month ||
-            (now.month == dob.month && now.day < dob.day)) {
-          age--;
+    // Use backend-computed age first (avoids Go zero-time DOB pitfall).
+    // Fall back to DOB computation only when age is 0, with a year guard
+    // to exclude Go's zero time value ("0001-01-01") which would produce ~2025.
+    int workerAge = age ?? 0;
+    if (workerAge <= 0) {
+      final dobStr = user?.userInfo?.dob;
+      if (dobStr != null && dobStr.isNotEmpty) {
+        final dob = DateTime.tryParse(dobStr);
+        if (dob != null && dob.year > 1900) {
+          final now = DateTime.now();
+          workerAge = now.year - dob.year;
+          if (now.month < dob.month ||
+              (now.month == dob.month && now.day < dob.day)) {
+            workerAge--;
+          }
         }
       }
     }
@@ -49,10 +57,10 @@ abstract class WorkerBidModel with _$WorkerBidModel {
       id: id,
       name: name,
       adCode: '',
-      age: age,
+      age: workerAge,
       rating: rating ?? 0.0,
       reviewCount: reviewCount ?? 0,
-      wage: wage ?? 0,
+      wage: (desiredSalary?.round()) ?? 0,
       avatarUrl: avatarUrl,
     );
   }

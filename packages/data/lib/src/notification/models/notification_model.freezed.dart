@@ -589,7 +589,7 @@ $NotificationPaginationModelCopyWith<$Res> get pagination {
 /// @nodoc
 mixin _$NotificationPaginationModel {
 
- int get page; int get limit; int get total;
+ int get page; int get limit;@JsonKey(name: 'total_rows') int get total;
 /// Create a copy of NotificationPaginationModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -622,7 +622,7 @@ abstract mixin class $NotificationPaginationModelCopyWith<$Res>  {
   factory $NotificationPaginationModelCopyWith(NotificationPaginationModel value, $Res Function(NotificationPaginationModel) _then) = _$NotificationPaginationModelCopyWithImpl;
 @useResult
 $Res call({
- int page, int limit, int total
+ int page, int limit,@JsonKey(name: 'total_rows') int total
 });
 
 
@@ -729,7 +729,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int page,  int limit,  int total)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int page,  int limit, @JsonKey(name: 'total_rows')  int total)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _NotificationPaginationModel() when $default != null:
 return $default(_that.page,_that.limit,_that.total);case _:
@@ -750,7 +750,7 @@ return $default(_that.page,_that.limit,_that.total);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int page,  int limit,  int total)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int page,  int limit, @JsonKey(name: 'total_rows')  int total)  $default,) {final _that = this;
 switch (_that) {
 case _NotificationPaginationModel():
 return $default(_that.page,_that.limit,_that.total);case _:
@@ -770,7 +770,7 @@ return $default(_that.page,_that.limit,_that.total);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int page,  int limit,  int total)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int page,  int limit, @JsonKey(name: 'total_rows')  int total)?  $default,) {final _that = this;
 switch (_that) {
 case _NotificationPaginationModel() when $default != null:
 return $default(_that.page,_that.limit,_that.total);case _:
@@ -785,12 +785,12 @@ return $default(_that.page,_that.limit,_that.total);case _:
 @JsonSerializable()
 
 class _NotificationPaginationModel implements NotificationPaginationModel {
-  const _NotificationPaginationModel({required this.page, required this.limit, required this.total});
+  const _NotificationPaginationModel({required this.page, required this.limit, @JsonKey(name: 'total_rows') required this.total});
   factory _NotificationPaginationModel.fromJson(Map<String, dynamic> json) => _$NotificationPaginationModelFromJson(json);
 
 @override final  int page;
 @override final  int limit;
-@override final  int total;
+@override@JsonKey(name: 'total_rows') final  int total;
 
 /// Create a copy of NotificationPaginationModel
 /// with the given fields replaced by the non-null parameter values.
@@ -825,7 +825,7 @@ abstract mixin class _$NotificationPaginationModelCopyWith<$Res> implements $Not
   factory _$NotificationPaginationModelCopyWith(_NotificationPaginationModel value, $Res Function(_NotificationPaginationModel) _then) = __$NotificationPaginationModelCopyWithImpl;
 @override @useResult
 $Res call({
- int page, int limit, int total
+ int page, int limit,@JsonKey(name: 'total_rows') int total
 });
 
 

@@ -10,9 +10,11 @@ _WorkerBidModel _$WorkerBidModelFromJson(Map<String, dynamic> json) =>
     _WorkerBidModel(
       id: json['id'] as String,
       userId: json['user_id'] as String?,
+      fullName: json['full_name'] as String?,
+      age: (json['age'] as num?)?.toInt(),
       rating: (json['rating'] as num?)?.toDouble(),
       reviewCount: (json['review_count'] as num?)?.toInt(),
-      wage: (json['wage'] as num?)?.toInt(),
+      desiredSalary: (json['desired_salary'] as num?)?.toDouble(),
       salaryType: json['salary_type'] as String?,
       user: json['user'] == null
           ? null
@@ -30,9 +32,11 @@ Map<String, dynamic> _$WorkerBidModelToJson(_WorkerBidModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'user_id': instance.userId,
+      'full_name': instance.fullName,
+      'age': instance.age,
       'rating': instance.rating,
       'review_count': instance.reviewCount,
-      'wage': instance.wage,
+      'desired_salary': instance.desiredSalary,
       'salary_type': instance.salaryType,
       'user': instance.user,
       'images': instance.images,

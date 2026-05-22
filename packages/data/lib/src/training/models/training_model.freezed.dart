@@ -102,6 +102,18 @@ as DateTime?,
 
 /// Adds pattern-matching-related methods to [TrainingModel].
 extension TrainingModelPatterns on TrainingModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
 @optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TrainingModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
@@ -111,6 +123,19 @@ return $default(_that);case _:
 
 }
 }
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
 @optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TrainingModel value)  $default,){
 final _that = this;
 switch (_that) {
@@ -120,6 +145,18 @@ return $default(_that);case _:
 
 }
 }
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
 @optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TrainingModel value)?  $default,){
 final _that = this;
 switch (_that) {
@@ -129,6 +166,18 @@ return $default(_that);case _:
 
 }
 }
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description, @JsonKey(name: 'company_name')  String companyName, @JsonKey(name: 'location_address')  String locationAddress, @JsonKey(name: 'date_of_training')  String dateOfTraining, @JsonKey(name: 'fee_per_person')  int feePerPerson,  String status, @JsonKey(name: 'user_id')  String userId, @JsonKey(name: 'ad_code')  String? adCode,  String? email,  String? role,  String? province,  String? city,  String? district,  String? village,  String? certificate, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'bank_name')  String bankName, @JsonKey(name: 'bank_account_number')  String bankAccountNumber, @JsonKey(name: 'bank_account_holder_name')  String bankAccountHolderName,  List<String> facilities, @JsonKey(name: 'total_approved_enrollees')  int totalApprovedEnrollees,  List<TrainingImageModel> images, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TrainingModel() when $default != null:
@@ -137,6 +186,19 @@ return $default(_that.id,_that.title,_that.description,_that.companyName,_that.l
 
 }
 }
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description, @JsonKey(name: 'company_name')  String companyName, @JsonKey(name: 'location_address')  String locationAddress, @JsonKey(name: 'date_of_training')  String dateOfTraining, @JsonKey(name: 'fee_per_person')  int feePerPerson,  String status, @JsonKey(name: 'user_id')  String userId, @JsonKey(name: 'ad_code')  String? adCode,  String? email,  String? role,  String? province,  String? city,  String? district,  String? village,  String? certificate, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'bank_name')  String bankName, @JsonKey(name: 'bank_account_number')  String bankAccountNumber, @JsonKey(name: 'bank_account_holder_name')  String bankAccountHolderName,  List<String> facilities, @JsonKey(name: 'total_approved_enrollees')  int totalApprovedEnrollees,  List<TrainingImageModel> images, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _TrainingModel():
@@ -145,6 +207,18 @@ return $default(_that.id,_that.title,_that.description,_that.companyName,_that.l
 
 }
 }
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description, @JsonKey(name: 'company_name')  String companyName, @JsonKey(name: 'location_address')  String locationAddress, @JsonKey(name: 'date_of_training')  String dateOfTraining, @JsonKey(name: 'fee_per_person')  int feePerPerson,  String status, @JsonKey(name: 'user_id')  String userId, @JsonKey(name: 'ad_code')  String? adCode,  String? email,  String? role,  String? province,  String? city,  String? district,  String? village,  String? certificate, @JsonKey(name: 'rejection_reason')  String? rejectionReason, @JsonKey(name: 'bank_name')  String bankName, @JsonKey(name: 'bank_account_number')  String bankAccountNumber, @JsonKey(name: 'bank_account_holder_name')  String bankAccountHolderName,  List<String> facilities, @JsonKey(name: 'total_approved_enrollees')  int totalApprovedEnrollees,  List<TrainingImageModel> images, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _TrainingModel() when $default != null:

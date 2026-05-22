@@ -61,5 +61,5 @@ Map<String, dynamic> _$NotificationPaginationModelToJson(
 ) => <String, dynamic>{
   'page': instance.page,
   'limit': instance.limit,
-  'total': instance.total,
+  'total_rows': instance.total,
 };

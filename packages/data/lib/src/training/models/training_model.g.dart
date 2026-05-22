@@ -28,9 +28,9 @@ _TrainingModel _$TrainingModelFromJson(Map<String, dynamic> json) =>
       rejectionReason: json['rejection_reason'] as String?,
       bankName: json['bank_name'] as String? ?? '',
       bankAccountNumber: json['bank_account_number'] as String? ?? '',
-      bankAccountHolderName:
-          json['bank_account_holder_name'] as String? ?? '',
-      facilities: (json['facilities'] as List<dynamic>?)
+      bankAccountHolderName: json['bank_account_holder_name'] as String? ?? '',
+      facilities:
+          (json['facilities'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
