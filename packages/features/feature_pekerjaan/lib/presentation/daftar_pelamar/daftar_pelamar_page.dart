@@ -238,7 +238,7 @@ class _PelamarTab extends StatelessWidget {
               final bid = state.pelamarList[index];
               return PelamarCard(
                 bid: bid,
-                adCode: args.adCode,
+                adCode: bid.worker?.adCode ?? args.adCode,
                 showActionButtons: true,
                 onDetailPekerjaPressed: () =>
                     _navigateToWorkerDetail(context, bid),
@@ -329,7 +329,7 @@ class _PelamarDiterimaTab extends StatelessWidget {
               final bid = state.diterimaList[index];
               return PelamarCard(
                 bid: bid,
-                adCode: args.adCode,
+                adCode: bid.worker?.adCode ?? args.adCode,
                 showActionButtons: false,
                 onDetailPekerjaPressed: () =>
                     _navigateToWorkerDetail(context, bid),

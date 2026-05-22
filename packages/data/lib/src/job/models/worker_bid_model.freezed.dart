@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WorkerBidModel {
 
- String get id;@JsonKey(name: 'user_id') String? get userId;@JsonKey(name: 'full_name') String? get fullName; int? get age; double? get rating;@JsonKey(name: 'review_count') int? get reviewCount;@JsonKey(name: 'desired_salary') double? get desiredSalary;@JsonKey(name: 'salary_type') String? get salaryType; WorkerUserBidModel? get user; List<WorkerImageBidModel> get images;
+ String get id;@JsonKey(name: 'user_id') String? get userId;@JsonKey(name: 'full_name') String? get fullName;@JsonKey(name: 'ad_code') String? get adCode; int? get age; double? get rating;@JsonKey(name: 'review_count') int? get reviewCount;@JsonKey(name: 'desired_salary') double? get desiredSalary;@JsonKey(name: 'salary_type') String? get salaryType; WorkerUserBidModel? get user; List<WorkerImageBidModel> get images;
 /// Create a copy of WorkerBidModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $WorkerBidModelCopyWith<WorkerBidModel> get copyWith => _$WorkerBidModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkerBidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.age, age) || other.age == age)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.desiredSalary, desiredSalary) || other.desiredSalary == desiredSalary)&&(identical(other.salaryType, salaryType) || other.salaryType == salaryType)&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other.images, images));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkerBidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.age, age) || other.age == age)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.desiredSalary, desiredSalary) || other.desiredSalary == desiredSalary)&&(identical(other.salaryType, salaryType) || other.salaryType == salaryType)&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other.images, images));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,fullName,age,rating,reviewCount,desiredSalary,salaryType,user,const DeepCollectionEquality().hash(images));
+int get hashCode => Object.hash(runtimeType,id,userId,fullName,adCode,age,rating,reviewCount,desiredSalary,salaryType,user,const DeepCollectionEquality().hash(images));
 
 @override
 String toString() {
-  return 'WorkerBidModel(id: $id, userId: $userId, fullName: $fullName, age: $age, rating: $rating, reviewCount: $reviewCount, desiredSalary: $desiredSalary, salaryType: $salaryType, user: $user, images: $images)';
+  return 'WorkerBidModel(id: $id, userId: $userId, fullName: $fullName, adCode: $adCode, age: $age, rating: $rating, reviewCount: $reviewCount, desiredSalary: $desiredSalary, salaryType: $salaryType, user: $user, images: $images)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $WorkerBidModelCopyWith<$Res>  {
   factory $WorkerBidModelCopyWith(WorkerBidModel value, $Res Function(WorkerBidModel) _then) = _$WorkerBidModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'user_id') String? userId,@JsonKey(name: 'full_name') String? fullName, int? age, double? rating,@JsonKey(name: 'review_count') int? reviewCount,@JsonKey(name: 'desired_salary') double? desiredSalary,@JsonKey(name: 'salary_type') String? salaryType, WorkerUserBidModel? user, List<WorkerImageBidModel> images
+ String id,@JsonKey(name: 'user_id') String? userId,@JsonKey(name: 'full_name') String? fullName,@JsonKey(name: 'ad_code') String? adCode, int? age, double? rating,@JsonKey(name: 'review_count') int? reviewCount,@JsonKey(name: 'desired_salary') double? desiredSalary,@JsonKey(name: 'salary_type') String? salaryType, WorkerUserBidModel? user, List<WorkerImageBidModel> images
 });
 
 
@@ -65,11 +65,12 @@ class _$WorkerBidModelCopyWithImpl<$Res>
 
 /// Create a copy of WorkerBidModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = freezed,Object? fullName = freezed,Object? age = freezed,Object? rating = freezed,Object? reviewCount = freezed,Object? desiredSalary = freezed,Object? salaryType = freezed,Object? user = freezed,Object? images = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = freezed,Object? fullName = freezed,Object? adCode = freezed,Object? age = freezed,Object? rating = freezed,Object? reviewCount = freezed,Object? desiredSalary = freezed,Object? salaryType = freezed,Object? user = freezed,Object? images = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String?,fullName: freezed == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String?,adCode: freezed == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
 as String?,age: freezed == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
 as int?,rating: freezed == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as double?,reviewCount: freezed == reviewCount ? _self.reviewCount : reviewCount // ignore: cast_nullable_to_non_nullable
@@ -174,10 +175,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'full_name')  String? fullName,  int? age,  double? rating, @JsonKey(name: 'review_count')  int? reviewCount, @JsonKey(name: 'desired_salary')  double? desiredSalary, @JsonKey(name: 'salary_type')  String? salaryType,  WorkerUserBidModel? user,  List<WorkerImageBidModel> images)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'full_name')  String? fullName, @JsonKey(name: 'ad_code')  String? adCode,  int? age,  double? rating, @JsonKey(name: 'review_count')  int? reviewCount, @JsonKey(name: 'desired_salary')  double? desiredSalary, @JsonKey(name: 'salary_type')  String? salaryType,  WorkerUserBidModel? user,  List<WorkerImageBidModel> images)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WorkerBidModel() when $default != null:
-return $default(_that.id,_that.userId,_that.fullName,_that.age,_that.rating,_that.reviewCount,_that.desiredSalary,_that.salaryType,_that.user,_that.images);case _:
+return $default(_that.id,_that.userId,_that.fullName,_that.adCode,_that.age,_that.rating,_that.reviewCount,_that.desiredSalary,_that.salaryType,_that.user,_that.images);case _:
   return orElse();
 
 }
@@ -195,10 +196,10 @@ return $default(_that.id,_that.userId,_that.fullName,_that.age,_that.rating,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'full_name')  String? fullName,  int? age,  double? rating, @JsonKey(name: 'review_count')  int? reviewCount, @JsonKey(name: 'desired_salary')  double? desiredSalary, @JsonKey(name: 'salary_type')  String? salaryType,  WorkerUserBidModel? user,  List<WorkerImageBidModel> images)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'full_name')  String? fullName, @JsonKey(name: 'ad_code')  String? adCode,  int? age,  double? rating, @JsonKey(name: 'review_count')  int? reviewCount, @JsonKey(name: 'desired_salary')  double? desiredSalary, @JsonKey(name: 'salary_type')  String? salaryType,  WorkerUserBidModel? user,  List<WorkerImageBidModel> images)  $default,) {final _that = this;
 switch (_that) {
 case _WorkerBidModel():
-return $default(_that.id,_that.userId,_that.fullName,_that.age,_that.rating,_that.reviewCount,_that.desiredSalary,_that.salaryType,_that.user,_that.images);case _:
+return $default(_that.id,_that.userId,_that.fullName,_that.adCode,_that.age,_that.rating,_that.reviewCount,_that.desiredSalary,_that.salaryType,_that.user,_that.images);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -215,10 +216,10 @@ return $default(_that.id,_that.userId,_that.fullName,_that.age,_that.rating,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'full_name')  String? fullName,  int? age,  double? rating, @JsonKey(name: 'review_count')  int? reviewCount, @JsonKey(name: 'desired_salary')  double? desiredSalary, @JsonKey(name: 'salary_type')  String? salaryType,  WorkerUserBidModel? user,  List<WorkerImageBidModel> images)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'full_name')  String? fullName, @JsonKey(name: 'ad_code')  String? adCode,  int? age,  double? rating, @JsonKey(name: 'review_count')  int? reviewCount, @JsonKey(name: 'desired_salary')  double? desiredSalary, @JsonKey(name: 'salary_type')  String? salaryType,  WorkerUserBidModel? user,  List<WorkerImageBidModel> images)?  $default,) {final _that = this;
 switch (_that) {
 case _WorkerBidModel() when $default != null:
-return $default(_that.id,_that.userId,_that.fullName,_that.age,_that.rating,_that.reviewCount,_that.desiredSalary,_that.salaryType,_that.user,_that.images);case _:
+return $default(_that.id,_that.userId,_that.fullName,_that.adCode,_that.age,_that.rating,_that.reviewCount,_that.desiredSalary,_that.salaryType,_that.user,_that.images);case _:
   return null;
 
 }
@@ -230,12 +231,13 @@ return $default(_that.id,_that.userId,_that.fullName,_that.age,_that.rating,_tha
 @JsonSerializable()
 
 class _WorkerBidModel extends WorkerBidModel {
-  const _WorkerBidModel({required this.id, @JsonKey(name: 'user_id') this.userId, @JsonKey(name: 'full_name') this.fullName, this.age, this.rating, @JsonKey(name: 'review_count') this.reviewCount, @JsonKey(name: 'desired_salary') this.desiredSalary, @JsonKey(name: 'salary_type') this.salaryType, this.user, final  List<WorkerImageBidModel> images = const []}): _images = images,super._();
+  const _WorkerBidModel({required this.id, @JsonKey(name: 'user_id') this.userId, @JsonKey(name: 'full_name') this.fullName, @JsonKey(name: 'ad_code') this.adCode, this.age, this.rating, @JsonKey(name: 'review_count') this.reviewCount, @JsonKey(name: 'desired_salary') this.desiredSalary, @JsonKey(name: 'salary_type') this.salaryType, this.user, final  List<WorkerImageBidModel> images = const []}): _images = images,super._();
   factory _WorkerBidModel.fromJson(Map<String, dynamic> json) => _$WorkerBidModelFromJson(json);
 
 @override final  String id;
 @override@JsonKey(name: 'user_id') final  String? userId;
 @override@JsonKey(name: 'full_name') final  String? fullName;
+@override@JsonKey(name: 'ad_code') final  String? adCode;
 @override final  int? age;
 @override final  double? rating;
 @override@JsonKey(name: 'review_count') final  int? reviewCount;
@@ -263,16 +265,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkerBidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.age, age) || other.age == age)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.desiredSalary, desiredSalary) || other.desiredSalary == desiredSalary)&&(identical(other.salaryType, salaryType) || other.salaryType == salaryType)&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other._images, _images));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkerBidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.age, age) || other.age == age)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.desiredSalary, desiredSalary) || other.desiredSalary == desiredSalary)&&(identical(other.salaryType, salaryType) || other.salaryType == salaryType)&&(identical(other.user, user) || other.user == user)&&const DeepCollectionEquality().equals(other._images, _images));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,fullName,age,rating,reviewCount,desiredSalary,salaryType,user,const DeepCollectionEquality().hash(_images));
+int get hashCode => Object.hash(runtimeType,id,userId,fullName,adCode,age,rating,reviewCount,desiredSalary,salaryType,user,const DeepCollectionEquality().hash(_images));
 
 @override
 String toString() {
-  return 'WorkerBidModel(id: $id, userId: $userId, fullName: $fullName, age: $age, rating: $rating, reviewCount: $reviewCount, desiredSalary: $desiredSalary, salaryType: $salaryType, user: $user, images: $images)';
+  return 'WorkerBidModel(id: $id, userId: $userId, fullName: $fullName, adCode: $adCode, age: $age, rating: $rating, reviewCount: $reviewCount, desiredSalary: $desiredSalary, salaryType: $salaryType, user: $user, images: $images)';
 }
 
 
@@ -283,7 +285,7 @@ abstract mixin class _$WorkerBidModelCopyWith<$Res> implements $WorkerBidModelCo
   factory _$WorkerBidModelCopyWith(_WorkerBidModel value, $Res Function(_WorkerBidModel) _then) = __$WorkerBidModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'user_id') String? userId,@JsonKey(name: 'full_name') String? fullName, int? age, double? rating,@JsonKey(name: 'review_count') int? reviewCount,@JsonKey(name: 'desired_salary') double? desiredSalary,@JsonKey(name: 'salary_type') String? salaryType, WorkerUserBidModel? user, List<WorkerImageBidModel> images
+ String id,@JsonKey(name: 'user_id') String? userId,@JsonKey(name: 'full_name') String? fullName,@JsonKey(name: 'ad_code') String? adCode, int? age, double? rating,@JsonKey(name: 'review_count') int? reviewCount,@JsonKey(name: 'desired_salary') double? desiredSalary,@JsonKey(name: 'salary_type') String? salaryType, WorkerUserBidModel? user, List<WorkerImageBidModel> images
 });
 
 
@@ -300,11 +302,12 @@ class __$WorkerBidModelCopyWithImpl<$Res>
 
 /// Create a copy of WorkerBidModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = freezed,Object? fullName = freezed,Object? age = freezed,Object? rating = freezed,Object? reviewCount = freezed,Object? desiredSalary = freezed,Object? salaryType = freezed,Object? user = freezed,Object? images = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = freezed,Object? fullName = freezed,Object? adCode = freezed,Object? age = freezed,Object? rating = freezed,Object? reviewCount = freezed,Object? desiredSalary = freezed,Object? salaryType = freezed,Object? user = freezed,Object? images = null,}) {
   return _then(_WorkerBidModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String?,fullName: freezed == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String?,adCode: freezed == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
 as String?,age: freezed == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
 as int?,rating: freezed == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as double?,reviewCount: freezed == reviewCount ? _self.reviewCount : reviewCount // ignore: cast_nullable_to_non_nullable

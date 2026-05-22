@@ -16,6 +16,7 @@ abstract class WorkerBidModel with _$WorkerBidModel {
     required String id,
     @JsonKey(name: 'user_id') String? userId,
     @JsonKey(name: 'full_name') String? fullName,
+    @JsonKey(name: 'ad_code') String? adCode,
     int? age,
     double? rating,
     @JsonKey(name: 'review_count') int? reviewCount,
@@ -56,7 +57,7 @@ abstract class WorkerBidModel with _$WorkerBidModel {
     return WorkerEntity(
       id: id,
       name: name,
-      adCode: '',
+      adCode: adCode ?? '',
       age: workerAge,
       rating: rating ?? 0.0,
       reviewCount: reviewCount ?? 0,

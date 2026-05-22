@@ -274,6 +274,11 @@ class WorkerRepositoryImpl implements WorkerRepository {
   }
 
   WorkerEntity _mapToEntity(Map<String, dynamic> json) {
+    final images = json['images'] as List<dynamic>?;
+    final avatarUrl = (images != null && images.isNotEmpty)
+        ? (images.first as Map<String, dynamic>)['uri_path']?.toString()
+        : json['avatar_url'] as String?;
+
     return WorkerEntity(
       id: json['id']?.toString() ?? '',
       name: json['full_name'] ?? json['name'] ?? '',
@@ -283,7 +288,7 @@ class WorkerRepositoryImpl implements WorkerRepository {
       reviewCount: json['review_count'] ?? 0,
       wage: json['desired_salary'] ?? json['wage'] ?? 0,
       statusLabel: json['status'],
-      avatarUrl: json['avatar_url'],
+      avatarUrl: avatarUrl,
       isAd: json['is_ad'] ?? false,
       adTitle: json['ad_title'],
       adImageUrl: json['ad_image_url'],
