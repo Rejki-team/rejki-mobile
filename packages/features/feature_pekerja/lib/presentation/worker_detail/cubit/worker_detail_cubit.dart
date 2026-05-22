@@ -11,6 +11,14 @@ class WorkerDetailCubit extends Cubit<WorkerDetailState> {
 
   WorkerDetailCubit(this._getWorkerByIdUseCase) : super(const WorkerDetailState());
 
+  String _formatWage(int wage) {
+    final formatted = wage.toString().replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+$)'),
+      (m) => '${m[1]}.',
+    );
+    return 'Rp $formatted / Jam';
+  }
+
   Future<void> loadDetail(String id) async {
     emit(state.copyWith(isLoading: true, isFailure: false));
 
@@ -44,7 +52,7 @@ class WorkerDetailCubit extends Cubit<WorkerDetailState> {
             age: workerEntity.age,
             rating: workerEntity.rating,
             reviewCount: workerEntity.reviewCount,
-            wageText: 'Rp ${workerEntity.wage}', // Modified from Rp wage / jam depending on formatting
+            wageText: _formatWage(workerEntity.wage),
             avatarUrl: workerEntity.avatarUrl,
             address: workerEntity.address ?? 'Alamat tidak tersedia', 
             workExperiences: (workerEntity.workExperience != null && workerEntity.workExperience!.isNotEmpty)

@@ -177,17 +177,6 @@ class _TrainingDetailView extends StatelessWidget {
                               const SizedBox(height: AppSpacing.xl),
                               _RequirementsSection(requirements: data.requirements),
                             ],
-                            if (data.bankName != null &&
-                                data.bankName!.isNotEmpty) ...[
-                              const SizedBox(height: AppSpacing.lg),
-                              const Divider(color: AppColors.border, thickness: 1),
-                              const SizedBox(height: AppSpacing.lg),
-                              _BankInfoSection(
-                                bankName: data.bankName!,
-                                accountNumber: data.bankAccountNumber,
-                                accountHolder: data.bankAccountHolderName,
-                              ),
-                            ],
                             if (data.status == 'rejected' &&
                                 data.rejectionReason != null &&
                                 data.rejectionReason!.isNotEmpty) ...[
@@ -425,94 +414,6 @@ class _RequirementsSection extends StatelessWidget {
   }
 }
 
-class _BankInfoSection extends StatelessWidget {
-  final String bankName;
-  final String? accountNumber;
-  final String? accountHolder;
-
-  const _BankInfoSection({
-    required this.bankName,
-    this.accountNumber,
-    this.accountHolder,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Informasi Pembayaran',
-          style: AppTypography.labelMedium.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppColors.textBlack,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
-            border: Border.all(color: AppColors.border),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              SvgPicture.asset(
-                AppAssets.iconCard,
-                width: 18,
-                height: 18,
-                colorFilter: const ColorFilter.mode(
-                  Color(0xFF6366F1),
-                  BlendMode.srcIn,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      bankName.toUpperCase(),
-                      style: AppTypography.labelMedium.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textBlack,
-                        fontSize: 13,
-                      ),
-                    ),
-                    if (accountNumber != null && accountNumber!.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        'No. $accountNumber',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                    if (accountHolder != null && accountHolder!.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        'a.n. $accountHolder',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _RejectionReasonBox extends StatelessWidget {
   final String reason;
 
@@ -626,7 +527,6 @@ class _StickyBottomBar extends StatelessWidget {
         }
 
         return _RegisterBottomBar(
-          training: state.training!,
           isRegistering: state.isRegistering,
           isRegistrationSuccess: state.isRegistrationSuccess,
           onRegister: () =>
@@ -682,13 +582,11 @@ class _OwnerBottomBar extends StatelessWidget {
 }
 
 class _RegisterBottomBar extends StatelessWidget {
-  final TrainingDetailModel training;
   final bool isRegistering;
   final bool isRegistrationSuccess;
   final VoidCallback onRegister;
 
   const _RegisterBottomBar({
-    required this.training,
     required this.isRegistering,
     required this.isRegistrationSuccess,
     required this.onRegister,
@@ -714,89 +612,48 @@ class _RegisterBottomBar extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Biaya Pendaftaran',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textBlack,
-                    fontSize: 11,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  training.fee,
-                  style: AppTypography.titleMedium.copyWith(
-                    fontSize: 16,
-                    color: AppColors.textBlack,
-                  ),
-                ),
-                if (training.feeNotice.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    training.feeNotice,
-                    style: AppTypography.bodySmall.copyWith(
-                      color: const Color(0xFF22C55E),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ],
+      child: SizedBox(
+        width: double.infinity,
+        height: 48,
+        child: ElevatedButton(
+          onPressed: isRegistering ? null : onRegister,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF312E81),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
+            elevation: 0,
           ),
-          const SizedBox(width: AppSpacing.sm),
-          SizedBox(
-            height: 48,
-            child: ElevatedButton(
-              onPressed: isRegistering ? null : onRegister,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF312E81),
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                elevation: 0,
-              ),
-              child: isRegistering
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
+          child: isRegistering
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    color: AppColors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      isRegistrationSuccess ? 'Terdaftar' : 'Daftar Sekarang',
+                      style: AppTypography.buttonRegularSmall.copyWith(
                         color: AppColors.white,
-                        strokeWidth: 2,
+                        fontSize: 13,
                       ),
-                    )
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          isRegistrationSuccess ? 'Terdaftar' : 'Daftar',
-                          style: AppTypography.buttonRegularSmall.copyWith(
-                            color: AppColors.white,
-                            fontSize: 13,
-                          ),
-                        ),
-                        if (!isRegistrationSuccess) ...[
-                          const SizedBox(width: AppSpacing.xs),
-                          const Icon(
-                            Icons.arrow_forward,
-                            color: AppColors.white,
-                            size: 16,
-                          ),
-                        ],
-                      ],
                     ),
-            ),
-          ),
-        ],
+                    if (!isRegistrationSuccess) ...[
+                      const SizedBox(width: AppSpacing.xs),
+                      const Icon(
+                        Icons.arrow_forward,
+                        color: AppColors.white,
+                        size: 16,
+                      ),
+                    ],
+                  ],
+                ),
+        ),
       ),
     );
   }

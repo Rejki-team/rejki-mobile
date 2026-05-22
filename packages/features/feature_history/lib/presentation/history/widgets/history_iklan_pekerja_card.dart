@@ -160,7 +160,7 @@ class HistoryIklanPekerjaCard extends StatelessWidget {
           _InfoChip(
             icon: AppAssets.iconMoney,
             iconColor: AppColors.badgeBlue,
-            text: wageText,
+            text: 'Upah : $wageText',
           ),
         ],
       ),

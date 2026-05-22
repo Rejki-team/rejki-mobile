@@ -104,11 +104,15 @@ class JobDetailBottomSheet extends StatelessWidget {
   /// Callback when "Ambil Pekerjaan" button is pressed
   final VoidCallback? onTakeJobPressed;
 
+  /// Whether the take job action is in loading state (checking worker profile)
+  final bool isLoading;
+
   const JobDetailBottomSheet({
     super.key,
     required this.data,
     this.onChatPressed,
     this.onTakeJobPressed,
+    this.isLoading = false,
   });
 
   /// Shows the job detail bottom sheet
@@ -652,38 +656,54 @@ class JobDetailBottomSheet extends StatelessWidget {
     );
   }
 
-  /// Builds the take job button with gradient
+  /// Builds the take job button with gradient and optional loading state
   Widget _buildTakeJobButton() {
+    final isDisabled = !isLoading && onTakeJobPressed == null;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: AppColors.buttonGradient,
+        gradient: isDisabled ? null : AppColors.buttonGradient,
+        color: isDisabled ? AppColors.border : null,
         borderRadius: AppDimensions.borderRadiusSm,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTakeJobPressed,
+          onTap: (isLoading || isDisabled) ? null : onTakeJobPressed,
           borderRadius: AppDimensions.borderRadiusSm,
+          splashColor: AppColors.white.withValues(alpha: 0.1),
+          highlightColor: AppColors.white.withValues(alpha: 0.05),
           child: Padding(
             padding: AppSpacing.paddingButtonSm,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SvgPicture.asset(
-                  AppAssets.iconWork,
-                  width: AppDimensions.iconXs,
-                  height: AppDimensions.iconXs,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.white,
-                    BlendMode.srcIn,
+                if (isLoading) ...[
+                  const SizedBox(
+                    width: AppDimensions.iconXs,
+                    height: AppDimensions.iconXs,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.white,
+                    ),
                   ),
-                ),
+                ] else ...[
+                  SvgPicture.asset(
+                    AppAssets.iconWork,
+                    width: AppDimensions.iconXs,
+                    height: AppDimensions.iconXs,
+                    colorFilter: ColorFilter.mode(
+                      isDisabled ? AppColors.textBlack : AppColors.white,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ],
                 const SizedBox(width: AppSpacing.sm),
                 Text(
                   'Ambil Pekerjaan',
                   style: AppTypography.buttonRegularSmall.copyWith(
-                    color: AppColors.white,
+                    color: isDisabled ? AppColors.textBlack : AppColors.white,
                   ),
                   textAlign: TextAlign.center,
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:network/network.dart';
 import 'package:core/core.dart';
 import 'package:components/components.dart';
@@ -140,13 +141,7 @@ class _JobDetailBottomSheetLoaderState
         // Loading indicator sudah ditangani di bottom sheet
       },
       workerProfileNotFound: () {
-        // User belum punya profil pekerja → tutup bottom sheet lalu arahkan
-        Navigator.of(context).pop();
-        // Navigasi ke halaman buat profil pekerja
-        // Gunakan rootNavigator agar di atas bottom nav
-        Navigator.of(context, rootNavigator: true).pushNamed(
-          _JobRoutes.pekerjaCreate,
-        );
+        _showNoWorkerProfileDialog(context);
       },
       workerProfileFound: (workerId, workerCount, defaultDateTime) {
         // Profil ditemukan → tampilkan dialog bid
@@ -186,6 +181,33 @@ class _JobDetailBottomSheetLoaderState
           ),
         );
       },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // No Worker Profile Dialog
+  // ---------------------------------------------------------------------------
+
+  void _showNoWorkerProfileDialog(BuildContext context) {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => AppDialogWarning(
+        title: 'Profil Pekerja Diperlukan',
+        message: 'Kamu belum memiliki profil pekerja. '
+            'Buat profil terlebih dahulu untuk dapat melamar pekerjaan ini.',
+        cancelText: 'Nanti',
+        confirmText: 'Buat Profil',
+        onCancel: () => Navigator.pop(dialogCtx),
+        onConfirm: () {
+          // Capture router sebelum pop — context tidak valid setelah pop
+          final router = GoRouter.of(context);
+          Navigator.pop(dialogCtx);
+          Navigator.of(context).pop();
+          router.push(_JobRoutes.pekerjaCreate);
+        },
+      ),
     );
   }
 
@@ -321,10 +343,9 @@ class _JobDetailBottomSheetLoaderState
             Navigator.of(context).pop();
             widget.onChatPressed?.call();
           },
-          // Ketika Ambil Pekerjaan ditekan: cek profil pekerja terlebih dahulu
-          onTakeJobPressed: isCheckingProfile
-              ? null // disable saat sedang loading
-              : () => context.read<TakeJobCubit>().checkWorkerProfileAndProceed(
+          isLoading: isCheckingProfile,
+          onTakeJobPressed: () =>
+              context.read<TakeJobCubit>().checkWorkerProfileAndProceed(
                     workerCount: job.workerCount,
                     defaultDateTime: job.dateOfJob,
                   ),

@@ -25,12 +25,6 @@ class TrainingCard extends StatelessWidget {
   /// List of facilities icons and labels paired
   final List<TrainingFacility> facilities;
 
-  /// Fee text (e.g. "Rp 20.000")
-  final String fee;
-
-  /// Text note about the fee (e.g. "Pelatihan 100% Gratis!")
-  final String feeNotice;
-
   /// Action when Daftar button is pressed
   final VoidCallback onRegisterPressed;
 
@@ -43,8 +37,6 @@ class TrainingCard extends StatelessWidget {
     required this.time,
     required this.location,
     required this.facilities,
-    required this.fee,
-    required this.feeNotice,
     required this.onRegisterPressed,
   });
 
@@ -122,18 +114,20 @@ class TrainingCard extends StatelessWidget {
                 // Date and Time Row
                 Row(
                   children: [
-                    _IconText(
-                      icon: AppAssets.iconCalendar,
-                      color: const Color(
-                        0xFF2563EB,
-                      ), // Blue outline typical for calendar
-                      text: date,
+                    Flexible(
+                      child: _IconText(
+                        icon: AppAssets.iconCalendar,
+                        color: const Color(0xFF2563EB),
+                        text: date,
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.lg),
-                    _IconText(
-                      icon: AppAssets.iconClock,
-                      color: const Color(0xFFEA580C), // Orange typical for time
-                      text: time,
+                    Flexible(
+                      child: _IconText(
+                        icon: AppAssets.iconClock,
+                        color: const Color(0xFFEA580C),
+                        text: time,
+                      ),
                     ),
                   ],
                 ),
@@ -172,78 +166,45 @@ class TrainingCard extends StatelessWidget {
           // Divider
           const Divider(height: 1, thickness: 1, color: AppColors.border),
 
-          // Footer: Fee & Daftar Button
+          // Footer: Daftar Button
           Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                // Biaya Pendaftaran Text
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                height: 36,
+                child: ElevatedButton(
+                  onPressed: onRegisterPressed,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF312E81),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Biaya Pendaftaran',
-                        style: AppTypography.jobCardCaption.copyWith(
-                          color: AppColors.textTertiary,
+                        'Daftar',
+                        style: AppTypography.buttonRegularSmall.copyWith(
+                          color: AppColors.white,
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.xxs),
-                      Text(
-                        fee,
-                        style: AppTypography.jobCardTitle.copyWith(
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xxs),
-                      Text(
-                        feeNotice,
-                        style: AppTypography.jobCardCaption.copyWith(
-                          color: const Color(0xFF22C55E), // Green
-                          fontWeight: FontWeight.w500,
-                        ),
+                      const SizedBox(width: AppSpacing.xs),
+                      const Icon(
+                        Icons.arrow_forward,
+                        color: AppColors.white,
+                        size: 14,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                // Daftar Button
-                SizedBox(
-                  height: 36,
-                  child: ElevatedButton(
-                    onPressed: onRegisterPressed,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(
-                        0xFF312E81,
-                      ), // Solid dark blue exact matching mockup
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Daftar',
-                          style: AppTypography.buttonRegularSmall.copyWith(
-                            color: AppColors.white,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        const Icon(
-                          Icons.arrow_forward,
-                          color: AppColors.white,
-                          size: 14,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ],
@@ -328,11 +289,15 @@ class _IconText extends StatelessWidget {
           colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
         ),
         const SizedBox(width: 6),
-        Text(
-          text,
-          style: AppTypography.bodySmall.copyWith(
-            color: AppColors.textSecondary,
-            fontSize: 12, // match Figma caption size visually
+        Flexible(
+          child: Text(
+            text,
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

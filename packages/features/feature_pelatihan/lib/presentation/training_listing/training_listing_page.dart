@@ -246,8 +246,6 @@ class _TrainingListSection extends StatelessWidget {
                     time: training.time,
                     location: training.location,
                     facilities: facilities,
-                    fee: training.fee,
-                    feeNotice: training.feeNotice,
                     onRegisterPressed: () =>
                         context.push('/pelatihan/${training.id}'),
                   ),

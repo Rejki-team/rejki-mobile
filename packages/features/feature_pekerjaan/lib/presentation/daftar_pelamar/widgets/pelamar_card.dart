@@ -111,7 +111,7 @@ class PelamarCard extends StatelessWidget {
           _buildInfoItem(
             iconPath: AppAssets.iconMoney,
             iconColor: AppColors.success,
-            text: 'Upah : Rp ${JobFormatter.formatNumber(wage)}',
+            text: 'Upah : Rp ${JobFormatter.formatNumber(wage)} / Jam',
           ),
 
           const SizedBox(height: AppSpacing.md),

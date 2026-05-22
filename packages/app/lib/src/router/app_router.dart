@@ -838,8 +838,7 @@ class _JobDetailBottomSheetContentState
       initial: () {},
       checkingWorkerProfile: () {},
       workerProfileNotFound: () {
-        Navigator.of(context).pop();
-        Navigator.of(context, rootNavigator: true).pushNamed('/pekerja/create');
+        _showNoWorkerProfileDialog(context);
       },
       workerProfileFound: (workerId, workerCount, defaultDateTime) {
         _showBidDialog(
@@ -875,6 +874,29 @@ class _JobDetailBottomSheetContentState
           ),
         );
       },
+    );
+  }
+
+  void _showNoWorkerProfileDialog(BuildContext context) {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => AppDialogWarning(
+        title: 'Profil Pekerja Diperlukan',
+        message: 'Kamu belum memiliki profil pekerja. '
+            'Buat profil terlebih dahulu untuk dapat melamar pekerjaan ini.',
+        cancelText: 'Nanti',
+        confirmText: 'Buat Profil',
+        onCancel: () => Navigator.pop(dialogCtx),
+        onConfirm: () {
+          // Capture router sebelum pop — context tidak valid setelah pop
+          final router = GoRouter.of(context);
+          Navigator.pop(dialogCtx);
+          Navigator.of(context).pop();
+          router.push(AppRoutes.pekerjaCreate);
+        },
+      ),
     );
   }
 
@@ -1001,9 +1023,9 @@ class _JobDetailBottomSheetContentState
             Navigator.of(context).pop();
             debugPrint('[JobDetail] Chat pressed for job: ${job.id}');
           },
-          onTakeJobPressed: isCheckingProfile
-              ? null
-              : () => context.read<TakeJobCubit>().checkWorkerProfileAndProceed(
+          isLoading: isCheckingProfile,
+          onTakeJobPressed: () =>
+              context.read<TakeJobCubit>().checkWorkerProfileAndProceed(
                     workerCount: job.workerCount,
                     defaultDateTime: job.dateOfJob,
                   ),
