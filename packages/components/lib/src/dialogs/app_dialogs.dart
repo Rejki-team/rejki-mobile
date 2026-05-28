@@ -417,11 +417,16 @@ Future<void> showSuccessDialog(
   return showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (_) => AppDialogSuccess(
+    builder: (dialogContext) => AppDialogSuccess(
       title: title,
       message: message,
       buttonText: buttonText,
-      onPressed: onPressed ?? () => Navigator.of(context).pop(),
+      onPressed: onPressed != null
+          ? () {
+              Navigator.of(dialogContext).pop();
+              onPressed();
+            }
+          : () => Navigator.of(dialogContext).pop(),
     ),
   );
 }
@@ -440,13 +445,19 @@ Future<void> showWarningDialog(
   return showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (_) => AppDialogWarning(
+    builder: (dialogContext) => AppDialogWarning(
       title: title,
       message: message,
       cancelText: cancelText,
       confirmText: confirmText,
-      onCancel: onCancel ?? () => Navigator.of(context).pop(),
-      onConfirm: onConfirm ?? () => Navigator.of(context).pop(),
+      // Gunakan dialogContext agar pop hanya menutup dialog, tidak stack go_router
+      onCancel: onCancel ?? () => Navigator.of(dialogContext).pop(),
+      onConfirm: onConfirm != null
+          ? () {
+              Navigator.of(dialogContext).pop();
+              onConfirm();
+            }
+          : () => Navigator.of(dialogContext).pop(),
     ),
   );
 }
@@ -463,11 +474,16 @@ Future<void> showInfoDialog(
   return showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (_) => AppDialogInfo(
+    builder: (dialogContext) => AppDialogInfo(
       title: title,
       message: message,
       buttonText: buttonText,
-      onPressed: onPressed ?? () => Navigator.of(context).pop(),
+      onPressed: onPressed != null
+          ? () {
+              Navigator.of(dialogContext).pop();
+              onPressed();
+            }
+          : () => Navigator.of(dialogContext).pop(),
     ),
   );
 }
@@ -484,11 +500,16 @@ Future<void> showFailedDialog(
   return showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (_) => AppDialogFailed(
+    builder: (dialogContext) => AppDialogFailed(
       title: title,
       message: message,
       buttonText: buttonText,
-      onPressed: onPressed ?? () => Navigator.of(context).pop(),
+      onPressed: onPressed != null
+          ? () {
+              Navigator.of(dialogContext).pop();
+              onPressed();
+            }
+          : () => Navigator.of(dialogContext).pop(),
     ),
   );
 }

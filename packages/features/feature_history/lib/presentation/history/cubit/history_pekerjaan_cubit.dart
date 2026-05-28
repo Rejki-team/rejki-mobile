@@ -84,14 +84,18 @@ class HistoryPekerjaanCubit extends Cubit<HistoryPekerjaanState> {
       status: 'completed',
     );
 
+    if (isClosed) return;
+
     result.fold(
       (failure) {
+        if (isClosed) return;
         emit(state.copyWith(
           mutationStatus: HistoryPekerjaanMutationStatus.failure,
           mutationErrorMessage: _mapFailureToMessage(failure),
         ));
       },
       (_) {
+        if (isClosed) return;
         // Optimistically update the list
         final updatedBids = state.bids.map((bid) {
           if (bid.id == bidId) {
@@ -103,7 +107,7 @@ class HistoryPekerjaanCubit extends Cubit<HistoryPekerjaanState> {
         emit(state.copyWith(
           bids: updatedBids,
           mutationStatus: HistoryPekerjaanMutationStatus.success,
-          mutationSuccessMessage: 'Pekerjaan Angkut barang dengan kode $adCode sudah di tandai selesai.',
+          mutationSuccessMessage: 'Pekerjaan dengan kode $adCode sudah ditandai selesai.',
         ));
       },
     );

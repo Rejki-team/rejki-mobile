@@ -309,7 +309,6 @@ class _HistoryList extends StatelessWidget {
                           bidId: bid.id,
                           adCode: job?.adCode ?? 'N/A',
                         );
-                        Navigator.of(context).pop();
                       },
                     );
                   } : null,
