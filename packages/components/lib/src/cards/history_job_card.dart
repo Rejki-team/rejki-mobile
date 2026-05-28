@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:designsystems/designsystems.dart';
 
-enum HistoryJobStatus { baru, proses, selesai }
+enum HistoryJobStatus { baru, proses, selesai, ditolak }
 
 enum HistoryTabType { aktifitas, iklanSaya }
 
@@ -144,17 +144,22 @@ class HistoryJobCard extends StatelessWidget {
       case HistoryJobStatus.baru:
         bgColor = AppColors.jobStatusBadgeBg;
         textColor = AppColors.buttonGradientEnd;
-        text = 'Baru';
+        text = 'Menunggu';
         break;
       case HistoryJobStatus.proses:
         bgColor = AppColors.availabilityBadgeBg;
         textColor = AppColors.primary;
-        text = 'Proses';
+        text = 'Berlangsung';
         break;
       case HistoryJobStatus.selesai:
         bgColor = AppColors.serviceCardIconBgGreen;
         textColor = AppColors.chatButtonGreen;
         text = 'Selesai';
+        break;
+      case HistoryJobStatus.ditolak:
+        bgColor = const Color(0xFFFEE2E2);
+        textColor = AppColors.error;
+        text = 'Ditolak';
         break;
     }
 

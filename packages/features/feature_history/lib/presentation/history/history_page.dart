@@ -264,34 +264,39 @@ class _HistoryList extends StatelessWidget {
 
                 final bid = state.bids[index];
                 final job = bid.job;
-                
+
+                // Status mapping sesuai backend: request, approve, completed, decline
                 HistoryJobStatus mapStatus(String status) {
                   switch (status.toLowerCase()) {
-                    case 'request':
-                    case 'proses':
-                    case 'approved':
-                    case 'active':
+                    case 'approve':
                       return HistoryJobStatus.proses;
                     case 'completed':
-                    case 'selesai':
                       return HistoryJobStatus.selesai;
+                    case 'decline':
+                      return HistoryJobStatus.ditolak;
+                    case 'request':
                     default:
-                      return HistoryJobStatus.proses;
+                      return HistoryJobStatus.baru;
                   }
                 }
+
+                // Tombol "Tandai Selesai" hanya aktif saat lamaran sudah disetujui (approve)
+                final canMarkDone = bid.status == 'approve';
+                // Tombol "Beri Rating" hanya aktif saat pekerjaan sudah selesai (completed)
+                final canRate = bid.status == 'completed';
 
                 return HistoryJobCard(
                   title: job?.title ?? 'Pekerjaan',
                   adCode: job?.adCode ?? 'N/A',
                   dateText: (job?.dateOfJob ?? bid.dateOfJob).toString().split(' ')[0],
                   priceText: 'Rp. ${job?.salary ?? 0} - ${job?.salaryType ?? 'Borongan'}',
-                  timeText: '11:00', // Mock time as API only has dateOfJob
+                  timeText: '11:00',
                   locationText: job != null ? '${job.village}, ${job.subdistrict}' : 'Lokasi tidak tersedia',
                   status: mapStatus(bid.status),
                   tabType: tabType,
                   onDetailPressed: () {},
                   onApplicantsPressed: () {},
-                  onMarkDonePressed: bid.status == 'request' || bid.status == 'proses' || bid.status == 'approved' ? () {
+                  onMarkDonePressed: canMarkDone ? () {
                     showWarningDialog(
                       context,
                       title: 'Pekerjaan Selesai?',
@@ -308,7 +313,7 @@ class _HistoryList extends StatelessWidget {
                       },
                     );
                   } : null,
-                  onRatingPressed: bid.status == 'completed' ? () {
+                  onRatingPressed: canRate ? () {
                     AppReviewDialog.show(
                       context,
                       adCode: job?.adCode ?? 'N/A',
