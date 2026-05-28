@@ -726,15 +726,24 @@ class _HistoryList extends StatelessWidget {
                   tabType: HistoryTabType.iklanSaya,
                   applicantsCount: job.bidCount ?? 0,
                   onDetailPressed: () {},
-                  onApplicantsPressed: () => context.push(
-                    '/pekerjaan/${job.id}/pelamar',
-                    extra: {
-                      'jobId': job.id,
-                      'jobTitle': job.title,
-                      'adCode': job.adCode,
-                      'jobStatus': job.status,
-                    },
-                  ),
+                  onApplicantsPressed: () async {
+                    await context.push(
+                      '/pekerjaan/${job.id}/pelamar',
+                      extra: {
+                        'jobId': job.id,
+                        'jobTitle': job.title,
+                        'adCode': job.adCode,
+                        'jobStatus': job.status,
+                      },
+                    );
+                    // Refresh setelah kembali dari DaftarPelamar agar
+                    // status job (in_progress → done) langsung terbaru
+                    if (context.mounted) {
+                      context
+                          .read<HistoryIklanPekerjaanCubit>()
+                          .loadMyJobs(refresh: true);
+                    }
+                  },
                 );
               },
             ),

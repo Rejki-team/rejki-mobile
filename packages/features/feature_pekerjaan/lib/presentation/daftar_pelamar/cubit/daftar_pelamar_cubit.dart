@@ -70,7 +70,7 @@ class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
     );
   }
 
-  // ── Tab Pelamar Diterima (status=approve) ───────────────────────────────────
+  // ── Tab Pelamar Diterima (status approve + completed) ───────────────────────
 
   Future<void> loadPelamarDiterima({
     required String jobId,
@@ -99,9 +99,10 @@ class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
       ));
     }
 
+    // Filter approve + completed agar tab ini menampilkan pelamar yang sudah
+    // diterima maupun yang sudah menyelesaikan pekerjaan.
     final result = await _getIncomingBidsUseCase.execute(
       jobId: jobId,
-      status: 'approve',
       page: state.diterimaPage,
       limit: 10,
     );
@@ -114,9 +115,13 @@ class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
         diterimaError: _mapFailure(failure),
       )),
       (data) {
+        // Filter client-side: hanya tampilkan bid approve dan completed
+        final filtered = data.bids
+            .where((b) => b.status == 'approve' || b.status == 'completed')
+            .toList();
         final merged = refresh
-            ? data.bids
-            : [...state.diterimaList, ...data.bids];
+            ? filtered
+            : [...state.diterimaList, ...filtered];
         emit(state.copyWith(
           diterimaStatus: DaftarPelamarStatus.success,
           diterimaList: merged,
