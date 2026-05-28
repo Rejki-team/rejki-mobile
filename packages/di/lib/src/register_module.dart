@@ -181,6 +181,11 @@ abstract class RegisterModule {
   UpdateBidStatusUseCase updateBidStatusUseCase(JobMutationRepository repository) =>
       UpdateBidStatusUseCase(repository);
 
+  /// OwnerCompleteJobUseCase - untuk pemilik menandai semua pekerjaan selesai
+  @lazySingleton
+  OwnerCompleteJobUseCase ownerCompleteJobUseCase(JobMutationRepository repository) =>
+      OwnerCompleteJobUseCase(repository);
+
   /// CreateJobReviewUseCase - untuk memberikan rating dan review pada pekerjaan
   @lazySingleton
   CreateJobReviewUseCase createJobReviewUseCase(JobMutationRepository repository) =>
@@ -838,8 +843,13 @@ abstract class RegisterModule {
   DaftarPelamarCubit daftarPelamarCubit(
     GetIncomingBidsUseCase getIncomingBidsUseCase,
     UpdateBidStatusUseCase updateBidStatusUseCase,
+    OwnerCompleteJobUseCase ownerCompleteJobUseCase,
   ) =>
-      DaftarPelamarCubit(getIncomingBidsUseCase, updateBidStatusUseCase);
+      DaftarPelamarCubit(
+        getIncomingBidsUseCase,
+        updateBidStatusUseCase,
+        ownerCompleteJobUseCase,
+      );
 
   /// HistoryIklanPekerjaanCubit - untuk tab Iklan Saya di halaman riwayat
   @factoryMethod

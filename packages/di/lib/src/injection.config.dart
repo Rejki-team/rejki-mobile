@@ -46,33 +46,8 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.sharedPreferences,
       preResolve: true,
     );
-    gh.factory<_i216.TrainingListingCubit>(
-      () => registerModule.trainingListingCubit(
-        gh<_i494.GetTrainingsUseCase>(),
-      ),
-    );
     gh.factory<_i216.CreateTrainingAdCubit>(
       () => registerModule.createTrainingAdCubit(),
-    );
-    gh.factory<_i216.LocationBloc>(
-      () => registerModule.locationBlocPelatihan(
-        gh<_i494.GetProvincesUseCase>(),
-        gh<_i494.GetRegenciesUseCase>(),
-        gh<_i494.GetDistrictsUseCase>(),
-        gh<_i494.GetVillagesUseCase>(),
-      ),
-    );
-    gh.factory<_i216.SubmitTrainingAdCubit>(
-      () => registerModule.submitTrainingAdCubit(
-        gh<_i494.CreateTrainingUseCase>(),
-      ),
-    );
-    gh.factory<_i216.TrainingDetailCubit>(
-      () => registerModule.trainingDetailCubit(
-        gh<_i494.GetTrainingDetailUseCase>(),
-        gh<_i494.EnrollTrainingUseCase>(),
-        gh<_i960.SessionStorage>(),
-      ),
     );
     gh.factory<_i674.HistoryCubit>(() => registerModule.historyCubit());
     gh.singleton<_i558.FlutterSecureStorage>(
@@ -80,9 +55,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i372.ConnectivityUtil>(
       () => registerModule.connectivityUtil,
-    );
-    gh.lazySingleton<_i960.EnumStorage>(
-      () => registerModule.enumStorage(gh<_i460.SharedPreferences>()),
     );
     gh.lazySingleton<_i960.SessionStorage>(
       () => registerModule.sessionStorage(
@@ -92,9 +64,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i372.DioClient>(
       () => registerModule.dioClient(gh<_i960.SessionStorage>()),
-    );
-    gh.lazySingleton<_i437.ProfileRemoteDataSource>(
-      () => registerModule.profileRemoteDataSource(gh<_i372.DioClient>()),
     );
     gh.lazySingleton<_i437.AuthRemoteDataSource>(
       () => registerModule.authRemoteDataSource(gh<_i372.DioClient>()),
@@ -129,22 +98,57 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i437.NotificationRemoteDataSource>(
       () => registerModule.notificationRemoteDataSource(gh<_i372.DioClient>()),
     );
-    gh.lazySingleton<_i494.JobMutationRepository>(
-      () => registerModule.jobMutationRepository(
-        gh<_i437.JobMutationDataSource>(),
+    gh.lazySingleton<_i437.ProfileRemoteDataSource>(
+      () => registerModule.profileRemoteDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i494.TrainingRepository>(
+      () => registerModule.trainingRepository(
+        gh<_i437.TrainingRemoteDataSource>(),
       ),
     );
-    gh.lazySingleton<_i494.CreateJobUseCase>(
-      () => registerModule.createJobUseCase(gh<_i494.JobMutationRepository>()),
-    );
-    gh.lazySingleton<_i494.UpdateBidStatusUseCase>(
-      () => registerModule.updateBidStatusUseCase(
-        gh<_i494.JobMutationRepository>(),
+    gh.lazySingleton<_i494.LocationRepository>(
+      () => registerModule.locationRepository(
+        gh<_i437.LocationRemoteDataSource>(),
       ),
     );
-    gh.lazySingleton<_i494.CreateJobReviewUseCase>(
-      () => registerModule.createJobReviewUseCase(
-        gh<_i494.JobMutationRepository>(),
+    gh.lazySingleton<_i494.GetMyTrainingEnrollmentsUseCase>(
+      () => registerModule.getMyTrainingEnrollmentsUseCase(
+        gh<_i494.TrainingRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.GetTrainingDetailUseCase>(
+      () => registerModule.getTrainingDetailUseCase(
+        gh<_i494.TrainingRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.GetTrainingsUseCase>(
+      () => registerModule.getTrainingsUseCase(gh<_i494.TrainingRepository>()),
+    );
+    gh.lazySingleton<_i494.GetMyTrainingsUseCase>(
+      () =>
+          registerModule.getMyTrainingsUseCase(gh<_i494.TrainingRepository>()),
+    );
+    gh.lazySingleton<_i494.CreateTrainingUseCase>(
+      () =>
+          registerModule.createTrainingUseCase(gh<_i494.TrainingRepository>()),
+    );
+    gh.lazySingleton<_i494.EnrollTrainingUseCase>(
+      () =>
+          registerModule.enrollTrainingUseCase(gh<_i494.TrainingRepository>()),
+    );
+    gh.lazySingleton<_i494.UploadPaymentProofUseCase>(
+      () => registerModule.uploadPaymentProofUseCase(
+        gh<_i494.TrainingRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.GetEnrollmentsByTrainingUseCase>(
+      () => registerModule.getEnrollmentsByTrainingUseCase(
+        gh<_i494.TrainingRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.SubmitTrainingBadgeUseCase>(
+      () => registerModule.submitTrainingBadgeUseCase(
+        gh<_i494.TrainingRepository>(),
       ),
     );
     gh.lazySingleton<_i494.ProfileRepository>(
@@ -153,13 +157,37 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i960.SessionStorage>(),
       ),
     );
-    gh.lazySingleton<_i494.LocationRepository>(
-      () => registerModule.locationRepository(
-        gh<_i437.LocationRemoteDataSource>(),
+    gh.factory<_i674.HistoryIklanPelatihanCubit>(
+      () => registerModule.historyIklanPelatihanCubit(
+        gh<_i494.GetMyTrainingsUseCase>(),
       ),
     );
-    gh.lazySingleton<_i494.WorkerRepository>(
-      () => registerModule.workerRepository(gh<_i437.WorkerRemoteDataSource>()),
+    gh.lazySingleton<_i494.SecondhandRepository>(
+      () => registerModule.secondhandRepository(
+        gh<_i437.SecondhandRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i960.EnumStorage>(
+      () => registerModule.enumStorage(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i494.JobMutationRepository>(
+      () => registerModule.jobMutationRepository(
+        gh<_i437.JobMutationDataSource>(),
+      ),
+    );
+    gh.factory<_i216.TrainingListingCubit>(
+      () =>
+          registerModule.trainingListingCubit(gh<_i494.GetTrainingsUseCase>()),
+    );
+    gh.factory<_i216.PaymentCubit>(
+      () => registerModule.paymentCubit(gh<_i494.UploadPaymentProofUseCase>()),
+    );
+    gh.factory<_i216.TrainingDetailCubit>(
+      () => registerModule.trainingDetailCubit(
+        gh<_i494.GetTrainingDetailUseCase>(),
+        gh<_i494.EnrollTrainingUseCase>(),
+        gh<_i960.SessionStorage>(),
+      ),
     );
     gh.lazySingleton<_i494.GetProvincesUseCase>(
       () => registerModule.getProvincesUseCase(gh<_i494.LocationRepository>()),
@@ -173,75 +201,58 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.GetVillagesUseCase>(
       () => registerModule.getVillagesUseCase(gh<_i494.LocationRepository>()),
     );
+    gh.lazySingleton<_i494.NotificationRepository>(
+      () => registerModule.notificationRepository(
+        gh<_i437.NotificationRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i494.WorkerRepository>(
+      () => registerModule.workerRepository(gh<_i437.WorkerRemoteDataSource>()),
+    );
+    gh.lazySingleton<_i494.GetSecondhandsUseCase>(
+      () => registerModule.getSecondhandsUseCase(
+        gh<_i494.SecondhandRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.GetSecondhandByIdUseCase>(
+      () => registerModule.getSecondhandByIdUseCase(
+        gh<_i494.SecondhandRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.GetMyClaimedSecondhandsUseCase>(
+      () => registerModule.getMyClaimedSecondhandsUseCase(
+        gh<_i494.SecondhandRepository>(),
+      ),
+    );
     gh.lazySingleton<_i494.AuthRepository>(
       () => registerModule.authRepository(
         gh<_i437.AuthRemoteDataSource>(),
         gh<_i960.SessionStorage>(),
       ),
     );
-    gh.lazySingleton<_i494.HelperRepository>(
-      () => registerModule.helperRepository(
-        gh<_i437.HelperRemoteDataSource>(),
-        gh<_i960.EnumStorage>(),
+    gh.lazySingleton<_i494.CreateJobUseCase>(
+      () => registerModule.createJobUseCase(gh<_i494.JobMutationRepository>()),
+    );
+    gh.lazySingleton<_i494.UpdateBidStatusUseCase>(
+      () => registerModule.updateBidStatusUseCase(
+        gh<_i494.JobMutationRepository>(),
       ),
     );
-    gh.factory<_i10.CreateJobBloc>(
-      () => registerModule.createJobBloc(gh<_i494.CreateJobUseCase>()),
-    );
-    gh.lazySingleton<_i494.SecondhandRepository>(
-      () => registerModule.secondhandRepository(
-        gh<_i437.SecondhandRemoteDataSource>(),
+    gh.lazySingleton<_i494.OwnerCompleteJobUseCase>(
+      () => registerModule.ownerCompleteJobUseCase(
+        gh<_i494.JobMutationRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.NotificationRepository>(
-      () => registerModule.notificationRepository(
-        gh<_i437.NotificationRemoteDataSource>(),
+    gh.lazySingleton<_i494.CreateJobReviewUseCase>(
+      () => registerModule.createJobReviewUseCase(
+        gh<_i494.JobMutationRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.UpdateProfileUseCase>(
-      () => registerModule.updateProfileUseCase(gh<_i494.ProfileRepository>()),
+    gh.lazySingleton<_i494.LoginUseCase>(
+      () => registerModule.loginUseCase(gh<_i494.AuthRepository>()),
     );
-    gh.lazySingleton<_i494.GetUserProfileUseCase>(
-      () => registerModule.getUserProfileUseCase(gh<_i494.ProfileRepository>()),
-    );
-    gh.lazySingleton<_i494.GetUserSummaryUseCase>(
-      () => registerModule.getUserSummaryUseCase(gh<_i494.ProfileRepository>()),
-    );
-    gh.lazySingleton<_i494.UploadProfilePhotoUseCase>(
-      () => registerModule.uploadProfilePhotoUseCase(
-        gh<_i494.ProfileRepository>(),
-      ),
-    );
-    gh.lazySingleton<_i494.GetUserFullProfileUseCase>(
-      () => registerModule.getUserFullProfileUseCase(
-        gh<_i494.ProfileRepository>(),
-      ),
-    );
-    gh.lazySingleton<_i494.UpdateWorkingHoursUseCase>(
-      () => registerModule.updateWorkingHoursUseCase(
-        gh<_i494.ProfileRepository>(),
-      ),
-    );
-    gh.lazySingleton<_i494.UpdatePhoneVisibilityUseCase>(
-      () => registerModule.updatePhoneVisibilityUseCase(
-        gh<_i494.ProfileRepository>(),
-      ),
-    );
-    gh.lazySingleton<_i494.JobRepository>(
-      () => registerModule.jobRepository(
-        gh<_i437.JobRemoteDataSource>(),
-        gh<_i437.BidJobDataSource>(),
-      ),
-    );
-    gh.lazySingleton<_i494.SecondhandMutationRepository>(
-      () => registerModule.secondhandMutationRepository(
-        gh<_i437.SecondhandMutationDataSource>(),
-      ),
-    );
-    gh.lazySingleton<_i494.TrainingRepository>(
-      () => registerModule.trainingRepository(
-        gh<_i437.TrainingRemoteDataSource>(),
-      ),
+    gh.lazySingleton<_i494.RegisterUseCase>(
+      () => registerModule.registerUseCase(gh<_i494.AuthRepository>()),
     );
     gh.lazySingleton<_i494.GetWorkersUseCase>(
       () => registerModule.getWorkersUseCase(gh<_i494.WorkerRepository>()),
@@ -283,51 +294,64 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.WorkerRepository>(),
       ),
     );
-    gh.factory<_i1070.PersonalInfoCubit>(
-      () => registerModule.personalInfoCubit(
-        gh<_i494.GetUserFullProfileUseCase>(),
-        gh<_i494.UpdateWorkingHoursUseCase>(),
-        gh<_i494.UpdatePhoneVisibilityUseCase>(),
+    gh.factory<_i216.DaftarPendaftarCubit>(
+      () => registerModule.daftarPendaftarCubit(
+        gh<_i494.GetEnrollmentsByTrainingUseCase>(),
       ),
     );
-    gh.factory<_i950.ContactRequestCubit>(
-      () => registerModule.contactRequestCubit(
-        gh<_i494.GetIncomingContactsUseCase>(),
-        gh<_i494.UpdateWorkerContactStatusUseCase>(),
+    gh.lazySingleton<_i494.UpdateProfileUseCase>(
+      () => registerModule.updateProfileUseCase(gh<_i494.ProfileRepository>()),
+    );
+    gh.lazySingleton<_i494.GetUserProfileUseCase>(
+      () => registerModule.getUserProfileUseCase(gh<_i494.ProfileRepository>()),
+    );
+    gh.lazySingleton<_i494.GetUserSummaryUseCase>(
+      () => registerModule.getUserSummaryUseCase(gh<_i494.ProfileRepository>()),
+    );
+    gh.lazySingleton<_i494.UploadProfilePhotoUseCase>(
+      () => registerModule.uploadProfilePhotoUseCase(
+        gh<_i494.ProfileRepository>(),
       ),
     );
-    gh.factory<_i1070.ProfileCubit>(
-      () => registerModule.profileCubit(
-        gh<_i494.GetUserSummaryUseCase>(),
-        gh<_i494.UploadProfilePhotoUseCase>(),
-        gh<_i960.SessionStorage>(),
+    gh.lazySingleton<_i494.GetUserFullProfileUseCase>(
+      () => registerModule.getUserFullProfileUseCase(
+        gh<_i494.ProfileRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.GetMyTrainingEnrollmentsUseCase>(
-      () => registerModule.getMyTrainingEnrollmentsUseCase(
-        gh<_i494.TrainingRepository>(),
+    gh.lazySingleton<_i494.UpdateWorkingHoursUseCase>(
+      () => registerModule.updateWorkingHoursUseCase(
+        gh<_i494.ProfileRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.GetTrainingDetailUseCase>(
-      () => registerModule.getTrainingDetailUseCase(
-        gh<_i494.TrainingRepository>(),
+    gh.lazySingleton<_i494.UpdatePhoneVisibilityUseCase>(
+      () => registerModule.updatePhoneVisibilityUseCase(
+        gh<_i494.ProfileRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.GetTrainingsUseCase>(
-      () => registerModule.getTrainingsUseCase(gh<_i494.TrainingRepository>()),
+    gh.lazySingleton<_i494.SecondhandMutationRepository>(
+      () => registerModule.secondhandMutationRepository(
+        gh<_i437.SecondhandMutationDataSource>(),
+      ),
     );
-    gh.lazySingleton<_i494.GetMyTrainingsUseCase>(
-      () => registerModule.getMyTrainingsUseCase(gh<_i494.TrainingRepository>()),
+    gh.lazySingleton<_i494.JobRepository>(
+      () => registerModule.jobRepository(
+        gh<_i437.JobRemoteDataSource>(),
+        gh<_i437.BidJobDataSource>(),
+      ),
     );
-    gh.lazySingleton<_i494.CreateTrainingUseCase>(
-      () => registerModule.createTrainingUseCase(gh<_i494.TrainingRepository>()),
+    gh.factory<_i674.HistoryIklanPekerjaCubit>(
+      () => registerModule.historyIklanPekerjaCubit(
+        gh<_i494.GetMyWorkerProfileUseCase>(),
+      ),
     );
-    gh.lazySingleton<_i494.EnrollTrainingUseCase>(
-      () => registerModule.enrollTrainingUseCase(gh<_i494.TrainingRepository>()),
+    gh.factory<_i674.HistoryPelatihanCubit>(
+      () => registerModule.historyPelatihanCubit(
+        gh<_i494.GetMyTrainingEnrollmentsUseCase>(),
+      ),
     );
-    gh.lazySingleton<_i494.UploadPaymentProofUseCase>(
-      () => registerModule.uploadPaymentProofUseCase(
-        gh<_i494.TrainingRepository>(),
+    gh.factory<_i216.BadgeUploadCubit>(
+      () => registerModule.badgeUploadCubit(
+        gh<_i494.SubmitTrainingBadgeUseCase>(),
       ),
     );
     gh.factory<_i10.LocationBloc>(
@@ -354,6 +378,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetVillagesUseCase>(),
       ),
     );
+    gh.factory<_i216.LocationBloc>(
+      () => registerModule.locationBlocPelatihan(
+        gh<_i494.GetProvincesUseCase>(),
+        gh<_i494.GetRegenciesUseCase>(),
+        gh<_i494.GetDistrictsUseCase>(),
+        gh<_i494.GetVillagesUseCase>(),
+      ),
+    );
     gh.factory<_i685.LocationBloc>(
       () => registerModule.locationBlocBarangBekas(
         gh<_i494.GetProvincesUseCase>(),
@@ -362,8 +394,58 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetVillagesUseCase>(),
       ),
     );
-    gh.factory<_i950.WorkerDetailCubit>(
-      () => registerModule.workerDetailCubit(gh<_i494.GetWorkerByIdUseCase>()),
+    gh.factory<_i216.SubmitTrainingAdCubit>(
+      () => registerModule.submitTrainingAdCubit(
+        gh<_i494.CreateTrainingUseCase>(),
+      ),
+    );
+    gh.factory<_i950.ContactRequestCubit>(
+      () => registerModule.contactRequestCubit(
+        gh<_i494.GetIncomingContactsUseCase>(),
+        gh<_i494.UpdateWorkerContactStatusUseCase>(),
+      ),
+    );
+    gh.factory<_i950.CreateWorkerAdCubit>(
+      () => registerModule.createWorkerAdCubit(
+        gh<_i494.CreateWorkerAdUseCase>(),
+        gh<_i494.UpdateWorkerProfileUseCase>(),
+        gh<_i494.GetMyWorkerProfileUseCase>(),
+        gh<_i494.GetUserProfileUseCase>(),
+        gh<_i960.EnumStorage>(),
+      ),
+    );
+    gh.lazySingleton<_i494.HelperRepository>(
+      () => registerModule.helperRepository(
+        gh<_i437.HelperRemoteDataSource>(),
+        gh<_i960.EnumStorage>(),
+      ),
+    );
+    gh.factory<_i473.RegisterCubit>(
+      () => registerModule.registerCubit(gh<_i494.RegisterUseCase>()),
+    );
+    gh.lazySingleton<_i494.GetLatestJobsUseCase>(
+      () => registerModule.getLatestJobsUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.lazySingleton<_i494.GetJobsUseCase>(
+      () => registerModule.getJobsUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.lazySingleton<_i494.GetJobByIdUseCase>(
+      () => registerModule.getJobByIdUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.lazySingleton<_i494.BidJobUseCase>(
+      () => registerModule.bidJobUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.lazySingleton<_i494.GetMyBidsUseCase>(
+      () => registerModule.getMyBidsUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.lazySingleton<_i494.GetIncomingBidsUseCase>(
+      () => registerModule.getIncomingBidsUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.lazySingleton<_i494.GetMyJobsUseCase>(
+      () => registerModule.getMyJobsUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.factory<_i950.WorkerListingCubit>(
+      () => registerModule.workerListingCubit(gh<_i494.GetWorkersUseCase>()),
     );
     gh.lazySingleton<_i494.GetNotificationsUseCase>(
       () => registerModule.getNotificationsUseCase(
@@ -390,35 +472,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.NotificationRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.LoginUseCase>(
-      () => registerModule.loginUseCase(gh<_i494.AuthRepository>()),
+    gh.factory<_i10.CreateJobBloc>(
+      () => registerModule.createJobBloc(gh<_i494.CreateJobUseCase>()),
     );
-    gh.lazySingleton<_i494.RegisterUseCase>(
-      () => registerModule.registerUseCase(gh<_i494.AuthRepository>()),
-    );
-    gh.lazySingleton<_i494.GetSecondhandsUseCase>(
-      () => registerModule.getSecondhandsUseCase(
-        gh<_i494.SecondhandRepository>(),
-      ),
-    );
-    gh.lazySingleton<_i494.GetSecondhandByIdUseCase>(
-      () => registerModule.getSecondhandByIdUseCase(
-        gh<_i494.SecondhandRepository>(),
-      ),
-    );
-    gh.lazySingleton<_i494.GetMyClaimedSecondhandsUseCase>(
-      () => registerModule.getMyClaimedSecondhandsUseCase(
-        gh<_i494.SecondhandRepository>(),
-      ),
-    );
-    gh.lazySingleton<_i494.SyncEnumsUseCase>(
-      () => registerModule.syncEnumsUseCase(gh<_i494.HelperRepository>()),
-    );
-    gh.factory<_i1070.EditProfileCubit>(
-      () => registerModule.editProfileCubit(gh<_i494.UpdateProfileUseCase>()),
-    );
-    gh.factory<_i674.HistoryIklanPekerjaCubit>(
-      () => registerModule.historyIklanPekerjaCubit(
+    gh.factory<_i806.TakeJobCubit>(
+      () => registerModule.takeJobCubit(
+        gh<_i494.BidJobUseCase>(),
         gh<_i494.GetMyWorkerProfileUseCase>(),
       ),
     );
@@ -427,15 +486,21 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetSecondhandByIdUseCase>(),
       ),
     );
-    gh.factory<_i674.HistoryPekerjaCubit>(
-      () => registerModule.historyPekerjaCubit(
-        gh<_i494.GetWorkerContactsUseCase>(),
-        gh<_i494.SubmitWorkerReviewUseCase>(),
+    gh.lazySingleton<_i494.SyncEnumsUseCase>(
+      () => registerModule.syncEnumsUseCase(gh<_i494.HelperRepository>()),
+    );
+    gh.factory<_i1070.ProfileCubit>(
+      () => registerModule.profileCubit(
+        gh<_i494.GetUserSummaryUseCase>(),
+        gh<_i494.UploadProfilePhotoUseCase>(),
+        gh<_i960.SessionStorage>(),
       ),
     );
-    gh.factory<_i674.HistoryPelatihanCubit>(
-      () => registerModule.historyPelatihanCubit(
-        gh<_i494.GetMyTrainingEnrollmentsUseCase>(),
+    gh.factory<_i1070.PersonalInfoCubit>(
+      () => registerModule.personalInfoCubit(
+        gh<_i494.GetUserFullProfileUseCase>(),
+        gh<_i494.UpdateWorkingHoursUseCase>(),
+        gh<_i494.UpdatePhoneVisibilityUseCase>(),
       ),
     );
     gh.factory<_i674.HistoryBarangBekasCubit>(
@@ -443,38 +508,31 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetMyClaimedSecondhandsUseCase>(),
       ),
     );
-    gh.factory<_i950.CreateWorkerAdCubit>(
-      () => registerModule.createWorkerAdCubit(
-        gh<_i494.CreateWorkerAdUseCase>(),
-        gh<_i494.UpdateWorkerProfileUseCase>(),
-        gh<_i494.GetMyWorkerProfileUseCase>(),
-        gh<_i494.GetUserProfileUseCase>(),
-        gh<_i960.EnumStorage>(),
+    gh.factory<_i674.HistoryPekerjaCubit>(
+      () => registerModule.historyPekerjaCubit(
+        gh<_i494.GetWorkerContactsUseCase>(),
+        gh<_i494.SubmitWorkerReviewUseCase>(),
       ),
     );
-    gh.factory<_i950.WorkerListingCubit>(
-      () => registerModule.workerListingCubit(gh<_i494.GetWorkersUseCase>()),
+    gh.factory<_i545.HomeBloc>(
+      () => registerModule.homeBloc(
+        gh<_i494.GetLatestJobsUseCase>(),
+        gh<_i494.GetUserFullProfileUseCase>(),
+      ),
     );
-    gh.lazySingleton<_i494.GetLatestJobsUseCase>(
-      () => registerModule.getLatestJobsUseCase(gh<_i494.JobRepository>()),
+    gh.factory<_i674.HistoryPekerjaanCubit>(
+      () => registerModule.historyPekerjaanCubit(
+        gh<_i494.GetMyBidsUseCase>(),
+        gh<_i494.UpdateBidStatusUseCase>(),
+        gh<_i494.CreateJobReviewUseCase>(),
+      ),
     );
-    gh.lazySingleton<_i494.GetJobsUseCase>(
-      () => registerModule.getJobsUseCase(gh<_i494.JobRepository>()),
-    );
-    gh.lazySingleton<_i494.GetJobByIdUseCase>(
-      () => registerModule.getJobByIdUseCase(gh<_i494.JobRepository>()),
-    );
-    gh.lazySingleton<_i494.BidJobUseCase>(
-      () => registerModule.bidJobUseCase(gh<_i494.JobRepository>()),
-    );
-    gh.lazySingleton<_i494.GetMyBidsUseCase>(
-      () => registerModule.getMyBidsUseCase(gh<_i494.JobRepository>()),
-    );
-    gh.lazySingleton<_i494.GetIncomingBidsUseCase>(
-      () => registerModule.getIncomingBidsUseCase(gh<_i494.JobRepository>()),
-    );
-    gh.lazySingleton<_i494.GetMyJobsUseCase>(
-      () => registerModule.getMyJobsUseCase(gh<_i494.JobRepository>()),
+    gh.factory<_i10.DaftarPelamarCubit>(
+      () => registerModule.daftarPelamarCubit(
+        gh<_i494.GetIncomingBidsUseCase>(),
+        gh<_i494.UpdateBidStatusUseCase>(),
+        gh<_i494.OwnerCompleteJobUseCase>(),
+      ),
     );
     gh.lazySingleton<_i494.CreateSecondhandUseCase>(
       () => registerModule.createSecondhandUseCase(
@@ -491,26 +549,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.CreateSecondhandUseCase>(),
       ),
     );
-    gh.lazySingleton<_i884.NotificationCubit>(
-      () => registerModule.notificationCubit(
-        gh<_i494.GetNotificationsUseCase>(),
-        gh<_i494.MarkNotificationReadUseCase>(),
-        gh<_i494.MarkAllNotificationsReadUseCase>(),
-        gh<_i494.GetUnreadCountUseCase>(),
-      ),
-    );
-    gh.factory<_i545.HomeBloc>(
-      () => registerModule.homeBloc(
-        gh<_i494.GetLatestJobsUseCase>(),
-        gh<_i494.GetUserFullProfileUseCase>(),
-      ),
-    );
-    gh.factory<_i674.HistoryPekerjaanCubit>(
-      () => registerModule.historyPekerjaanCubit(
-        gh<_i494.GetMyBidsUseCase>(),
-        gh<_i494.UpdateBidStatusUseCase>(),
-        gh<_i494.CreateJobReviewUseCase>(),
-      ),
+    gh.factory<_i1070.EditProfileCubit>(
+      () => registerModule.editProfileCubit(gh<_i494.UpdateProfileUseCase>()),
     );
     gh.factory<_i685.SearchUsedGoodsAdCubit>(
       () => registerModule.searchUsedGoodsAdCubit(
@@ -518,27 +558,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetUserProfileUseCase>(),
       ),
     );
-    gh.factory<_i473.RegisterCubit>(
-      () => registerModule.registerCubit(gh<_i494.RegisterUseCase>()),
-    );
-    gh.factory<_i10.JobDetailCubit>(
-      () => registerModule.jobDetailCubit(gh<_i494.GetJobByIdUseCase>()),
+    gh.factory<_i950.WorkerDetailCubit>(
+      () => registerModule.workerDetailCubit(gh<_i494.GetWorkerByIdUseCase>()),
     );
     gh.factory<_i674.HistoryIklanPekerjaanCubit>(
       () => registerModule.historyIklanPekerjaanCubit(
         gh<_i494.GetMyJobsUseCase>(),
-      ),
-    );
-    gh.factory<_i10.DaftarPelamarCubit>(
-      () => registerModule.daftarPelamarCubit(
-        gh<_i494.GetIncomingBidsUseCase>(),
-        gh<_i494.UpdateBidStatusUseCase>(),
-      ),
-    );
-    gh.factory<_i806.TakeJobCubit>(
-      () => registerModule.takeJobCubit(
-        gh<_i494.BidJobUseCase>(),
-        gh<_i494.GetMyWorkerProfileUseCase>(),
       ),
     );
     gh.factory<_i685.ClaimSecondhandCubit>(
@@ -546,40 +571,21 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.ClaimSecondhandUseCase>(),
       ),
     );
+    gh.factory<_i10.JobDetailCubit>(
+      () => registerModule.jobDetailCubit(gh<_i494.GetJobByIdUseCase>()),
+    );
     gh.factory<_i10.JobListingCubit>(
       () => registerModule.jobListingCubit(
         gh<_i494.GetJobsUseCase>(),
         gh<_i494.SyncEnumsUseCase>(),
       ),
     );
-    gh.lazySingleton<_i494.GetEnrollmentsByTrainingUseCase>(
-      () => registerModule.getEnrollmentsByTrainingUseCase(
-        gh<_i494.TrainingRepository>(),
-      ),
-    );
-    gh.lazySingleton<_i494.SubmitTrainingBadgeUseCase>(
-      () => registerModule.submitTrainingBadgeUseCase(
-        gh<_i494.TrainingRepository>(),
-      ),
-    );
-    gh.factory<_i216.PaymentCubit>(
-      () => registerModule.paymentCubit(
-        gh<_i494.UploadPaymentProofUseCase>(),
-      ),
-    );
-    gh.factory<_i216.DaftarPendaftarCubit>(
-      () => registerModule.daftarPendaftarCubit(
-        gh<_i494.GetEnrollmentsByTrainingUseCase>(),
-      ),
-    );
-    gh.factory<_i216.BadgeUploadCubit>(
-      () => registerModule.badgeUploadCubit(
-        gh<_i494.SubmitTrainingBadgeUseCase>(),
-      ),
-    );
-    gh.factory<_i674.HistoryIklanPelatihanCubit>(
-      () => registerModule.historyIklanPelatihanCubit(
-        gh<_i494.GetMyTrainingsUseCase>(),
+    gh.lazySingleton<_i884.NotificationCubit>(
+      () => registerModule.notificationCubit(
+        gh<_i494.GetNotificationsUseCase>(),
+        gh<_i494.MarkNotificationReadUseCase>(),
+        gh<_i494.MarkAllNotificationsReadUseCase>(),
+        gh<_i494.GetUnreadCountUseCase>(),
       ),
     );
     return this;

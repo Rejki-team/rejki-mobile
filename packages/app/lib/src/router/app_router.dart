@@ -377,6 +377,7 @@ class AppRouter {
                       jobTitle: extra['jobTitle'] as String? ?? '',
                       adCode: extra['adCode'] as String? ?? '',
                       jobStatus: extra['jobStatus'] as String? ?? '',
+                      jobDateOfJob: extra['jobDateOfJob'] as DateTime?,
                     ),
                   );
                 },

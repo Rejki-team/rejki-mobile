@@ -262,9 +262,14 @@ class PelamarCard extends StatelessWidget {
 
     switch (status.toLowerCase()) {
       case 'approve':
+        bgColor = AppColors.availabilityBadgeBg;
+        textColor = AppColors.primary;
+        label = 'Berlangsung';
+        break;
+      case 'completed':
         bgColor = AppColors.serviceCardIconBgGreen;
         textColor = AppColors.chatButtonGreen;
-        label = 'Diterima';
+        label = 'Selesai';
         break;
       case 'decline':
         bgColor = AppColors.error.withValues(alpha: 0.15);

@@ -26,4 +26,8 @@ abstract class JobMutationRepository {
     required int rating,
     required String review,
   });
+
+  /// Owner marks all approved bids as completed (job → done).
+  /// Backend validates the 30-minute window from bid/job start time.
+  Future<Either<JobFailure, Unit>> ownerCompleteJob({required String jobId});
 }

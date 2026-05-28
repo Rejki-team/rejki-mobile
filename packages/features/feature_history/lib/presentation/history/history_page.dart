@@ -734,6 +734,7 @@ class _HistoryList extends StatelessWidget {
                         'jobTitle': job.title,
                         'adCode': job.adCode,
                         'jobStatus': job.status,
+                        'jobDateOfJob': job.dateOfJob,
                       },
                     );
                     // Refresh setelah kembali dari DaftarPelamar agar

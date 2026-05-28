@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:designsystems/designsystems.dart';
+import 'package:components/components.dart';
 import 'package:domain/domain.dart';
 
 import 'cubit/daftar_pelamar_cubit.dart';
@@ -266,7 +267,7 @@ class _PelamarTab extends StatelessWidget {
   }
 }
 
-// ── Tab Pelamar Diterima (status = approve) ────────────────────────────────
+// ── Tab Pelamar Diterima (status approve + completed) ─────────────────────
 
 class _PelamarDiterimaTab extends StatelessWidget {
   final DaftarPelamarArgs args;
@@ -279,12 +280,41 @@ class _PelamarDiterimaTab extends StatelessWidget {
     required this.cubit,
   });
 
+  /// Referensi waktu mulai kerja untuk bid ini.
+  /// Utamakan Bid.DateOfJob (kesepakatan), fallback ke Job.DateOfJob (jadwal iklan).
+  DateTime _refTime(BidEntity bid) {
+    final bidTime = bid.dateOfJob;
+    if (!bidTime.isUtc
+        ? bidTime.isAfter(DateTime(2000))
+        : bidTime.toLocal().isAfter(DateTime(2000))) {
+      return bidTime;
+    }
+    return args.jobDateOfJob ?? DateTime.now();
+  }
+
+  /// Tombol "Tandai Selesai" dapat ditekan jika:
+  /// 1. Masih ada pelamar dengan status approve (belum semua selesai).
+  /// 2. Sudah 30 menit sejak referensi waktu terlama (earliest bid).
+  bool _canMarkDone(List<BidEntity> diterimaList) {
+    final hasApproved = diterimaList.any((b) => b.status == 'approve');
+    if (!hasApproved) return false;
+
+    final now = DateTime.now();
+    // Gunakan referensi waktu terkecil (paling awal) dari semua bid approve
+    final approvedBids = diterimaList.where((b) => b.status == 'approve');
+    final earliest = approvedBids
+        .map(_refTime)
+        .reduce((a, b) => a.isBefore(b) ? a : b);
+    return now.isAfter(earliest.add(const Duration(minutes: 30)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DaftarPelamarCubit, DaftarPelamarState>(
       buildWhen: (prev, curr) =>
           prev.diterimaStatus != curr.diterimaStatus ||
-          prev.diterimaList != curr.diterimaList,
+          prev.diterimaList != curr.diterimaList ||
+          prev.mutationStatus != curr.mutationStatus,
       builder: (context, state) {
         if (state.diterimaStatus == DaftarPelamarStatus.initial ||
             state.diterimaStatus == DaftarPelamarStatus.loading) {
@@ -306,38 +336,126 @@ class _PelamarDiterimaTab extends StatelessWidget {
           return const _EmptyView(message: 'Belum ada pelamar yang diterima');
         }
 
-        return RefreshIndicator(
-          onRefresh: () => cubit.loadPelamarDiterima(
-            jobId: args.jobId,
-            refresh: true,
-          ),
-          child: ListView.builder(
-            controller: scrollController,
-            padding: const EdgeInsets.all(AppSpacing.md),
-            itemCount:
-                state.diterimaList.length +
-                (state.diterimaStatus == DaftarPelamarStatus.loadingMore
-                    ? 1
-                    : 0),
-            itemBuilder: (context, index) {
-              if (index == state.diterimaList.length) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-              final bid = state.diterimaList[index];
-              return PelamarCard(
-                bid: bid,
-                adCode: bid.worker?.adCode ?? args.adCode,
-                showActionButtons: false,
-                onDetailPekerjaPressed: () =>
-                    _navigateToWorkerDetail(context, bid),
-              );
-            },
-          ),
+        final isJobDone = args.jobStatus == 'done';
+        final canMark = !isJobDone && _canMarkDone(state.diterimaList);
+        final isMarking =
+            state.mutationStatus == DaftarPelamarMutationStatus.loading;
+
+        return Column(
+          children: [
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () => cubit.loadPelamarDiterima(
+                  jobId: args.jobId,
+                  refresh: true,
+                ),
+                child: ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.md,
+                    AppSpacing.md,
+                    AppSpacing.xs,
+                  ),
+                  itemCount:
+                      state.diterimaList.length +
+                      (state.diterimaStatus == DaftarPelamarStatus.loadingMore
+                          ? 1
+                          : 0),
+                  itemBuilder: (context, index) {
+                    if (index == state.diterimaList.length) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: AppSpacing.md,
+                        ),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    final bid = state.diterimaList[index];
+                    return PelamarCard(
+                      bid: bid,
+                      adCode: bid.worker?.adCode ?? args.adCode,
+                      showActionButtons: false,
+                      onDetailPekerjaPressed: () =>
+                          _navigateToWorkerDetail(context, bid),
+                    );
+                  },
+                ),
+              ),
+            ),
+
+            // ── Tombol Tandai Selesai ────────────────────────────────────────
+            if (!isJobDone)
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (!canMark && !isMarking)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        child: Text(
+                          canMark
+                              ? ''
+                              : state.diterimaList
+                                      .every((b) => b.status == 'completed')
+                                  ? 'Semua pekerja telah menandai selesai.'
+                                  : 'Tersedia 30 menit setelah jam kerja dimulai.',
+                          textAlign: TextAlign.center,
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ElevatedButton(
+                      onPressed: canMark && !isMarking
+                          ? () => _onMarkDonePressed(context)
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.buttonGradientEnd,
+                        disabledBackgroundColor:
+                            AppColors.buttonGradientEnd.withValues(alpha: 0.4),
+                        minimumSize: const Size(double.infinity, 44),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: isMarking
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: AppColors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              'Tandai Pekerjaan Selesai',
+                              style: AppTypography.labelMedium.copyWith(
+                                color: AppColors.white,
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
         );
       },
+    );
+  }
+
+  void _onMarkDonePressed(BuildContext context) {
+    showWarningDialog(
+      context,
+      title: 'Tandai Pekerjaan Selesai?',
+      message:
+          'Semua pelamar yang diterima akan ditandai selesai dan pekerjaan '
+          'akan berubah statusnya menjadi selesai.',
+      cancelText: 'Batal',
+      confirmText: 'Ya, Selesai',
+      onConfirm: () => cubit.markAllComplete(jobId: args.jobId),
     );
   }
 

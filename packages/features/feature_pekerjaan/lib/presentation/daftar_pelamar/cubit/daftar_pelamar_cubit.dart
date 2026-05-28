@@ -7,10 +7,12 @@ import 'daftar_pelamar_state.dart';
 class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
   final GetIncomingBidsUseCase _getIncomingBidsUseCase;
   final UpdateBidStatusUseCase _updateBidStatusUseCase;
+  final OwnerCompleteJobUseCase _ownerCompleteJobUseCase;
 
   DaftarPelamarCubit(
     this._getIncomingBidsUseCase,
     this._updateBidStatusUseCase,
+    this._ownerCompleteJobUseCase,
   ) : super(const DaftarPelamarState());
 
   // ── Tab Pelamar (status=request) ────────────────────────────────────────────
@@ -209,6 +211,38 @@ class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
         mutationStatus: DaftarPelamarMutationStatus.success,
         mutationSuccessMessage: 'Pelamar berhasil ditolak.',
       )),
+    );
+  }
+
+  Future<void> markAllComplete({required String jobId}) async {
+    if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
+
+    emit(state.copyWith(
+      mutationStatus: DaftarPelamarMutationStatus.loading,
+      mutationErrorMessage: null,
+      mutationSuccessMessage: null,
+    ));
+
+    final result = await _ownerCompleteJobUseCase.execute(jobId: jobId);
+
+    if (isClosed) return;
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        mutationStatus: DaftarPelamarMutationStatus.failure,
+        mutationErrorMessage: _mapFailure(failure),
+      )),
+      (_) {
+        // Optimistic update: tandai semua bid approve → completed di state lokal
+        final updated = state.diterimaList
+            .map((b) => b.status == 'approve' ? b.copyWith(status: 'completed') : b)
+            .toList();
+        emit(state.copyWith(
+          diterimaList: updated,
+          mutationStatus: DaftarPelamarMutationStatus.success,
+          mutationSuccessMessage: 'Pekerjaan berhasil ditandai selesai.',
+        ));
+      },
     );
   }
 

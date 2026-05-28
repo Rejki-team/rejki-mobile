@@ -23,6 +23,8 @@ abstract class JobMutationDataSource {
     required int rating,
     required String review,
   });
+
+  Future<void> ownerCompleteJob({required String jobId});
 }
 
 /// Implementation of JobMutationDataSource
@@ -139,6 +141,20 @@ class JobMutationDataSourceImpl implements JobMutationDataSource {
         'review': review,
       },
     );
+
+    final apiResponse = ApiResponse<dynamic>.fromJson(
+      response.data as Map<String, dynamic>,
+      fromJsonT: (data) => data,
+    );
+
+    if (apiResponse.hasError) {
+      throw Exception(apiResponse.errorMessage);
+    }
+  }
+
+  @override
+  Future<void> ownerCompleteJob({required String jobId}) async {
+    final response = await dio.post('/jobs/$jobId/complete');
 
     final apiResponse = ApiResponse<dynamic>.fromJson(
       response.data as Map<String, dynamic>,

@@ -87,6 +87,21 @@ class JobMutationRepositoryImpl implements JobMutationRepository {
     }
   }
 
+  @override
+  Future<Either<JobFailure, Unit>> ownerCompleteJob({
+    required String jobId,
+  }) async {
+    try {
+      await remoteDataSource.ownerCompleteJob(jobId: jobId);
+      return const Right(unit);
+    } on DioException catch (e) {
+      final apiError = ApiError.fromDioException(e);
+      return Left(_mapApiErrorToJobFailure(apiError));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
   /// Map ApiError to JobFailure
   JobFailure _mapApiErrorToJobFailure(ApiError error) {
     switch (error.type) {
