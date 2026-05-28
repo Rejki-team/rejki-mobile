@@ -849,11 +849,13 @@ abstract class RegisterModule {
     GetIncomingBidsUseCase getIncomingBidsUseCase,
     UpdateBidStatusUseCase updateBidStatusUseCase,
     OwnerCompleteJobUseCase ownerCompleteJobUseCase,
+    OwnerConfirmBidUseCase ownerConfirmBidUseCase,
   ) =>
       DaftarPelamarCubit(
         getIncomingBidsUseCase,
         updateBidStatusUseCase,
         ownerCompleteJobUseCase,
+        ownerConfirmBidUseCase,
       );
 
   /// HistoryIklanPekerjaanCubit - untuk tab Iklan Saya di halaman riwayat
