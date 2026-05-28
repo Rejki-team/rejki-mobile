@@ -387,7 +387,13 @@ class _PelamarDiterimaTab extends StatelessWidget {
             // ── Tombol Tandai Selesai ────────────────────────────────────────
             if (!isJobDone)
               Padding(
-                padding: const EdgeInsets.all(AppSpacing.md),
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md +
+                      MediaQuery.viewPaddingOf(context).bottom,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
