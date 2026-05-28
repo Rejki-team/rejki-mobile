@@ -30,4 +30,11 @@ abstract class JobMutationRepository {
   /// Owner marks all approved bids as completed (job → done).
   /// Backend validates the 30-minute window from bid/job start time.
   Future<Either<JobFailure, Unit>> ownerCompleteJob({required String jobId});
+
+  /// Owner confirms a single worker's completion claim
+  /// (bid: pending_owner_confirm → completed).
+  Future<Either<JobFailure, Unit>> ownerConfirmBidComplete({
+    required String jobId,
+    required String bidId,
+  });
 }

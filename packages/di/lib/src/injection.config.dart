@@ -243,6 +243,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.JobMutationRepository>(),
       ),
     );
+    gh.lazySingleton<_i494.OwnerConfirmBidUseCase>(
+      () => registerModule.ownerConfirmBidUseCase(
+        gh<_i494.JobMutationRepository>(),
+      ),
+    );
     gh.lazySingleton<_i494.CreateJobReviewUseCase>(
       () => registerModule.createJobReviewUseCase(
         gh<_i494.JobMutationRepository>(),

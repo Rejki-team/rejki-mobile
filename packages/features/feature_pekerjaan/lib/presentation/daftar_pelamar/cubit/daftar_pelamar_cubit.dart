@@ -8,11 +8,13 @@ class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
   final GetIncomingBidsUseCase _getIncomingBidsUseCase;
   final UpdateBidStatusUseCase _updateBidStatusUseCase;
   final OwnerCompleteJobUseCase _ownerCompleteJobUseCase;
+  final OwnerConfirmBidUseCase _ownerConfirmBidUseCase;
 
   DaftarPelamarCubit(
     this._getIncomingBidsUseCase,
     this._updateBidStatusUseCase,
     this._ownerCompleteJobUseCase,
+    this._ownerConfirmBidUseCase,
   ) : super(const DaftarPelamarState());
 
   // ── Tab Pelamar (status=request) ────────────────────────────────────────────
@@ -117,9 +119,12 @@ class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
         diterimaError: _mapFailure(failure),
       )),
       (data) {
-        // Filter client-side: hanya tampilkan bid approve dan completed
+        // Filter client-side: tampilkan bid approve, pending_owner_confirm, dan completed
         final filtered = data.bids
-            .where((b) => b.status == 'approve' || b.status == 'completed')
+            .where((b) =>
+                b.status == 'approve' ||
+                b.status == 'pending_owner_confirm' ||
+                b.status == 'completed')
             .toList();
         final merged = refresh
             ? filtered
@@ -241,6 +246,44 @@ class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
           diterimaList: updated,
           mutationStatus: DaftarPelamarMutationStatus.success,
           mutationSuccessMessage: 'Pekerjaan berhasil ditandai selesai.',
+        ));
+      },
+    );
+  }
+
+  // Owner confirms a single worker's completion claim per-bid.
+  Future<void> confirmBidComplete({
+    required String jobId,
+    required String bidId,
+  }) async {
+    if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
+
+    emit(state.copyWith(
+      mutationStatus: DaftarPelamarMutationStatus.loading,
+      mutationErrorMessage: null,
+      mutationSuccessMessage: null,
+    ));
+
+    final result = await _ownerConfirmBidUseCase.execute(
+      jobId: jobId,
+      bidId: bidId,
+    );
+
+    if (isClosed) return;
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        mutationStatus: DaftarPelamarMutationStatus.failure,
+        mutationErrorMessage: _mapFailure(failure),
+      )),
+      (_) {
+        final updated = state.diterimaList
+            .map((b) => b.id == bidId ? b.copyWith(status: 'completed') : b)
+            .toList();
+        emit(state.copyWith(
+          diterimaList: updated,
+          mutationStatus: DaftarPelamarMutationStatus.success,
+          mutationSuccessMessage: 'Pekerjaan berhasil dikonfirmasi selesai.',
         ));
       },
     );

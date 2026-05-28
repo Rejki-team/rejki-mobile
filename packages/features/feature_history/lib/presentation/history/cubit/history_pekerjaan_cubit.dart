@@ -65,6 +65,8 @@ class HistoryPekerjaanCubit extends Cubit<HistoryPekerjaanState> {
     );
   }
 
+  // Worker claims the job is done — transitions to 'pending_owner_confirm'.
+  // The bid stays in this state until the owner confirms or 72h elapses.
   Future<void> markJobAsDone({
     required String jobId,
     required String bidId,
@@ -81,7 +83,7 @@ class HistoryPekerjaanCubit extends Cubit<HistoryPekerjaanState> {
     final result = await _updateBidStatusUseCase.execute(
       jobId: jobId,
       bidId: bidId,
-      status: 'completed',
+      status: 'pending_owner_confirm',
     );
 
     if (isClosed) return;
@@ -96,10 +98,9 @@ class HistoryPekerjaanCubit extends Cubit<HistoryPekerjaanState> {
       },
       (_) {
         if (isClosed) return;
-        // Optimistically update the list
         final updatedBids = state.bids.map((bid) {
           if (bid.id == bidId) {
-            return bid.copyWith(status: 'completed');
+            return bid.copyWith(status: 'pending_owner_confirm');
           }
           return bid;
         }).toList();
@@ -107,7 +108,8 @@ class HistoryPekerjaanCubit extends Cubit<HistoryPekerjaanState> {
         emit(state.copyWith(
           bids: updatedBids,
           mutationStatus: HistoryPekerjaanMutationStatus.success,
-          mutationSuccessMessage: 'Pekerjaan dengan kode $adCode sudah ditandai selesai.',
+          mutationSuccessMessage:
+              'Klaim selesai untuk pekerjaan $adCode telah dikirim. Menunggu konfirmasi pemilik.',
         ));
       },
     );

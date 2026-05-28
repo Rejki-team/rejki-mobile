@@ -21,6 +21,8 @@ abstract class BidModel with _$BidModel {
     WorkerBidModel? worker,
     @JsonKey(name: 'created_at') String? createdAt,
     @JsonKey(name: 'updated_at') String? updatedAt,
+    // Phase 1 — dual-confirmation tracking
+    @JsonKey(name: 'completion_claimed_at') String? completionClaimedAt,
   }) = _BidModel;
 
   factory BidModel.fromJson(Map<String, dynamic> json) => _$BidModelFromJson(json);
@@ -37,6 +39,9 @@ abstract class BidModel with _$BidModel {
       worker: worker?.toWorkerEntity(),
       createdAt: createdAt != null ? DateTime.tryParse(createdAt!) : null,
       updatedAt: updatedAt != null ? DateTime.tryParse(updatedAt!) : null,
+      completionClaimedAt: completionClaimedAt != null
+          ? DateTime.tryParse(completionClaimedAt!)
+          : null,
     );
   }
 }

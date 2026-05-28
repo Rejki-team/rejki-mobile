@@ -25,6 +25,11 @@ abstract class JobMutationDataSource {
   });
 
   Future<void> ownerCompleteJob({required String jobId});
+
+  Future<void> ownerConfirmBidComplete({
+    required String jobId,
+    required String bidId,
+  });
 }
 
 /// Implementation of JobMutationDataSource
@@ -155,6 +160,23 @@ class JobMutationDataSourceImpl implements JobMutationDataSource {
   @override
   Future<void> ownerCompleteJob({required String jobId}) async {
     final response = await dio.post('/jobs/$jobId/complete');
+
+    final apiResponse = ApiResponse<dynamic>.fromJson(
+      response.data as Map<String, dynamic>,
+      fromJsonT: (data) => data,
+    );
+
+    if (apiResponse.hasError) {
+      throw Exception(apiResponse.errorMessage);
+    }
+  }
+
+  @override
+  Future<void> ownerConfirmBidComplete({
+    required String jobId,
+    required String bidId,
+  }) async {
+    final response = await dio.post('/jobs/$jobId/bids/$bidId/confirm-complete');
 
     final apiResponse = ApiResponse<dynamic>.fromJson(
       response.data as Map<String, dynamic>,

@@ -21,6 +21,7 @@ _BidModel _$BidModelFromJson(Map<String, dynamic> json) => _BidModel(
       : WorkerBidModel.fromJson(json['worker'] as Map<String, dynamic>),
   createdAt: json['created_at'] as String?,
   updatedAt: json['updated_at'] as String?,
+  completionClaimedAt: json['completion_claimed_at'] as String?,
 );
 
 Map<String, dynamic> _$BidModelToJson(_BidModel instance) => <String, dynamic>{
@@ -34,4 +35,5 @@ Map<String, dynamic> _$BidModelToJson(_BidModel instance) => <String, dynamic>{
   'worker': instance.worker,
   'created_at': instance.createdAt,
   'updated_at': instance.updatedAt,
+  'completion_claimed_at': instance.completionClaimedAt,
 };

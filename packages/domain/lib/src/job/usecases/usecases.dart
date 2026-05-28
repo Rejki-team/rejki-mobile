@@ -12,3 +12,4 @@ export 'get_incoming_bids_usecase.dart';
 export 'update_bid_status_usecase.dart';
 export 'create_job_review_usecase.dart';
 export 'owner_complete_job_usecase.dart';
+export 'owner_confirm_bid_usecase.dart';

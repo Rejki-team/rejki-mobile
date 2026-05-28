@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BidModel {
 
- String get id;@JsonKey(name: 'job_id') String get jobId;@JsonKey(name: 'worker_id') String? get workerId;@JsonKey(name: 'user_id') String? get userId; String get status;@JsonKey(name: 'date_of_job') String get dateOfJob; JobModel? get job; WorkerBidModel? get worker;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'updated_at') String? get updatedAt;
+ String get id;@JsonKey(name: 'job_id') String get jobId;@JsonKey(name: 'worker_id') String? get workerId;@JsonKey(name: 'user_id') String? get userId; String get status;@JsonKey(name: 'date_of_job') String get dateOfJob; JobModel? get job; WorkerBidModel? get worker;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'updated_at') String? get updatedAt;// Phase 1 — dual-confirmation tracking
+@JsonKey(name: 'completion_claimed_at') String? get completionClaimedAt;
 /// Create a copy of BidModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $BidModelCopyWith<BidModel> get copyWith => _$BidModelCopyWithImpl<BidModel>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.completionClaimedAt, completionClaimedAt) || other.completionClaimedAt == completionClaimedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt,completionClaimedAt);
 
 @override
 String toString() {
-  return 'BidModel(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'BidModel(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt, completionClaimedAt: $completionClaimedAt)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $BidModelCopyWith<$Res>  {
   factory $BidModelCopyWith(BidModel value, $Res Function(BidModel) _then) = _$BidModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'job_id') String jobId,@JsonKey(name: 'worker_id') String? workerId,@JsonKey(name: 'user_id') String? userId, String status,@JsonKey(name: 'date_of_job') String dateOfJob, JobModel? job, WorkerBidModel? worker,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt
+ String id,@JsonKey(name: 'job_id') String jobId,@JsonKey(name: 'worker_id') String? workerId,@JsonKey(name: 'user_id') String? userId, String status,@JsonKey(name: 'date_of_job') String dateOfJob, JobModel? job, WorkerBidModel? worker,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'completion_claimed_at') String? completionClaimedAt
 });
 
 
@@ -65,7 +66,7 @@ class _$BidModelCopyWithImpl<$Res>
 
 /// Create a copy of BidModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jobId = null,Object? workerId = freezed,Object? userId = freezed,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jobId = null,Object? workerId = freezed,Object? userId = freezed,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? completionClaimedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,jobId: null == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
@@ -77,6 +78,7 @@ as String,job: freezed == job ? _self.job : job // ignore: cast_nullable_to_non_
 as JobModel?,worker: freezed == worker ? _self.worker : worker // ignore: cast_nullable_to_non_nullable
 as WorkerBidModel?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as String?,completionClaimedAt: freezed == completionClaimedAt ? _self.completionClaimedAt : completionClaimedAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -186,10 +188,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'completion_claimed_at')  String? completionClaimedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BidModel() when $default != null:
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt);case _:
   return orElse();
 
 }
@@ -207,10 +209,10 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'completion_claimed_at')  String? completionClaimedAt)  $default,) {final _that = this;
 switch (_that) {
 case _BidModel():
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -227,10 +229,10 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'completion_claimed_at')  String? completionClaimedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _BidModel() when $default != null:
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt);case _:
   return null;
 
 }
@@ -242,7 +244,7 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 @JsonSerializable()
 
 class _BidModel extends BidModel {
-  const _BidModel({required this.id, @JsonKey(name: 'job_id') required this.jobId, @JsonKey(name: 'worker_id') this.workerId, @JsonKey(name: 'user_id') this.userId, required this.status, @JsonKey(name: 'date_of_job') required this.dateOfJob, this.job, this.worker, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt}): super._();
+  const _BidModel({required this.id, @JsonKey(name: 'job_id') required this.jobId, @JsonKey(name: 'worker_id') this.workerId, @JsonKey(name: 'user_id') this.userId, required this.status, @JsonKey(name: 'date_of_job') required this.dateOfJob, this.job, this.worker, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt, @JsonKey(name: 'completion_claimed_at') this.completionClaimedAt}): super._();
   factory _BidModel.fromJson(Map<String, dynamic> json) => _$BidModelFromJson(json);
 
 @override final  String id;
@@ -255,6 +257,8 @@ class _BidModel extends BidModel {
 @override final  WorkerBidModel? worker;
 @override@JsonKey(name: 'created_at') final  String? createdAt;
 @override@JsonKey(name: 'updated_at') final  String? updatedAt;
+// Phase 1 — dual-confirmation tracking
+@override@JsonKey(name: 'completion_claimed_at') final  String? completionClaimedAt;
 
 /// Create a copy of BidModel
 /// with the given fields replaced by the non-null parameter values.
@@ -269,16 +273,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.completionClaimedAt, completionClaimedAt) || other.completionClaimedAt == completionClaimedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt,completionClaimedAt);
 
 @override
 String toString() {
-  return 'BidModel(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'BidModel(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt, completionClaimedAt: $completionClaimedAt)';
 }
 
 
@@ -289,7 +293,7 @@ abstract mixin class _$BidModelCopyWith<$Res> implements $BidModelCopyWith<$Res>
   factory _$BidModelCopyWith(_BidModel value, $Res Function(_BidModel) _then) = __$BidModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'job_id') String jobId,@JsonKey(name: 'worker_id') String? workerId,@JsonKey(name: 'user_id') String? userId, String status,@JsonKey(name: 'date_of_job') String dateOfJob, JobModel? job, WorkerBidModel? worker,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt
+ String id,@JsonKey(name: 'job_id') String jobId,@JsonKey(name: 'worker_id') String? workerId,@JsonKey(name: 'user_id') String? userId, String status,@JsonKey(name: 'date_of_job') String dateOfJob, JobModel? job, WorkerBidModel? worker,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'completion_claimed_at') String? completionClaimedAt
 });
 
 
@@ -306,7 +310,7 @@ class __$BidModelCopyWithImpl<$Res>
 
 /// Create a copy of BidModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jobId = null,Object? workerId = freezed,Object? userId = freezed,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jobId = null,Object? workerId = freezed,Object? userId = freezed,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? completionClaimedAt = freezed,}) {
   return _then(_BidModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,jobId: null == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
@@ -318,6 +322,7 @@ as String,job: freezed == job ? _self.job : job // ignore: cast_nullable_to_non_
 as JobModel?,worker: freezed == worker ? _self.worker : worker // ignore: cast_nullable_to_non_nullable
 as WorkerBidModel?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as String?,completionClaimedAt: freezed == completionClaimedAt ? _self.completionClaimedAt : completionClaimedAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

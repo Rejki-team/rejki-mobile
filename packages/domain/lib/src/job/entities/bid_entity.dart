@@ -19,5 +19,7 @@ abstract class BidEntity with _$BidEntity {
     WorkerEntity? worker,
     DateTime? createdAt,
     DateTime? updatedAt,
+    // Phase 1 — dual-confirmation tracking
+    DateTime? completionClaimedAt,
   }) = _BidEntity;
 }

@@ -100,6 +100,17 @@ as DateTime?,
 /// Adds pattern-matching-related methods to [TrainingEntity].
 extension TrainingEntityPatterns on TrainingEntity {
 /// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
 @optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TrainingEntity value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
@@ -110,6 +121,18 @@ return $default(_that);case _:
 }
 }
 /// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
 @optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TrainingEntity value)  $default,){
 final _that = this;
 switch (_that) {
@@ -120,6 +143,17 @@ return $default(_that);case _:
 }
 }
 /// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
 @optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TrainingEntity value)?  $default,){
 final _that = this;
 switch (_that) {
@@ -130,6 +164,17 @@ return $default(_that);case _:
 }
 }
 /// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String companyName,  String locationAddress,  String dateOfTraining,  int feePerPerson,  String status,  String userId,  String? adCode,  String? email,  String? role,  String? province,  String? city,  String? district,  String? village,  String? certificate,  String? rejectionReason,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  int totalApprovedEnrollees,  List<TrainingImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TrainingEntity() when $default != null:
@@ -139,6 +184,18 @@ return $default(_that.id,_that.title,_that.description,_that.companyName,_that.l
 }
 }
 /// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String companyName,  String locationAddress,  String dateOfTraining,  int feePerPerson,  String status,  String userId,  String? adCode,  String? email,  String? role,  String? province,  String? city,  String? district,  String? village,  String? certificate,  String? rejectionReason,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  int totalApprovedEnrollees,  List<TrainingImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _TrainingEntity():
@@ -148,6 +205,17 @@ return $default(_that.id,_that.title,_that.description,_that.companyName,_that.l
 }
 }
 /// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description,  String companyName,  String locationAddress,  String dateOfTraining,  int feePerPerson,  String status,  String userId,  String? adCode,  String? email,  String? role,  String? province,  String? city,  String? district,  String? village,  String? certificate,  String? rejectionReason,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  int totalApprovedEnrollees,  List<TrainingImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _TrainingEntity() when $default != null:
@@ -164,7 +232,7 @@ return $default(_that.id,_that.title,_that.description,_that.companyName,_that.l
 
 class _TrainingEntity extends TrainingEntity {
   const _TrainingEntity({required this.id, required this.title, required this.description, required this.companyName, required this.locationAddress, required this.dateOfTraining, required this.feePerPerson, required this.status, required this.userId, this.adCode, this.email, this.role, this.province, this.city, this.district, this.village, this.certificate, this.rejectionReason, this.bankName = '', this.bankAccountNumber = '', this.bankAccountHolderName = '', final  List<String> facilities = const [], this.totalApprovedEnrollees = 0, final  List<TrainingImageEntity> images = const [], this.createdAt, this.updatedAt}): _facilities = facilities,_images = images,super._();
-
+  
 
 @override final  String id;
 @override final  String title;
@@ -184,9 +252,9 @@ class _TrainingEntity extends TrainingEntity {
 @override final  String? village;
 @override final  String? certificate;
 @override final  String? rejectionReason;
-@override final  String bankName;
-@override final  String bankAccountNumber;
-@override final  String bankAccountHolderName;
+@override@JsonKey() final  String bankName;
+@override@JsonKey() final  String bankAccountNumber;
+@override@JsonKey() final  String bankAccountHolderName;
  final  List<String> _facilities;
 @override@JsonKey() List<String> get facilities {
   if (_facilities is EqualUnmodifiableListView) return _facilities;
@@ -194,7 +262,7 @@ class _TrainingEntity extends TrainingEntity {
   return EqualUnmodifiableListView(_facilities);
 }
 
-@override final  int totalApprovedEnrollees;
+@override@JsonKey() final  int totalApprovedEnrollees;
  final  List<TrainingImageEntity> _images;
 @override@JsonKey() List<TrainingImageEntity> get images {
   if (_images is EqualUnmodifiableListView) return _images;

@@ -186,6 +186,11 @@ abstract class RegisterModule {
   OwnerCompleteJobUseCase ownerCompleteJobUseCase(JobMutationRepository repository) =>
       OwnerCompleteJobUseCase(repository);
 
+  /// OwnerConfirmBidUseCase - untuk pemilik konfirmasi klaim selesai per-bid
+  @lazySingleton
+  OwnerConfirmBidUseCase ownerConfirmBidUseCase(JobMutationRepository repository) =>
+      OwnerConfirmBidUseCase(repository);
+
   /// CreateJobReviewUseCase - untuk memberikan rating dan review pada pekerjaan
   @lazySingleton
   CreateJobReviewUseCase createJobReviewUseCase(JobMutationRepository repository) =>
