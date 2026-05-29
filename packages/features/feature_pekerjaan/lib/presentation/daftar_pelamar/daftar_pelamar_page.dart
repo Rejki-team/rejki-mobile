@@ -520,57 +520,16 @@ class _PelamarDiterimaTab extends StatelessWidget {
     required Color confirmColor,
     required void Function(String reason) onConfirm,
   }) {
-    final controller = TextEditingController();
     showDialog<void>(
       context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          backgroundColor: AppColors.white,
-          title: Text(title, style: AppTypography.titleSmall),
-          content: TextField(
-            controller: controller,
-            maxLines: 4,
-            minLines: 2,
-            maxLength: 500,
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: AppTypography.caption.copyWith(
-                color: AppColors.textTertiary,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: Text(
-                'Batal',
-                style: AppTypography.labelMedium.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                final reason = controller.text.trim();
-                if (reason.length < 10) return;
-                Navigator.of(ctx).pop();
-                onConfirm(reason);
-              },
-              child: Text(
-                confirmLabel,
-                style: AppTypography.labelMedium.copyWith(
-                  color: confirmColor,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    ).then((_) => controller.dispose());
+      builder: (ctx) => _ReasonDialog(
+        title: title,
+        hint: hint,
+        confirmLabel: confirmLabel,
+        confirmColor: confirmColor,
+        onConfirm: onConfirm,
+      ),
+    );
   }
 }
 
@@ -636,6 +595,89 @@ class _ErrorView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ── _ReasonDialog ──────────────────────────────────────────────────────────
+// StatefulWidget agar TextEditingController punya lifecycle sendiri dan tidak
+// di-dispose saat builder dipanggil ulang akibat state rebuild dari cubit.
+
+class _ReasonDialog extends StatefulWidget {
+  final String title;
+  final String hint;
+  final String confirmLabel;
+  final Color confirmColor;
+  final void Function(String reason) onConfirm;
+
+  const _ReasonDialog({
+    required this.title,
+    required this.hint,
+    required this.confirmLabel,
+    required this.confirmColor,
+    required this.onConfirm,
+  });
+
+  @override
+  State<_ReasonDialog> createState() => _ReasonDialogState();
+}
+
+class _ReasonDialogState extends State<_ReasonDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppColors.white,
+      title: Text(widget.title, style: AppTypography.titleSmall),
+      content: TextField(
+        controller: _controller,
+        maxLines: 4,
+        minLines: 2,
+        maxLength: 500,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: widget.hint,
+          hintStyle: AppTypography.caption.copyWith(
+            color: AppColors.textTertiary,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(
+            'Batal',
+            style: AppTypography.labelMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            final reason = _controller.text.trim();
+            if (reason.length < 10) return;
+            Navigator.of(context).pop();
+            widget.onConfirm(reason);
+          },
+          child: Text(
+            widget.confirmLabel,
+            style: AppTypography.labelMedium.copyWith(
+              color: widget.confirmColor,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
