@@ -13,3 +13,7 @@ export 'update_bid_status_usecase.dart';
 export 'create_job_review_usecase.dart';
 export 'owner_complete_job_usecase.dart';
 export 'owner_confirm_bid_usecase.dart';
+// Phase 2 — Dispute & Cancellation
+export 'dispute_bid_usecase.dart';
+export 'cancel_bid_usecase.dart';
+export 'upload_bid_evidence_usecase.dart';

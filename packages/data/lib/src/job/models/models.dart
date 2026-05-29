@@ -8,3 +8,4 @@ export 'pagination_model.dart';
 export 'user_job_model.dart';
 export 'bid_model.dart';
 export 'bids_response_model.dart';
+export 'job_bid_evidence_model.dart';

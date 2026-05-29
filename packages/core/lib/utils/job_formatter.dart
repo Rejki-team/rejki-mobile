@@ -117,10 +117,16 @@ class JobFormatter {
 
   /// Maps bid status string to UI label.
   ///
-  /// - `'request'` → `'Melamar'`
-  /// - `'approve'` → `'Diterima'`
-  /// - `'decline'` → `'Ditolak'`
-  /// - otherwise → `'Melamar'`
+  /// - `'request'`              → `'Melamar'`
+  /// - `'approve'`              → `'Diterima'`
+  /// - `'decline'`              → `'Ditolak'`
+  /// - `'pending_owner_confirm'`→ `'Menunggu Konfirmasi'`
+  /// - `'completed'`            → `'Selesai'`
+  /// - `'disputed'`             → `'Sengketa'`
+  /// - `'cancelled_by_owner'`   → `'Dibatalkan Pemilik'`
+  /// - `'cancelled_by_worker'`  → `'Dibatalkan Pekerja'`
+  /// - `'cancelled_by_admin'`   → `'Dibatalkan Admin'`
+  /// - otherwise                → `'Melamar'`
   static String getBidStatusLabel(String status) {
     switch (status.toLowerCase()) {
       case 'request':
@@ -129,8 +135,35 @@ class JobFormatter {
         return 'Diterima';
       case 'decline':
         return 'Ditolak';
+      case 'pending_owner_confirm':
+        return 'Menunggu Konfirmasi';
+      case 'completed':
+        return 'Selesai';
+      case 'disputed':
+        return 'Sengketa';
+      case 'cancelled_by_owner':
+        return 'Dibatalkan Pemilik';
+      case 'cancelled_by_worker':
+        return 'Dibatalkan Pekerja';
+      case 'cancelled_by_admin':
+        return 'Dibatalkan Admin';
       default:
         return 'Melamar';
+    }
+  }
+
+  /// Returns true if [status] is a final/terminal bid state
+  /// (no further transitions possible from the worker or owner side).
+  static bool isBidStatusFinal(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+      case 'decline':
+      case 'cancelled_by_owner':
+      case 'cancelled_by_worker':
+      case 'cancelled_by_admin':
+        return true;
+      default:
+        return false;
     }
   }
 

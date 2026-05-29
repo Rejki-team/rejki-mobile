@@ -225,7 +225,7 @@ return $default(_that.training,_that.isLoading,_that.isFailure,_that.errorMessag
 
 class _TrainingDetailState implements TrainingDetailState {
   const _TrainingDetailState({this.training, this.isLoading = true, this.isFailure = false, this.errorMessage, this.isRegistering = false, this.isRegistrationSuccess = false, this.isOwner = false});
-
+  
 
 @override final  TrainingDetailModel? training;
 @override@JsonKey() final  bool isLoading;

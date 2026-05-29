@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$BidModel {
 
  String get id;@JsonKey(name: 'job_id') String get jobId;@JsonKey(name: 'worker_id') String? get workerId;@JsonKey(name: 'user_id') String? get userId; String get status;@JsonKey(name: 'date_of_job') String get dateOfJob; JobModel? get job; WorkerBidModel? get worker;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'updated_at') String? get updatedAt;// Phase 1 — dual-confirmation tracking
-@JsonKey(name: 'completion_claimed_at') String? get completionClaimedAt;@JsonKey(name: 'slot_count') int get slotCount;
+@JsonKey(name: 'completion_claimed_at') String? get completionClaimedAt;@JsonKey(name: 'slot_count') int get slotCount;// Phase 2 — dispute & cancellation
+@JsonKey(name: 'dispute_reason') String? get disputeReason;@JsonKey(name: 'disputed_at') String? get disputedAt;@JsonKey(name: 'cancelled_reason') String? get cancelledReason;@JsonKey(name: 'cancelled_by') String? get cancelledBy; List<JobBidEvidenceModel> get evidence;
 /// Create a copy of BidModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +30,16 @@ $BidModelCopyWith<BidModel> get copyWith => _$BidModelCopyWithImpl<BidModel>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.completionClaimedAt, completionClaimedAt) || other.completionClaimedAt == completionClaimedAt)&&(identical(other.slotCount, slotCount) || other.slotCount == slotCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.completionClaimedAt, completionClaimedAt) || other.completionClaimedAt == completionClaimedAt)&&(identical(other.slotCount, slotCount) || other.slotCount == slotCount)&&(identical(other.disputeReason, disputeReason) || other.disputeReason == disputeReason)&&(identical(other.disputedAt, disputedAt) || other.disputedAt == disputedAt)&&(identical(other.cancelledReason, cancelledReason) || other.cancelledReason == cancelledReason)&&(identical(other.cancelledBy, cancelledBy) || other.cancelledBy == cancelledBy)&&const DeepCollectionEquality().equals(other.evidence, evidence));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt,completionClaimedAt,slotCount);
+int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt,completionClaimedAt,slotCount,disputeReason,disputedAt,cancelledReason,cancelledBy,const DeepCollectionEquality().hash(evidence));
 
 @override
 String toString() {
-  return 'BidModel(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt, completionClaimedAt: $completionClaimedAt, slotCount: $slotCount)';
+  return 'BidModel(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt, completionClaimedAt: $completionClaimedAt, slotCount: $slotCount, disputeReason: $disputeReason, disputedAt: $disputedAt, cancelledReason: $cancelledReason, cancelledBy: $cancelledBy, evidence: $evidence)';
 }
 
 
@@ -49,7 +50,7 @@ abstract mixin class $BidModelCopyWith<$Res>  {
   factory $BidModelCopyWith(BidModel value, $Res Function(BidModel) _then) = _$BidModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'job_id') String jobId,@JsonKey(name: 'worker_id') String? workerId,@JsonKey(name: 'user_id') String? userId, String status,@JsonKey(name: 'date_of_job') String dateOfJob, JobModel? job, WorkerBidModel? worker,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'completion_claimed_at') String? completionClaimedAt,@JsonKey(name: 'slot_count') int slotCount
+ String id,@JsonKey(name: 'job_id') String jobId,@JsonKey(name: 'worker_id') String? workerId,@JsonKey(name: 'user_id') String? userId, String status,@JsonKey(name: 'date_of_job') String dateOfJob, JobModel? job, WorkerBidModel? worker,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'completion_claimed_at') String? completionClaimedAt,@JsonKey(name: 'slot_count') int slotCount,@JsonKey(name: 'dispute_reason') String? disputeReason,@JsonKey(name: 'disputed_at') String? disputedAt,@JsonKey(name: 'cancelled_reason') String? cancelledReason,@JsonKey(name: 'cancelled_by') String? cancelledBy, List<JobBidEvidenceModel> evidence
 });
 
 
@@ -66,7 +67,7 @@ class _$BidModelCopyWithImpl<$Res>
 
 /// Create a copy of BidModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jobId = null,Object? workerId = freezed,Object? userId = freezed,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? completionClaimedAt = freezed,Object? slotCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jobId = null,Object? workerId = freezed,Object? userId = freezed,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? completionClaimedAt = freezed,Object? slotCount = null,Object? disputeReason = freezed,Object? disputedAt = freezed,Object? cancelledReason = freezed,Object? cancelledBy = freezed,Object? evidence = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,jobId: null == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
@@ -80,7 +81,12 @@ as WorkerBidModel?,createdAt: freezed == createdAt ? _self.createdAt : createdAt
 as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as String?,completionClaimedAt: freezed == completionClaimedAt ? _self.completionClaimedAt : completionClaimedAt // ignore: cast_nullable_to_non_nullable
 as String?,slotCount: null == slotCount ? _self.slotCount : slotCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,disputeReason: freezed == disputeReason ? _self.disputeReason : disputeReason // ignore: cast_nullable_to_non_nullable
+as String?,disputedAt: freezed == disputedAt ? _self.disputedAt : disputedAt // ignore: cast_nullable_to_non_nullable
+as String?,cancelledReason: freezed == cancelledReason ? _self.cancelledReason : cancelledReason // ignore: cast_nullable_to_non_nullable
+as String?,cancelledBy: freezed == cancelledBy ? _self.cancelledBy : cancelledBy // ignore: cast_nullable_to_non_nullable
+as String?,evidence: null == evidence ? _self.evidence : evidence // ignore: cast_nullable_to_non_nullable
+as List<JobBidEvidenceModel>,
   ));
 }
 /// Create a copy of BidModel
@@ -189,10 +195,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'completion_claimed_at')  String? completionClaimedAt, @JsonKey(name: 'slot_count')  int slotCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'completion_claimed_at')  String? completionClaimedAt, @JsonKey(name: 'slot_count')  int slotCount, @JsonKey(name: 'dispute_reason')  String? disputeReason, @JsonKey(name: 'disputed_at')  String? disputedAt, @JsonKey(name: 'cancelled_reason')  String? cancelledReason, @JsonKey(name: 'cancelled_by')  String? cancelledBy,  List<JobBidEvidenceModel> evidence)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BidModel() when $default != null:
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount,_that.disputeReason,_that.disputedAt,_that.cancelledReason,_that.cancelledBy,_that.evidence);case _:
   return orElse();
 
 }
@@ -210,10 +216,10 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'completion_claimed_at')  String? completionClaimedAt, @JsonKey(name: 'slot_count')  int slotCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'completion_claimed_at')  String? completionClaimedAt, @JsonKey(name: 'slot_count')  int slotCount, @JsonKey(name: 'dispute_reason')  String? disputeReason, @JsonKey(name: 'disputed_at')  String? disputedAt, @JsonKey(name: 'cancelled_reason')  String? cancelledReason, @JsonKey(name: 'cancelled_by')  String? cancelledBy,  List<JobBidEvidenceModel> evidence)  $default,) {final _that = this;
 switch (_that) {
 case _BidModel():
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount,_that.disputeReason,_that.disputedAt,_that.cancelledReason,_that.cancelledBy,_that.evidence);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -230,10 +236,10 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'completion_claimed_at')  String? completionClaimedAt, @JsonKey(name: 'slot_count')  int slotCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'job_id')  String jobId, @JsonKey(name: 'worker_id')  String? workerId, @JsonKey(name: 'user_id')  String? userId,  String status, @JsonKey(name: 'date_of_job')  String dateOfJob,  JobModel? job,  WorkerBidModel? worker, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'completion_claimed_at')  String? completionClaimedAt, @JsonKey(name: 'slot_count')  int slotCount, @JsonKey(name: 'dispute_reason')  String? disputeReason, @JsonKey(name: 'disputed_at')  String? disputedAt, @JsonKey(name: 'cancelled_reason')  String? cancelledReason, @JsonKey(name: 'cancelled_by')  String? cancelledBy,  List<JobBidEvidenceModel> evidence)?  $default,) {final _that = this;
 switch (_that) {
 case _BidModel() when $default != null:
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount,_that.disputeReason,_that.disputedAt,_that.cancelledReason,_that.cancelledBy,_that.evidence);case _:
   return null;
 
 }
@@ -245,7 +251,7 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 @JsonSerializable()
 
 class _BidModel extends BidModel {
-  const _BidModel({required this.id, @JsonKey(name: 'job_id') required this.jobId, @JsonKey(name: 'worker_id') this.workerId, @JsonKey(name: 'user_id') this.userId, required this.status, @JsonKey(name: 'date_of_job') required this.dateOfJob, this.job, this.worker, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt, @JsonKey(name: 'completion_claimed_at') this.completionClaimedAt, @JsonKey(name: 'slot_count') this.slotCount = 1}): super._();
+  const _BidModel({required this.id, @JsonKey(name: 'job_id') required this.jobId, @JsonKey(name: 'worker_id') this.workerId, @JsonKey(name: 'user_id') this.userId, required this.status, @JsonKey(name: 'date_of_job') required this.dateOfJob, this.job, this.worker, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt, @JsonKey(name: 'completion_claimed_at') this.completionClaimedAt, @JsonKey(name: 'slot_count') this.slotCount = 1, @JsonKey(name: 'dispute_reason') this.disputeReason, @JsonKey(name: 'disputed_at') this.disputedAt, @JsonKey(name: 'cancelled_reason') this.cancelledReason, @JsonKey(name: 'cancelled_by') this.cancelledBy, final  List<JobBidEvidenceModel> evidence = const []}): _evidence = evidence,super._();
   factory _BidModel.fromJson(Map<String, dynamic> json) => _$BidModelFromJson(json);
 
 @override final  String id;
@@ -261,6 +267,18 @@ class _BidModel extends BidModel {
 // Phase 1 — dual-confirmation tracking
 @override@JsonKey(name: 'completion_claimed_at') final  String? completionClaimedAt;
 @override@JsonKey(name: 'slot_count') final  int slotCount;
+// Phase 2 — dispute & cancellation
+@override@JsonKey(name: 'dispute_reason') final  String? disputeReason;
+@override@JsonKey(name: 'disputed_at') final  String? disputedAt;
+@override@JsonKey(name: 'cancelled_reason') final  String? cancelledReason;
+@override@JsonKey(name: 'cancelled_by') final  String? cancelledBy;
+ final  List<JobBidEvidenceModel> _evidence;
+@override@JsonKey() List<JobBidEvidenceModel> get evidence {
+  if (_evidence is EqualUnmodifiableListView) return _evidence;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_evidence);
+}
+
 
 /// Create a copy of BidModel
 /// with the given fields replaced by the non-null parameter values.
@@ -275,16 +293,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.completionClaimedAt, completionClaimedAt) || other.completionClaimedAt == completionClaimedAt)&&(identical(other.slotCount, slotCount) || other.slotCount == slotCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BidModel&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.completionClaimedAt, completionClaimedAt) || other.completionClaimedAt == completionClaimedAt)&&(identical(other.slotCount, slotCount) || other.slotCount == slotCount)&&(identical(other.disputeReason, disputeReason) || other.disputeReason == disputeReason)&&(identical(other.disputedAt, disputedAt) || other.disputedAt == disputedAt)&&(identical(other.cancelledReason, cancelledReason) || other.cancelledReason == cancelledReason)&&(identical(other.cancelledBy, cancelledBy) || other.cancelledBy == cancelledBy)&&const DeepCollectionEquality().equals(other._evidence, _evidence));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt,completionClaimedAt,slotCount);
+int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt,completionClaimedAt,slotCount,disputeReason,disputedAt,cancelledReason,cancelledBy,const DeepCollectionEquality().hash(_evidence));
 
 @override
 String toString() {
-  return 'BidModel(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt, completionClaimedAt: $completionClaimedAt, slotCount: $slotCount)';
+  return 'BidModel(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt, completionClaimedAt: $completionClaimedAt, slotCount: $slotCount, disputeReason: $disputeReason, disputedAt: $disputedAt, cancelledReason: $cancelledReason, cancelledBy: $cancelledBy, evidence: $evidence)';
 }
 
 
@@ -295,7 +313,7 @@ abstract mixin class _$BidModelCopyWith<$Res> implements $BidModelCopyWith<$Res>
   factory _$BidModelCopyWith(_BidModel value, $Res Function(_BidModel) _then) = __$BidModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'job_id') String jobId,@JsonKey(name: 'worker_id') String? workerId,@JsonKey(name: 'user_id') String? userId, String status,@JsonKey(name: 'date_of_job') String dateOfJob, JobModel? job, WorkerBidModel? worker,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'completion_claimed_at') String? completionClaimedAt,@JsonKey(name: 'slot_count') int slotCount
+ String id,@JsonKey(name: 'job_id') String jobId,@JsonKey(name: 'worker_id') String? workerId,@JsonKey(name: 'user_id') String? userId, String status,@JsonKey(name: 'date_of_job') String dateOfJob, JobModel? job, WorkerBidModel? worker,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'completion_claimed_at') String? completionClaimedAt,@JsonKey(name: 'slot_count') int slotCount,@JsonKey(name: 'dispute_reason') String? disputeReason,@JsonKey(name: 'disputed_at') String? disputedAt,@JsonKey(name: 'cancelled_reason') String? cancelledReason,@JsonKey(name: 'cancelled_by') String? cancelledBy, List<JobBidEvidenceModel> evidence
 });
 
 
@@ -312,7 +330,7 @@ class __$BidModelCopyWithImpl<$Res>
 
 /// Create a copy of BidModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jobId = null,Object? workerId = freezed,Object? userId = freezed,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? completionClaimedAt = freezed,Object? slotCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jobId = null,Object? workerId = freezed,Object? userId = freezed,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? completionClaimedAt = freezed,Object? slotCount = null,Object? disputeReason = freezed,Object? disputedAt = freezed,Object? cancelledReason = freezed,Object? cancelledBy = freezed,Object? evidence = null,}) {
   return _then(_BidModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,jobId: null == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
@@ -326,7 +344,12 @@ as WorkerBidModel?,createdAt: freezed == createdAt ? _self.createdAt : createdAt
 as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as String?,completionClaimedAt: freezed == completionClaimedAt ? _self.completionClaimedAt : completionClaimedAt // ignore: cast_nullable_to_non_nullable
 as String?,slotCount: null == slotCount ? _self.slotCount : slotCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,disputeReason: freezed == disputeReason ? _self.disputeReason : disputeReason // ignore: cast_nullable_to_non_nullable
+as String?,disputedAt: freezed == disputedAt ? _self.disputedAt : disputedAt // ignore: cast_nullable_to_non_nullable
+as String?,cancelledReason: freezed == cancelledReason ? _self.cancelledReason : cancelledReason // ignore: cast_nullable_to_non_nullable
+as String?,cancelledBy: freezed == cancelledBy ? _self.cancelledBy : cancelledBy // ignore: cast_nullable_to_non_nullable
+as String?,evidence: null == evidence ? _self._evidence : evidence // ignore: cast_nullable_to_non_nullable
+as List<JobBidEvidenceModel>,
   ));
 }
 

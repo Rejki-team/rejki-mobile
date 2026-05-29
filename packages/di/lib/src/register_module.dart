@@ -191,6 +191,21 @@ abstract class RegisterModule {
   OwnerConfirmBidUseCase ownerConfirmBidUseCase(JobMutationRepository repository) =>
       OwnerConfirmBidUseCase(repository);
 
+  /// DisputeBidUseCase - untuk pemilik menolak klaim selesai dan membuka sengketa
+  @lazySingleton
+  DisputeBidUseCase disputeBidUseCase(JobMutationRepository repository) =>
+      DisputeBidUseCase(repository);
+
+  /// CancelBidUseCase - untuk pemilik atau pekerja membatalkan bid yang sudah disetujui
+  @lazySingleton
+  CancelBidUseCase cancelBidUseCase(JobMutationRepository repository) =>
+      CancelBidUseCase(repository);
+
+  /// UploadBidEvidenceUseCase - untuk pekerja upload bukti pekerjaan
+  @lazySingleton
+  UploadBidEvidenceUseCase uploadBidEvidenceUseCase(JobMutationRepository repository) =>
+      UploadBidEvidenceUseCase(repository);
+
   /// CreateJobReviewUseCase - untuk memberikan rating dan review pada pekerjaan
   @lazySingleton
   CreateJobReviewUseCase createJobReviewUseCase(JobMutationRepository repository) =>
@@ -850,12 +865,16 @@ abstract class RegisterModule {
     UpdateBidStatusUseCase updateBidStatusUseCase,
     OwnerCompleteJobUseCase ownerCompleteJobUseCase,
     OwnerConfirmBidUseCase ownerConfirmBidUseCase,
+    DisputeBidUseCase disputeBidUseCase,
+    CancelBidUseCase cancelBidUseCase,
   ) =>
       DaftarPelamarCubit(
         getIncomingBidsUseCase,
         updateBidStatusUseCase,
         ownerCompleteJobUseCase,
         ownerConfirmBidUseCase,
+        disputeBidUseCase,
+        cancelBidUseCase,
       );
 
   /// HistoryIklanPekerjaanCubit - untuk tab Iklan Saya di halaman riwayat

@@ -378,6 +378,16 @@ class _PelamarDiterimaTab extends StatelessWidget {
                       showActionButtons: false,
                       onDetailPekerjaPressed: () =>
                           _navigateToWorkerDetail(context, bid),
+                      // Phase 2 — dispute hanya saat pending_owner_confirm
+                      onDisputePressed: bid.status == 'pending_owner_confirm'
+                          ? () => _onDisputePressed(context, bid)
+                          : null,
+                      // Phase 2 — cancel hanya saat approve atau pending_owner_confirm
+                      onCancelPressed:
+                          (bid.status == 'approve' ||
+                                  bid.status == 'pending_owner_confirm')
+                              ? () => _onCancelPressed(context, bid)
+                              : null,
                     );
                   },
                 ),
@@ -470,6 +480,97 @@ class _PelamarDiterimaTab extends StatelessWidget {
     if (workerId.isNotEmpty) {
       context.push('/pekerja/$workerId');
     }
+  }
+
+  void _onDisputePressed(BuildContext context, BidEntity bid) {
+    _showReasonDialog(
+      context,
+      title: 'Ajukan Sengketa',
+      hint: 'Jelaskan mengapa Anda tidak menyetujui klaim selesai ini...',
+      confirmLabel: 'Ajukan Sengketa',
+      confirmColor: AppColors.error,
+      onConfirm: (reason) => cubit.disputeBid(
+        jobId: args.jobId,
+        bidId: bid.id,
+        reason: reason,
+      ),
+    );
+  }
+
+  void _onCancelPressed(BuildContext context, BidEntity bid) {
+    _showReasonDialog(
+      context,
+      title: 'Batalkan Bid',
+      hint: 'Jelaskan alasan pembatalan...',
+      confirmLabel: 'Batalkan Bid',
+      confirmColor: AppColors.textSecondary,
+      onConfirm: (reason) => cubit.cancelBid(
+        jobId: args.jobId,
+        bidId: bid.id,
+        reason: reason,
+      ),
+    );
+  }
+
+  void _showReasonDialog(
+    BuildContext context, {
+    required String title,
+    required String hint,
+    required String confirmLabel,
+    required Color confirmColor,
+    required void Function(String reason) onConfirm,
+  }) {
+    final controller = TextEditingController();
+    showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: AppColors.white,
+          title: Text(title, style: AppTypography.titleSmall),
+          content: TextField(
+            controller: controller,
+            maxLines: 4,
+            minLines: 2,
+            maxLength: 500,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: AppTypography.caption.copyWith(
+                color: AppColors.textTertiary,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(
+                'Batal',
+                style: AppTypography.labelMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final reason = controller.text.trim();
+                if (reason.length < 10) return;
+                Navigator.of(ctx).pop();
+                onConfirm(reason);
+              },
+              child: Text(
+                confirmLabel,
+                style: AppTypography.labelMedium.copyWith(
+                  color: confirmColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    ).then((_) => controller.dispose());
   }
 }
 

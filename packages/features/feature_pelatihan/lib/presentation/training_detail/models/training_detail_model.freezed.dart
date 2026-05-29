@@ -14,7 +14,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TrainingDetailModel {
 
- String get id; String? get imageUrl; String get title; String get badge; String get description; String get date; String get time; String get location; List<TrainingFacilityModel> get facilities; List<String> get requirements; String get fee; String get feeNotice; String get companyName; String get status; String? get adCode; String? get rejectionReason; int get totalApprovedEnrollees; String? get contactEmail; String? get contactRole; String? get region; String? get bankName; String? get bankAccountNumber; String? get bankAccountHolderName;
+ String get id; String? get imageUrl; String get title; String get badge; String get description; String get date; String get time; String get location; List<TrainingFacilityModel> get facilities; List<String> get requirements; String get fee; String get feeNotice;// Extended info
+ String get companyName; String get status; String? get adCode; String? get rejectionReason; int get totalApprovedEnrollees; String? get contactEmail; String? get contactRole; String? get region; String? get bankName; String? get bankAccountNumber; String? get bankAccountHolderName;
 /// Create a copy of TrainingDetailModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -229,7 +230,7 @@ return $default(_that.id,_that.imageUrl,_that.title,_that.badge,_that.descriptio
 
 class _TrainingDetailModel implements TrainingDetailModel {
   const _TrainingDetailModel({required this.id, this.imageUrl, required this.title, this.badge = 'Gratis', required this.description, required this.date, required this.time, required this.location, final  List<TrainingFacilityModel> facilities = const [], final  List<String> requirements = const [], required this.fee, required this.feeNotice, required this.companyName, required this.status, this.adCode, this.rejectionReason, this.totalApprovedEnrollees = 0, this.contactEmail, this.contactRole, this.region, this.bankName, this.bankAccountNumber, this.bankAccountHolderName}): _facilities = facilities,_requirements = requirements;
-
+  
 
 @override final  String id;
 @override final  String? imageUrl;
@@ -255,6 +256,7 @@ class _TrainingDetailModel implements TrainingDetailModel {
 
 @override final  String fee;
 @override final  String feeNotice;
+// Extended info
 @override final  String companyName;
 @override final  String status;
 @override final  String? adCode;

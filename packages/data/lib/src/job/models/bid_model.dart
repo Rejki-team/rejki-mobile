@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:domain/domain.dart';
 import 'job_model.dart';
+import 'job_bid_evidence_model.dart';
 import 'worker_bid_model.dart';
 
 part 'bid_model.freezed.dart';
@@ -24,6 +25,12 @@ abstract class BidModel with _$BidModel {
     // Phase 1 — dual-confirmation tracking
     @JsonKey(name: 'completion_claimed_at') String? completionClaimedAt,
     @JsonKey(name: 'slot_count') @Default(1) int slotCount,
+    // Phase 2 — dispute & cancellation
+    @JsonKey(name: 'dispute_reason') String? disputeReason,
+    @JsonKey(name: 'disputed_at') String? disputedAt,
+    @JsonKey(name: 'cancelled_reason') String? cancelledReason,
+    @JsonKey(name: 'cancelled_by') String? cancelledBy,
+    @Default([]) List<JobBidEvidenceModel> evidence,
   }) = _BidModel;
 
   factory BidModel.fromJson(Map<String, dynamic> json) => _$BidModelFromJson(json);
@@ -44,6 +51,12 @@ abstract class BidModel with _$BidModel {
           ? DateTime.tryParse(completionClaimedAt!)
           : null,
       slotCount: slotCount,
+      // Phase 2
+      disputeReason: disputeReason,
+      disputedAt: disputedAt != null ? DateTime.tryParse(disputedAt!) : null,
+      cancelledReason: cancelledReason,
+      cancelledBy: cancelledBy,
+      evidence: evidence.map((e) => e.toEntity()).toList(),
     );
   }
 }

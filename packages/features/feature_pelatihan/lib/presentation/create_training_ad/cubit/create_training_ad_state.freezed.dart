@@ -94,6 +94,18 @@ as String?,
 
 /// Adds pattern-matching-related methods to [CreateTrainingAdState].
 extension CreateTrainingAdStatePatterns on CreateTrainingAdState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
 @optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CreateTrainingAdState value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
@@ -103,6 +115,19 @@ return $default(_that);case _:
 
 }
 }
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
 @optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CreateTrainingAdState value)  $default,){
 final _that = this;
 switch (_that) {
@@ -112,6 +137,18 @@ return $default(_that);case _:
 
 }
 }
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
 @optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CreateTrainingAdState value)?  $default,){
 final _that = this;
 switch (_that) {
@@ -121,6 +158,18 @@ return $default(_that);case _:
 
 }
 }
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String companyName,  String position,  String title,  String description,  String date,  String time,  String address,  String province,  String city,  String district,  String village,  String location,  String cost,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  bool isSubmitting,  bool isSuccess,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CreateTrainingAdState() when $default != null:
@@ -129,6 +178,19 @@ return $default(_that.email,_that.companyName,_that.position,_that.title,_that.d
 
 }
 }
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String companyName,  String position,  String title,  String description,  String date,  String time,  String address,  String province,  String city,  String district,  String village,  String location,  String cost,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  bool isSubmitting,  bool isSuccess,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _CreateTrainingAdState():
@@ -137,6 +199,18 @@ return $default(_that.email,_that.companyName,_that.position,_that.title,_that.d
 
 }
 }
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String companyName,  String position,  String title,  String description,  String date,  String time,  String address,  String province,  String city,  String district,  String village,  String location,  String cost,  String bankName,  String bankAccountNumber,  String bankAccountHolderName,  List<String> facilities,  bool isSubmitting,  bool isSuccess,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _CreateTrainingAdState() when $default != null:
@@ -152,8 +226,8 @@ return $default(_that.email,_that.companyName,_that.position,_that.title,_that.d
 
 
 class _CreateTrainingAdState extends CreateTrainingAdState {
-  const _CreateTrainingAdState({this.email = '', this.companyName = '', this.position = '', this.title = '', this.description = '', this.date = '', this.time = '', this.address = '', this.province = '', this.city = '', this.district = '', this.village = '', this.location = '', this.cost = '', this.bankName = '', this.bankAccountNumber = '', this.bankAccountHolderName = '', final List<String> facilities = const [], this.isSubmitting = false, this.isSuccess = false, this.errorMessage}): _facilities = facilities, super._();
-
+  const _CreateTrainingAdState({this.email = '', this.companyName = '', this.position = '', this.title = '', this.description = '', this.date = '', this.time = '', this.address = '', this.province = '', this.city = '', this.district = '', this.village = '', this.location = '', this.cost = '', this.bankName = '', this.bankAccountNumber = '', this.bankAccountHolderName = '', final  List<String> facilities = const [], this.isSubmitting = false, this.isSuccess = false, this.errorMessage}): _facilities = facilities,super._();
+  
 
 @override@JsonKey() final  String email;
 @override@JsonKey() final  String companyName;
@@ -172,7 +246,7 @@ class _CreateTrainingAdState extends CreateTrainingAdState {
 @override@JsonKey() final  String bankName;
 @override@JsonKey() final  String bankAccountNumber;
 @override@JsonKey() final  String bankAccountHolderName;
- final List<String> _facilities;
+ final  List<String> _facilities;
 @override@JsonKey() List<String> get facilities {
   if (_facilities is EqualUnmodifiableListView) return _facilities;
   // ignore: implicit_dynamic_type

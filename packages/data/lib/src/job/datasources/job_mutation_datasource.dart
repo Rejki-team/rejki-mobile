@@ -4,6 +4,7 @@ import 'package:network/network.dart';
 import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 import '../models/job_model.dart';
+import '../models/job_bid_evidence_model.dart';
 
 /// Data source for Job MUTATIONS
 ///
@@ -27,6 +28,30 @@ abstract class JobMutationDataSource {
   Future<void> ownerCompleteJob({required String jobId});
 
   Future<void> ownerConfirmBidComplete({
+    required String jobId,
+    required String bidId,
+  });
+
+  // Phase 2
+  Future<void> disputeBid({
+    required String jobId,
+    required String bidId,
+    required String reason,
+  });
+
+  Future<void> cancelBid({
+    required String jobId,
+    required String bidId,
+    required String reason,
+  });
+
+  Future<List<JobBidEvidenceModel>> uploadBidEvidence({
+    required String jobId,
+    required String bidId,
+    required List<String> imagePaths,
+  });
+
+  Future<List<JobBidEvidenceModel>> getBidEvidence({
     required String jobId,
     required String bidId,
   });
@@ -186,5 +211,103 @@ class JobMutationDataSourceImpl implements JobMutationDataSource {
     if (apiResponse.hasError) {
       throw Exception(apiResponse.errorMessage);
     }
+  }
+
+  @override
+  Future<void> disputeBid({
+    required String jobId,
+    required String bidId,
+    required String reason,
+  }) async {
+    final response = await dio.post(
+      '/jobs/$jobId/bids/$bidId/dispute',
+      data: {'reason': reason},
+    );
+
+    final apiResponse = ApiResponse<dynamic>.fromJson(
+      response.data as Map<String, dynamic>,
+      fromJsonT: (data) => data,
+    );
+
+    if (apiResponse.hasError) {
+      throw Exception(apiResponse.errorMessage);
+    }
+  }
+
+  @override
+  Future<void> cancelBid({
+    required String jobId,
+    required String bidId,
+    required String reason,
+  }) async {
+    final response = await dio.post(
+      '/jobs/$jobId/bids/$bidId/cancel',
+      data: {'reason': reason},
+    );
+
+    final apiResponse = ApiResponse<dynamic>.fromJson(
+      response.data as Map<String, dynamic>,
+      fromJsonT: (data) => data,
+    );
+
+    if (apiResponse.hasError) {
+      throw Exception(apiResponse.errorMessage);
+    }
+  }
+
+  @override
+  Future<List<JobBidEvidenceModel>> uploadBidEvidence({
+    required String jobId,
+    required String bidId,
+    required List<String> imagePaths,
+  }) async {
+    final imageFiles = <MultipartFile>[];
+    for (final path in imagePaths) {
+      imageFiles.add(
+        await MultipartFile.fromFile(path, filename: path.split('/').last),
+      );
+    }
+
+    final formData = FormData.fromMap({'images': imageFiles});
+
+    final response = await dio.post(
+      '/jobs/$jobId/bids/$bidId/evidence',
+      data: formData,
+      options: Options(contentType: 'multipart/form-data'),
+    );
+
+    final apiResponse = ApiResponse<List<dynamic>>.fromJson(
+      response.data as Map<String, dynamic>,
+      fromJsonT: (data) => data as List<dynamic>,
+    );
+
+    if (apiResponse.hasError) {
+      throw Exception(apiResponse.errorMessage);
+    }
+
+    return (apiResponse.data ?? [])
+        .map((e) => JobBidEvidenceModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<List<JobBidEvidenceModel>> getBidEvidence({
+    required String jobId,
+    required String bidId,
+  }) async {
+    final response = await dio.get('/jobs/$jobId/bids/$bidId/evidence');
+
+    final apiResponse = ApiResponse<List<dynamic>>.fromJson(
+      response.data as Map<String, dynamic>,
+      fromJsonT: (data) => data as List<dynamic>,
+    );
+
+    if (apiResponse.hasError) {
+      throw Exception(apiResponse.errorMessage);
+    }
+
+    return (apiResponse.data ?? [])
+        .map((e) => JobBidEvidenceModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

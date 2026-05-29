@@ -9,12 +9,17 @@ class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
   final UpdateBidStatusUseCase _updateBidStatusUseCase;
   final OwnerCompleteJobUseCase _ownerCompleteJobUseCase;
   final OwnerConfirmBidUseCase _ownerConfirmBidUseCase;
+  // Phase 2
+  final DisputeBidUseCase _disputeBidUseCase;
+  final CancelBidUseCase _cancelBidUseCase;
 
   DaftarPelamarCubit(
     this._getIncomingBidsUseCase,
     this._updateBidStatusUseCase,
     this._ownerCompleteJobUseCase,
     this._ownerConfirmBidUseCase,
+    this._disputeBidUseCase,
+    this._cancelBidUseCase,
   ) : super(const DaftarPelamarState());
 
   // ── Tab Pelamar (status=request) ────────────────────────────────────────────
@@ -284,6 +289,93 @@ class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
           diterimaList: updated,
           mutationStatus: DaftarPelamarMutationStatus.success,
           mutationSuccessMessage: 'Pekerjaan berhasil dikonfirmasi selesai.',
+        ));
+      },
+    );
+  }
+
+  // ── Phase 2: Dispute ────────────────────────────────────────────────────────
+
+  /// Owner menolak klaim selesai pekerja dan membuka sengketa.
+  /// [reason] wajib diisi (min 10 karakter, divalidasi di backend).
+  Future<void> disputeBid({
+    required String jobId,
+    required String bidId,
+    required String reason,
+  }) async {
+    if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
+
+    emit(state.copyWith(
+      mutationStatus: DaftarPelamarMutationStatus.loading,
+      mutationErrorMessage: null,
+      mutationSuccessMessage: null,
+    ));
+
+    final result = await _disputeBidUseCase.execute(
+      jobId: jobId,
+      bidId: bidId,
+      reason: reason,
+    );
+
+    if (isClosed) return;
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        mutationStatus: DaftarPelamarMutationStatus.failure,
+        mutationErrorMessage: _mapFailure(failure),
+      )),
+      (_) {
+        // Optimistic update: tandai bid disputed di diterimaList
+        final updated = state.diterimaList
+            .map((b) => b.id == bidId ? b.copyWith(status: 'disputed') : b)
+            .toList();
+        emit(state.copyWith(
+          diterimaList: updated,
+          mutationStatus: DaftarPelamarMutationStatus.success,
+          mutationSuccessMessage:
+              'Sengketa dibuka. Pekerja akan mendapat notifikasi.',
+        ));
+      },
+    );
+  }
+
+  // ── Phase 2: Cancel ─────────────────────────────────────────────────────────
+
+  /// Owner atau pekerja membatalkan bid yang sudah disetujui.
+  /// [reason] wajib diisi (min 10 karakter, divalidasi di backend).
+  Future<void> cancelBid({
+    required String jobId,
+    required String bidId,
+    required String reason,
+  }) async {
+    if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
+
+    emit(state.copyWith(
+      mutationStatus: DaftarPelamarMutationStatus.loading,
+      mutationErrorMessage: null,
+      mutationSuccessMessage: null,
+    ));
+
+    final result = await _cancelBidUseCase.execute(
+      jobId: jobId,
+      bidId: bidId,
+      reason: reason,
+    );
+
+    if (isClosed) return;
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        mutationStatus: DaftarPelamarMutationStatus.failure,
+        mutationErrorMessage: _mapFailure(failure),
+      )),
+      (_) {
+        // Hapus bid yang dibatalkan dari diterimaList
+        emit(state.copyWith(
+          diterimaList:
+              state.diterimaList.where((b) => b.id != bidId).toList(),
+          mutationStatus: DaftarPelamarMutationStatus.success,
+          mutationSuccessMessage: 'Bid berhasil dibatalkan.',
         ));
       },
     );

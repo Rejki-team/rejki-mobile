@@ -121,6 +121,88 @@ class JobMutationRepositoryImpl implements JobMutationRepository {
     }
   }
 
+  @override
+  Future<Either<JobFailure, Unit>> disputeBid({
+    required String jobId,
+    required String bidId,
+    required String reason,
+  }) async {
+    try {
+      await remoteDataSource.disputeBid(
+        jobId: jobId,
+        bidId: bidId,
+        reason: reason,
+      );
+      return const Right(unit);
+    } on DioException catch (e) {
+      final apiError = ApiError.fromDioException(e);
+      return Left(_mapApiErrorToJobFailure(apiError));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<JobFailure, Unit>> cancelBid({
+    required String jobId,
+    required String bidId,
+    required String reason,
+  }) async {
+    try {
+      await remoteDataSource.cancelBid(
+        jobId: jobId,
+        bidId: bidId,
+        reason: reason,
+      );
+      return const Right(unit);
+    } on DioException catch (e) {
+      final apiError = ApiError.fromDioException(e);
+      return Left(_mapApiErrorToJobFailure(apiError));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<JobFailure, List<JobBidEvidenceEntity>>> uploadBidEvidence({
+    required String jobId,
+    required String bidId,
+    required List<String> imagePaths,
+  }) async {
+    try {
+      final models = await remoteDataSource.uploadBidEvidence(
+        jobId: jobId,
+        bidId: bidId,
+        imagePaths: imagePaths,
+      );
+      return Right(models.map((m) => m.toEntity()).toList());
+    } on DioException catch (e) {
+      final apiError = ApiError.fromDioException(e);
+      return Left(_mapApiErrorToJobFailure(apiError));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<JobFailure, List<JobBidEvidenceEntity>>> getBidEvidence({
+    required String jobId,
+    required String bidId,
+  }) async {
+    try {
+      final models = await remoteDataSource.getBidEvidence(
+        jobId: jobId,
+        bidId: bidId,
+      );
+      return Right(models.map((m) => m.toEntity()).toList());
+    } on DioException catch (e) {
+      final apiError = ApiError.fromDioException(e);
+      return Left(_mapApiErrorToJobFailure(apiError));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
   /// Map ApiError to JobFailure
   JobFailure _mapApiErrorToJobFailure(ApiError error) {
     switch (error.type) {

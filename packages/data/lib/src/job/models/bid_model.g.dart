@@ -23,6 +23,15 @@ _BidModel _$BidModelFromJson(Map<String, dynamic> json) => _BidModel(
   updatedAt: json['updated_at'] as String?,
   completionClaimedAt: json['completion_claimed_at'] as String?,
   slotCount: (json['slot_count'] as num?)?.toInt() ?? 1,
+  disputeReason: json['dispute_reason'] as String?,
+  disputedAt: json['disputed_at'] as String?,
+  cancelledReason: json['cancelled_reason'] as String?,
+  cancelledBy: json['cancelled_by'] as String?,
+  evidence:
+      (json['evidence'] as List<dynamic>?)
+          ?.map((e) => JobBidEvidenceModel.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$BidModelToJson(_BidModel instance) => <String, dynamic>{
@@ -38,4 +47,9 @@ Map<String, dynamic> _$BidModelToJson(_BidModel instance) => <String, dynamic>{
   'updated_at': instance.updatedAt,
   'completion_claimed_at': instance.completionClaimedAt,
   'slot_count': instance.slotCount,
+  'dispute_reason': instance.disputeReason,
+  'disputed_at': instance.disputedAt,
+  'cancelled_reason': instance.cancelledReason,
+  'cancelled_by': instance.cancelledBy,
+  'evidence': instance.evidence,
 };

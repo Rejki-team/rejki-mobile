@@ -11,6 +11,9 @@ class PelamarCard extends StatelessWidget {
   final VoidCallback onDetailPekerjaPressed;
   final VoidCallback? onTolakPressed;
   final VoidCallback? onTerimaPressed;
+  // Phase 2 — aksi dari tab Diterima
+  final VoidCallback? onDisputePressed;
+  final VoidCallback? onCancelPressed;
 
   const PelamarCard({
     super.key,
@@ -20,6 +23,8 @@ class PelamarCard extends StatelessWidget {
     required this.onDetailPekerjaPressed,
     this.onTolakPressed,
     this.onTerimaPressed,
+    this.onDisputePressed,
+    this.onCancelPressed,
   });
 
   @override
@@ -229,6 +234,61 @@ class PelamarCard extends StatelessWidget {
               ],
             ),
           ],
+
+          // ── Phase 2: Dispute / Cancel buttons (Tab Diterima only) ─────────
+          if (!showActionButtons &&
+              (bid.status == 'approve' ||
+                  bid.status == 'pending_owner_confirm')) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              children: [
+                if (onDisputePressed != null &&
+                    bid.status == 'pending_owner_confirm')
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: onDisputePressed,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.error,
+                        side: const BorderSide(color: AppColors.error),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        minimumSize: const Size(0, 40),
+                      ),
+                      child: Text(
+                        'Sengketa',
+                        style: AppTypography.labelMedium.copyWith(
+                          color: AppColors.error,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (onDisputePressed != null &&
+                    bid.status == 'pending_owner_confirm')
+                  const SizedBox(width: AppSpacing.sm),
+                if (onCancelPressed != null)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: onCancelPressed,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary,
+                        side: BorderSide(color: AppColors.textSecondary),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        minimumSize: const Size(0, 40),
+                      ),
+                      child: Text(
+                        'Batalkan',
+                        style: AppTypography.labelMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -266,10 +326,27 @@ class PelamarCard extends StatelessWidget {
         textColor = AppColors.primary;
         label = 'Berlangsung';
         break;
+      case 'pending_owner_confirm':
+        bgColor = const Color(0xFFFFF9C4);
+        textColor = const Color(0xFFF57F17);
+        label = 'Menunggu Konfirmasi';
+        break;
       case 'completed':
         bgColor = AppColors.serviceCardIconBgGreen;
         textColor = AppColors.chatButtonGreen;
         label = 'Selesai';
+        break;
+      case 'disputed':
+        bgColor = AppColors.error.withValues(alpha: 0.12);
+        textColor = AppColors.error;
+        label = 'Sengketa';
+        break;
+      case 'cancelled_by_owner':
+      case 'cancelled_by_worker':
+      case 'cancelled_by_admin':
+        bgColor = AppColors.textTertiary.withValues(alpha: 0.15);
+        textColor = AppColors.textSecondary;
+        label = 'Dibatalkan';
         break;
       case 'decline':
         bgColor = AppColors.error.withValues(alpha: 0.15);

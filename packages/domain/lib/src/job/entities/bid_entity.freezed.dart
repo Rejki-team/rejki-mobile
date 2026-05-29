@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 mixin _$BidEntity {
 
  String get id; String get jobId; String get workerId; String get userId; String get status; DateTime get dateOfJob; JobEntity? get job; WorkerEntity? get worker; DateTime? get createdAt; DateTime? get updatedAt;// Phase 1 — dual-confirmation tracking
- DateTime? get completionClaimedAt; int get slotCount;
+ DateTime? get completionClaimedAt; int get slotCount;// Phase 2 — dispute & cancellation
+ String? get disputeReason; DateTime? get disputedAt; String? get cancelledReason; String? get cancelledBy; List<JobBidEvidenceEntity> get evidence;
 /// Create a copy of BidEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +27,16 @@ $BidEntityCopyWith<BidEntity> get copyWith => _$BidEntityCopyWithImpl<BidEntity>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BidEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.completionClaimedAt, completionClaimedAt) || other.completionClaimedAt == completionClaimedAt)&&(identical(other.slotCount, slotCount) || other.slotCount == slotCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BidEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.completionClaimedAt, completionClaimedAt) || other.completionClaimedAt == completionClaimedAt)&&(identical(other.slotCount, slotCount) || other.slotCount == slotCount)&&(identical(other.disputeReason, disputeReason) || other.disputeReason == disputeReason)&&(identical(other.disputedAt, disputedAt) || other.disputedAt == disputedAt)&&(identical(other.cancelledReason, cancelledReason) || other.cancelledReason == cancelledReason)&&(identical(other.cancelledBy, cancelledBy) || other.cancelledBy == cancelledBy)&&const DeepCollectionEquality().equals(other.evidence, evidence));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt,completionClaimedAt,slotCount);
+int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt,completionClaimedAt,slotCount,disputeReason,disputedAt,cancelledReason,cancelledBy,const DeepCollectionEquality().hash(evidence));
 
 @override
 String toString() {
-  return 'BidEntity(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt, completionClaimedAt: $completionClaimedAt, slotCount: $slotCount)';
+  return 'BidEntity(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt, completionClaimedAt: $completionClaimedAt, slotCount: $slotCount, disputeReason: $disputeReason, disputedAt: $disputedAt, cancelledReason: $cancelledReason, cancelledBy: $cancelledBy, evidence: $evidence)';
 }
 
 
@@ -46,7 +47,7 @@ abstract mixin class $BidEntityCopyWith<$Res>  {
   factory $BidEntityCopyWith(BidEntity value, $Res Function(BidEntity) _then) = _$BidEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String jobId, String workerId, String userId, String status, DateTime dateOfJob, JobEntity? job, WorkerEntity? worker, DateTime? createdAt, DateTime? updatedAt, DateTime? completionClaimedAt, int slotCount
+ String id, String jobId, String workerId, String userId, String status, DateTime dateOfJob, JobEntity? job, WorkerEntity? worker, DateTime? createdAt, DateTime? updatedAt, DateTime? completionClaimedAt, int slotCount, String? disputeReason, DateTime? disputedAt, String? cancelledReason, String? cancelledBy, List<JobBidEvidenceEntity> evidence
 });
 
 
@@ -63,7 +64,7 @@ class _$BidEntityCopyWithImpl<$Res>
 
 /// Create a copy of BidEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jobId = null,Object? workerId = null,Object? userId = null,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? completionClaimedAt = freezed,Object? slotCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? jobId = null,Object? workerId = null,Object? userId = null,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? completionClaimedAt = freezed,Object? slotCount = null,Object? disputeReason = freezed,Object? disputedAt = freezed,Object? cancelledReason = freezed,Object? cancelledBy = freezed,Object? evidence = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,jobId: null == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
@@ -77,7 +78,12 @@ as WorkerEntity?,createdAt: freezed == createdAt ? _self.createdAt : createdAt /
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,completionClaimedAt: freezed == completionClaimedAt ? _self.completionClaimedAt : completionClaimedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,slotCount: null == slotCount ? _self.slotCount : slotCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,disputeReason: freezed == disputeReason ? _self.disputeReason : disputeReason // ignore: cast_nullable_to_non_nullable
+as String?,disputedAt: freezed == disputedAt ? _self.disputedAt : disputedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,cancelledReason: freezed == cancelledReason ? _self.cancelledReason : cancelledReason // ignore: cast_nullable_to_non_nullable
+as String?,cancelledBy: freezed == cancelledBy ? _self.cancelledBy : cancelledBy // ignore: cast_nullable_to_non_nullable
+as String?,evidence: null == evidence ? _self.evidence : evidence // ignore: cast_nullable_to_non_nullable
+as List<JobBidEvidenceEntity>,
   ));
 }
 /// Create a copy of BidEntity
@@ -186,10 +192,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  WorkerEntity? worker,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? completionClaimedAt,  int slotCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  WorkerEntity? worker,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? completionClaimedAt,  int slotCount,  String? disputeReason,  DateTime? disputedAt,  String? cancelledReason,  String? cancelledBy,  List<JobBidEvidenceEntity> evidence)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BidEntity() when $default != null:
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount,_that.disputeReason,_that.disputedAt,_that.cancelledReason,_that.cancelledBy,_that.evidence);case _:
   return orElse();
 
 }
@@ -207,10 +213,10 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  WorkerEntity? worker,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? completionClaimedAt,  int slotCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  WorkerEntity? worker,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? completionClaimedAt,  int slotCount,  String? disputeReason,  DateTime? disputedAt,  String? cancelledReason,  String? cancelledBy,  List<JobBidEvidenceEntity> evidence)  $default,) {final _that = this;
 switch (_that) {
 case _BidEntity():
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount,_that.disputeReason,_that.disputedAt,_that.cancelledReason,_that.cancelledBy,_that.evidence);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -227,10 +233,10 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  WorkerEntity? worker,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? completionClaimedAt,  int slotCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String jobId,  String workerId,  String userId,  String status,  DateTime dateOfJob,  JobEntity? job,  WorkerEntity? worker,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? completionClaimedAt,  int slotCount,  String? disputeReason,  DateTime? disputedAt,  String? cancelledReason,  String? cancelledBy,  List<JobBidEvidenceEntity> evidence)?  $default,) {final _that = this;
 switch (_that) {
 case _BidEntity() when $default != null:
-return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount);case _:
+return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_that.dateOfJob,_that.job,_that.worker,_that.createdAt,_that.updatedAt,_that.completionClaimedAt,_that.slotCount,_that.disputeReason,_that.disputedAt,_that.cancelledReason,_that.cancelledBy,_that.evidence);case _:
   return null;
 
 }
@@ -242,7 +248,7 @@ return $default(_that.id,_that.jobId,_that.workerId,_that.userId,_that.status,_t
 
 
 class _BidEntity extends BidEntity {
-  const _BidEntity({required this.id, required this.jobId, required this.workerId, required this.userId, required this.status, required this.dateOfJob, this.job, this.worker, this.createdAt, this.updatedAt, this.completionClaimedAt, this.slotCount = 1}): super._();
+  const _BidEntity({required this.id, required this.jobId, required this.workerId, required this.userId, required this.status, required this.dateOfJob, this.job, this.worker, this.createdAt, this.updatedAt, this.completionClaimedAt, this.slotCount = 1, this.disputeReason, this.disputedAt, this.cancelledReason, this.cancelledBy, final  List<JobBidEvidenceEntity> evidence = const []}): _evidence = evidence,super._();
   
 
 @override final  String id;
@@ -258,6 +264,18 @@ class _BidEntity extends BidEntity {
 // Phase 1 — dual-confirmation tracking
 @override final  DateTime? completionClaimedAt;
 @override@JsonKey() final  int slotCount;
+// Phase 2 — dispute & cancellation
+@override final  String? disputeReason;
+@override final  DateTime? disputedAt;
+@override final  String? cancelledReason;
+@override final  String? cancelledBy;
+ final  List<JobBidEvidenceEntity> _evidence;
+@override@JsonKey() List<JobBidEvidenceEntity> get evidence {
+  if (_evidence is EqualUnmodifiableListView) return _evidence;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_evidence);
+}
+
 
 /// Create a copy of BidEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -269,16 +287,16 @@ _$BidEntityCopyWith<_BidEntity> get copyWith => __$BidEntityCopyWithImpl<_BidEnt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BidEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.completionClaimedAt, completionClaimedAt) || other.completionClaimedAt == completionClaimedAt)&&(identical(other.slotCount, slotCount) || other.slotCount == slotCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BidEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.status, status) || other.status == status)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.job, job) || other.job == job)&&(identical(other.worker, worker) || other.worker == worker)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.completionClaimedAt, completionClaimedAt) || other.completionClaimedAt == completionClaimedAt)&&(identical(other.slotCount, slotCount) || other.slotCount == slotCount)&&(identical(other.disputeReason, disputeReason) || other.disputeReason == disputeReason)&&(identical(other.disputedAt, disputedAt) || other.disputedAt == disputedAt)&&(identical(other.cancelledReason, cancelledReason) || other.cancelledReason == cancelledReason)&&(identical(other.cancelledBy, cancelledBy) || other.cancelledBy == cancelledBy)&&const DeepCollectionEquality().equals(other._evidence, _evidence));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt,completionClaimedAt,slotCount);
+int get hashCode => Object.hash(runtimeType,id,jobId,workerId,userId,status,dateOfJob,job,worker,createdAt,updatedAt,completionClaimedAt,slotCount,disputeReason,disputedAt,cancelledReason,cancelledBy,const DeepCollectionEquality().hash(_evidence));
 
 @override
 String toString() {
-  return 'BidEntity(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt, completionClaimedAt: $completionClaimedAt, slotCount: $slotCount)';
+  return 'BidEntity(id: $id, jobId: $jobId, workerId: $workerId, userId: $userId, status: $status, dateOfJob: $dateOfJob, job: $job, worker: $worker, createdAt: $createdAt, updatedAt: $updatedAt, completionClaimedAt: $completionClaimedAt, slotCount: $slotCount, disputeReason: $disputeReason, disputedAt: $disputedAt, cancelledReason: $cancelledReason, cancelledBy: $cancelledBy, evidence: $evidence)';
 }
 
 
@@ -289,7 +307,7 @@ abstract mixin class _$BidEntityCopyWith<$Res> implements $BidEntityCopyWith<$Re
   factory _$BidEntityCopyWith(_BidEntity value, $Res Function(_BidEntity) _then) = __$BidEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String jobId, String workerId, String userId, String status, DateTime dateOfJob, JobEntity? job, WorkerEntity? worker, DateTime? createdAt, DateTime? updatedAt, DateTime? completionClaimedAt, int slotCount
+ String id, String jobId, String workerId, String userId, String status, DateTime dateOfJob, JobEntity? job, WorkerEntity? worker, DateTime? createdAt, DateTime? updatedAt, DateTime? completionClaimedAt, int slotCount, String? disputeReason, DateTime? disputedAt, String? cancelledReason, String? cancelledBy, List<JobBidEvidenceEntity> evidence
 });
 
 
@@ -306,7 +324,7 @@ class __$BidEntityCopyWithImpl<$Res>
 
 /// Create a copy of BidEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jobId = null,Object? workerId = null,Object? userId = null,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? completionClaimedAt = freezed,Object? slotCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? jobId = null,Object? workerId = null,Object? userId = null,Object? status = null,Object? dateOfJob = null,Object? job = freezed,Object? worker = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? completionClaimedAt = freezed,Object? slotCount = null,Object? disputeReason = freezed,Object? disputedAt = freezed,Object? cancelledReason = freezed,Object? cancelledBy = freezed,Object? evidence = null,}) {
   return _then(_BidEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,jobId: null == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
@@ -320,7 +338,12 @@ as WorkerEntity?,createdAt: freezed == createdAt ? _self.createdAt : createdAt /
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,completionClaimedAt: freezed == completionClaimedAt ? _self.completionClaimedAt : completionClaimedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,slotCount: null == slotCount ? _self.slotCount : slotCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,disputeReason: freezed == disputeReason ? _self.disputeReason : disputeReason // ignore: cast_nullable_to_non_nullable
+as String?,disputedAt: freezed == disputedAt ? _self.disputedAt : disputedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,cancelledReason: freezed == cancelledReason ? _self.cancelledReason : cancelledReason // ignore: cast_nullable_to_non_nullable
+as String?,cancelledBy: freezed == cancelledBy ? _self.cancelledBy : cancelledBy // ignore: cast_nullable_to_non_nullable
+as String?,evidence: null == evidence ? _self._evidence : evidence // ignore: cast_nullable_to_non_nullable
+as List<JobBidEvidenceEntity>,
   ));
 }
 

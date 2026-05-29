@@ -248,6 +248,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.JobMutationRepository>(),
       ),
     );
+    gh.lazySingleton<_i494.DisputeBidUseCase>(
+      () => registerModule.disputeBidUseCase(gh<_i494.JobMutationRepository>()),
+    );
+    gh.lazySingleton<_i494.CancelBidUseCase>(
+      () => registerModule.cancelBidUseCase(gh<_i494.JobMutationRepository>()),
+    );
+    gh.lazySingleton<_i494.UploadBidEvidenceUseCase>(
+      () => registerModule.uploadBidEvidenceUseCase(
+        gh<_i494.JobMutationRepository>(),
+      ),
+    );
     gh.lazySingleton<_i494.CreateJobReviewUseCase>(
       () => registerModule.createJobReviewUseCase(
         gh<_i494.JobMutationRepository>(),
@@ -452,14 +463,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i950.WorkerListingCubit>(
       () => registerModule.workerListingCubit(gh<_i494.GetWorkersUseCase>()),
     );
-    gh.factory<_i10.DaftarPelamarCubit>(
-      () => registerModule.daftarPelamarCubit(
-        gh<_i494.GetIncomingBidsUseCase>(),
-        gh<_i494.UpdateBidStatusUseCase>(),
-        gh<_i494.OwnerCompleteJobUseCase>(),
-        gh<_i494.OwnerConfirmBidUseCase>(),
-      ),
-    );
     gh.lazySingleton<_i494.GetNotificationsUseCase>(
       () => registerModule.getNotificationsUseCase(
         gh<_i494.NotificationRepository>(),
@@ -538,6 +541,16 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetMyBidsUseCase>(),
         gh<_i494.UpdateBidStatusUseCase>(),
         gh<_i494.CreateJobReviewUseCase>(),
+      ),
+    );
+    gh.factory<_i10.DaftarPelamarCubit>(
+      () => registerModule.daftarPelamarCubit(
+        gh<_i494.GetIncomingBidsUseCase>(),
+        gh<_i494.UpdateBidStatusUseCase>(),
+        gh<_i494.OwnerCompleteJobUseCase>(),
+        gh<_i494.OwnerConfirmBidUseCase>(),
+        gh<_i494.DisputeBidUseCase>(),
+        gh<_i494.CancelBidUseCase>(),
       ),
     );
     gh.lazySingleton<_i494.CreateSecondhandUseCase>(
