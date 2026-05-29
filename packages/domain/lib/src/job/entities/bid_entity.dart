@@ -21,5 +21,6 @@ abstract class BidEntity with _$BidEntity {
     DateTime? updatedAt,
     // Phase 1 — dual-confirmation tracking
     DateTime? completionClaimedAt,
+    @Default(1) int slotCount,
   }) = _BidEntity;
 }

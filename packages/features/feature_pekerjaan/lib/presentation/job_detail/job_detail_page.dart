@@ -247,12 +247,13 @@ class _JobDetailBottomSheetLoaderState
               ),
               workerId: workerId,
               isSubmitting: isSubmitting,
-              onSubmit: (selectedDateTime, resolvedWorkerId) {
+              onSubmit: (selectedDateTime, resolvedWorkerId, slotCount) {
                 Navigator.of(dialogContext).pop();
                 ctx.read<TakeJobCubit>().submitBid(
                       jobId: job.id,
                       workerId: resolvedWorkerId,
                       dateOfJob: selectedDateTime,
+                      slotCount: slotCount,
                     );
               },
             );

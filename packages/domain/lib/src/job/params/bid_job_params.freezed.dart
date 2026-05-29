@@ -18,7 +18,11 @@ mixin _$BidJobParams {
  String get jobId;/// The ID of the worker taking the job
  String get workerId;/// The agreed or default date/time for the job
 /// Format: "2025-12-01 10:00:00"
- String get dateOfJob;
+ String get dateOfJob;/// How many worker slots this bid fills (≥1). Defaults to 1.
+/// If slotCount equals the job's total NumberOfWorker, the custom
+/// dateOfJob is used; otherwise the job's default date is applied
+/// by the backend.
+ int get slotCount;
 /// Create a copy of BidJobParams
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +33,16 @@ $BidJobParamsCopyWith<BidJobParams> get copyWith => _$BidJobParamsCopyWithImpl<B
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BidJobParams&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BidJobParams&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.slotCount, slotCount) || other.slotCount == slotCount));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,jobId,workerId,dateOfJob);
+int get hashCode => Object.hash(runtimeType,jobId,workerId,dateOfJob,slotCount);
 
 @override
 String toString() {
-  return 'BidJobParams(jobId: $jobId, workerId: $workerId, dateOfJob: $dateOfJob)';
+  return 'BidJobParams(jobId: $jobId, workerId: $workerId, dateOfJob: $dateOfJob, slotCount: $slotCount)';
 }
 
 
@@ -49,7 +53,7 @@ abstract mixin class $BidJobParamsCopyWith<$Res>  {
   factory $BidJobParamsCopyWith(BidJobParams value, $Res Function(BidJobParams) _then) = _$BidJobParamsCopyWithImpl;
 @useResult
 $Res call({
- String jobId, String workerId, String dateOfJob
+ String jobId, String workerId, String dateOfJob, int slotCount
 });
 
 
@@ -66,12 +70,13 @@ class _$BidJobParamsCopyWithImpl<$Res>
 
 /// Create a copy of BidJobParams
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? jobId = null,Object? workerId = null,Object? dateOfJob = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? jobId = null,Object? workerId = null,Object? dateOfJob = null,Object? slotCount = null,}) {
   return _then(_self.copyWith(
 jobId: null == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
 as String,workerId: null == workerId ? _self.workerId : workerId // ignore: cast_nullable_to_non_nullable
 as String,dateOfJob: null == dateOfJob ? _self.dateOfJob : dateOfJob // ignore: cast_nullable_to_non_nullable
-as String,
+as String,slotCount: null == slotCount ? _self.slotCount : slotCount // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -156,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String jobId,  String workerId,  String dateOfJob)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String jobId,  String workerId,  String dateOfJob,  int slotCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BidJobParams() when $default != null:
-return $default(_that.jobId,_that.workerId,_that.dateOfJob);case _:
+return $default(_that.jobId,_that.workerId,_that.dateOfJob,_that.slotCount);case _:
   return orElse();
 
 }
@@ -177,10 +182,10 @@ return $default(_that.jobId,_that.workerId,_that.dateOfJob);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String jobId,  String workerId,  String dateOfJob)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String jobId,  String workerId,  String dateOfJob,  int slotCount)  $default,) {final _that = this;
 switch (_that) {
 case _BidJobParams():
-return $default(_that.jobId,_that.workerId,_that.dateOfJob);case _:
+return $default(_that.jobId,_that.workerId,_that.dateOfJob,_that.slotCount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +202,10 @@ return $default(_that.jobId,_that.workerId,_that.dateOfJob);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String jobId,  String workerId,  String dateOfJob)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String jobId,  String workerId,  String dateOfJob,  int slotCount)?  $default,) {final _that = this;
 switch (_that) {
 case _BidJobParams() when $default != null:
-return $default(_that.jobId,_that.workerId,_that.dateOfJob);case _:
+return $default(_that.jobId,_that.workerId,_that.dateOfJob,_that.slotCount);case _:
   return null;
 
 }
@@ -212,7 +217,7 @@ return $default(_that.jobId,_that.workerId,_that.dateOfJob);case _:
 
 
 class _BidJobParams implements BidJobParams {
-  const _BidJobParams({required this.jobId, required this.workerId, required this.dateOfJob});
+  const _BidJobParams({required this.jobId, required this.workerId, required this.dateOfJob, this.slotCount = 1});
   
 
 /// The ID of the job being bid on
@@ -222,6 +227,11 @@ class _BidJobParams implements BidJobParams {
 /// The agreed or default date/time for the job
 /// Format: "2025-12-01 10:00:00"
 @override final  String dateOfJob;
+/// How many worker slots this bid fills (≥1). Defaults to 1.
+/// If slotCount equals the job's total NumberOfWorker, the custom
+/// dateOfJob is used; otherwise the job's default date is applied
+/// by the backend.
+@override@JsonKey() final  int slotCount;
 
 /// Create a copy of BidJobParams
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +243,16 @@ _$BidJobParamsCopyWith<_BidJobParams> get copyWith => __$BidJobParamsCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BidJobParams&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BidJobParams&&(identical(other.jobId, jobId) || other.jobId == jobId)&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.slotCount, slotCount) || other.slotCount == slotCount));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,jobId,workerId,dateOfJob);
+int get hashCode => Object.hash(runtimeType,jobId,workerId,dateOfJob,slotCount);
 
 @override
 String toString() {
-  return 'BidJobParams(jobId: $jobId, workerId: $workerId, dateOfJob: $dateOfJob)';
+  return 'BidJobParams(jobId: $jobId, workerId: $workerId, dateOfJob: $dateOfJob, slotCount: $slotCount)';
 }
 
 
@@ -253,7 +263,7 @@ abstract mixin class _$BidJobParamsCopyWith<$Res> implements $BidJobParamsCopyWi
   factory _$BidJobParamsCopyWith(_BidJobParams value, $Res Function(_BidJobParams) _then) = __$BidJobParamsCopyWithImpl;
 @override @useResult
 $Res call({
- String jobId, String workerId, String dateOfJob
+ String jobId, String workerId, String dateOfJob, int slotCount
 });
 
 
@@ -270,12 +280,13 @@ class __$BidJobParamsCopyWithImpl<$Res>
 
 /// Create a copy of BidJobParams
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? jobId = null,Object? workerId = null,Object? dateOfJob = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? jobId = null,Object? workerId = null,Object? dateOfJob = null,Object? slotCount = null,}) {
   return _then(_BidJobParams(
 jobId: null == jobId ? _self.jobId : jobId // ignore: cast_nullable_to_non_nullable
 as String,workerId: null == workerId ? _self.workerId : workerId // ignore: cast_nullable_to_non_nullable
 as String,dateOfJob: null == dateOfJob ? _self.dateOfJob : dateOfJob // ignore: cast_nullable_to_non_nullable
-as String,
+as String,slotCount: null == slotCount ? _self.slotCount : slotCount // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

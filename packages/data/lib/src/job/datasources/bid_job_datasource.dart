@@ -22,11 +22,14 @@ class BidJobDataSourceImpl implements BidJobDataSource {
     debugPrint('📍 [BidJobDataSource] date_of_job: ${params.dateOfJob}');
     debugPrint('📍 [BidJobDataSource] worker_id: ${params.workerId}');
     
+    debugPrint('📍 [BidJobDataSource] slot_count: ${params.slotCount}');
+
     final response = await dio.post(
       '/jobs/${params.jobId}/bids',
       data: {
         'date_of_job': params.dateOfJob,
         'worker_id': params.workerId,
+        'slot_count': params.slotCount,
       },
     );
 

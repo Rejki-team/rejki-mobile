@@ -15,5 +15,11 @@ abstract class BidJobParams with _$BidJobParams {
     /// The agreed or default date/time for the job
     /// Format: "2025-12-01 10:00:00"
     required String dateOfJob,
+
+    /// How many worker slots this bid fills (≥1). Defaults to 1.
+    /// If slotCount equals the job's total NumberOfWorker, the custom
+    /// dateOfJob is used; otherwise the job's default date is applied
+    /// by the backend.
+    @Default(1) int slotCount,
   }) = _BidJobParams;
 }

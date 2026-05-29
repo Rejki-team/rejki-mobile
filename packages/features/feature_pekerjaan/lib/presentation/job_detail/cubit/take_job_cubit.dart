@@ -91,6 +91,7 @@ class TakeJobCubit extends Cubit<TakeJobState> {
     required String jobId,
     required String workerId,
     required DateTime dateOfJob,
+    int slotCount = 1,
   }) async {
     emit(const TakeJobState.submitting());
 
@@ -100,6 +101,7 @@ class TakeJobCubit extends Cubit<TakeJobState> {
         jobId: jobId,
         workerId: workerId,
         dateOfJob: formattedDate,
+        slotCount: slotCount,
       );
 
       final result = await _bidJobUseCase(params);

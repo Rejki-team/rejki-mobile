@@ -930,12 +930,13 @@ class _JobDetailBottomSheetContentState
               submitting: () => true,
               orElse: () => false,
             ),
-            onSubmit: (selectedDateTime, resolvedWorkerId) {
+            onSubmit: (selectedDateTime, resolvedWorkerId, slotCount) {
               Navigator.of(dialogContext).pop();
               _takeJobCubit.submitBid(
                 jobId: job.id,
                 workerId: resolvedWorkerId,
                 dateOfJob: selectedDateTime,
+                slotCount: slotCount,
               );
             },
           ),

@@ -11,26 +11,17 @@ import '../inputs/app_inputs.dart';
 // ============================================================================
 
 /// Data class untuk konfigurasi TakeJobDialog.
-///
-/// - [defaultDateTime]: DateTime pekerjaan dari job entity (null jika tidak ada).
-/// - [defaultTimeRangeText]: Rentang jam kerja default (misal "08:00 - 17:00 WIB").
-/// - [workerCount]: Jumlah pekerja yang dibutuhkan dari job listing.
 class TakeJobDialogData {
   /// DateTime pekerjaan dari job entity untuk jadwal default.
-  /// Digunakan untuk submit ke API jika user memilih "ikuti jadwal default".
   final DateTime? defaultDateTime;
 
-  /// Teks tanggal default (display only, misal "12 Oktober 2025").
+  /// Teks tanggal default (display only).
   final String defaultDateText;
 
-  /// Teks rentang jam kerja default (display only, misal "08:00 - 17:00 WIB").
+  /// Teks rentang jam kerja default (display only).
   final String defaultTimeText;
 
-  /// Jumlah pekerja yang dibutuhkan.
-  ///
-  /// Jika > 1:
-  /// - Checkbox "Ikuti Jadwal Default" otomatis terpilih dan tidak bisa diubah.
-  /// - Menampilkan info bahwa pekerjaan akan dimulai setelah kuota terpenuhi.
+  /// Jumlah total pekerja yang dibutuhkan job ini.
   final int workerCount;
 
   const TakeJobDialogData({
@@ -47,46 +38,27 @@ class TakeJobDialogData {
 
 /// Dialog "Atur Jadwal" untuk mengambil pekerjaan.
 ///
-/// Behavior berdasarkan [TakeJobDialogData.workerCount]:
-/// - **workerCount == 1**: user bebas toggle antara jadwal default dan custom.
-/// - **workerCount > 1**: jadwal default otomatis dipilih & dikunci;
-///   ditampilkan info bahwa pekerjaan baru bisa dimulai jika kuota pekerja terpenuhi.
+/// Menampilkan stepper jumlah slot (1 sampai [TakeJobDialogData.workerCount])
+/// sehingga satu pelamar bisa mengisi beberapa slot sekaligus.
 ///
-/// [onSubmit] di-callback dengan DateTime yang dipilih:
-/// - Jika "ikuti jadwal default" → [TakeJobDialogData.defaultDateTime] (atau DateTime.now() sebagai fallback).
-/// - Jika custom → DateTime yang dipilih user.
+/// Aturan jadwal:
+/// - Jika slotCount == workerCount (pelamar isi semua slot) → custom date boleh.
+/// - Jika slotCount < workerCount → jadwal default dikunci (backend juga memaksa ini).
 ///
-/// Usage:
-/// ```dart
-/// showDialog(
-///   context: context,
-///   builder: (_) => TakeJobDialog(
-///     data: TakeJobDialogData(
-///       defaultDateTime: job.dateOfJob,
-///       defaultDateText: '12 Okt 2023',
-///       defaultTimeText: '08:00 - 17:00 WIB',
-///       workerCount: job.workerCount,
-///     ),
-///     workerId: workerProfile.id,
-///     isSubmitting: false,
-///     onSubmit: (DateTime dt, String workerId) { ... },
-///   ),
-/// );
-/// ```
+/// [onSubmit] di-callback dengan:
+/// - [selectedDateTime]: DateTime yang dipilih.
+/// - [workerId]: Worker Profile ID.
+/// - [slotCount]: Jumlah slot yang diisi.
 class TakeJobDialog extends StatefulWidget {
   final TakeJobDialogData data;
-
-  /// Worker Profile ID yang telah diverifikasi sebelum dialog ditampilkan.
   final String workerId;
-
   final bool isSubmitting;
 
-  /// Callback saat user menekan tombol submit.
-  ///
-  /// Parameter:
-  /// - [selectedDateTime]: DateTime yang dipilih (default atau custom).
-  /// - [workerId]: Worker Profile ID diteruskan kembali untuk kemudahan caller.
-  final void Function(DateTime selectedDateTime, String workerId) onSubmit;
+  final void Function(
+    DateTime selectedDateTime,
+    String workerId,
+    int slotCount,
+  ) onSubmit;
 
   const TakeJobDialog({
     super.key,
@@ -104,15 +76,27 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
   late bool _useDefaultSchedule;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  late int _slotCount;
 
-  /// True jika workerCount > 1 — paksa ikuti jadwal default
-  bool get _forceDefaultSchedule => widget.data.workerCount > 1;
+  /// Jadwal wajib default ketika slot yang dipilih < total kebutuhan.
+  /// Backend juga memaksa ini, tapi UI harus konsisten.
+  bool get _forceDefaultSchedule => _slotCount < widget.data.workerCount;
 
   @override
   void initState() {
     super.initState();
-    // Jika workerCount > 1, paksa ikuti jadwal default dan tidak bisa diubah.
-    _useDefaultSchedule = _forceDefaultSchedule ? true : true;
+    _slotCount = 1;
+    _useDefaultSchedule = true;
+  }
+
+  void _onSlotChanged(int delta) {
+    final next = (_slotCount + delta).clamp(1, widget.data.workerCount);
+    if (next == _slotCount) return;
+    setState(() {
+      _slotCount = next;
+      // Bila slot kembali ke kurang-dari-total, paksa jadwal default.
+      if (_forceDefaultSchedule) _useDefaultSchedule = true;
+    });
   }
 
   @override
@@ -133,17 +117,17 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Header: gambar + judul + deskripsi
             _buildHeader(),
-
             const SizedBox(height: AppSpacing.lg),
 
             // Info jadwal default dari pemberi kerja
             _buildDefaultScheduleCard(),
-
             const SizedBox(height: AppSpacing.md),
 
-            // Info kolaborasi (hanya muncul jika workerCount > 1)
+            // Stepper jumlah slot (hanya tampil jika job butuh > 1 pekerja)
+            if (widget.data.workerCount > 1) _buildSlotStepper(),
+
+            // Info jadwal ikut default (muncul saat slot < total kebutuhan)
             if (_forceDefaultSchedule) _buildCollaborationInfo(),
 
             // Checkbox "Ikuti Jadwal Default" (disabled jika dipaksa)
@@ -153,8 +137,6 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
             if (!_useDefaultSchedule) _buildCustomSchedulePickers(),
 
             const SizedBox(height: AppSpacing.xl),
-
-            // Tombol submit
             _buildSubmitButton(),
           ],
         ),
@@ -189,6 +171,47 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
           textAlign: TextAlign.center,
         ),
       ],
+    );
+  }
+
+  Widget _buildSlotStepper() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Jumlah slot yang kamu isi',
+                  style: AppTypography.labelLarge.copyWith(
+                    color: AppColors.textBlack,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxs),
+                Text(
+                  _slotCount == widget.data.workerCount
+                      ? 'Kamu mengisi semua slot — jadwal custom diizinkan'
+                      : 'Sebagian slot — jadwal mengikuti default iklan',
+                  style: AppTypography.caption.copyWith(
+                    color: _slotCount == widget.data.workerCount
+                        ? AppColors.primary
+                        : AppColors.textCaption,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          _SlotCounter(
+            value: _slotCount,
+            max: widget.data.workerCount,
+            onDecrement: () => _onSlotChanged(-1),
+            onIncrement: () => _onSlotChanged(1),
+          ),
+        ],
+      ),
     );
   }
 
@@ -411,17 +434,12 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
 
   void _handleSubmit() {
     if (_useDefaultSchedule) {
-      // Gunakan defaultDateTime dari job entity jika tersedia;
-      // fallback ke DateTime.now() untuk menghindari null.
       final effectiveDateTime = widget.data.defaultDateTime ?? DateTime.now();
-      widget.onSubmit(effectiveDateTime, widget.workerId);
+      widget.onSubmit(effectiveDateTime, widget.workerId, _slotCount);
       return;
     }
 
-    // Custom schedule — validasi field sebelum submit
-    if (_selectedDate == null || _selectedTime == null) {
-      return; // Tombol submit seharusnya sudah diproteksi, tapi jaga-jaga
-    }
+    if (_selectedDate == null || _selectedTime == null) return;
 
     final customDateTime = DateTime(
       _selectedDate!.year,
@@ -430,7 +448,85 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
       _selectedTime!.hour,
       _selectedTime!.minute,
     );
-    widget.onSubmit(customDateTime, widget.workerId);
+    widget.onSubmit(customDateTime, widget.workerId, _slotCount);
+  }
+}
+
+// ============================================================================
+// _SlotCounter — reusable increment/decrement widget
+// ============================================================================
+
+class _SlotCounter extends StatelessWidget {
+  final int value;
+  final int max;
+  final VoidCallback onDecrement;
+  final VoidCallback onIncrement;
+
+  const _SlotCounter({
+    required this.value,
+    required this.max,
+    required this.onDecrement,
+    required this.onIncrement,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _CounterButton(
+          icon: Icons.remove,
+          onTap: value > 1 ? onDecrement : null,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+          child: Text(
+            '$value',
+            style: AppTypography.labelLarge.copyWith(
+              color: AppColors.textBlack,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        _CounterButton(
+          icon: Icons.add,
+          onTap: value < max ? onIncrement : null,
+        ),
+      ],
+    );
+  }
+}
+
+class _CounterButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  const _CounterButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onTap != null;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: enabled ? AppColors.primary : AppColors.border,
+          ),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+          color: enabled
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : AppColors.background,
+        ),
+        child: Icon(
+          icon,
+          size: 16,
+          color: enabled ? AppColors.primary : AppColors.textCaption,
+        ),
+      ),
+    );
   }
 }
 

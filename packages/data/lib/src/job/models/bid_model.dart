@@ -23,6 +23,7 @@ abstract class BidModel with _$BidModel {
     @JsonKey(name: 'updated_at') String? updatedAt,
     // Phase 1 — dual-confirmation tracking
     @JsonKey(name: 'completion_claimed_at') String? completionClaimedAt,
+    @JsonKey(name: 'slot_count') @Default(1) int slotCount,
   }) = _BidModel;
 
   factory BidModel.fromJson(Map<String, dynamic> json) => _$BidModelFromJson(json);
@@ -42,6 +43,7 @@ abstract class BidModel with _$BidModel {
       completionClaimedAt: completionClaimedAt != null
           ? DateTime.tryParse(completionClaimedAt!)
           : null,
+      slotCount: slotCount,
     );
   }
 }
