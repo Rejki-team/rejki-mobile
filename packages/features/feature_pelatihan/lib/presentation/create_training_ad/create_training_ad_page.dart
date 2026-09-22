@@ -93,7 +93,8 @@ class _CreateTrainingAdViewState extends State<_CreateTrainingAdView> {
                     _LocationAndCostSection(
                       costController: _costController,
                       costPeriod: _costPeriod,
-                      onCostPeriodChanged: (v) => setState(() => _costPeriod = v),
+                      onCostPeriodChanged: (v) =>
+                          setState(() => _costPeriod = v),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     _BankInfoSection(),
@@ -271,8 +272,8 @@ class _LocationAndCostSection extends StatelessWidget {
                 final indonesia = LocationEntity(id: 'ID', name: 'Indonesia');
                 final selectedCountry =
                     locState.selectedCountry is LocationEntity
-                        ? locState.selectedCountry as LocationEntity
-                        : indonesia;
+                    ? locState.selectedCountry as LocationEntity
+                    : indonesia;
 
                 return CascadingLocationField(
                   number: '8',
@@ -305,38 +306,38 @@ class _LocationAndCostSection extends StatelessWidget {
                   },
                   onProvinceChanged: (province) {
                     if (province != null) {
-                      context
-                          .read<LocationBloc>()
-                          .add(LocationEvent.selectProvince(province));
+                      context.read<LocationBloc>().add(
+                        LocationEvent.selectProvince(province),
+                      );
                       cubit.provinceChanged(province.name);
                     } else {
-                      context
-                          .read<LocationBloc>()
-                          .add(const LocationEvent.reset());
+                      context.read<LocationBloc>().add(
+                        const LocationEvent.reset(),
+                      );
                       cubit.provinceChanged('');
                     }
                   },
                   onCityChanged: (city) {
                     if (city != null) {
-                      context
-                          .read<LocationBloc>()
-                          .add(LocationEvent.selectRegency(city));
+                      context.read<LocationBloc>().add(
+                        LocationEvent.selectRegency(city),
+                      );
                       cubit.cityChanged(city.name);
                     }
                   },
                   onDistrictChanged: (district) {
                     if (district != null) {
-                      context
-                          .read<LocationBloc>()
-                          .add(LocationEvent.selectDistrict(district));
+                      context.read<LocationBloc>().add(
+                        LocationEvent.selectDistrict(district),
+                      );
                       cubit.districtChanged(district.name);
                     }
                   },
                   onVillageChanged: (village) {
                     if (village != null) {
-                      context
-                          .read<LocationBloc>()
-                          .add(LocationEvent.selectVillage(village));
+                      context.read<LocationBloc>().add(
+                        LocationEvent.selectVillage(village),
+                      );
                       cubit.villageChanged(village.name);
                       final loc = context.read<LocationBloc>().state;
                       final parts = [
@@ -357,7 +358,7 @@ class _LocationAndCostSection extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             LabeledCurrencyDropdownField(
               number: '9',
-              label: 'Biaya Pelatihan',
+              label: 'Biaya Komitmen',
               isMandatory: true,
               currencyHint: 'Cth. 500.000',
               dropdownHint: '-Pilih-',
@@ -448,12 +449,10 @@ class _BottomActionSection extends StatelessWidget {
               return ElevatedButton(
                 onPressed: state.isFormValid
                     ? () {
-                        final params =
-                            context.read<CreateTrainingAdCubit>().buildParams();
-                        context.push(
-                          '/pelatihan/create/review',
-                          extra: params,
-                        );
+                        final params = context
+                            .read<CreateTrainingAdCubit>()
+                            .buildParams();
+                        context.push('/pelatihan/create/review', extra: params);
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

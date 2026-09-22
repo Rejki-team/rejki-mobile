@@ -4,7 +4,8 @@ part 'incoming_contact_entity.freezed.dart';
 
 /// Public info of the employer who sent the contact request
 @freezed
-abstract class IncomingContactEmployerEntity with _$IncomingContactEmployerEntity {
+abstract class IncomingContactEmployerEntity
+    with _$IncomingContactEmployerEntity {
   const factory IncomingContactEmployerEntity({
     required String id,
     required String fullName,
@@ -26,7 +27,8 @@ abstract class IncomingContactEntity with _$IncomingContactEntity {
 
 /// Paginated result of incoming contact requests
 @freezed
-abstract class IncomingContactsResultEntity with _$IncomingContactsResultEntity {
+abstract class IncomingContactsResultEntity
+    with _$IncomingContactsResultEntity {
   const factory IncomingContactsResultEntity({
     required List<IncomingContactEntity> contacts,
     required int totalRows,

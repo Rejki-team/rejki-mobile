@@ -12,7 +12,7 @@ enum OtpPurpose {
 
   /// Konversi ke nilai string sesuai kontrak API
   String get value => switch (this) {
-        OtpPurpose.registration => 'registration',
-        OtpPurpose.passwordReset => 'password_reset',
-      };
+    OtpPurpose.registration => 'registration',
+    OtpPurpose.passwordReset => 'password_reset',
+  };
 }

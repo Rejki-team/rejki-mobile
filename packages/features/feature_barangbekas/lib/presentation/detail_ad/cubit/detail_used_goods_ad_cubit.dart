@@ -8,7 +8,7 @@ class DetailUsedGoodsAdCubit extends Cubit<DetailUsedGoodsAdState> {
   final GetSecondhandByIdUseCase _getSecondhandByIdUseCase;
 
   DetailUsedGoodsAdCubit(this._getSecondhandByIdUseCase)
-      : super(const DetailUsedGoodsAdState());
+    : super(const DetailUsedGoodsAdState());
 
   /// Fetch detail for secondhand ad with [id].
   Future<void> loadAdDetail(String id) async {
@@ -25,9 +25,7 @@ class DetailUsedGoodsAdCubit extends Cubit<DetailUsedGoodsAdState> {
           errorMessage: _mapFailureMessage(failure),
         ),
       ),
-      (entity) => emit(
-        state.copyWith(isLoading: false, secondhand: entity),
-      ),
+      (entity) => emit(state.copyWith(isLoading: false, secondhand: entity)),
     );
   }
 

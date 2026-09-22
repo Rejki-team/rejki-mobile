@@ -15,6 +15,10 @@ abstract class JobDetailState with _$JobDetailState {
 
     /// Error message if any
     String? errorMessage,
+
+    /// Agregasi rating pemberi kerja (F-17, PRD §5.15) — `null` selagi belum
+    /// selesai fetch atau `job.userId` kosong; tidak memblokir `isSuccess`.
+    RatingAggregateEntity? employerRating,
   }) = _JobDetailState;
 
   const JobDetailState._();

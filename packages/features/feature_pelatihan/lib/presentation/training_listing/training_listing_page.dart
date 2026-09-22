@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
 import 'cubit/training_listing_cubit.dart';
 import 'cubit/training_listing_state.dart';
+import 'widgets/training_distance_filter_bottom_sheet.dart';
 
 class TrainingListingPage extends StatelessWidget {
   const TrainingListingPage({super.key});
@@ -16,8 +18,63 @@ class TrainingListingPage extends StatelessWidget {
   }
 }
 
-class _TrainingListingView extends StatelessWidget {
+class _TrainingListingView extends StatefulWidget {
   const _TrainingListingView();
+
+  @override
+  State<_TrainingListingView> createState() => _TrainingListingViewState();
+}
+
+class _TrainingListingViewState extends State<_TrainingListingView> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchDeviceLocation();
+  }
+
+  /// Fetches device GPS coordinates and dispatches them to [TrainingListingCubit]
+  /// (F-1/F-14, PRD §5.13.1). Mirrors the pattern established in
+  /// `create_job_page.dart`.
+  ///
+  /// ## Safety guarantees
+  /// - Called from [initState] — never blocks the UI (listing already loads
+  ///   without coordinates first).
+  /// - All exceptions are caught silently; GPS failure does **not** prevent
+  ///   the listing from showing (lat/lng simply stay omitted from the API call).
+  /// - [mounted] guard prevents using a disposed widget's context.
+  Future<void> _fetchDeviceLocation() async {
+    try {
+      final permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        debugPrint(
+          '[TrainingListingPage] Location permission denied — lat/lng omitted.',
+        );
+        return;
+      }
+
+      Position? position;
+      try {
+        position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 8),
+          ),
+        );
+      } catch (_) {
+        position = await Geolocator.getLastKnownPosition();
+      }
+
+      if (!mounted || position == null) return;
+
+      context.read<TrainingListingCubit>().updateLocation(
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+    } catch (e) {
+      debugPrint('[TrainingListingPage] Failed to fetch location: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,9 +191,7 @@ class _DistanceFilterSection extends StatelessWidget {
             ),
           ),
           InkWell(
-            onTap: () {
-              // Open distance filter bottom sheet
-            },
+            onTap: () => TrainingDistanceFilterBottomSheet.show(context),
             child: BlocBuilder<TrainingListingCubit, TrainingListingState>(
               buildWhen: (prev, curr) =>
                   prev.locationDisplayText != curr.locationDisplayText,
@@ -190,14 +245,16 @@ class _TrainingListSection extends StatelessWidget {
 
         if (state.isFailure) {
           return AppErrorState(
-            description: state.errorMessage ?? 'Terjadi kesalahan saat memuat pelatihan',
+            description:
+                state.errorMessage ?? 'Terjadi kesalahan saat memuat pelatihan',
             onRetry: () => context.read<TrainingListingCubit>().loadTrainings(),
           );
         }
 
         if (state.trainings.isEmpty) {
           return AppPullToRefresh(
-            onRefresh: () => context.read<TrainingListingCubit>().loadTrainings(),
+            onRefresh: () =>
+                context.read<TrainingListingCubit>().loadTrainings(),
             child: CustomScrollView(
               slivers: [
                 SliverFillRemaining(
@@ -213,7 +270,8 @@ class _TrainingListSection extends StatelessWidget {
                       ),
                     ),
                     title: 'Belum ada pelatihan tersedia',
-                    description: 'Silahkan coba cari dengan kata kunci atau lokasi lain',
+                    description:
+                        'Silahkan coba cari dengan kata kunci atau lokasi lain',
                   ),
                 ),
               ],
@@ -230,10 +288,12 @@ class _TrainingListSection extends StatelessWidget {
               const SizedBox(height: AppSpacing.md),
               ...state.trainings.map((training) {
                 final facilities = training.facilities
-                    .map((f) => TrainingFacility(
-                          iconAsset: AppAssets.iconInfoLine,
-                          label: f,
-                        ))
+                    .map(
+                      (f) => TrainingFacility(
+                        iconAsset: AppAssets.iconInfoLine,
+                        label: f,
+                      ),
+                    )
                     .toList();
 
                 return Padding(

@@ -13,6 +13,7 @@ export 'src/pages/pages.dart';
 
 // Services
 export 'src/services/fcm_notification_service.dart';
+export 'src/services/ad_service.dart';
 
 // Re-export feature_splashscreen untuk kemudahan akses
 export 'package:feature_splashscreen/feature_splashscreen.dart';

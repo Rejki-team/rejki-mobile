@@ -34,21 +34,23 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   }
 
   void _onSelectCountry(_SelectCountry event, Emitter<LocationState> emit) {
-    emit(state.copyWith(
-      selectedCountry: event.country,
-      selectedProvince: null,
-      selectedRegency: null,
-      selectedDistrict: null,
-      selectedVillage: null,
-      provinces: [],
-      regencies: [],
-      districts: [],
-      villages: [],
-      provincesStatus: LocationLoadStatus.initial,
-      regenciesStatus: LocationLoadStatus.initial,
-      districtsStatus: LocationLoadStatus.initial,
-      villagesStatus: LocationLoadStatus.initial,
-    ));
+    emit(
+      state.copyWith(
+        selectedCountry: event.country,
+        selectedProvince: null,
+        selectedRegency: null,
+        selectedDistrict: null,
+        selectedVillage: null,
+        provinces: [],
+        regencies: [],
+        districts: [],
+        villages: [],
+        provincesStatus: LocationLoadStatus.initial,
+        regenciesStatus: LocationLoadStatus.initial,
+        districtsStatus: LocationLoadStatus.initial,
+        villagesStatus: LocationLoadStatus.initial,
+      ),
+    );
   }
 
   Future<void> _onLoadProvinces(
@@ -58,15 +60,19 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     emit(state.copyWith(provincesStatus: LocationLoadStatus.loading));
     final result = await _getProvincesUseCase();
     result.fold(
-      (failure) => emit(state.copyWith(
-        provincesStatus: LocationLoadStatus.failure,
-        errorMessage: failure.userMessage,
-      )),
-      (provinces) => emit(state.copyWith(
-        provincesStatus: LocationLoadStatus.success,
-        provinces: provinces,
-        errorMessage: null,
-      )),
+      (failure) => emit(
+        state.copyWith(
+          provincesStatus: LocationLoadStatus.failure,
+          errorMessage: failure.userMessage,
+        ),
+      ),
+      (provinces) => emit(
+        state.copyWith(
+          provincesStatus: LocationLoadStatus.success,
+          provinces: provinces,
+          errorMessage: null,
+        ),
+      ),
     );
   }
 
@@ -74,29 +80,35 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     _SelectProvince event,
     Emitter<LocationState> emit,
   ) async {
-    emit(state.copyWith(
-      selectedProvince: event.province,
-      selectedRegency: null,
-      selectedDistrict: null,
-      selectedVillage: null,
-      regencies: [],
-      districts: [],
-      villages: [],
-      regenciesStatus: LocationLoadStatus.loading,
-      districtsStatus: LocationLoadStatus.initial,
-      villagesStatus: LocationLoadStatus.initial,
-    ));
+    emit(
+      state.copyWith(
+        selectedProvince: event.province,
+        selectedRegency: null,
+        selectedDistrict: null,
+        selectedVillage: null,
+        regencies: [],
+        districts: [],
+        villages: [],
+        regenciesStatus: LocationLoadStatus.loading,
+        districtsStatus: LocationLoadStatus.initial,
+        villagesStatus: LocationLoadStatus.initial,
+      ),
+    );
     final result = await _getRegenciesUseCase(event.province.id);
     result.fold(
-      (failure) => emit(state.copyWith(
-        regenciesStatus: LocationLoadStatus.failure,
-        errorMessage: failure.userMessage,
-      )),
-      (regencies) => emit(state.copyWith(
-        regenciesStatus: LocationLoadStatus.success,
-        regencies: regencies,
-        errorMessage: null,
-      )),
+      (failure) => emit(
+        state.copyWith(
+          regenciesStatus: LocationLoadStatus.failure,
+          errorMessage: failure.userMessage,
+        ),
+      ),
+      (regencies) => emit(
+        state.copyWith(
+          regenciesStatus: LocationLoadStatus.success,
+          regencies: regencies,
+          errorMessage: null,
+        ),
+      ),
     );
   }
 
@@ -104,26 +116,32 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     _SelectRegency event,
     Emitter<LocationState> emit,
   ) async {
-    emit(state.copyWith(
-      selectedRegency: event.regency,
-      selectedDistrict: null,
-      selectedVillage: null,
-      districts: [],
-      villages: [],
-      districtsStatus: LocationLoadStatus.loading,
-      villagesStatus: LocationLoadStatus.initial,
-    ));
+    emit(
+      state.copyWith(
+        selectedRegency: event.regency,
+        selectedDistrict: null,
+        selectedVillage: null,
+        districts: [],
+        villages: [],
+        districtsStatus: LocationLoadStatus.loading,
+        villagesStatus: LocationLoadStatus.initial,
+      ),
+    );
     final result = await _getDistrictsUseCase(event.regency.id);
     result.fold(
-      (failure) => emit(state.copyWith(
-        districtsStatus: LocationLoadStatus.failure,
-        errorMessage: failure.userMessage,
-      )),
-      (districts) => emit(state.copyWith(
-        districtsStatus: LocationLoadStatus.success,
-        districts: districts,
-        errorMessage: null,
-      )),
+      (failure) => emit(
+        state.copyWith(
+          districtsStatus: LocationLoadStatus.failure,
+          errorMessage: failure.userMessage,
+        ),
+      ),
+      (districts) => emit(
+        state.copyWith(
+          districtsStatus: LocationLoadStatus.success,
+          districts: districts,
+          errorMessage: null,
+        ),
+      ),
     );
   }
 
@@ -131,23 +149,29 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     _SelectDistrict event,
     Emitter<LocationState> emit,
   ) async {
-    emit(state.copyWith(
-      selectedDistrict: event.district,
-      selectedVillage: null,
-      villages: [],
-      villagesStatus: LocationLoadStatus.loading,
-    ));
+    emit(
+      state.copyWith(
+        selectedDistrict: event.district,
+        selectedVillage: null,
+        villages: [],
+        villagesStatus: LocationLoadStatus.loading,
+      ),
+    );
     final result = await _getVillagesUseCase(event.district.id);
     result.fold(
-      (failure) => emit(state.copyWith(
-        villagesStatus: LocationLoadStatus.failure,
-        errorMessage: failure.userMessage,
-      )),
-      (villages) => emit(state.copyWith(
-        villagesStatus: LocationLoadStatus.success,
-        villages: villages,
-        errorMessage: null,
-      )),
+      (failure) => emit(
+        state.copyWith(
+          villagesStatus: LocationLoadStatus.failure,
+          errorMessage: failure.userMessage,
+        ),
+      ),
+      (villages) => emit(
+        state.copyWith(
+          villagesStatus: LocationLoadStatus.success,
+          villages: villages,
+          errorMessage: null,
+        ),
+      ),
     );
   }
 

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HistoryBarangBekasState {
 
- HistoryBarangBekasStatus get status; List<SecondhandEntity> get claims; bool get hasNext; int get currentPage; String? get errorMessage;
+ HistoryBarangBekasStatus get status; List<BiderEntity> get biderList; String? get errorMessage;
 /// Create a copy of HistoryBarangBekasState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $HistoryBarangBekasStateCopyWith<HistoryBarangBekasState> get copyWith => _$Hist
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryBarangBekasState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.claims, claims)&&(identical(other.hasNext, hasNext) || other.hasNext == hasNext)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryBarangBekasState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.biderList, biderList)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(claims),hasNext,currentPage,errorMessage);
+int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(biderList),errorMessage);
 
 @override
 String toString() {
-  return 'HistoryBarangBekasState(status: $status, claims: $claims, hasNext: $hasNext, currentPage: $currentPage, errorMessage: $errorMessage)';
+  return 'HistoryBarangBekasState(status: $status, biderList: $biderList, errorMessage: $errorMessage)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $HistoryBarangBekasStateCopyWith<$Res>  {
   factory $HistoryBarangBekasStateCopyWith(HistoryBarangBekasState value, $Res Function(HistoryBarangBekasState) _then) = _$HistoryBarangBekasStateCopyWithImpl;
 @useResult
 $Res call({
- HistoryBarangBekasStatus status, List<SecondhandEntity> claims, bool hasNext, int currentPage, String? errorMessage
+ HistoryBarangBekasStatus status, List<BiderEntity> biderList, String? errorMessage
 });
 
 
@@ -62,13 +62,11 @@ class _$HistoryBarangBekasStateCopyWithImpl<$Res>
 
 /// Create a copy of HistoryBarangBekasState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? claims = null,Object? hasNext = null,Object? currentPage = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? biderList = null,Object? errorMessage = freezed,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as HistoryBarangBekasStatus,claims: null == claims ? _self.claims : claims // ignore: cast_nullable_to_non_nullable
-as List<SecondhandEntity>,hasNext: null == hasNext ? _self.hasNext : hasNext // ignore: cast_nullable_to_non_nullable
-as bool,currentPage: null == currentPage ? _self.currentPage : currentPage // ignore: cast_nullable_to_non_nullable
-as int,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as HistoryBarangBekasStatus,biderList: null == biderList ? _self.biderList : biderList // ignore: cast_nullable_to_non_nullable
+as List<BiderEntity>,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -154,10 +152,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HistoryBarangBekasStatus status,  List<SecondhandEntity> claims,  bool hasNext,  int currentPage,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HistoryBarangBekasStatus status,  List<BiderEntity> biderList,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HistoryBarangBekasState() when $default != null:
-return $default(_that.status,_that.claims,_that.hasNext,_that.currentPage,_that.errorMessage);case _:
+return $default(_that.status,_that.biderList,_that.errorMessage);case _:
   return orElse();
 
 }
@@ -175,10 +173,10 @@ return $default(_that.status,_that.claims,_that.hasNext,_that.currentPage,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HistoryBarangBekasStatus status,  List<SecondhandEntity> claims,  bool hasNext,  int currentPage,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HistoryBarangBekasStatus status,  List<BiderEntity> biderList,  String? errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _HistoryBarangBekasState():
-return $default(_that.status,_that.claims,_that.hasNext,_that.currentPage,_that.errorMessage);case _:
+return $default(_that.status,_that.biderList,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +193,10 @@ return $default(_that.status,_that.claims,_that.hasNext,_that.currentPage,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HistoryBarangBekasStatus status,  List<SecondhandEntity> claims,  bool hasNext,  int currentPage,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HistoryBarangBekasStatus status,  List<BiderEntity> biderList,  String? errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _HistoryBarangBekasState() when $default != null:
-return $default(_that.status,_that.claims,_that.hasNext,_that.currentPage,_that.errorMessage);case _:
+return $default(_that.status,_that.biderList,_that.errorMessage);case _:
   return null;
 
 }
@@ -210,19 +208,17 @@ return $default(_that.status,_that.claims,_that.hasNext,_that.currentPage,_that.
 
 
 class _HistoryBarangBekasState implements HistoryBarangBekasState {
-  const _HistoryBarangBekasState({this.status = HistoryBarangBekasStatus.initial, final  List<SecondhandEntity> claims = const [], this.hasNext = false, this.currentPage = 1, this.errorMessage}): _claims = claims;
+  const _HistoryBarangBekasState({this.status = HistoryBarangBekasStatus.initial, final  List<BiderEntity> biderList = const [], this.errorMessage}): _biderList = biderList;
   
 
 @override@JsonKey() final  HistoryBarangBekasStatus status;
- final  List<SecondhandEntity> _claims;
-@override@JsonKey() List<SecondhandEntity> get claims {
-  if (_claims is EqualUnmodifiableListView) return _claims;
+ final  List<BiderEntity> _biderList;
+@override@JsonKey() List<BiderEntity> get biderList {
+  if (_biderList is EqualUnmodifiableListView) return _biderList;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_claims);
+  return EqualUnmodifiableListView(_biderList);
 }
 
-@override@JsonKey() final  bool hasNext;
-@override@JsonKey() final  int currentPage;
 @override final  String? errorMessage;
 
 /// Create a copy of HistoryBarangBekasState
@@ -235,16 +231,16 @@ _$HistoryBarangBekasStateCopyWith<_HistoryBarangBekasState> get copyWith => __$H
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryBarangBekasState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._claims, _claims)&&(identical(other.hasNext, hasNext) || other.hasNext == hasNext)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryBarangBekasState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._biderList, _biderList)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_claims),hasNext,currentPage,errorMessage);
+int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_biderList),errorMessage);
 
 @override
 String toString() {
-  return 'HistoryBarangBekasState(status: $status, claims: $claims, hasNext: $hasNext, currentPage: $currentPage, errorMessage: $errorMessage)';
+  return 'HistoryBarangBekasState(status: $status, biderList: $biderList, errorMessage: $errorMessage)';
 }
 
 
@@ -255,7 +251,7 @@ abstract mixin class _$HistoryBarangBekasStateCopyWith<$Res> implements $History
   factory _$HistoryBarangBekasStateCopyWith(_HistoryBarangBekasState value, $Res Function(_HistoryBarangBekasState) _then) = __$HistoryBarangBekasStateCopyWithImpl;
 @override @useResult
 $Res call({
- HistoryBarangBekasStatus status, List<SecondhandEntity> claims, bool hasNext, int currentPage, String? errorMessage
+ HistoryBarangBekasStatus status, List<BiderEntity> biderList, String? errorMessage
 });
 
 
@@ -272,13 +268,11 @@ class __$HistoryBarangBekasStateCopyWithImpl<$Res>
 
 /// Create a copy of HistoryBarangBekasState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? claims = null,Object? hasNext = null,Object? currentPage = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? biderList = null,Object? errorMessage = freezed,}) {
   return _then(_HistoryBarangBekasState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as HistoryBarangBekasStatus,claims: null == claims ? _self._claims : claims // ignore: cast_nullable_to_non_nullable
-as List<SecondhandEntity>,hasNext: null == hasNext ? _self.hasNext : hasNext // ignore: cast_nullable_to_non_nullable
-as bool,currentPage: null == currentPage ? _self.currentPage : currentPage // ignore: cast_nullable_to_non_nullable
-as int,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as HistoryBarangBekasStatus,biderList: null == biderList ? _self._biderList : biderList // ignore: cast_nullable_to_non_nullable
+as List<BiderEntity>,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

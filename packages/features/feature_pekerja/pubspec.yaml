@@ -33,6 +33,8 @@ dependencies:
   go_router: ^17.0.1
   shared_widgets:
     path: ../../shared_widgets
+  feature_report:
+    path: ../feature_report
   image_picker: ^1.1.2
   permission_handler: ^12.0.1
   url_launcher: ^6.3.2

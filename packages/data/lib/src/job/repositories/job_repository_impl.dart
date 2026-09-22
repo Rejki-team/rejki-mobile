@@ -2,14 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:domain/domain.dart';
 import '../datasources/job_remote_datasource.dart';
-import '../datasources/bid_job_datasource.dart';
+import '../datasources/lamaran_datasource.dart';
 
 /// Implementation of shared Job Repository
 class JobRepositoryImpl extends JobRepository {
   final JobRemoteDataSource _remoteDataSource;
-  final BidJobDataSource _bidJobDataSource;
+  final LamaranDataSource _lamaranDataSource;
 
-  JobRepositoryImpl(this._remoteDataSource, this._bidJobDataSource);
+  JobRepositoryImpl(this._remoteDataSource, this._lamaranDataSource);
 
   @override
   Future<Either<JobFailure, JobsResultEntity>> getJobs(
@@ -38,10 +38,10 @@ class JobRepositoryImpl extends JobRepository {
   }
 
   @override
-  Future<Either<JobFailure, Unit>> bidJob(BidJobParams params) async {
+  Future<Either<JobFailure, LamaranEntity>> lamar(LamarParams params) async {
     try {
-      await _bidJobDataSource.bidJob(params);
-      return const Right(unit);
+      final model = await _lamaranDataSource.lamar(params);
+      return Right(model.toEntity());
     } on DioException catch (e) {
       return Left(_handleDioException(e));
     } catch (e) {
@@ -50,18 +50,10 @@ class JobRepositoryImpl extends JobRepository {
   }
 
   @override
-  Future<Either<JobFailure, BidsResultEntity>> getMyBids({
-    String? status,
-    int page = 1,
-    int limit = 10,
-  }) async {
+  Future<Either<JobFailure, List<LamaranEntity>>> getLamaranSaya() async {
     try {
-      final response = await _remoteDataSource.getMyBids(
-        status: status,
-        page: page,
-        limit: limit,
-      );
-      return Right(response.toEntity());
+      final models = await _remoteDataSource.getLamaranSaya();
+      return Right(models.map((m) => m.toEntity()).toList());
     } on DioException catch (e) {
       return Left(_handleDioException(e));
     } catch (e) {
@@ -70,20 +62,12 @@ class JobRepositoryImpl extends JobRepository {
   }
 
   @override
-  Future<Either<JobFailure, BidsResultEntity>> getIncomingBids({
-    String? jobId,
-    String? status,
-    int page = 1,
-    int limit = 10,
-  }) async {
+  Future<Either<JobFailure, List<LamaranEntity>>> getLamaranForIklan(
+    String iklanId,
+  ) async {
     try {
-      final response = await _remoteDataSource.getIncomingBids(
-        jobId: jobId,
-        status: status,
-        page: page,
-        limit: limit,
-      );
-      return Right(response.toEntity());
+      final models = await _remoteDataSource.getLamaranForIklan(iklanId);
+      return Right(models.map((m) => m.toEntity()).toList());
     } on DioException catch (e) {
       return Left(_handleDioException(e));
     } catch (e) {

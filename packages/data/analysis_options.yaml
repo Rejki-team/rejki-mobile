@@ -24,6 +24,7 @@ analyzer:
     invalid_annotation_target: ignore
   exclude:
     - path/to/excluded/files/**
+    - build/**
 
 # For more information about the core and recommended set of lints, see
 # https://dart.dev/go/core-lints

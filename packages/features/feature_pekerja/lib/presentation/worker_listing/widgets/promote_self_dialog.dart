@@ -63,9 +63,11 @@ class PromoteSelfDialog extends StatelessWidget {
             _PromoteSelfOption(
               iconPath: AppAssets.iconProfileOutlined,
               title: 'Gunakan Profil Saya',
-              subtitle: 'Isi otomatis dari data profil yang sudah terverifikasi',
-              onTap: () =>
-                  Navigator.of(context).pop(PromoteSelfOption.useExistingProfile),
+              subtitle:
+                  'Isi otomatis dari data profil yang sudah terverifikasi',
+              onTap: () => Navigator.of(
+                context,
+              ).pop(PromoteSelfOption.useExistingProfile),
             ),
 
             const SizedBox(height: AppSpacing.sm),
@@ -117,9 +119,7 @@ class _PromoteSelfDialogHeader extends StatelessWidget {
         const SizedBox(height: AppSpacing.xxs),
         Text(
           'Pilih cara mengisi profil pekerja Anda',
-          style: AppTypography.bodySmall.copyWith(
-            color: AppColors.textCaption,
-          ),
+          style: AppTypography.bodySmall.copyWith(color: AppColors.textCaption),
           textAlign: TextAlign.center,
         ),
       ],

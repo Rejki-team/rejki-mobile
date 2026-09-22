@@ -12,9 +12,9 @@ class GetWorkersUseCase {
   GetWorkersUseCase(this._repository);
 
   Future<Either<WorkerFailure, List<WorkerEntity>>> call({
-    required double latitude,
-    required double longitude,
-    required double maxDistance,
+    double? latitude,
+    double? longitude,
+    double? maxDistance,
     String? sortBy,
     String? keyword,
   }) {

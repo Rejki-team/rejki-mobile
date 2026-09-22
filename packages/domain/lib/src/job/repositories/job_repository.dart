@@ -1,14 +1,15 @@
 import 'package:fpdart/fpdart.dart';
 import '../entities/job_entity.dart';
 import '../entities/jobs_result_entity.dart';
-import '../entities/bids_result_entity.dart';
+import '../entities/lamaran_entity.dart';
 import '../failures/job_failure.dart';
 import '../params/params.dart';
 
 /// Shared Job Repository Interface (Domain Layer)
 ///
-/// This repository handles READ-ONLY operations for jobs.
-/// For mutations (create, update, delete), use feature-specific repositories.
+/// This repository handles READ-ONLY operations for jobs, plus the "lamar"
+/// action (F-3) which is reusable across features the same way `getJobs` is.
+/// For pure mutations (create, review, dsb.), use [JobMutationRepository].
 abstract class JobRepository {
   /// Get jobs with query parameters
   ///
@@ -29,31 +30,19 @@ abstract class JobRepository {
     return getJobs(JobQueryParams.latest(limit: limit));
   }
 
-  /// Bid on / take a job
-  ///
-  /// Returns Unit on success or JobFailure on error
-  Future<Either<JobFailure, Unit>> bidJob(BidJobParams params);
+  /// Ajukan lamaran (F-3, PRD §5.11.3). Backend memvalidasi 3 poin (sudah punya
+  /// Iklan Pekerja aktif, bukan iklan sendiri, tidak ada jadwal bentrok).
+  Future<Either<JobFailure, LamaranEntity>> lamar(LamarParams params);
 
-  /// Get user's bids (pekerjaan yang diambil)
-  ///
-  /// Returns a paginated result of bids matching the query parameters.
-  Future<Either<JobFailure, BidsResultEntity>> getMyBids({
-    String? status,
-    int page = 1,
-    int limit = 10,
-  });
+  /// Daftar lamaran milik pelamar yang sedang login — "Riwayat Aktifitas Pelamar"
+  /// (PRD §5.11.4). Tidak dipaginasi oleh backend (mengembalikan seluruh riwayat).
+  Future<Either<JobFailure, List<LamaranEntity>>> getLamaranSaya();
 
-  /// Get incoming bids for jobs posted by the current user (employer view)
-  ///
-  /// Returns a paginated list of bids received on the user's own job listings.
-  /// [jobId] optionally filters bids to a specific job.
-  /// [status] optionally filters by bid status (request, approve, decline).
-  Future<Either<JobFailure, BidsResultEntity>> getIncomingBids({
-    String? jobId,
-    String? status,
-    int page = 1,
-    int limit = 10,
-  });
+  /// Daftar lamaran untuk satu iklan — "Kelola Pelamar" (PRD §5.11.5), dipanggil
+  /// pemilik iklan. Tidak dipaginasi oleh backend.
+  Future<Either<JobFailure, List<LamaranEntity>>> getLamaranForIklan(
+    String iklanId,
+  );
 
   /// Get jobs posted by the current user
   ///

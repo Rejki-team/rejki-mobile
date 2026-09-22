@@ -30,29 +30,35 @@ class PersonalInfoCubit extends Cubit<PersonalInfoState> {
   Future<void> loadProfile() => _loadProfile();
 
   Future<void> _loadProfile() async {
-    emit(state.copyWith(
-      status: PersonalInfoStatus.loading,
-      errorMessage: null,
-      workingHoursError: null,
-      phoneVisibilityError: null,
-      // Reset result saat load ulang agar listener tidak trigger ulang
-      updateResult: PersonalInfoUpdateResult.none,
-    ));
+    emit(
+      state.copyWith(
+        status: PersonalInfoStatus.loading,
+        errorMessage: null,
+        workingHoursError: null,
+        phoneVisibilityError: null,
+        // Reset result saat load ulang agar listener tidak trigger ulang
+        updateResult: PersonalInfoUpdateResult.none,
+      ),
+    );
 
     final result = await _getFullProfile();
 
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: PersonalInfoStatus.failure,
-        errorMessage: _mapFailure(failure),
-      )),
-      (profile) => emit(state.copyWith(
-        status: PersonalInfoStatus.success,
-        profile: profile,
-        errorMessage: null,
-      )),
+      (failure) => emit(
+        state.copyWith(
+          status: PersonalInfoStatus.failure,
+          errorMessage: _mapFailure(failure),
+        ),
+      ),
+      (profile) => emit(
+        state.copyWith(
+          status: PersonalInfoStatus.success,
+          profile: profile,
+          errorMessage: null,
+        ),
+      ),
     );
   }
 
@@ -68,11 +74,13 @@ class PersonalInfoCubit extends Cubit<PersonalInfoState> {
   Future<void> updateWorkingHours(String workingHours) async {
     if (state.isBusy) return;
 
-    emit(state.copyWith(
-      isUpdatingWorkingHours: true,
-      workingHoursError: null,
-      updateResult: PersonalInfoUpdateResult.none,
-    ));
+    emit(
+      state.copyWith(
+        isUpdatingWorkingHours: true,
+        workingHoursError: null,
+        updateResult: PersonalInfoUpdateResult.none,
+      ),
+    );
 
     final result = await _updateWorkingHours(workingHours);
 
@@ -80,19 +88,23 @@ class PersonalInfoCubit extends Cubit<PersonalInfoState> {
 
     await result.fold(
       (failure) async {
-        emit(state.copyWith(
-          isUpdatingWorkingHours: false,
-          workingHoursError: _mapFailure(failure),
-          updateResult: PersonalInfoUpdateResult.workingHoursFailed,
-        ));
+        emit(
+          state.copyWith(
+            isUpdatingWorkingHours: false,
+            workingHoursError: _mapFailure(failure),
+            updateResult: PersonalInfoUpdateResult.workingHoursFailed,
+          ),
+        );
       },
       (_) async {
         // Refresh data dari server setelah sukses
         emit(state.copyWith(isUpdatingWorkingHours: false));
         // Emit sukses dulu agar listener bisa menampilkan dialog
-        emit(state.copyWith(
-          updateResult: PersonalInfoUpdateResult.workingHoursSuccess,
-        ));
+        emit(
+          state.copyWith(
+            updateResult: PersonalInfoUpdateResult.workingHoursSuccess,
+          ),
+        );
         // Auto-refresh: ambil data terbaru dari server
         await _loadProfile();
       },
@@ -109,11 +121,13 @@ class PersonalInfoCubit extends Cubit<PersonalInfoState> {
   Future<void> updatePhoneVisibility({required bool isVisible}) async {
     if (state.isBusy) return;
 
-    emit(state.copyWith(
-      isUpdatingPhoneVisibility: true,
-      phoneVisibilityError: null,
-      updateResult: PersonalInfoUpdateResult.none,
-    ));
+    emit(
+      state.copyWith(
+        isUpdatingPhoneVisibility: true,
+        phoneVisibilityError: null,
+        updateResult: PersonalInfoUpdateResult.none,
+      ),
+    );
 
     final result = await _updatePhoneVisibility(isVisible: isVisible);
 
@@ -121,17 +135,21 @@ class PersonalInfoCubit extends Cubit<PersonalInfoState> {
 
     await result.fold(
       (failure) async {
-        emit(state.copyWith(
-          isUpdatingPhoneVisibility: false,
-          phoneVisibilityError: _mapFailure(failure),
-          updateResult: PersonalInfoUpdateResult.phoneVisibilityFailed,
-        ));
+        emit(
+          state.copyWith(
+            isUpdatingPhoneVisibility: false,
+            phoneVisibilityError: _mapFailure(failure),
+            updateResult: PersonalInfoUpdateResult.phoneVisibilityFailed,
+          ),
+        );
       },
       (_) async {
         emit(state.copyWith(isUpdatingPhoneVisibility: false));
-        emit(state.copyWith(
-          updateResult: PersonalInfoUpdateResult.phoneVisibilitySuccess,
-        ));
+        emit(
+          state.copyWith(
+            updateResult: PersonalInfoUpdateResult.phoneVisibilitySuccess,
+          ),
+        );
         await _loadProfile();
       },
     );

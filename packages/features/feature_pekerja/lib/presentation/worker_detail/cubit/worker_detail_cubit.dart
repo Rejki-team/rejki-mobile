@@ -8,8 +8,10 @@ import '../models/worker_detail_model.dart';
 @injectable
 class WorkerDetailCubit extends Cubit<WorkerDetailState> {
   final GetWorkerByIdUseCase _getWorkerByIdUseCase;
+  final GetRatingAggregateUseCase _getRatingAggregateUseCase;
 
-  WorkerDetailCubit(this._getWorkerByIdUseCase) : super(const WorkerDetailState());
+  WorkerDetailCubit(this._getWorkerByIdUseCase, this._getRatingAggregateUseCase)
+    : super(const WorkerDetailState());
 
   String _formatWage(int wage) {
     final formatted = wage.toString().replaceAllMapped(
@@ -42,20 +44,23 @@ class WorkerDetailCubit extends Cubit<WorkerDetailState> {
             ),
           );
         },
-        (workerEntity) {
+        (workerEntity) async {
           // Map to Detail Model using newly pulled API fields
-          final model = WorkerDetailModel(
+          var model = WorkerDetailModel(
             id: workerEntity.id,
             name: workerEntity.name,
             adCode: workerEntity.adCode,
+            posterId: workerEntity.posterId,
             statusLabel: workerEntity.statusLabel ?? 'Available',
             age: workerEntity.age,
             rating: workerEntity.rating,
             reviewCount: workerEntity.reviewCount,
             wageText: _formatWage(workerEntity.wage),
             avatarUrl: workerEntity.avatarUrl,
-            address: workerEntity.address ?? 'Alamat tidak tersedia', 
-            workExperiences: (workerEntity.workExperience != null && workerEntity.workExperience!.isNotEmpty)
+            address: workerEntity.address ?? 'Alamat tidak tersedia',
+            workExperiences:
+                (workerEntity.workExperience != null &&
+                    workerEntity.workExperience!.isNotEmpty)
                 ? [workerEntity.workExperience!]
                 : ['Tidak ada pengalaman kerja terdaftar'],
             workingHours: workerEntity.available ?? 'Fleksibel',
@@ -64,6 +69,23 @@ class WorkerDetailCubit extends Cubit<WorkerDetailState> {
           );
 
           emit(state.copyWith(isLoading: false, worker: model));
+
+          // F-17 (PRD §5.15): agregat rating pekerja — fetch terpisah, tidak
+          // memblokir tampilnya detail bila gagal.
+          final posterId = workerEntity.posterId;
+          if (posterId != null && posterId.isNotEmpty) {
+            final ratingResult = await _getRatingAggregateUseCase.execute(
+              posterId,
+            );
+            if (isClosed) return;
+            ratingResult.fold((_) {}, (agg) {
+              model = model.copyWith(
+                rating: agg.average,
+                reviewCount: agg.count,
+              );
+              emit(state.copyWith(worker: model));
+            });
+          }
         },
       );
     } catch (e) {

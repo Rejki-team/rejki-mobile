@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WorkerDetailModel {
 
- String get id; String get name; String get adCode; String get statusLabel; int get age; double get rating; int get reviewCount; String get wageText; String? get avatarUrl; String get address; List<String> get workExperiences; String get workingHours; String get phoneNumber; List<String> get badges;
+ String get id; String get name; String get adCode; String? get posterId; String get statusLabel; int get age; double get rating; int get reviewCount; String get wageText; String? get avatarUrl; String get address; List<String> get workExperiences; String get workingHours; String get phoneNumber; List<String> get badges;
 /// Create a copy of WorkerDetailModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $WorkerDetailModelCopyWith<WorkerDetailModel> get copyWith => _$WorkerDetailMode
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkerDetailModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.statusLabel, statusLabel) || other.statusLabel == statusLabel)&&(identical(other.age, age) || other.age == age)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.wageText, wageText) || other.wageText == wageText)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other.workExperiences, workExperiences)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&const DeepCollectionEquality().equals(other.badges, badges));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkerDetailModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.posterId, posterId) || other.posterId == posterId)&&(identical(other.statusLabel, statusLabel) || other.statusLabel == statusLabel)&&(identical(other.age, age) || other.age == age)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.wageText, wageText) || other.wageText == wageText)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other.workExperiences, workExperiences)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&const DeepCollectionEquality().equals(other.badges, badges));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,adCode,statusLabel,age,rating,reviewCount,wageText,avatarUrl,address,const DeepCollectionEquality().hash(workExperiences),workingHours,phoneNumber,const DeepCollectionEquality().hash(badges));
+int get hashCode => Object.hash(runtimeType,id,name,adCode,posterId,statusLabel,age,rating,reviewCount,wageText,avatarUrl,address,const DeepCollectionEquality().hash(workExperiences),workingHours,phoneNumber,const DeepCollectionEquality().hash(badges));
 
 @override
 String toString() {
-  return 'WorkerDetailModel(id: $id, name: $name, adCode: $adCode, statusLabel: $statusLabel, age: $age, rating: $rating, reviewCount: $reviewCount, wageText: $wageText, avatarUrl: $avatarUrl, address: $address, workExperiences: $workExperiences, workingHours: $workingHours, phoneNumber: $phoneNumber, badges: $badges)';
+  return 'WorkerDetailModel(id: $id, name: $name, adCode: $adCode, posterId: $posterId, statusLabel: $statusLabel, age: $age, rating: $rating, reviewCount: $reviewCount, wageText: $wageText, avatarUrl: $avatarUrl, address: $address, workExperiences: $workExperiences, workingHours: $workingHours, phoneNumber: $phoneNumber, badges: $badges)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $WorkerDetailModelCopyWith<$Res>  {
   factory $WorkerDetailModelCopyWith(WorkerDetailModel value, $Res Function(WorkerDetailModel) _then) = _$WorkerDetailModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String adCode, String statusLabel, int age, double rating, int reviewCount, String wageText, String? avatarUrl, String address, List<String> workExperiences, String workingHours, String phoneNumber, List<String> badges
+ String id, String name, String adCode, String? posterId, String statusLabel, int age, double rating, int reviewCount, String wageText, String? avatarUrl, String address, List<String> workExperiences, String workingHours, String phoneNumber, List<String> badges
 });
 
 
@@ -62,12 +62,13 @@ class _$WorkerDetailModelCopyWithImpl<$Res>
 
 /// Create a copy of WorkerDetailModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? adCode = null,Object? statusLabel = null,Object? age = null,Object? rating = null,Object? reviewCount = null,Object? wageText = null,Object? avatarUrl = freezed,Object? address = null,Object? workExperiences = null,Object? workingHours = null,Object? phoneNumber = null,Object? badges = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? adCode = null,Object? posterId = freezed,Object? statusLabel = null,Object? age = null,Object? rating = null,Object? reviewCount = null,Object? wageText = null,Object? avatarUrl = freezed,Object? address = null,Object? workExperiences = null,Object? workingHours = null,Object? phoneNumber = null,Object? badges = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,adCode: null == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
-as String,statusLabel: null == statusLabel ? _self.statusLabel : statusLabel // ignore: cast_nullable_to_non_nullable
+as String,posterId: freezed == posterId ? _self.posterId : posterId // ignore: cast_nullable_to_non_nullable
+as String?,statusLabel: null == statusLabel ? _self.statusLabel : statusLabel // ignore: cast_nullable_to_non_nullable
 as String,age: null == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
 as int,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as double,reviewCount: null == reviewCount ? _self.reviewCount : reviewCount // ignore: cast_nullable_to_non_nullable
@@ -163,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String adCode,  String statusLabel,  int age,  double rating,  int reviewCount,  String wageText,  String? avatarUrl,  String address,  List<String> workExperiences,  String workingHours,  String phoneNumber,  List<String> badges)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String adCode,  String? posterId,  String statusLabel,  int age,  double rating,  int reviewCount,  String wageText,  String? avatarUrl,  String address,  List<String> workExperiences,  String workingHours,  String phoneNumber,  List<String> badges)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WorkerDetailModel() when $default != null:
-return $default(_that.id,_that.name,_that.adCode,_that.statusLabel,_that.age,_that.rating,_that.reviewCount,_that.wageText,_that.avatarUrl,_that.address,_that.workExperiences,_that.workingHours,_that.phoneNumber,_that.badges);case _:
+return $default(_that.id,_that.name,_that.adCode,_that.posterId,_that.statusLabel,_that.age,_that.rating,_that.reviewCount,_that.wageText,_that.avatarUrl,_that.address,_that.workExperiences,_that.workingHours,_that.phoneNumber,_that.badges);case _:
   return orElse();
 
 }
@@ -184,10 +185,10 @@ return $default(_that.id,_that.name,_that.adCode,_that.statusLabel,_that.age,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String adCode,  String statusLabel,  int age,  double rating,  int reviewCount,  String wageText,  String? avatarUrl,  String address,  List<String> workExperiences,  String workingHours,  String phoneNumber,  List<String> badges)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String adCode,  String? posterId,  String statusLabel,  int age,  double rating,  int reviewCount,  String wageText,  String? avatarUrl,  String address,  List<String> workExperiences,  String workingHours,  String phoneNumber,  List<String> badges)  $default,) {final _that = this;
 switch (_that) {
 case _WorkerDetailModel():
-return $default(_that.id,_that.name,_that.adCode,_that.statusLabel,_that.age,_that.rating,_that.reviewCount,_that.wageText,_that.avatarUrl,_that.address,_that.workExperiences,_that.workingHours,_that.phoneNumber,_that.badges);case _:
+return $default(_that.id,_that.name,_that.adCode,_that.posterId,_that.statusLabel,_that.age,_that.rating,_that.reviewCount,_that.wageText,_that.avatarUrl,_that.address,_that.workExperiences,_that.workingHours,_that.phoneNumber,_that.badges);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +205,10 @@ return $default(_that.id,_that.name,_that.adCode,_that.statusLabel,_that.age,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String adCode,  String statusLabel,  int age,  double rating,  int reviewCount,  String wageText,  String? avatarUrl,  String address,  List<String> workExperiences,  String workingHours,  String phoneNumber,  List<String> badges)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String adCode,  String? posterId,  String statusLabel,  int age,  double rating,  int reviewCount,  String wageText,  String? avatarUrl,  String address,  List<String> workExperiences,  String workingHours,  String phoneNumber,  List<String> badges)?  $default,) {final _that = this;
 switch (_that) {
 case _WorkerDetailModel() when $default != null:
-return $default(_that.id,_that.name,_that.adCode,_that.statusLabel,_that.age,_that.rating,_that.reviewCount,_that.wageText,_that.avatarUrl,_that.address,_that.workExperiences,_that.workingHours,_that.phoneNumber,_that.badges);case _:
+return $default(_that.id,_that.name,_that.adCode,_that.posterId,_that.statusLabel,_that.age,_that.rating,_that.reviewCount,_that.wageText,_that.avatarUrl,_that.address,_that.workExperiences,_that.workingHours,_that.phoneNumber,_that.badges);case _:
   return null;
 
 }
@@ -219,12 +220,13 @@ return $default(_that.id,_that.name,_that.adCode,_that.statusLabel,_that.age,_th
 
 
 class _WorkerDetailModel implements WorkerDetailModel {
-  const _WorkerDetailModel({required this.id, required this.name, required this.adCode, required this.statusLabel, required this.age, required this.rating, required this.reviewCount, required this.wageText, this.avatarUrl, required this.address, required final  List<String> workExperiences, required this.workingHours, required this.phoneNumber, required final  List<String> badges}): _workExperiences = workExperiences,_badges = badges;
+  const _WorkerDetailModel({required this.id, required this.name, required this.adCode, this.posterId, required this.statusLabel, required this.age, required this.rating, required this.reviewCount, required this.wageText, this.avatarUrl, required this.address, required final  List<String> workExperiences, required this.workingHours, required this.phoneNumber, required final  List<String> badges}): _workExperiences = workExperiences,_badges = badges;
   
 
 @override final  String id;
 @override final  String name;
 @override final  String adCode;
+@override final  String? posterId;
 @override final  String statusLabel;
 @override final  int age;
 @override final  double rating;
@@ -259,16 +261,16 @@ _$WorkerDetailModelCopyWith<_WorkerDetailModel> get copyWith => __$WorkerDetailM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkerDetailModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.statusLabel, statusLabel) || other.statusLabel == statusLabel)&&(identical(other.age, age) || other.age == age)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.wageText, wageText) || other.wageText == wageText)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other._workExperiences, _workExperiences)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&const DeepCollectionEquality().equals(other._badges, _badges));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkerDetailModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.posterId, posterId) || other.posterId == posterId)&&(identical(other.statusLabel, statusLabel) || other.statusLabel == statusLabel)&&(identical(other.age, age) || other.age == age)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.wageText, wageText) || other.wageText == wageText)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other._workExperiences, _workExperiences)&&(identical(other.workingHours, workingHours) || other.workingHours == workingHours)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&const DeepCollectionEquality().equals(other._badges, _badges));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,adCode,statusLabel,age,rating,reviewCount,wageText,avatarUrl,address,const DeepCollectionEquality().hash(_workExperiences),workingHours,phoneNumber,const DeepCollectionEquality().hash(_badges));
+int get hashCode => Object.hash(runtimeType,id,name,adCode,posterId,statusLabel,age,rating,reviewCount,wageText,avatarUrl,address,const DeepCollectionEquality().hash(_workExperiences),workingHours,phoneNumber,const DeepCollectionEquality().hash(_badges));
 
 @override
 String toString() {
-  return 'WorkerDetailModel(id: $id, name: $name, adCode: $adCode, statusLabel: $statusLabel, age: $age, rating: $rating, reviewCount: $reviewCount, wageText: $wageText, avatarUrl: $avatarUrl, address: $address, workExperiences: $workExperiences, workingHours: $workingHours, phoneNumber: $phoneNumber, badges: $badges)';
+  return 'WorkerDetailModel(id: $id, name: $name, adCode: $adCode, posterId: $posterId, statusLabel: $statusLabel, age: $age, rating: $rating, reviewCount: $reviewCount, wageText: $wageText, avatarUrl: $avatarUrl, address: $address, workExperiences: $workExperiences, workingHours: $workingHours, phoneNumber: $phoneNumber, badges: $badges)';
 }
 
 
@@ -279,7 +281,7 @@ abstract mixin class _$WorkerDetailModelCopyWith<$Res> implements $WorkerDetailM
   factory _$WorkerDetailModelCopyWith(_WorkerDetailModel value, $Res Function(_WorkerDetailModel) _then) = __$WorkerDetailModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String adCode, String statusLabel, int age, double rating, int reviewCount, String wageText, String? avatarUrl, String address, List<String> workExperiences, String workingHours, String phoneNumber, List<String> badges
+ String id, String name, String adCode, String? posterId, String statusLabel, int age, double rating, int reviewCount, String wageText, String? avatarUrl, String address, List<String> workExperiences, String workingHours, String phoneNumber, List<String> badges
 });
 
 
@@ -296,12 +298,13 @@ class __$WorkerDetailModelCopyWithImpl<$Res>
 
 /// Create a copy of WorkerDetailModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? adCode = null,Object? statusLabel = null,Object? age = null,Object? rating = null,Object? reviewCount = null,Object? wageText = null,Object? avatarUrl = freezed,Object? address = null,Object? workExperiences = null,Object? workingHours = null,Object? phoneNumber = null,Object? badges = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? adCode = null,Object? posterId = freezed,Object? statusLabel = null,Object? age = null,Object? rating = null,Object? reviewCount = null,Object? wageText = null,Object? avatarUrl = freezed,Object? address = null,Object? workExperiences = null,Object? workingHours = null,Object? phoneNumber = null,Object? badges = null,}) {
   return _then(_WorkerDetailModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,adCode: null == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
-as String,statusLabel: null == statusLabel ? _self.statusLabel : statusLabel // ignore: cast_nullable_to_non_nullable
+as String,posterId: freezed == posterId ? _self.posterId : posterId // ignore: cast_nullable_to_non_nullable
+as String?,statusLabel: null == statusLabel ? _self.statusLabel : statusLabel // ignore: cast_nullable_to_non_nullable
 as String,age: null == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
 as int,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as double,reviewCount: null == reviewCount ? _self.reviewCount : reviewCount // ignore: cast_nullable_to_non_nullable

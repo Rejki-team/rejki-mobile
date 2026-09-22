@@ -11,37 +11,84 @@ class TrainingListingCubit extends Cubit<TrainingListingState> {
   final GetTrainingsUseCase _getTrainingsUseCase;
 
   TrainingListingCubit(this._getTrainingsUseCase)
-      : super(const TrainingListingState());
+    : super(const TrainingListingState());
 
   Future<void> loadTrainings({String? search}) async {
     emit(state.copyWith(isLoading: true, isFailure: false));
 
-    final result = await _getTrainingsUseCase(search: search);
+    final result = await _getTrainingsUseCase(
+      search: search,
+      latitude: state.latitude,
+      longitude: state.longitude,
+    );
 
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        isLoading: false,
-        isFailure: true,
-        errorMessage: failure.maybeWhen(
-          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
-          orElse: () => 'Gagal memuat daftar pelatihan.',
+      (failure) => emit(
+        state.copyWith(
+          isLoading: false,
+          isFailure: true,
+          errorMessage: failure.maybeWhen(
+            serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+            orElse: () => 'Gagal memuat daftar pelatihan.',
+          ),
         ),
-      )),
+      ),
       (entities) {
         final models = entities.map(_entityToModel).toList();
-        emit(state.copyWith(
-          isLoading: false,
-          trainings: models,
-          summaryDisplayText: '${models.length} Pelatihan tersedia',
-        ));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            trainings: models,
+            summaryDisplayText: '${models.length} Pelatihan tersedia',
+          ),
+        );
       },
     );
   }
 
   void updateSearchQuery(String query) {
     loadTrainings(search: query.isEmpty ? null : query);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Location & distance filter (F-1/F-14, PRD §5.13.1)
+  // ---------------------------------------------------------------------------
+
+  /// Update device location for radius-based API filtering. Reloads listing
+  /// with the new coordinates.
+  void updateLocation({
+    required double latitude,
+    required double longitude,
+    String? locationName,
+  }) {
+    emit(
+      state.copyWith(
+        latitude: latitude,
+        longitude: longitude,
+        locationName: locationName ?? state.locationName,
+      ),
+    );
+    loadTrainings();
+  }
+
+  /// Apply distance filter chosen by user (marks `isDistanceFilterApplied = true`).
+  ///
+  /// Backend memfix radius Pelatihan di 10km (PRD §5.13.1, tanpa parameter override) —
+  /// nilai ini murni indikator visual, konsisten dengan pola Iklan Pekerjaan.
+  void applyDistanceFilter(int distanceKm) {
+    emit(
+      state.copyWith(
+        distanceKm: distanceKm.clamp(0, 10),
+        isDistanceFilterApplied: true,
+      ),
+    );
+  }
+
+  /// Reset distance filter — reverts to max radius (10 KM) and "not applied" visual.
+  void resetDistanceFilter() {
+    emit(state.copyWith(distanceKm: 10, isDistanceFilterApplied: false));
   }
 
   TrainingModel _entityToModel(TrainingEntity entity) {
@@ -67,8 +114,18 @@ class TrainingListingCubit extends Cubit<TrainingListingState> {
     try {
       final dt = DateTime.parse(raw);
       const months = [
-        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
       ];
       return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
     } catch (_) {

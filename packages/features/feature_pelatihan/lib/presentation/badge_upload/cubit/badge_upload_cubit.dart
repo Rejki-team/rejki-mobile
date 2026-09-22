@@ -12,7 +12,7 @@ class BadgeUploadCubit extends Cubit<BadgeUploadState> {
   final SubmitTrainingBadgeUseCase _submitTrainingBadgeUseCase;
 
   BadgeUploadCubit(this._submitTrainingBadgeUseCase)
-      : super(const BadgeUploadState());
+    : super(const BadgeUploadState());
 
   void setBadgeImage(File image) {
     emit(state.copyWith(badgeImage: image, errorMessage: null));
@@ -41,8 +41,9 @@ class BadgeUploadCubit extends Cubit<BadgeUploadState> {
       if (originalSize > 2 * 1024 * 1024) {
         final tempDir = await getTemporaryDirectory();
         final targetPath = '${tempDir.path}/badge_upload_compressed.jpg';
-        final quality =
-            ((2 * 1024 * 1024 / originalSize) * 80).clamp(20, 80).toInt();
+        final quality = ((2 * 1024 * 1024 / originalSize) * 80)
+            .clamp(20, 80)
+            .toInt();
         final compressed = await FlutterImageCompress.compressAndGetFile(
           state.badgeImage!.path,
           targetPath,
@@ -63,13 +64,15 @@ class BadgeUploadCubit extends Cubit<BadgeUploadState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        isSubmitting: false,
-        errorMessage: failure.maybeWhen(
-          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
-          orElse: () => 'Gagal mengupload badge.',
+      (failure) => emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorMessage: failure.maybeWhen(
+            serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+            orElse: () => 'Gagal mengupload badge.',
+          ),
         ),
-      )),
+      ),
       (_) => emit(state.copyWith(isSubmitting: false, isSuccess: true)),
     );
   }

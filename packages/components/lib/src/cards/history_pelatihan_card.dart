@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:designsystems/designsystems.dart';
 
-enum HistoryPelatihanCardStatus { pending, paymentUploaded, rejected, inProgress, completed, approved }
+enum HistoryPelatihanCardStatus {
+  pending,
+  paymentUploaded,
+  rejected,
+  inProgress,
+  completed,
+  approved,
+}
 
 class HistoryPelatihanCard extends StatelessWidget {
   final String title;
@@ -12,7 +19,7 @@ class HistoryPelatihanCard extends StatelessWidget {
   final String locationText;
   final HistoryPelatihanCardStatus status;
   final String? rejectionReason;
-  
+
   // Actions
   final VoidCallback onDetailPressed;
   final VoidCallback? onProcessPressed;
@@ -69,8 +76,9 @@ class HistoryPelatihanCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildInfoGrid(),
-          
-          if (status == HistoryPelatihanCardStatus.rejected && rejectionReason != null) ...[
+
+          if (status == HistoryPelatihanCardStatus.rejected &&
+              rejectionReason != null) ...[
             const SizedBox(height: 16),
             _buildRejectedBox(),
           ],
@@ -78,9 +86,9 @@ class HistoryPelatihanCard extends StatelessWidget {
             const SizedBox(height: 16),
             _buildInProgressBox(),
           ],
-          
+
           const SizedBox(height: 16),
-          
+
           if (onProcessPressed != null) ...[
             ElevatedButton(
               onPressed: onProcessPressed,
@@ -101,7 +109,7 @@ class HistoryPelatihanCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
           ],
-          
+
           OutlinedButton(
             onPressed: onDetailPressed,
             style: OutlinedButton.styleFrom(
@@ -277,11 +285,7 @@ class HistoryPelatihanCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.error_outline,
-                color: AppColors.error,
-                size: 16,
-              ),
+              const Icon(Icons.error_outline, color: AppColors.error, size: 16),
               const SizedBox(width: 8),
               Text(
                 'Pendaftaran Ditolak',

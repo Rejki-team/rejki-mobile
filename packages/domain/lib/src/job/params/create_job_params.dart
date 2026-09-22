@@ -12,6 +12,13 @@ abstract class CreateJobParams with _$CreateJobParams {
     /// Judul Pekerjaan
     required String title,
 
+    /// Nama perusahaan/pemberi kerja — backend `rejki-app` mewajibkan field
+    /// ini (`perusahaan`, min 2 karakter) tapi TIDAK ADA form field khusus
+    /// untuk ini di UI create_job (di luar scope Kelompok 3 Phase 2, hanya
+    /// perbaikan path+field mapping) — `CreateJobBloc` default ke [title]
+    /// bila kosong/null. Gap dicatat, bukan diperbaiki penuh.
+    String? perusahaan,
+
     /// Deskripsi Pekerjaan
     required String jobDesc,
 

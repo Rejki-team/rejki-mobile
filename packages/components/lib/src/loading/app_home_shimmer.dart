@@ -107,18 +107,10 @@ class AppHomeShimmer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AppShimmer(
-              child: Container(
-                height: 24,
-                width: 180,
-                color: AppColors.white,
-              ),
+              child: Container(height: 24, width: 180, color: AppColors.white),
             ),
             AppShimmer(
-              child: Container(
-                height: 16,
-                width: 80,
-                color: AppColors.white,
-              ),
+              child: Container(height: 16, width: 80, color: AppColors.white),
             ),
           ],
         ),

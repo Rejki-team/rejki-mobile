@@ -50,8 +50,11 @@ class _TrainingDetailView extends StatelessWidget {
 
             if (state.isFailure || state.training == null) {
               return AppErrorState(
-                description: state.errorMessage ?? 'Gagal memuat detail pelatihan.',
-                onRetry: () => context.read<TrainingDetailCubit>().loadTraining(trainingId),
+                description:
+                    state.errorMessage ?? 'Gagal memuat detail pelatihan.',
+                onRetry: () => context.read<TrainingDetailCubit>().loadTraining(
+                  trainingId,
+                ),
               );
             }
 
@@ -93,7 +96,10 @@ class _TrainingDetailView extends StatelessWidget {
                               text: data.companyName,
                             ),
                             const SizedBox(height: AppSpacing.lg),
-                            const Divider(color: AppColors.border, thickness: 1),
+                            const Divider(
+                              color: AppColors.border,
+                              thickness: 1,
+                            ),
                             const SizedBox(height: AppSpacing.lg),
                             _DateAndTimeRow(date: data.date, time: data.time),
                             const SizedBox(height: AppSpacing.sm),
@@ -114,12 +120,16 @@ class _TrainingDetailView extends StatelessWidget {
                             _IconText(
                               icon: AppAssets.iconTwoUser,
                               color: const Color(0xFF6366F1),
-                              text: '${data.totalApprovedEnrollees} peserta disetujui',
+                              text:
+                                  '${data.totalApprovedEnrollees} peserta disetujui',
                             ),
                             if (data.contactEmail != null ||
                                 data.contactRole != null) ...[
                               const SizedBox(height: AppSpacing.lg),
-                              const Divider(color: AppColors.border, thickness: 1),
+                              const Divider(
+                                color: AppColors.border,
+                                thickness: 1,
+                              ),
                               const SizedBox(height: AppSpacing.lg),
                               Text(
                                 'Kontak',
@@ -146,7 +156,10 @@ class _TrainingDetailView extends StatelessWidget {
                               ],
                             ],
                             const SizedBox(height: AppSpacing.lg),
-                            const Divider(color: AppColors.border, thickness: 1),
+                            const Divider(
+                              color: AppColors.border,
+                              thickness: 1,
+                            ),
                             const SizedBox(height: AppSpacing.lg),
                             Text(
                               'Deskripsi',
@@ -167,21 +180,31 @@ class _TrainingDetailView extends StatelessWidget {
                             ),
                             if (data.facilities.isNotEmpty) ...[
                               const SizedBox(height: AppSpacing.xl),
-                              const Divider(color: AppColors.border, thickness: 1),
+                              const Divider(
+                                color: AppColors.border,
+                                thickness: 1,
+                              ),
                               const SizedBox(height: AppSpacing.xl),
                               _FacilitiesSection(facilities: data.facilities),
                             ],
                             if (data.requirements.isNotEmpty) ...[
                               const SizedBox(height: AppSpacing.xl),
-                              const Divider(color: AppColors.border, thickness: 1),
+                              const Divider(
+                                color: AppColors.border,
+                                thickness: 1,
+                              ),
                               const SizedBox(height: AppSpacing.xl),
-                              _RequirementsSection(requirements: data.requirements),
+                              _RequirementsSection(
+                                requirements: data.requirements,
+                              ),
                             ],
                             if (data.status == 'rejected' &&
                                 data.rejectionReason != null &&
                                 data.rejectionReason!.isNotEmpty) ...[
                               const SizedBox(height: AppSpacing.lg),
-                              _RejectionReasonBox(reason: data.rejectionReason!),
+                              _RejectionReasonBox(
+                                reason: data.rejectionReason!,
+                              ),
                             ],
                             const SizedBox(height: AppSpacing.xl),
                           ],
@@ -245,9 +268,21 @@ class _StatusAndCodeRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (bgColor, textColor, label) = switch (status) {
-      'approved' => (const Color(0xFFDCFCE7), const Color(0xFF16A34A), 'Disetujui'),
-      'pending' => (const Color(0xFFFEF3C7), const Color(0xFFD97706), 'Menunggu'),
-      'rejected' => (const Color(0xFFFEE2E2), const Color(0xFFDC2626), 'Ditolak'),
+      'approved' => (
+        const Color(0xFFDCFCE7),
+        const Color(0xFF16A34A),
+        'Disetujui',
+      ),
+      'pending' => (
+        const Color(0xFFFEF3C7),
+        const Color(0xFFD97706),
+        'Menunggu',
+      ),
+      'rejected' => (
+        const Color(0xFFFEE2E2),
+        const Color(0xFFDC2626),
+        'Ditolak',
+      ),
       _ => (const Color(0xFFF1F5F9), AppColors.textSecondary, status),
     };
 
@@ -551,7 +586,9 @@ class _OwnerBottomBar extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: const Color(0xFFF0F9FF),
-        border: const Border(top: BorderSide(color: Color(0xFFBAE6FD), width: 1)),
+        border: const Border(
+          top: BorderSide(color: Color(0xFFBAE6FD), width: 1),
+        ),
       ),
       child: Row(
         children: [
@@ -603,7 +640,9 @@ class _RegisterBottomBar extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.white,
-        border: const Border(top: BorderSide(color: AppColors.border, width: 1)),
+        border: const Border(
+          top: BorderSide(color: AppColors.border, width: 1),
+        ),
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.05),

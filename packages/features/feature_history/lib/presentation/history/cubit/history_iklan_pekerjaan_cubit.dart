@@ -8,7 +8,7 @@ class HistoryIklanPekerjaanCubit extends Cubit<HistoryIklanPekerjaanState> {
   final GetMyJobsUseCase _getMyJobsUseCase;
 
   HistoryIklanPekerjaanCubit(this._getMyJobsUseCase)
-      : super(const HistoryIklanPekerjaanState());
+    : super(const HistoryIklanPekerjaanState());
 
   Future<void> loadMyJobs({bool refresh = false}) async {
     if (state.status == HistoryIklanPekerjaanStatus.loading ||
@@ -17,45 +17,48 @@ class HistoryIklanPekerjaanCubit extends Cubit<HistoryIklanPekerjaanState> {
     }
 
     if (refresh) {
-      emit(state.copyWith(
-        status: HistoryIklanPekerjaanStatus.loading,
-        page: 1,
-        jobs: [],
-        hasNext: true,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          status: HistoryIklanPekerjaanStatus.loading,
+          page: 1,
+          jobs: [],
+          hasNext: true,
+          errorMessage: null,
+        ),
+      );
     } else {
       if (!state.hasNext) return;
-      emit(state.copyWith(
-        status: state.jobs.isEmpty
-            ? HistoryIklanPekerjaanStatus.loading
-            : HistoryIklanPekerjaanStatus.loadingMore,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          status: state.jobs.isEmpty
+              ? HistoryIklanPekerjaanStatus.loading
+              : HistoryIklanPekerjaanStatus.loadingMore,
+          errorMessage: null,
+        ),
+      );
     }
 
-    final result = await _getMyJobsUseCase.execute(
-      page: state.page,
-      limit: 10,
-    );
+    final result = await _getMyJobsUseCase.execute(page: state.page, limit: 10);
 
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: HistoryIklanPekerjaanStatus.failure,
-        errorMessage: _mapFailure(failure),
-      )),
+      (failure) => emit(
+        state.copyWith(
+          status: HistoryIklanPekerjaanStatus.failure,
+          errorMessage: _mapFailure(failure),
+        ),
+      ),
       (data) {
-        final merged = refresh
-            ? data.jobs
-            : [...state.jobs, ...data.jobs];
-        emit(state.copyWith(
-          status: HistoryIklanPekerjaanStatus.success,
-          jobs: merged,
-          page: state.page + 1,
-          hasNext: data.pagination.hasNext,
-        ));
+        final merged = refresh ? data.jobs : [...state.jobs, ...data.jobs];
+        emit(
+          state.copyWith(
+            status: HistoryIklanPekerjaanStatus.success,
+            jobs: merged,
+            page: state.page + 1,
+            hasNext: data.pagination.hasNext,
+          ),
+        );
       },
     );
   }

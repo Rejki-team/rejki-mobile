@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:designsystems/designsystems.dart';
 import 'app_shimmer.dart';
 
-enum ShimmerCardStyle {
-  textOnly,
-  avatarText,
-  topImage,
-  leftImage,
-}
+enum ShimmerCardStyle { textOnly, avatarText, topImage, leftImage }
 
 /// Generic Shimmer Card to match the proportion of different lists in the app.
 class AppShimmerCard extends StatelessWidget {
@@ -16,16 +11,20 @@ class AppShimmerCard extends StatelessWidget {
   const AppShimmerCard({super.key, required this.style});
 
   /// Shimmer for Job, Training, History Job
-  factory AppShimmerCard.job() => const AppShimmerCard(style: ShimmerCardStyle.textOnly);
-  
+  factory AppShimmerCard.job() =>
+      const AppShimmerCard(style: ShimmerCardStyle.textOnly);
+
   /// Shimmer for Worker
-  factory AppShimmerCard.worker() => const AppShimmerCard(style: ShimmerCardStyle.avatarText);
-  
+  factory AppShimmerCard.worker() =>
+      const AppShimmerCard(style: ShimmerCardStyle.avatarText);
+
   /// Shimmer for Used Goods
-  factory AppShimmerCard.usedGoods() => const AppShimmerCard(style: ShimmerCardStyle.topImage);
-  
+  factory AppShimmerCard.usedGoods() =>
+      const AppShimmerCard(style: ShimmerCardStyle.topImage);
+
   /// Shimmer for News
-  factory AppShimmerCard.news() => const AppShimmerCard(style: ShimmerCardStyle.leftImage);
+  factory AppShimmerCard.news() =>
+      const AppShimmerCard(style: ShimmerCardStyle.leftImage);
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +36,16 @@ class AppShimmerCard extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: style == ShimmerCardStyle.topImage ? BorderRadius.circular(12) : AppDimensions.borderRadiusSm,
-        border: Border.all(color: AppColors.border, width: AppDimensions.borderThin),
-        boxShadow: style == ShimmerCardStyle.topImage ? null : AppShadows.jobCard,
+        borderRadius: style == ShimmerCardStyle.topImage
+            ? BorderRadius.circular(12)
+            : AppDimensions.borderRadiusSm,
+        border: Border.all(
+          color: AppColors.border,
+          width: AppDimensions.borderThin,
+        ),
+        boxShadow: style == ShimmerCardStyle.topImage
+            ? null
+            : AppShadows.jobCard,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -48,29 +54,42 @@ class AppShimmerCard extends StatelessWidget {
           if (style == ShimmerCardStyle.topImage)
             AppShimmer(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
-                child: Container(
-                  height: 180,
-                  color: AppColors.white,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(11),
                 ),
+                child: Container(height: 180, color: AppColors.white),
               ),
             ),
           Padding(
-            padding: EdgeInsets.all(style == ShimmerCardStyle.topImage ? AppSpacing.md : AppSpacing.paddingAllMd.top),
+            padding: EdgeInsets.all(
+              style == ShimmerCardStyle.topImage
+                  ? AppSpacing.md
+                  : AppSpacing.paddingAllMd.top,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(),
                 const SizedBox(height: AppSpacing.lg),
-                if (style != ShimmerCardStyle.topImage)
-                  _buildMetadata(),
-                if (style == ShimmerCardStyle.topImage)
-                  ...[
-                    AppShimmer(child: Container(height: 12, width: double.infinity, color: AppColors.white)),
-                    const SizedBox(height: 8),
-                    AppShimmer(child: Container(height: 12, width: 200, color: AppColors.white)),
-                    const SizedBox(height: 16),
-                  ],
+                if (style != ShimmerCardStyle.topImage) _buildMetadata(),
+                if (style == ShimmerCardStyle.topImage) ...[
+                  AppShimmer(
+                    child: Container(
+                      height: 12,
+                      width: double.infinity,
+                      color: AppColors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  AppShimmer(
+                    child: Container(
+                      height: 12,
+                      width: 200,
+                      color: AppColors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 _buildFooter(),
               ],
             ),
@@ -85,21 +104,51 @@ class AppShimmerCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (style == ShimmerCardStyle.avatarText) ...[
-          AppShimmer(child: Container(width: 40, height: 40, decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.white))),
+          AppShimmer(
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.white,
+              ),
+            ),
+          ),
           const SizedBox(width: AppSpacing.md),
         ],
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppShimmer(child: Container(height: 16, width: double.infinity, color: AppColors.white)),
+              AppShimmer(
+                child: Container(
+                  height: 16,
+                  width: double.infinity,
+                  color: AppColors.white,
+                ),
+              ),
               const SizedBox(height: 8),
-              AppShimmer(child: Container(height: 12, width: 120, color: AppColors.white)),
+              AppShimmer(
+                child: Container(
+                  height: 12,
+                  width: 120,
+                  color: AppColors.white,
+                ),
+              ),
             ],
           ),
         ),
         const SizedBox(width: AppSpacing.md),
-        AppShimmer(child: Container(height: 24, width: 60, decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(4)))),
+        AppShimmer(
+          child: Container(
+            height: 24,
+            width: 60,
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -115,9 +164,21 @@ class AppShimmerCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppShimmer(child: Container(height: 12, width: 100, color: AppColors.white)),
+                AppShimmer(
+                  child: Container(
+                    height: 12,
+                    width: 100,
+                    color: AppColors.white,
+                  ),
+                ),
                 const SizedBox(height: 12),
-                AppShimmer(child: Container(height: 12, width: 80, color: AppColors.white)),
+                AppShimmer(
+                  child: Container(
+                    height: 12,
+                    width: 80,
+                    color: AppColors.white,
+                  ),
+                ),
               ],
             ),
           ),
@@ -126,9 +187,21 @@ class AppShimmerCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppShimmer(child: Container(height: 12, width: 110, color: AppColors.white)),
+                AppShimmer(
+                  child: Container(
+                    height: 12,
+                    width: 110,
+                    color: AppColors.white,
+                  ),
+                ),
                 const SizedBox(height: 12),
-                AppShimmer(child: Container(height: 12, width: 90, color: AppColors.white)),
+                AppShimmer(
+                  child: Container(
+                    height: 12,
+                    width: 90,
+                    color: AppColors.white,
+                  ),
+                ),
               ],
             ),
           ),
@@ -142,10 +215,25 @@ class AppShimmerCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (style != ShimmerCardStyle.topImage) ...[
-          AppShimmer(child: Container(height: 12, width: double.infinity, color: AppColors.white)),
+          AppShimmer(
+            child: Container(
+              height: 12,
+              width: double.infinity,
+              color: AppColors.white,
+            ),
+          ),
           const SizedBox(height: 16),
         ],
-        AppShimmer(child: Container(height: 48, width: double.infinity, decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(8)))),
+        AppShimmer(
+          child: Container(
+            height: 48,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -160,7 +248,10 @@ class AppShimmerCard extends StatelessWidget {
             child: Container(
               width: 90,
               height: 90,
-              decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.md),
@@ -168,13 +259,37 @@ class AppShimmerCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppShimmer(child: Container(height: 12, width: 80, color: AppColors.white)),
+                AppShimmer(
+                  child: Container(
+                    height: 12,
+                    width: 80,
+                    color: AppColors.white,
+                  ),
+                ),
                 const SizedBox(height: 8),
-                AppShimmer(child: Container(height: 14, width: double.infinity, color: AppColors.white)),
+                AppShimmer(
+                  child: Container(
+                    height: 14,
+                    width: double.infinity,
+                    color: AppColors.white,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                AppShimmer(child: Container(height: 14, width: 180, color: AppColors.white)),
+                AppShimmer(
+                  child: Container(
+                    height: 14,
+                    width: 180,
+                    color: AppColors.white,
+                  ),
+                ),
                 const SizedBox(height: 12),
-                AppShimmer(child: Container(height: 10, width: 120, color: AppColors.white)),
+                AppShimmer(
+                  child: Container(
+                    height: 10,
+                    width: 120,
+                    color: AppColors.white,
+                  ),
+                ),
               ],
             ),
           ),

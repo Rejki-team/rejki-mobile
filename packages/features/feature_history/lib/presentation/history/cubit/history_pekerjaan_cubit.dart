@@ -3,159 +3,201 @@ import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 import 'history_pekerjaan_state.dart';
 
+/// "Riwayat Aktifitas Pelamar" (PRD §5.11.4). Pengganti alur "Bid" lama —
+/// tidak ada lagi konfirmasi-ganda pemilik iklan; pelamar mulai bekerja
+/// (geofence 50m, GPS dibaca di widget lalu dikirim ke sini) dan menandai
+/// selesai sendiri.
 @injectable
 class HistoryPekerjaanCubit extends Cubit<HistoryPekerjaanState> {
-  final GetMyBidsUseCase _getMyBidsUseCase;
-  final UpdateBidStatusUseCase _updateBidStatusUseCase;
+  final GetLamaranSayaUseCase _getLamaranSayaUseCase;
+  final MulaiBekerjaUseCase _mulaiBekerjaUseCase;
+  final TandaiSelesaiUseCase _tandaiSelesaiUseCase;
   final CreateJobReviewUseCase _createJobReviewUseCase;
 
   HistoryPekerjaanCubit(
-    this._getMyBidsUseCase,
-    this._updateBidStatusUseCase,
+    this._getLamaranSayaUseCase,
+    this._mulaiBekerjaUseCase,
+    this._tandaiSelesaiUseCase,
     this._createJobReviewUseCase,
   ) : super(const HistoryPekerjaanState());
 
-  Future<void> loadBids({bool refresh = false}) async {
-    if (state.status == HistoryPekerjaanStatus.loading ||
-        state.status == HistoryPekerjaanStatus.loadingMore) {
-      return;
-    }
+  /// Backend tidak memaginasi hasil ini — selalu muat ulang seluruh riwayat.
+  Future<void> loadLamaran() async {
+    if (state.status == HistoryPekerjaanStatus.loading) return;
 
-    if (refresh) {
-      emit(state.copyWith(
+    emit(
+      state.copyWith(
         status: HistoryPekerjaanStatus.loading,
-        page: 1,
-        bids: [],
-        hasNext: true,
         errorMessage: null,
-      ));
-    } else {
-      if (!state.hasNext) {
-        return;
-      }
-      emit(state.copyWith(
-        status: state.bids.isEmpty
-            ? HistoryPekerjaanStatus.loading
-            : HistoryPekerjaanStatus.loadingMore,
-        errorMessage: null,
-      ));
-    }
-
-    final result = await _getMyBidsUseCase.execute(
-      page: state.page,
-      limit: 10,
+      ),
     );
 
+    final result = await _getLamaranSayaUseCase();
+
+    if (isClosed) return;
+
     result.fold(
-      (failure) {
-        emit(state.copyWith(
+      (failure) => emit(
+        state.copyWith(
           status: HistoryPekerjaanStatus.failure,
           errorMessage: _mapFailureToMessage(failure),
-        ));
-      },
-      (data) {
-        final newBids = refresh ? data.bids : [...state.bids, ...data.bids];
-        emit(state.copyWith(
+        ),
+      ),
+      (data) => emit(
+        state.copyWith(
           status: HistoryPekerjaanStatus.success,
-          bids: newBids,
-          page: state.page + 1,
-          hasNext: data.pagination.hasNext,
-        ));
-      },
+          lamaranList: data,
+        ),
+      ),
     );
   }
 
-  // Worker claims the job is done — transitions to 'pending_owner_confirm'.
-  // The bid stays in this state until the owner confirms or 72h elapses.
-  Future<void> markJobAsDone({
-    required String jobId,
-    required String bidId,
-    required String adCode,
+  /// PRD §5.11.4 — tombol "Mulai Bekerja", hanya aktif dalam radius 50m dari
+  /// alamat iklan (divalidasi backend). [latitude]/[longitude] dari GPS
+  /// device, dibaca di widget (bukan di cubit — I/O platform bukan tanggung
+  /// jawab layer ini).
+  Future<void> mulaiBekerja({
+    required String iklanId,
+    required String lamaranId,
+    required double latitude,
+    required double longitude,
   }) async {
     if (state.mutationStatus == HistoryPekerjaanMutationStatus.loading) return;
 
-    emit(state.copyWith(
-      mutationStatus: HistoryPekerjaanMutationStatus.loading,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        mutationStatus: HistoryPekerjaanMutationStatus.loading,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
+    );
 
-    final result = await _updateBidStatusUseCase.execute(
-      jobId: jobId,
-      bidId: bidId,
-      status: 'pending_owner_confirm',
+    final result = await _mulaiBekerjaUseCase.execute(
+      iklanId: iklanId,
+      lamaranId: lamaranId,
+      latitude: latitude,
+      longitude: longitude,
     );
 
     if (isClosed) return;
 
     result.fold(
-      (failure) {
-        if (isClosed) return;
-        emit(state.copyWith(
+      (failure) => emit(
+        state.copyWith(
           mutationStatus: HistoryPekerjaanMutationStatus.failure,
           mutationErrorMessage: _mapFailureToMessage(failure),
-        ));
-      },
-      (_) {
-        if (isClosed) return;
-        final updatedBids = state.bids.map((bid) {
-          if (bid.id == bidId) {
-            return bid.copyWith(status: 'pending_owner_confirm');
-          }
-          return bid;
-        }).toList();
-
-        emit(state.copyWith(
-          bids: updatedBids,
-          mutationStatus: HistoryPekerjaanMutationStatus.success,
-          mutationSuccessMessage:
-              'Klaim selesai untuk pekerjaan $adCode telah dikirim. Menunggu konfirmasi pemilik.',
-        ));
+        ),
+      ),
+      (updated) {
+        final list = state.lamaranList
+            .map((l) => l.id == lamaranId ? updated : l)
+            .toList();
+        emit(
+          state.copyWith(
+            lamaranList: list,
+            mutationStatus: HistoryPekerjaanMutationStatus.success,
+            mutationSuccessMessage: 'Kamu telah mulai bekerja.',
+          ),
+        );
       },
     );
   }
 
-  Future<void> submitReview({
-    required String jobId,
-    required int rating,
-    required String review,
+  /// PRD §5.11.4 — tombol "Tandai Pekerjaan Selesai".
+  Future<void> tandaiSelesai({
+    required String iklanId,
+    required String lamaranId,
   }) async {
     if (state.mutationStatus == HistoryPekerjaanMutationStatus.loading) return;
 
-    emit(state.copyWith(
-      mutationStatus: HistoryPekerjaanMutationStatus.loading,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
-
-    final result = await _createJobReviewUseCase.execute(
-      jobId: jobId,
-      rating: rating,
-      review: review,
+    emit(
+      state.copyWith(
+        mutationStatus: HistoryPekerjaanMutationStatus.loading,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
     );
 
+    final result = await _tandaiSelesaiUseCase.execute(
+      iklanId: iklanId,
+      lamaranId: lamaranId,
+    );
+
+    if (isClosed) return;
+
     result.fold(
-      (failure) {
-        emit(state.copyWith(
+      (failure) => emit(
+        state.copyWith(
           mutationStatus: HistoryPekerjaanMutationStatus.failure,
           mutationErrorMessage: _mapFailureToMessage(failure),
-        ));
+        ),
+      ),
+      (updated) {
+        final list = state.lamaranList
+            .map((l) => l.id == lamaranId ? updated : l)
+            .toList();
+        emit(
+          state.copyWith(
+            lamaranList: list,
+            mutationStatus: HistoryPekerjaanMutationStatus.success,
+            mutationSuccessMessage: 'Pekerjaan berhasil ditandai selesai.',
+          ),
+        );
       },
-      (_) {
-        emit(state.copyWith(
+    );
+  }
+
+  /// Pelamar menilai pemberi kerja (F-17, PRD §5.15, arah
+  /// `pelamar_ke_pemberi_kerja`). [posterId] = `LamaranEntity.iklanPosterId`.
+  Future<void> submitReview({
+    required String iklanId,
+    required String posterId,
+    required int bintang,
+    String? ulasan,
+  }) async {
+    if (state.mutationStatus == HistoryPekerjaanMutationStatus.loading) return;
+
+    emit(
+      state.copyWith(
+        mutationStatus: HistoryPekerjaanMutationStatus.loading,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
+    );
+
+    final result = await _createJobReviewUseCase.execute(
+      iklanId: iklanId,
+      posterId: posterId,
+      bintang: bintang,
+      ulasan: ulasan,
+    );
+
+    if (isClosed) return;
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          mutationStatus: HistoryPekerjaanMutationStatus.failure,
+          mutationErrorMessage: _mapFailureToMessage(failure),
+        ),
+      ),
+      (_) => emit(
+        state.copyWith(
           mutationStatus: HistoryPekerjaanMutationStatus.success,
           mutationSuccessMessage: 'Kamu berhasil memberikan rating',
-        ));
-      },
+        ),
+      ),
     );
   }
 
   void clearMutationState() {
-    emit(state.copyWith(
-      mutationStatus: HistoryPekerjaanMutationStatus.initial,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        mutationStatus: HistoryPekerjaanMutationStatus.initial,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
+    );
   }
 
   String _mapFailureToMessage(JobFailure failure) {

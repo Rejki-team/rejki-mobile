@@ -3,390 +3,212 @@ import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 import 'daftar_pelamar_state.dart';
 
+/// "Kelola Pelamar" (PRD §5.11.5). Pengganti alur "Bid" lama — tidak ada lagi
+/// sengketa, konfirmasi-ganda, atau pembatalan oleh pekerja; pemilik iklan
+/// hanya bisa terima/tolak lamaran baru dan membatalkan lamaran yang sudah
+/// diterima (maks H-24 jam sebelum mulai, alasan wajib, divalidasi backend).
 @injectable
 class DaftarPelamarCubit extends Cubit<DaftarPelamarState> {
-  final GetIncomingBidsUseCase _getIncomingBidsUseCase;
-  final UpdateBidStatusUseCase _updateBidStatusUseCase;
-  final OwnerCompleteJobUseCase _ownerCompleteJobUseCase;
-  final OwnerConfirmBidUseCase _ownerConfirmBidUseCase;
-  // Phase 2
-  final DisputeBidUseCase _disputeBidUseCase;
-  final CancelBidUseCase _cancelBidUseCase;
+  final GetLamaranForIklanUseCase _getLamaranForIklanUseCase;
+  final ReviewLamaranUseCase _reviewLamaranUseCase;
+  final BatalkanLamaranUseCase _batalkanLamaranUseCase;
+  final SubmitWorkerReviewUseCase _submitWorkerReviewUseCase;
 
   DaftarPelamarCubit(
-    this._getIncomingBidsUseCase,
-    this._updateBidStatusUseCase,
-    this._ownerCompleteJobUseCase,
-    this._ownerConfirmBidUseCase,
-    this._disputeBidUseCase,
-    this._cancelBidUseCase,
+    this._getLamaranForIklanUseCase,
+    this._reviewLamaranUseCase,
+    this._batalkanLamaranUseCase,
+    this._submitWorkerReviewUseCase,
   ) : super(const DaftarPelamarState());
 
-  // ── Tab Pelamar (status=request) ────────────────────────────────────────────
+  /// Backend tidak memaginasi/filter per status — 1 fetch, 3 tab difilter
+  /// client-side via getter di [DaftarPelamarState].
+  Future<void> loadLamaran(String iklanId) async {
+    if (state.status == DaftarPelamarStatus.loading) return;
 
-  Future<void> loadPelamar({
-    required String jobId,
-    bool refresh = false,
-  }) async {
-    if (state.pelamarStatus == DaftarPelamarStatus.loading ||
-        state.pelamarStatus == DaftarPelamarStatus.loadingMore) {
-      return;
-    }
-
-    if (refresh) {
-      emit(state.copyWith(
-        pelamarStatus: DaftarPelamarStatus.loading,
-        pelamarPage: 1,
-        pelamarList: [],
-        pelamarHasNext: true,
-        pelamarError: null,
-      ));
-    } else {
-      if (!state.pelamarHasNext) return;
-      emit(state.copyWith(
-        pelamarStatus: state.pelamarList.isEmpty
-            ? DaftarPelamarStatus.loading
-            : DaftarPelamarStatus.loadingMore,
-        pelamarError: null,
-      ));
-    }
-
-    final result = await _getIncomingBidsUseCase.execute(
-      jobId: jobId,
-      status: 'request',
-      page: state.pelamarPage,
-      limit: 10,
+    emit(
+      state.copyWith(status: DaftarPelamarStatus.loading, errorMessage: null),
     );
+
+    final result = await _getLamaranForIklanUseCase(iklanId);
 
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        pelamarStatus: DaftarPelamarStatus.failure,
-        pelamarError: _mapFailure(failure),
-      )),
-      (data) {
-        final merged = refresh
-            ? data.bids
-            : [...state.pelamarList, ...data.bids];
-        emit(state.copyWith(
-          pelamarStatus: DaftarPelamarStatus.success,
-          pelamarList: merged,
-          pelamarPage: state.pelamarPage + 1,
-          pelamarHasNext: data.pagination.hasNext,
-        ));
-      },
+      (failure) => emit(
+        state.copyWith(
+          status: DaftarPelamarStatus.failure,
+          errorMessage: _mapFailure(failure),
+        ),
+      ),
+      (data) => emit(
+        state.copyWith(status: DaftarPelamarStatus.success, allLamaran: data),
+      ),
     );
   }
 
-  // ── Tab Pelamar Diterima (status approve + completed) ───────────────────────
+  Future<void> terima({required String iklanId, required String lamaranId}) {
+    return _review(iklanId: iklanId, lamaranId: lamaranId, approved: true);
+  }
 
-  Future<void> loadPelamarDiterima({
-    required String jobId,
-    bool refresh = false,
+  Future<void> tolak({required String iklanId, required String lamaranId}) {
+    return _review(iklanId: iklanId, lamaranId: lamaranId, approved: false);
+  }
+
+  Future<void> _review({
+    required String iklanId,
+    required String lamaranId,
+    required bool approved,
   }) async {
-    if (state.diterimaStatus == DaftarPelamarStatus.loading ||
-        state.diterimaStatus == DaftarPelamarStatus.loadingMore) {
-      return;
-    }
+    if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
 
-    if (refresh) {
-      emit(state.copyWith(
-        diterimaStatus: DaftarPelamarStatus.loading,
-        diterimaPage: 1,
-        diterimaList: [],
-        diterimaHasNext: true,
-        diterimaError: null,
-      ));
-    } else {
-      if (!state.diterimaHasNext) return;
-      emit(state.copyWith(
-        diterimaStatus: state.diterimaList.isEmpty
-            ? DaftarPelamarStatus.loading
-            : DaftarPelamarStatus.loadingMore,
-        diterimaError: null,
-      ));
-    }
+    emit(
+      state.copyWith(
+        mutationStatus: DaftarPelamarMutationStatus.loading,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
+    );
 
-    // Filter approve + completed agar tab ini menampilkan pelamar yang sudah
-    // diterima maupun yang sudah menyelesaikan pekerjaan.
-    final result = await _getIncomingBidsUseCase.execute(
-      jobId: jobId,
-      page: state.diterimaPage,
-      limit: 10,
+    final result = await _reviewLamaranUseCase.execute(
+      iklanId: iklanId,
+      lamaranId: lamaranId,
+      approved: approved,
     );
 
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        diterimaStatus: DaftarPelamarStatus.failure,
-        diterimaError: _mapFailure(failure),
-      )),
-      (data) {
-        // Filter client-side: tampilkan bid approve, pending_owner_confirm, dan completed
-        final filtered = data.bids
-            .where((b) =>
-                b.status == 'approve' ||
-                b.status == 'pending_owner_confirm' ||
-                b.status == 'completed')
+      (failure) => emit(
+        state.copyWith(
+          mutationStatus: DaftarPelamarMutationStatus.failure,
+          mutationErrorMessage: _mapFailure(failure),
+        ),
+      ),
+      (updated) {
+        final list = state.allLamaran
+            .map((l) => l.id == lamaranId ? updated : l)
             .toList();
-        final merged = refresh
-            ? filtered
-            : [...state.diterimaList, ...filtered];
-        emit(state.copyWith(
-          diterimaStatus: DaftarPelamarStatus.success,
-          diterimaList: merged,
-          diterimaPage: state.diterimaPage + 1,
-          diterimaHasNext: data.pagination.hasNext,
-        ));
+        emit(
+          state.copyWith(
+            allLamaran: list,
+            mutationStatus: DaftarPelamarMutationStatus.success,
+            mutationSuccessMessage: approved
+                ? 'Pelamar berhasil diterima.'
+                : 'Pelamar berhasil ditolak.',
+          ),
+        );
       },
     );
   }
 
-  // ── Mutations ───────────────────────────────────────────────────────────────
-
-  Future<void> terima({
-    required String jobId,
-    required String bidId,
+  /// PRD §5.11.5 — pembatalan lamaran Diterima, alasan wajib, maks H-24 jam
+  /// sebelum mulai (divalidasi backend, bukan di sini).
+  Future<void> batalkan({
+    required String iklanId,
+    required String lamaranId,
+    required String alasan,
   }) async {
     if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
 
-    emit(state.copyWith(
-      mutationStatus: DaftarPelamarMutationStatus.loading,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        mutationStatus: DaftarPelamarMutationStatus.loading,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
+    );
 
-    final result = await _updateBidStatusUseCase.execute(
-      jobId: jobId,
-      bidId: bidId,
-      status: 'approve',
+    final result = await _batalkanLamaranUseCase.execute(
+      iklanId: iklanId,
+      lamaranId: lamaranId,
+      alasan: alasan,
     );
 
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        mutationStatus: DaftarPelamarMutationStatus.failure,
-        mutationErrorMessage: _mapFailure(failure),
-      )),
-      (_) {
-        // Optimistic update: remove accepted bid from pelamarList,
-        // and add it (with updated status) to diterimaList.
-        final accepted = state.pelamarList
-            .where((b) => b.id == bidId)
-            .map((b) => b.copyWith(status: 'approve'))
+      (failure) => emit(
+        state.copyWith(
+          mutationStatus: DaftarPelamarMutationStatus.failure,
+          mutationErrorMessage: _mapFailure(failure),
+        ),
+      ),
+      (updated) {
+        final list = state.allLamaran
+            .map((l) => l.id == lamaranId ? updated : l)
             .toList();
-
-        emit(state.copyWith(
-          pelamarList:
-              state.pelamarList.where((b) => b.id != bidId).toList(),
-          diterimaList: [...state.diterimaList, ...accepted],
-          mutationStatus: DaftarPelamarMutationStatus.success,
-          mutationSuccessMessage: 'Pelamar berhasil diterima.',
-        ));
+        emit(
+          state.copyWith(
+            allLamaran: list,
+            mutationStatus: DaftarPelamarMutationStatus.success,
+            mutationSuccessMessage: 'Lamaran berhasil dibatalkan.',
+          ),
+        );
       },
     );
   }
 
-  Future<void> tolak({
-    required String jobId,
-    required String bidId,
+  /// Pemberi kerja menilai pelamar setelah Lamaran Selesai (F-17, PRD §5.15,
+  /// arah `pemberi_kerja_ke_pelamar`) — dipicu dari kartu "Pelamar Diterima".
+  Future<void> beriRating({
+    required String iklanId,
+    required String pelamarId,
+    required int bintang,
+    String? ulasan,
   }) async {
     if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
 
-    emit(state.copyWith(
-      mutationStatus: DaftarPelamarMutationStatus.loading,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        mutationStatus: DaftarPelamarMutationStatus.loading,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
+    );
 
-    final result = await _updateBidStatusUseCase.execute(
-      jobId: jobId,
-      bidId: bidId,
-      status: 'decline',
+    final result = await _submitWorkerReviewUseCase.execute(
+      iklanId: iklanId,
+      pelamarId: pelamarId,
+      bintang: bintang,
+      ulasan: ulasan,
     );
 
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        mutationStatus: DaftarPelamarMutationStatus.failure,
-        mutationErrorMessage: _mapFailure(failure),
-      )),
-      (_) => emit(state.copyWith(
-        pelamarList:
-            state.pelamarList.where((b) => b.id != bidId).toList(),
-        mutationStatus: DaftarPelamarMutationStatus.success,
-        mutationSuccessMessage: 'Pelamar berhasil ditolak.',
-      )),
+      (failure) => emit(
+        state.copyWith(
+          mutationStatus: DaftarPelamarMutationStatus.failure,
+          mutationErrorMessage: _mapWorkerFailure(failure),
+        ),
+      ),
+      (_) => emit(
+        state.copyWith(
+          mutationStatus: DaftarPelamarMutationStatus.success,
+          mutationSuccessMessage: 'Kamu berhasil memberikan rating.',
+        ),
+      ),
     );
   }
 
-  Future<void> markAllComplete({required String jobId}) async {
-    if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
-
-    emit(state.copyWith(
-      mutationStatus: DaftarPelamarMutationStatus.loading,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
-
-    final result = await _ownerCompleteJobUseCase.execute(jobId: jobId);
-
-    if (isClosed) return;
-
-    result.fold(
-      (failure) => emit(state.copyWith(
-        mutationStatus: DaftarPelamarMutationStatus.failure,
-        mutationErrorMessage: _mapFailure(failure),
-      )),
-      (_) {
-        // Optimistic update: tandai semua bid approve → completed di state lokal
-        final updated = state.diterimaList
-            .map((b) => b.status == 'approve' ? b.copyWith(status: 'completed') : b)
-            .toList();
-        emit(state.copyWith(
-          diterimaList: updated,
-          mutationStatus: DaftarPelamarMutationStatus.success,
-          mutationSuccessMessage: 'Pekerjaan berhasil ditandai selesai.',
-        ));
-      },
-    );
-  }
-
-  // Owner confirms a single worker's completion claim per-bid.
-  Future<void> confirmBidComplete({
-    required String jobId,
-    required String bidId,
-  }) async {
-    if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
-
-    emit(state.copyWith(
-      mutationStatus: DaftarPelamarMutationStatus.loading,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
-
-    final result = await _ownerConfirmBidUseCase.execute(
-      jobId: jobId,
-      bidId: bidId,
-    );
-
-    if (isClosed) return;
-
-    result.fold(
-      (failure) => emit(state.copyWith(
-        mutationStatus: DaftarPelamarMutationStatus.failure,
-        mutationErrorMessage: _mapFailure(failure),
-      )),
-      (_) {
-        final updated = state.diterimaList
-            .map((b) => b.id == bidId ? b.copyWith(status: 'completed') : b)
-            .toList();
-        emit(state.copyWith(
-          diterimaList: updated,
-          mutationStatus: DaftarPelamarMutationStatus.success,
-          mutationSuccessMessage: 'Pekerjaan berhasil dikonfirmasi selesai.',
-        ));
-      },
-    );
-  }
-
-  // ── Phase 2: Dispute ────────────────────────────────────────────────────────
-
-  /// Owner menolak klaim selesai pekerja dan membuka sengketa.
-  /// [reason] wajib diisi (min 10 karakter, divalidasi di backend).
-  Future<void> disputeBid({
-    required String jobId,
-    required String bidId,
-    required String reason,
-  }) async {
-    if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
-
-    emit(state.copyWith(
-      mutationStatus: DaftarPelamarMutationStatus.loading,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
-
-    final result = await _disputeBidUseCase.execute(
-      jobId: jobId,
-      bidId: bidId,
-      reason: reason,
-    );
-
-    if (isClosed) return;
-
-    result.fold(
-      (failure) => emit(state.copyWith(
-        mutationStatus: DaftarPelamarMutationStatus.failure,
-        mutationErrorMessage: _mapFailure(failure),
-      )),
-      (_) {
-        // Optimistic update: tandai bid disputed di diterimaList
-        final updated = state.diterimaList
-            .map((b) => b.id == bidId ? b.copyWith(status: 'disputed') : b)
-            .toList();
-        emit(state.copyWith(
-          diterimaList: updated,
-          mutationStatus: DaftarPelamarMutationStatus.success,
-          mutationSuccessMessage:
-              'Sengketa dibuka. Pekerja akan mendapat notifikasi.',
-        ));
-      },
-    );
-  }
-
-  // ── Phase 2: Cancel ─────────────────────────────────────────────────────────
-
-  /// Owner atau pekerja membatalkan bid yang sudah disetujui.
-  /// [reason] wajib diisi (min 10 karakter, divalidasi di backend).
-  Future<void> cancelBid({
-    required String jobId,
-    required String bidId,
-    required String reason,
-  }) async {
-    if (state.mutationStatus == DaftarPelamarMutationStatus.loading) return;
-
-    emit(state.copyWith(
-      mutationStatus: DaftarPelamarMutationStatus.loading,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
-
-    final result = await _cancelBidUseCase.execute(
-      jobId: jobId,
-      bidId: bidId,
-      reason: reason,
-    );
-
-    if (isClosed) return;
-
-    result.fold(
-      (failure) => emit(state.copyWith(
-        mutationStatus: DaftarPelamarMutationStatus.failure,
-        mutationErrorMessage: _mapFailure(failure),
-      )),
-      (_) {
-        // Hapus bid yang dibatalkan dari diterimaList
-        emit(state.copyWith(
-          diterimaList:
-              state.diterimaList.where((b) => b.id != bidId).toList(),
-          mutationStatus: DaftarPelamarMutationStatus.success,
-          mutationSuccessMessage: 'Bid berhasil dibatalkan.',
-        ));
-      },
+  String _mapWorkerFailure(WorkerFailure failure) {
+    return failure.map(
+      serverError: (e) => e.message ?? 'Terjadi kesalahan server.',
+      networkError: (_) => 'Tidak ada koneksi internet.',
+      validationError: (e) => e.message,
+      unknown: (_) => 'Terjadi kesalahan yang tidak diketahui.',
     );
   }
 
   void clearMutationState() {
-    emit(state.copyWith(
-      mutationStatus: DaftarPelamarMutationStatus.initial,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        mutationStatus: DaftarPelamarMutationStatus.initial,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
+    );
   }
 
   String _mapFailure(JobFailure failure) {

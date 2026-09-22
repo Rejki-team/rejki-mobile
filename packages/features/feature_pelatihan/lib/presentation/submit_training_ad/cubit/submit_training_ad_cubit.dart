@@ -9,7 +9,7 @@ class SubmitTrainingAdCubit extends Cubit<SubmitTrainingAdState> {
   final CreateTrainingUseCase _createTrainingUseCase;
 
   SubmitTrainingAdCubit(this._createTrainingUseCase)
-      : super(const SubmitTrainingAdState());
+    : super(const SubmitTrainingAdState());
 
   Future<void> submitRequest(CreateTrainingParams params) async {
     emit(
@@ -21,13 +21,15 @@ class SubmitTrainingAdCubit extends Cubit<SubmitTrainingAdState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        isRequesting: false,
-        errorMessage: failure.maybeWhen(
-          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
-          orElse: () => 'Gagal mengirim proposal. Silakan coba lagi.',
+      (failure) => emit(
+        state.copyWith(
+          isRequesting: false,
+          errorMessage: failure.maybeWhen(
+            serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+            orElse: () => 'Gagal mengirim proposal. Silakan coba lagi.',
+          ),
         ),
-      )),
+      ),
       (_) => emit(state.copyWith(isRequesting: false, isSuccess: true)),
     );
   }

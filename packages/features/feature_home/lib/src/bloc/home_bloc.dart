@@ -31,10 +31,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetLatestJobsUseCase _getLatestJobsUseCase;
   final GetUserFullProfileUseCase _getUserFullProfileUseCase;
 
-  HomeBloc(
-    this._getLatestJobsUseCase,
-    this._getUserFullProfileUseCase,
-  ) : super(const HomeState()) {
+  HomeBloc(this._getLatestJobsUseCase, this._getUserFullProfileUseCase)
+    : super(const HomeState()) {
     on<_LoadRequested>(_onLoadRequested);
     on<_RefreshRequested>(_onRefreshRequested);
     on<_LoadMoreRequested>(_onLoadMoreRequested);
@@ -148,17 +146,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     String verificationStatus = state.userVerificationStatus;
     String profilePhotoPath = state.userProfilePhotoPath;
 
-    profileResult.fold(
-      (_) {},
-      (profile) {
-        final userProfile = profile as UserProfileEntity;
-        userName = userProfile.fullName.isNotEmpty
-            ? userProfile.fullName
-            : state.userName;
-        verificationStatus = userProfile.verificationStatus;
-        profilePhotoPath = userProfile.profilePhotoPath;
-      },
-    );
+    profileResult.fold((_) {}, (profile) {
+      final userProfile = profile as UserProfileEntity;
+      userName = userProfile.fullName.isNotEmpty
+          ? userProfile.fullName
+          : state.userName;
+      verificationStatus = userProfile.verificationStatus;
+      profilePhotoPath = userProfile.profilePhotoPath;
+    });
 
     String? errorMessage;
     jobsResult.fold(

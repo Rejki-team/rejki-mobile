@@ -12,6 +12,7 @@
 import 'package:data/data.dart' as _i437;
 import 'package:domain/domain.dart' as _i494;
 import 'package:feature_barangbekas/feature_barangbekas.dart' as _i685;
+import 'package:feature_chat/feature_chat.dart' as _i421;
 import 'package:feature_history/feature_history.dart' as _i674;
 import 'package:feature_home/feature_home.dart' as _i545;
 import 'package:feature_notification/feature_notification.dart' as _i884;
@@ -25,10 +26,12 @@ import 'package:feature_pelatihan/feature_pelatihan.dart' as _i216;
 import 'package:feature_profile/feature_profile.dart' as _i1070;
 import 'package:feature_profile/src/location/bloc/location_bloc.dart' as _i1018;
 import 'package:feature_register/feature_register.dart' as _i473;
+import 'package:feature_report/feature_report.dart' as _i459;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:local/local.dart' as _i960;
+import 'package:location_manager/location_manager.dart' as _i278;
 import 'package:network/network.dart' as _i372;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
@@ -46,6 +49,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.sharedPreferences,
       preResolve: true,
     );
+    gh.factory<_i372.ChatWebSocketClient>(
+      () => registerModule.chatWebSocketClient,
+    );
     gh.factory<_i216.CreateTrainingAdCubit>(
       () => registerModule.createTrainingAdCubit(),
     );
@@ -55,6 +61,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i372.ConnectivityUtil>(
       () => registerModule.connectivityUtil,
+    );
+    gh.lazySingleton<_i372.PresignedUploadClient>(
+      () => registerModule.presignedUploadClient,
+    );
+    gh.lazySingleton<_i278.AppLocationManager>(
+      () => registerModule.appLocationManager,
     );
     gh.lazySingleton<_i960.SessionStorage>(
       () => registerModule.sessionStorage(
@@ -71,8 +83,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i437.JobRemoteDataSource>(
       () => registerModule.jobRemoteDataSource(gh<_i372.DioClient>()),
     );
-    gh.lazySingleton<_i437.BidJobDataSource>(
-      () => registerModule.bidJobDataSource(gh<_i372.DioClient>()),
+    gh.lazySingleton<_i437.LamaranDataSource>(
+      () => registerModule.lamaranDataSource(gh<_i372.DioClient>()),
     );
     gh.lazySingleton<_i437.JobMutationDataSource>(
       () => registerModule.jobMutationDataSource(gh<_i372.DioClient>()),
@@ -82,6 +94,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i437.HelperRemoteDataSource>(
       () => registerModule.helperRemoteDataSource(gh<_i372.DioClient>()),
+    );
+    gh.lazySingleton<_i437.RatingRemoteDataSource>(
+      () => registerModule.ratingRemoteDataSource(gh<_i372.DioClient>()),
     );
     gh.lazySingleton<_i437.WorkerRemoteDataSource>(
       () => registerModule.workerRemoteDataSource(gh<_i372.DioClient>()),
@@ -151,10 +166,16 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.TrainingRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.ProfileRepository>(
-      () => registerModule.profileRepository(
-        gh<_i437.ProfileRemoteDataSource>(),
-        gh<_i960.SessionStorage>(),
+    gh.lazySingleton<_i437.ReportRemoteDataSource>(
+      () => registerModule.reportRemoteDataSource(
+        gh<_i372.DioClient>(),
+        gh<_i372.PresignedUploadClient>(),
+      ),
+    );
+    gh.lazySingleton<_i437.ChatRemoteDataSource>(
+      () => registerModule.chatRemoteDataSource(
+        gh<_i372.DioClient>(),
+        gh<_i372.PresignedUploadClient>(),
       ),
     );
     gh.factory<_i674.HistoryIklanPelatihanCubit>(
@@ -167,8 +188,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i437.SecondhandRemoteDataSource>(),
       ),
     );
+    gh.lazySingleton<_i960.AdImpressionStorage>(
+      () => registerModule.adImpressionStorage(gh<_i460.SharedPreferences>()),
+    );
     gh.lazySingleton<_i960.EnumStorage>(
       () => registerModule.enumStorage(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i494.RatingRepository>(
+      () => registerModule.ratingRepository(gh<_i437.RatingRemoteDataSource>()),
     );
     gh.lazySingleton<_i494.JobMutationRepository>(
       () => registerModule.jobMutationRepository(
@@ -186,6 +213,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.trainingDetailCubit(
         gh<_i494.GetTrainingDetailUseCase>(),
         gh<_i494.EnrollTrainingUseCase>(),
+        gh<_i960.SessionStorage>(),
+      ),
+    );
+    gh.factory<_i494.ChatRealtimeGateway>(
+      () => registerModule.chatRealtimeGateway(
+        gh<_i372.ChatWebSocketClient>(),
         gh<_i960.SessionStorage>(),
       ),
     );
@@ -219,10 +252,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.SecondhandRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.GetMyClaimedSecondhandsUseCase>(
-      () => registerModule.getMyClaimedSecondhandsUseCase(
+    gh.lazySingleton<_i494.GetMyAdsUseCase>(
+      () => registerModule.getMyAdsUseCase(gh<_i494.SecondhandRepository>()),
+    );
+    gh.lazySingleton<_i494.GetBiderForIklanUseCase>(
+      () => registerModule.getBiderForIklanUseCase(
         gh<_i494.SecondhandRepository>(),
       ),
+    );
+    gh.lazySingleton<_i494.GetBiderSayaUseCase>(
+      () =>
+          registerModule.getBiderSayaUseCase(gh<_i494.SecondhandRepository>()),
     );
     gh.lazySingleton<_i494.AuthRepository>(
       () => registerModule.authRepository(
@@ -233,29 +273,22 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.CreateJobUseCase>(
       () => registerModule.createJobUseCase(gh<_i494.JobMutationRepository>()),
     );
-    gh.lazySingleton<_i494.UpdateBidStatusUseCase>(
-      () => registerModule.updateBidStatusUseCase(
+    gh.lazySingleton<_i494.ReviewLamaranUseCase>(
+      () => registerModule.reviewLamaranUseCase(
         gh<_i494.JobMutationRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.OwnerCompleteJobUseCase>(
-      () => registerModule.ownerCompleteJobUseCase(
+    gh.lazySingleton<_i494.MulaiBekerjaUseCase>(
+      () =>
+          registerModule.mulaiBekerjaUseCase(gh<_i494.JobMutationRepository>()),
+    );
+    gh.lazySingleton<_i494.TandaiSelesaiUseCase>(
+      () => registerModule.tandaiSelesaiUseCase(
         gh<_i494.JobMutationRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.OwnerConfirmBidUseCase>(
-      () => registerModule.ownerConfirmBidUseCase(
-        gh<_i494.JobMutationRepository>(),
-      ),
-    );
-    gh.lazySingleton<_i494.DisputeBidUseCase>(
-      () => registerModule.disputeBidUseCase(gh<_i494.JobMutationRepository>()),
-    );
-    gh.lazySingleton<_i494.CancelBidUseCase>(
-      () => registerModule.cancelBidUseCase(gh<_i494.JobMutationRepository>()),
-    );
-    gh.lazySingleton<_i494.UploadBidEvidenceUseCase>(
-      () => registerModule.uploadBidEvidenceUseCase(
+    gh.lazySingleton<_i494.BatalkanLamaranUseCase>(
+      () => registerModule.batalkanLamaranUseCase(
         gh<_i494.JobMutationRepository>(),
       ),
     );
@@ -264,11 +297,32 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.JobMutationRepository>(),
       ),
     );
+    gh.lazySingleton<_i494.GetRatingAggregateUseCase>(
+      () => registerModule.getRatingAggregateUseCase(
+        gh<_i494.RatingRepository>(),
+      ),
+    );
     gh.lazySingleton<_i494.LoginUseCase>(
       () => registerModule.loginUseCase(gh<_i494.AuthRepository>()),
     );
     gh.lazySingleton<_i494.RegisterUseCase>(
       () => registerModule.registerUseCase(gh<_i494.AuthRepository>()),
+    );
+    gh.lazySingleton<_i494.ChatRepository>(
+      () => registerModule.chatRepository(gh<_i437.ChatRemoteDataSource>()),
+    );
+    gh.lazySingleton<_i494.JobRepository>(
+      () => registerModule.jobRepository(
+        gh<_i437.JobRemoteDataSource>(),
+        gh<_i437.LamaranDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i494.ProfileRepository>(
+      () => registerModule.profileRepository(
+        gh<_i437.ProfileRemoteDataSource>(),
+        gh<_i960.SessionStorage>(),
+        gh<_i437.RatingRemoteDataSource>(),
+      ),
     );
     gh.lazySingleton<_i494.GetWorkersUseCase>(
       () => registerModule.getWorkersUseCase(gh<_i494.WorkerRepository>()),
@@ -349,12 +403,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i437.SecondhandMutationDataSource>(),
       ),
     );
-    gh.lazySingleton<_i494.JobRepository>(
-      () => registerModule.jobRepository(
-        gh<_i437.JobRemoteDataSource>(),
-        gh<_i437.BidJobDataSource>(),
-      ),
-    );
     gh.factory<_i674.HistoryIklanPekerjaCubit>(
       () => registerModule.historyIklanPekerjaCubit(
         gh<_i494.GetMyWorkerProfileUseCase>(),
@@ -369,6 +417,29 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.badgeUploadCubit(
         gh<_i494.SubmitTrainingBadgeUseCase>(),
       ),
+    );
+    gh.lazySingleton<_i494.GetConversationsUseCase>(
+      () => registerModule.getConversationsUseCase(gh<_i494.ChatRepository>()),
+    );
+    gh.lazySingleton<_i494.GetOrCreateConversationUseCase>(
+      () => registerModule.getOrCreateConversationUseCase(
+        gh<_i494.ChatRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.GetMessagesUseCase>(
+      () => registerModule.getMessagesUseCase(gh<_i494.ChatRepository>()),
+    );
+    gh.lazySingleton<_i494.MarkReadUseCase>(
+      () => registerModule.markReadUseCase(gh<_i494.ChatRepository>()),
+    );
+    gh.lazySingleton<_i494.EndConversationUseCase>(
+      () => registerModule.endConversationUseCase(gh<_i494.ChatRepository>()),
+    );
+    gh.lazySingleton<_i494.UploadChatPhotoUseCase>(
+      () => registerModule.uploadChatPhotoUseCase(gh<_i494.ChatRepository>()),
+    );
+    gh.lazySingleton<_i494.ReportRepository>(
+      () => registerModule.reportRepository(gh<_i437.ReportRemoteDataSource>()),
     );
     gh.factory<_i10.LocationBloc>(
       () => registerModule.locationBloc(
@@ -415,6 +486,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.CreateTrainingUseCase>(),
       ),
     );
+    gh.factory<_i950.WorkerDetailCubit>(
+      () => registerModule.workerDetailCubit(
+        gh<_i494.GetWorkerByIdUseCase>(),
+        gh<_i494.GetRatingAggregateUseCase>(),
+      ),
+    );
+    gh.factory<_i674.HistoryIklanBarangBekasCubit>(
+      () => registerModule.historyIklanBarangBekasCubit(
+        gh<_i494.GetMyAdsUseCase>(),
+      ),
+    );
     gh.factory<_i950.ContactRequestCubit>(
       () => registerModule.contactRequestCubit(
         gh<_i494.GetIncomingContactsUseCase>(),
@@ -439,6 +521,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i473.RegisterCubit>(
       () => registerModule.registerCubit(gh<_i494.RegisterUseCase>()),
     );
+    gh.factory<_i421.ConversationListCubit>(
+      () => registerModule.conversationListCubit(
+        gh<_i494.GetConversationsUseCase>(),
+      ),
+    );
     gh.lazySingleton<_i494.GetLatestJobsUseCase>(
       () => registerModule.getLatestJobsUseCase(gh<_i494.JobRepository>()),
     );
@@ -448,17 +535,22 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i494.GetJobByIdUseCase>(
       () => registerModule.getJobByIdUseCase(gh<_i494.JobRepository>()),
     );
-    gh.lazySingleton<_i494.BidJobUseCase>(
-      () => registerModule.bidJobUseCase(gh<_i494.JobRepository>()),
+    gh.lazySingleton<_i494.LamarUseCase>(
+      () => registerModule.lamarUseCase(gh<_i494.JobRepository>()),
     );
-    gh.lazySingleton<_i494.GetMyBidsUseCase>(
-      () => registerModule.getMyBidsUseCase(gh<_i494.JobRepository>()),
+    gh.lazySingleton<_i494.GetLamaranSayaUseCase>(
+      () => registerModule.getLamaranSayaUseCase(gh<_i494.JobRepository>()),
     );
-    gh.lazySingleton<_i494.GetIncomingBidsUseCase>(
-      () => registerModule.getIncomingBidsUseCase(gh<_i494.JobRepository>()),
+    gh.lazySingleton<_i494.GetLamaranForIklanUseCase>(
+      () => registerModule.getLamaranForIklanUseCase(gh<_i494.JobRepository>()),
     );
     gh.lazySingleton<_i494.GetMyJobsUseCase>(
       () => registerModule.getMyJobsUseCase(gh<_i494.JobRepository>()),
+    );
+    gh.factory<_i674.HistoryBarangBekasCubit>(
+      () => registerModule.historyBarangBekasCubit(
+        gh<_i494.GetBiderSayaUseCase>(),
+      ),
     );
     gh.factory<_i950.WorkerListingCubit>(
       () => registerModule.workerListingCubit(gh<_i494.GetWorkersUseCase>()),
@@ -491,10 +583,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i10.CreateJobBloc>(
       () => registerModule.createJobBloc(gh<_i494.CreateJobUseCase>()),
     );
-    gh.factory<_i806.TakeJobCubit>(
-      () => registerModule.takeJobCubit(
-        gh<_i494.BidJobUseCase>(),
-        gh<_i494.GetMyWorkerProfileUseCase>(),
+    gh.factory<_i10.JobDetailCubit>(
+      () => registerModule.jobDetailCubit(
+        gh<_i494.GetJobByIdUseCase>(),
+        gh<_i494.GetRatingAggregateUseCase>(),
       ),
     );
     gh.factory<_i685.DetailUsedGoodsAdCubit>(
@@ -504,6 +596,19 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i494.SyncEnumsUseCase>(
       () => registerModule.syncEnumsUseCase(gh<_i494.HelperRepository>()),
+    );
+    gh.factory<_i10.DaftarPelamarCubit>(
+      () => registerModule.daftarPelamarCubit(
+        gh<_i494.GetLamaranForIklanUseCase>(),
+        gh<_i494.ReviewLamaranUseCase>(),
+        gh<_i494.BatalkanLamaranUseCase>(),
+        gh<_i494.SubmitWorkerReviewUseCase>(),
+      ),
+    );
+    gh.factory<_i674.HistoryPekerjaCubit>(
+      () => registerModule.historyPekerjaCubit(
+        gh<_i494.GetWorkerContactsUseCase>(),
+      ),
     );
     gh.factory<_i1070.ProfileCubit>(
       () => registerModule.profileCubit(
@@ -519,47 +624,36 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.UpdatePhoneVisibilityUseCase>(),
       ),
     );
-    gh.factory<_i674.HistoryBarangBekasCubit>(
-      () => registerModule.historyBarangBekasCubit(
-        gh<_i494.GetMyClaimedSecondhandsUseCase>(),
-      ),
-    );
-    gh.factory<_i674.HistoryPekerjaCubit>(
-      () => registerModule.historyPekerjaCubit(
-        gh<_i494.GetWorkerContactsUseCase>(),
-        gh<_i494.SubmitWorkerReviewUseCase>(),
-      ),
-    );
     gh.factory<_i545.HomeBloc>(
       () => registerModule.homeBloc(
         gh<_i494.GetLatestJobsUseCase>(),
         gh<_i494.GetUserFullProfileUseCase>(),
       ),
     );
-    gh.factory<_i674.HistoryPekerjaanCubit>(
-      () => registerModule.historyPekerjaanCubit(
-        gh<_i494.GetMyBidsUseCase>(),
-        gh<_i494.UpdateBidStatusUseCase>(),
-        gh<_i494.CreateJobReviewUseCase>(),
-      ),
+    gh.lazySingleton<_i494.LaporkanIklanUseCase>(
+      () => registerModule.laporkanIklanUseCase(gh<_i494.ReportRepository>()),
     );
-    gh.factory<_i10.DaftarPelamarCubit>(
-      () => registerModule.daftarPelamarCubit(
-        gh<_i494.GetIncomingBidsUseCase>(),
-        gh<_i494.UpdateBidStatusUseCase>(),
-        gh<_i494.OwnerCompleteJobUseCase>(),
-        gh<_i494.OwnerConfirmBidUseCase>(),
-        gh<_i494.DisputeBidUseCase>(),
-        gh<_i494.CancelBidUseCase>(),
-      ),
+    gh.lazySingleton<_i494.PelaporanMasalahUseCase>(
+      () =>
+          registerModule.pelaporanMasalahUseCase(gh<_i494.ReportRepository>()),
     );
     gh.lazySingleton<_i494.CreateSecondhandUseCase>(
       () => registerModule.createSecondhandUseCase(
         gh<_i494.SecondhandMutationRepository>(),
       ),
     );
-    gh.lazySingleton<_i494.ClaimSecondhandUseCase>(
-      () => registerModule.claimSecondhandUseCase(
+    gh.lazySingleton<_i494.AmbilBarangUseCase>(
+      () => registerModule.ambilBarangUseCase(
+        gh<_i494.SecondhandMutationRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.SetujuiBiderUseCase>(
+      () => registerModule.setujuiBiderUseCase(
+        gh<_i494.SecondhandMutationRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i494.WithdrawBiderUseCase>(
+      () => registerModule.withdrawBiderUseCase(
         gh<_i494.SecondhandMutationRepository>(),
       ),
     );
@@ -577,21 +671,39 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.GetUserProfileUseCase>(),
       ),
     );
-    gh.factory<_i950.WorkerDetailCubit>(
-      () => registerModule.workerDetailCubit(gh<_i494.GetWorkerByIdUseCase>()),
+    gh.factory<_i421.ConversationRoomCubit>(
+      () => registerModule.conversationRoomCubit(
+        gh<_i494.GetOrCreateConversationUseCase>(),
+        gh<_i494.GetMessagesUseCase>(),
+        gh<_i494.MarkReadUseCase>(),
+        gh<_i494.EndConversationUseCase>(),
+        gh<_i494.UploadChatPhotoUseCase>(),
+        gh<_i494.ChatRealtimeGateway>(),
+        gh<_i960.SessionStorage>(),
+        gh<_i278.AppLocationManager>(),
+      ),
     );
     gh.factory<_i674.HistoryIklanPekerjaanCubit>(
       () => registerModule.historyIklanPekerjaanCubit(
         gh<_i494.GetMyJobsUseCase>(),
       ),
     );
-    gh.factory<_i685.ClaimSecondhandCubit>(
-      () => registerModule.claimSecondhandCubit(
-        gh<_i494.ClaimSecondhandUseCase>(),
+    gh.factory<_i674.HistoryPekerjaanCubit>(
+      () => registerModule.historyPekerjaanCubit(
+        gh<_i494.GetLamaranSayaUseCase>(),
+        gh<_i494.MulaiBekerjaUseCase>(),
+        gh<_i494.TandaiSelesaiUseCase>(),
+        gh<_i494.CreateJobReviewUseCase>(),
       ),
     );
-    gh.factory<_i10.JobDetailCubit>(
-      () => registerModule.jobDetailCubit(gh<_i494.GetJobByIdUseCase>()),
+    gh.factory<_i806.TakeJobCubit>(
+      () => registerModule.takeJobCubit(
+        gh<_i494.LamarUseCase>(),
+        gh<_i494.GetMyWorkerProfileUseCase>(),
+      ),
+    );
+    gh.factory<_i685.AmbilBarangCubit>(
+      () => registerModule.ambilBarangCubit(gh<_i494.AmbilBarangUseCase>()),
     );
     gh.factory<_i10.JobListingCubit>(
       () => registerModule.jobListingCubit(
@@ -605,6 +717,21 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i494.MarkNotificationReadUseCase>(),
         gh<_i494.MarkAllNotificationsReadUseCase>(),
         gh<_i494.GetUnreadCountUseCase>(),
+      ),
+    );
+    gh.factory<_i459.PelaporanMasalahCubit>(
+      () => registerModule.pelaporanMasalahCubit(
+        gh<_i494.PelaporanMasalahUseCase>(),
+      ),
+    );
+    gh.factory<_i459.LaporkanIklanCubit>(
+      () => registerModule.laporkanIklanCubit(gh<_i494.LaporkanIklanUseCase>()),
+    );
+    gh.factory<_i685.DaftarBiderCubit>(
+      () => registerModule.daftarBiderCubit(
+        gh<_i494.GetBiderForIklanUseCase>(),
+        gh<_i494.SetujuiBiderUseCase>(),
+        gh<_i494.WithdrawBiderUseCase>(),
       ),
     );
     return this;

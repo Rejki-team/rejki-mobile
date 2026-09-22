@@ -5,11 +5,8 @@ import '../entities/training_enrollment_entity.dart';
 import '../params/create_training_params.dart';
 
 abstract class TrainingRepository {
-  Future<Either<TrainingFailure, List<TrainingEnrollmentEntity>>> getMyTrainingEnrollments({
-    String? status,
-    int page = 1,
-    int limit = 10,
-  });
+  Future<Either<TrainingFailure, List<TrainingEnrollmentEntity>>>
+  getMyTrainingEnrollments({String? status, int page = 1, int limit = 10});
 
   Future<Either<TrainingFailure, TrainingEntity>> getTrainingDetail(String id);
 
@@ -17,6 +14,8 @@ abstract class TrainingRepository {
     String? search,
     int page = 1,
     int limit = 10,
+    double? latitude,
+    double? longitude,
   });
 
   Future<Either<TrainingFailure, List<TrainingEntity>>> getMyTrainings({
@@ -24,9 +23,13 @@ abstract class TrainingRepository {
     int limit = 10,
   });
 
-  Future<Either<TrainingFailure, TrainingEntity>> createTraining(CreateTrainingParams params);
+  Future<Either<TrainingFailure, TrainingEntity>> createTraining(
+    CreateTrainingParams params,
+  );
 
-  Future<Either<TrainingFailure, TrainingEnrollmentEntity>> enrollTraining(String trainingId);
+  Future<Either<TrainingFailure, TrainingEnrollmentEntity>> enrollTraining(
+    String trainingId,
+  );
 
   Future<Either<TrainingFailure, TrainingEnrollmentEntity>> uploadPaymentProof({
     required String trainingId,
@@ -34,9 +37,8 @@ abstract class TrainingRepository {
     required String filePath,
   });
 
-  Future<Either<TrainingFailure, List<TrainingEnrollmentEntity>>> getEnrollmentsByTraining(
-    String trainingId,
-  );
+  Future<Either<TrainingFailure, List<TrainingEnrollmentEntity>>>
+  getEnrollmentsByTraining(String trainingId);
 
   Future<Either<TrainingFailure, void>> submitTrainingBadge({
     required String trainingId,

@@ -41,7 +41,8 @@ class DaftarPendaftarPage extends StatelessWidget {
 
           if (state.isFailure) {
             return AppErrorState(
-              description: state.errorMessage ?? 'Gagal memuat daftar pendaftar',
+              description:
+                  state.errorMessage ?? 'Gagal memuat daftar pendaftar',
               onRetry: () => context
                   .read<DaftarPendaftarCubit>()
                   .loadEnrollments(trainingId),
@@ -52,8 +53,9 @@ class DaftarPendaftarPage extends StatelessWidget {
             return Center(
               child: Text(
                 'Belum ada pendaftar yang disetujui.',
-                style: AppTypography.bodyMedium
-                    .copyWith(color: AppColors.textSecondary),
+                style: AppTypography.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
             );
           }
@@ -65,8 +67,7 @@ class DaftarPendaftarPage extends StatelessWidget {
             child: ListView.separated(
               padding: const EdgeInsets.all(AppSpacing.md),
               itemCount: state.enrollments.length,
-              separatorBuilder: (_, _) =>
-                  const SizedBox(height: AppSpacing.sm),
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
               itemBuilder: (context, index) {
                 final enrollment = state.enrollments[index];
                 return _EnrollmentCard(enrollment: enrollment);

@@ -6,7 +6,9 @@ import 'package:get_it/get_it.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:feature_report/feature_report.dart';
 
 import 'cubit/worker_detail_cubit.dart';
 import 'cubit/worker_detail_state.dart';
@@ -54,8 +56,10 @@ class _WorkerDetailView extends StatelessWidget {
 
             if (state.isFailure) {
               return AppErrorState(
-                description: state.errorMessage ?? 'Gagal memuat detail pekerja',
-                onRetry: () => context.read<WorkerDetailCubit>().loadDetail(workerId),
+                description:
+                    state.errorMessage ?? 'Gagal memuat detail pekerja',
+                onRetry: () =>
+                    context.read<WorkerDetailCubit>().loadDetail(workerId),
               );
             }
 
@@ -70,7 +74,11 @@ class _WorkerDetailView extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        _WorkerProfileHeader(worker: worker),
+                        _WorkerProfileHeader(
+                          worker: worker,
+                          onReportPressed: () =>
+                              _showLaporkanIklanDialog(context, worker.id),
+                        ),
                         _WorkerDetailsSection(worker: worker),
                       ],
                     ),
@@ -86,10 +94,44 @@ class _WorkerDetailView extends StatelessWidget {
   }
 }
 
+/// Menampilkan dialog "Laporkan Iklan" (F-20, PRD §5.10) untuk iklan pekerja.
+void _showLaporkanIklanDialog(BuildContext context, String workerId) {
+  final cubit = GetIt.I<LaporkanIklanCubit>();
+  LaporkanIklanDialog.show(
+    context,
+    onSubmit: (alasan) async {
+      await cubit.submit(
+        targetType: 'iklan',
+        targetId: workerId,
+        alasan: alasan,
+        targetAdType: 'pekerja',
+      );
+      if (!context.mounted) return;
+      final state = cubit.state;
+      showDialog(
+        context: context,
+        builder: (dialogCtx) => state.isSuccess
+            ? AppDialogSuccess(
+                title: 'Berhasil',
+                message: 'Laporan kamu telah dikirim.',
+                onPressed: () => Navigator.pop(dialogCtx),
+              )
+            : AppDialogFailed(
+                title: 'Gagal',
+                message: state.errorMessage ?? 'Terjadi kesalahan.',
+                onPressed: () => Navigator.pop(dialogCtx),
+              ),
+      );
+      cubit.close();
+    },
+  );
+}
+
 class _WorkerProfileHeader extends StatelessWidget {
   final WorkerDetailModel worker;
+  final VoidCallback? onReportPressed;
 
-  const _WorkerProfileHeader({required this.worker});
+  const _WorkerProfileHeader({required this.worker, this.onReportPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +196,17 @@ class _WorkerProfileHeader extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        if (onReportPressed != null)
+                          GestureDetector(
+                            onTap: onReportPressed,
+                            child: Text(
+                              'Laporkan Iklan',
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.error,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ],
@@ -360,7 +413,9 @@ class _WorkerDetailsSection extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.badgeGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: AppColors.badgeGreen.withValues(alpha: 0.2)),
+                border: Border.all(
+                  color: AppColors.badgeGreen.withValues(alpha: 0.2),
+                ),
               ),
               child: Text(
                 worker.workingHours,
@@ -390,7 +445,7 @@ class _WorkerDetailsSection extends StatelessWidget {
 
           // 5. Badge Saya
           _DetailCard(
-            icon: AppAssets.iconStar, 
+            icon: AppAssets.iconStar,
             iconColor: AppColors.iconOrange,
             iconBgColor: AppColors.iconOrange.withValues(alpha: 0.1),
             title: 'Badge Saya',
@@ -523,6 +578,16 @@ class _BottomActionSection extends StatelessWidget {
           height: 48,
           child: ElevatedButton(
             onPressed: () async {
+              final posterId = worker.posterId;
+              if (posterId != null && posterId.isNotEmpty) {
+                context.push(
+                  '/chat/$posterId'
+                  '?otherUsername=${Uri.encodeComponent(worker.name)}'
+                  '&adType=pekerja&adId=${worker.id}',
+                );
+                return;
+              }
+
               final phone = worker.phoneNumber;
               if (phone.isNotEmpty && phone != '-') {
                 String formattedPhone = phone;
@@ -530,16 +595,20 @@ class _BottomActionSection extends StatelessWidget {
                 if (formattedPhone.startsWith('0')) {
                   formattedPhone = '62${formattedPhone.substring(1)}';
                 }
-                
+
                 final Uri url = Uri.parse('https://wa.me/$formattedPhone');
-                
+
                 try {
-                  final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+                  final launched = await launchUrl(
+                    url,
+                    mode: LaunchMode.externalApplication,
+                  );
                   if (!launched && context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Tidak dapat membuka tautan WhatsApp'),
-                        backgroundColor: AppColors.error, // Adjust if AppColors.error is not defined
+                        backgroundColor: AppColors
+                            .error, // Adjust if AppColors.error is not defined
                       ),
                     );
                   }
@@ -548,7 +617,8 @@ class _BottomActionSection extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Gagal tersambung ke WhatsApp'),
-                        backgroundColor: Colors.red, // Using Colors.red as fallback if AppColors.error doesn't exist just in case
+                        backgroundColor: Colors
+                            .red, // Using Colors.red as fallback if AppColors.error doesn't exist just in case
                       ),
                     );
                   }

@@ -22,13 +22,13 @@ abstract class NotificationModel with _$NotificationModel {
 
 extension NotificationModelX on NotificationModel {
   NotificationEntity toEntity() => NotificationEntity(
-        id: id,
-        type: type,
-        title: title,
-        body: body,
-        isRead: isRead,
-        createdAt: DateTime.tryParse(createdAt) ?? DateTime.now(),
-      );
+    id: id,
+    type: type,
+    title: title,
+    body: body,
+    isRead: isRead,
+    createdAt: DateTime.tryParse(createdAt) ?? DateTime.now(),
+  );
 }
 
 @freezed
@@ -45,13 +45,13 @@ abstract class NotificationsResponseModel with _$NotificationsResponseModel {
 
 extension NotificationsResponseModelX on NotificationsResponseModel {
   NotificationsResultEntity toEntity() => NotificationsResultEntity(
-        notifications: notifications.map((n) => n.toEntity()).toList(),
-        unreadCount: unreadCount,
-        page: pagination.page,
-        limit: pagination.limit,
-        total: pagination.total,
-        hasNext: pagination.page * pagination.limit < pagination.total,
-      );
+    notifications: notifications.map((n) => n.toEntity()).toList(),
+    unreadCount: unreadCount,
+    page: pagination.page,
+    limit: pagination.limit,
+    total: pagination.total,
+    hasNext: pagination.page * pagination.limit < pagination.total,
+  );
 }
 
 @freezed

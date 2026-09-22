@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:designsystems/designsystems.dart';
 
-enum HistoryJobStatus { baru, proses, selesai, ditolak }
+/// PRD §5.11.4 — `diterima` (tombol Mulai Bekerja) berbeda dari `proses`
+/// (tombol Tandai Selesai): dua state PRD yang berbeda, sebelumnya keduanya
+/// digabung jadi satu "Berlangsung" pada alur "Bid" lama.
+enum HistoryJobStatus { baru, diterima, proses, selesai, ditolak }
 
 enum HistoryTabType { aktifitas, iklanSaya }
 
@@ -26,6 +29,10 @@ class HistoryJobCard extends StatelessWidget {
   final VoidCallback? onMarkDonePressed;
   final VoidCallback? onApplicantsPressed;
 
+  /// PRD §5.11.4 — hanya aktif dalam radius 50m dari alamat iklan (divalidasi
+  /// backend); `null` menyembunyikan tombol.
+  final VoidCallback? onMulaiBekerjaPressed;
+
   const HistoryJobCard({
     super.key,
     required this.title,
@@ -42,6 +49,7 @@ class HistoryJobCard extends StatelessWidget {
     this.onRatingPressed,
     this.onMarkDonePressed,
     this.onApplicantsPressed,
+    this.onMulaiBekerjaPressed,
   });
 
   @override
@@ -83,12 +91,14 @@ class HistoryJobCard extends StatelessWidget {
           _buildInfoGrid(),
           const SizedBox(height: 16),
 
+          if (status == HistoryJobStatus.diterima) _buildDiterimaBox(),
           if (status == HistoryJobStatus.proses) _buildProcessBox(),
           if (status == HistoryJobStatus.selesai) _buildRatingBox(),
 
           if (tabType == HistoryTabType.iklanSaya) ...[_buildApplicantsBox()],
 
-          if (status == HistoryJobStatus.proses ||
+          if (status == HistoryJobStatus.diterima ||
+              status == HistoryJobStatus.proses ||
               status == HistoryJobStatus.selesai)
             const SizedBox(height: 16),
 
@@ -145,6 +155,11 @@ class HistoryJobCard extends StatelessWidget {
         bgColor = AppColors.jobStatusBadgeBg;
         textColor = AppColors.buttonGradientEnd;
         text = 'Menunggu';
+        break;
+      case HistoryJobStatus.diterima:
+        bgColor = AppColors.availabilityBadgeBg;
+        textColor = AppColors.primary;
+        text = 'Diterima';
         break;
       case HistoryJobStatus.proses:
         bgColor = AppColors.availabilityBadgeBg;
@@ -249,6 +264,74 @@ class HistoryJobCard extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  /// PRD §5.11.4: status Diterima → tombol "Mulai Bekerja" (hanya aktif dalam
+  /// radius 50m dari alamat iklan, divalidasi backend saat ditekan).
+  Widget _buildDiterimaBox() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.availabilityBadgeBg,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.primary),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SvgPicture.asset(
+                AppAssets.iconLocation,
+                width: 16,
+                height: 16,
+                colorFilter: const ColorFilter.mode(
+                  AppColors.primary,
+                  BlendMode.srcIn,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Lamaran Diterima',
+                style: AppTypography.labelMedium.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Alamat lengkap sudah dikirim. Tekan "Mulai Bekerja" saat kamu '
+            'sudah berada di lokasi (dalam radius 50 meter).',
+            style: AppTypography.caption.copyWith(
+              color: AppColors.primary,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: onMulaiBekerjaPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 0,
+              ),
+              child: Text(
+                'Mulai Bekerja',
+                style: AppTypography.labelMedium.copyWith(
+                  color: AppColors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

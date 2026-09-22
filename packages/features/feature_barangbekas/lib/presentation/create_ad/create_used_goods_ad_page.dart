@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +12,12 @@ import '../location/bloc/location_bloc.dart';
 import 'cubit/create_used_goods_ad_cubit.dart';
 import 'cubit/create_used_goods_ad_state.dart';
 
+/// Form "Buat Iklan Barang Bekas" (F-15). Upload foto DIHAPUS (backend
+/// `foto_urls` butuh presigned-URL flow terpisah, belum di-wire — lihat
+/// `CreateUsedGoodsAdCubit`); field lokasi disederhanakan jadi 1 alamat teks
+/// wajib (`lokasi_pengambilan`, match kontrak backend) + cascading
+/// province/city/district/village TETAP dipertahankan (UX sudah bagus) tapi
+/// hanya dipakai untuk `region_id` (geocoding opsional server-side).
 class CreateUsedGoodsAdPage extends StatelessWidget {
   const CreateUsedGoodsAdPage({super.key});
 
@@ -20,13 +25,10 @@ class CreateUsedGoodsAdPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) => GetIt.I<CreateUsedGoodsAdCubit>(),
-        ),
+        BlocProvider(create: (_) => GetIt.I<CreateUsedGoodsAdCubit>()),
         BlocProvider(
           create: (_) =>
-              GetIt.I<LocationBloc>()
-                ..add(const LocationEvent.loadProvinces()),
+              GetIt.I<LocationBloc>()..add(const LocationEvent.loadProvinces()),
         ),
       ],
       child: const _CreateUsedGoodsAdView(),
@@ -42,25 +44,19 @@ class _CreateUsedGoodsAdView extends StatefulWidget {
 }
 
 class _CreateUsedGoodsAdViewState extends State<_CreateUsedGoodsAdView> {
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _conditionController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _amountController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<CreateUsedGoodsAdCubit>().initLocationCapture();
-  }
+  final _judulController = TextEditingController();
+  final _deskripsiController = TextEditingController();
+  final _jenisBarangController = TextEditingController();
+  final _lokasiController = TextEditingController();
+  final _jumlahController = TextEditingController();
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _conditionController.dispose();
-    _addressController.dispose();
-    _amountController.dispose();
+    _judulController.dispose();
+    _deskripsiController.dispose();
+    _jenisBarangController.dispose();
+    _lokasiController.dispose();
+    _jumlahController.dispose();
     super.dispose();
   }
 
@@ -105,17 +101,15 @@ class _CreateUsedGoodsAdViewState extends State<_CreateUsedGoodsAdView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildTitleField(),
+                  _buildJudulField(),
                   const SizedBox(height: AppSpacing.md),
-                  _buildDescriptionField(),
+                  _buildDeskripsiField(),
                   const SizedBox(height: AppSpacing.md),
-                  _buildConditionTextField(),
+                  _buildJenisBarangField(),
                   const SizedBox(height: AppSpacing.md),
-                  _buildImagePicker(),
+                  _buildJumlahField(),
                   const SizedBox(height: AppSpacing.md),
-                  _buildAmountField(),
-                  const SizedBox(height: AppSpacing.md),
-                  _buildAddressField(),
+                  _buildLokasiField(),
                   const SizedBox(height: AppSpacing.md),
                   _buildLocationField(),
                   const SizedBox(height: AppSpacing.xl),
@@ -165,80 +159,63 @@ class _CreateUsedGoodsAdViewState extends State<_CreateUsedGoodsAdView> {
     );
   }
 
-  Widget _buildTitleField() {
+  Widget _buildJudulField() {
     return LabeledTextField(
       number: '1',
       label: 'Judul',
       isMandatory: true,
       hint: 'Cth. Meja makan...',
-      controller: _titleController,
-      onChanged: (val) => context.read<CreateUsedGoodsAdCubit>().titleChanged(val),
+      controller: _judulController,
+      onChanged: (val) =>
+          context.read<CreateUsedGoodsAdCubit>().judulChanged(val),
     );
   }
 
-  Widget _buildDescriptionField() {
+  Widget _buildDeskripsiField() {
     return LabeledTextArea(
       number: '2',
       label: 'Deskripsi Barang',
       isMandatory: true,
       hint: 'Cth. Meja kayu ukuran 120x80 cm...',
-      controller: _descriptionController,
+      controller: _deskripsiController,
       onChanged: (val) =>
-          context.read<CreateUsedGoodsAdCubit>().descriptionChanged(val),
+          context.read<CreateUsedGoodsAdCubit>().deskripsiChanged(val),
     );
   }
 
-  Widget _buildConditionTextField() {
+  Widget _buildJenisBarangField() {
     return LabeledTextField(
       number: '3',
       label: 'Kondisi',
       isMandatory: true,
-      hint: 'Cth. Bekas / Baru',
-      controller: _conditionController,
+      hint: 'Bekas / Baru',
+      controller: _jenisBarangController,
       onChanged: (val) =>
-          context.read<CreateUsedGoodsAdCubit>().conditionChanged(val),
+          context.read<CreateUsedGoodsAdCubit>().jenisBarangChanged(val),
     );
   }
 
-  Widget _buildImagePicker() {
-    return BlocSelector<CreateUsedGoodsAdCubit, CreateUsedGoodsAdState,
-        List<File>>(
-      selector: (state) => state.selectedImages,
-      builder: (context, images) {
-        return LabeledImagePicker(
-          number: '4',
-          label: 'Foto Barang',
-          isMandatory: true,
-          images: images,
-          caption: 'Maksimal 500kb, format JPG/PNG',
-          onImagesChanged: (newImages) =>
-              context.read<CreateUsedGoodsAdCubit>().setImages(newImages),
-        );
-      },
-    );
-  }
-
-  Widget _buildAmountField() {
+  Widget _buildJumlahField() {
     return LabeledNumberField(
-      number: '5',
+      number: '4',
       label: 'Jumlah Barang',
       isMandatory: true,
       hint: 'Cth. 1',
-      controller: _amountController,
+      controller: _jumlahController,
       onChanged: (val) =>
-          context.read<CreateUsedGoodsAdCubit>().amountChanged(val),
+          context.read<CreateUsedGoodsAdCubit>().jumlahChanged(val),
     );
   }
 
-  Widget _buildAddressField() {
+  Widget _buildLokasiField() {
     return LabeledTextField(
-      number: '6',
+      number: '5',
       label: 'Alamat Lokasi Barang Bekas',
       isMandatory: true,
       hint: 'Cth. Jl. Damai No. 1...',
-      controller: _addressController,
+      controller: _lokasiController,
       onChanged: (val) =>
-          context.read<CreateUsedGoodsAdCubit>().addressChanged(val),
+          context.read<CreateUsedGoodsAdCubit>().lokasiPengambilanChanged(val),
     );
   }
 
@@ -248,9 +225,9 @@ class _CreateUsedGoodsAdViewState extends State<_CreateUsedGoodsAdView> {
     return BlocBuilder<LocationBloc, LocationState>(
       builder: (context, locationState) {
         return CascadingLocationField(
-          number: '7',
+          number: '6',
           label: 'Lokasi Detail',
-          isMandatory: true,
+          isMandatory: false,
           selectedCountry: indonesia,
           selectedProvince: locationState.selectedProvince,
           selectedCity: locationState.selectedRegency,
@@ -273,7 +250,6 @@ class _CreateUsedGoodsAdViewState extends State<_CreateUsedGoodsAdView> {
               context.read<LocationBloc>().add(
                 LocationEvent.selectProvince(entity),
               );
-              context.read<CreateUsedGoodsAdCubit>().provinceChanged(entity.id);
             }
           },
           onCityChanged: (entity) {
@@ -281,7 +257,6 @@ class _CreateUsedGoodsAdViewState extends State<_CreateUsedGoodsAdView> {
               context.read<LocationBloc>().add(
                 LocationEvent.selectRegency(entity),
               );
-              context.read<CreateUsedGoodsAdCubit>().cityChanged(entity.id);
             }
           },
           onDistrictChanged: (entity) {
@@ -289,9 +264,6 @@ class _CreateUsedGoodsAdViewState extends State<_CreateUsedGoodsAdView> {
               context.read<LocationBloc>().add(
                 LocationEvent.selectDistrict(entity),
               );
-              context
-                  .read<CreateUsedGoodsAdCubit>()
-                  .subdistrictChanged(entity.id);
             }
           },
           onVillageChanged: (entity) {
@@ -299,9 +271,8 @@ class _CreateUsedGoodsAdViewState extends State<_CreateUsedGoodsAdView> {
               context.read<LocationBloc>().add(
                 LocationEvent.selectVillage(entity),
               );
-              context
-                  .read<CreateUsedGoodsAdCubit>()
-                  .villageChanged(entity.name);
+              // Kelurahan = region_id paling spesifik untuk geocoding backend.
+              context.read<CreateUsedGoodsAdCubit>().regionIdChanged(entity.id);
             }
           },
         );
@@ -324,10 +295,7 @@ class _CreateUsedGoodsAdViewState extends State<_CreateUsedGoodsAdView> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text(
-              'Keluar',
-              style: TextStyle(color: AppColors.error),
-            ),
+            child: Text('Keluar', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -360,8 +328,11 @@ class _StickySubmitBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<CreateUsedGoodsAdCubit, CreateUsedGoodsAdState,
-        (bool, bool)>(
+    return BlocSelector<
+      CreateUsedGoodsAdCubit,
+      CreateUsedGoodsAdState,
+      (bool, bool)
+    >(
       selector: (state) => (state.isFormValid, state.isRequesting),
       builder: (context, record) {
         final (isFormValid, isRequesting) = record;

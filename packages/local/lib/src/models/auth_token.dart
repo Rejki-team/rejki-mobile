@@ -14,7 +14,9 @@ class AuthToken {
   bool get isExpired {
     if (expiresAt == null) return false;
     // Tambahkan buffer 1 menit sebelum expired
-    return DateTime.now().isAfter(expiresAt!.subtract(const Duration(minutes: 1)));
+    return DateTime.now().isAfter(
+      expiresAt!.subtract(const Duration(minutes: 1)),
+    );
   }
 
   /// Cek apakah token valid (not empty dan not expired)

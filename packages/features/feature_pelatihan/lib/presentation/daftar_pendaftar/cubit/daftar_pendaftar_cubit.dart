@@ -9,7 +9,7 @@ class DaftarPendaftarCubit extends Cubit<DaftarPendaftarState> {
   final GetEnrollmentsByTrainingUseCase _getEnrollmentsByTrainingUseCase;
 
   DaftarPendaftarCubit(this._getEnrollmentsByTrainingUseCase)
-      : super(const DaftarPendaftarState());
+    : super(const DaftarPendaftarState());
 
   Future<void> loadEnrollments(String trainingId) async {
     emit(state.copyWith(isLoading: true, isFailure: false, errorMessage: null));
@@ -19,18 +19,24 @@ class DaftarPendaftarCubit extends Cubit<DaftarPendaftarState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        isLoading: false,
-        isFailure: true,
-        errorMessage: failure.maybeWhen(
-          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
-          orElse: () => 'Gagal memuat daftar pendaftar.',
+      (failure) => emit(
+        state.copyWith(
+          isLoading: false,
+          isFailure: true,
+          errorMessage: failure.maybeWhen(
+            serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+            orElse: () => 'Gagal memuat daftar pendaftar.',
+          ),
         ),
-      )),
-      (enrollments) => emit(state.copyWith(
-        isLoading: false,
-        enrollments: enrollments.where((e) => e.status == 'approved').toList(),
-      )),
+      ),
+      (enrollments) => emit(
+        state.copyWith(
+          isLoading: false,
+          enrollments: enrollments
+              .where((e) => e.status == 'approved')
+              .toList(),
+        ),
+      ),
     );
   }
 }

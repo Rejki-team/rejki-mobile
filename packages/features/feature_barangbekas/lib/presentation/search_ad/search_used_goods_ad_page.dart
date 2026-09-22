@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
 import 'package:domain/domain.dart';
-import 'package:network/network.dart';
 
 import 'cubit/search_used_goods_ad_cubit.dart';
 import 'cubit/search_used_goods_ad_state.dart';
@@ -58,7 +57,8 @@ class _SearchUsedGoodsAdViewState extends State<_SearchUsedGoodsAdView> {
                   );
                 }
 
-                if (state.items.isEmpty) {
+                final items = state.filteredItems;
+                if (items.isEmpty) {
                   return const _EmptyState();
                 }
 
@@ -70,11 +70,11 @@ class _SearchUsedGoodsAdViewState extends State<_SearchUsedGoodsAdView> {
                       horizontal: AppSpacing.md,
                       vertical: AppSpacing.sm,
                     ),
-                    itemCount: state.items.length,
+                    itemCount: items.length,
                     separatorBuilder: (context, index) =>
                         const SizedBox(height: AppSpacing.md),
                     itemBuilder: (context, index) {
-                      final item = state.items[index];
+                      final item = items[index];
                       return _buildCard(context, item);
                     },
                   ),
@@ -88,23 +88,20 @@ class _SearchUsedGoodsAdViewState extends State<_SearchUsedGoodsAdView> {
   }
 
   Widget _buildCard(BuildContext context, SecondhandEntity item) {
-    final imageUrl = item.firstImageUri != null
-        ? ApiConfig.buildImageUrl(item.firstImageUri!)
-        : '';
-
-    final conditionLabel = item.condition == 'new' ? 'Baru' : 'Bekas';
-    final address =
-        '${item.subdistrict}, ${item.city}, ${item.province}';
+    // `foto_urls` backend adalah URL langsung (bukan uri_path relatif seperti
+    // skema lama) — tidak lewat `ApiConfig.buildImageUrl`.
+    final imageUrl = item.firstImageUrl ?? '';
+    final conditionLabel = item.jenisBarang == 'baru' ? 'Baru' : 'Bekas';
 
     return UsedGoodsCard(
       imageUrl: imageUrl,
-      title: item.title,
+      title: item.judul,
       badgeText: conditionLabel,
-      description: item.description,
+      description: item.deskripsi,
       category: '',
-      condition: item.condition,
-      address: address,
-      quantity: item.amount,
+      condition: item.jenisBarang,
+      address: item.lokasiPengambilan,
+      quantity: item.jumlah,
       freeText: 'Barang 100% Gratis!',
       buttonText: 'Lihat Detail',
       onButtonPressed: () => context.push('/barang-bekas/${item.id}'),
@@ -234,15 +231,14 @@ class _TopStickyBar extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      isActive
-                          ? 'Radius ${state.radiusKm} km'
-                          : 'Radius',
+                      isActive ? 'Radius ${state.radiusKm} km' : 'Radius',
                       style: AppTypography.labelSmall.copyWith(
                         color: isActive
                             ? AppColors.primary
                             : AppColors.textSecondary,
-                        fontWeight:
-                            isActive ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: isActive
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
                     ),
                     if (isActive) ...[
@@ -303,8 +299,7 @@ class _RadiusFilterBottomSheetState extends State<_RadiusFilterBottomSheet> {
   @override
   void initState() {
     super.initState();
-    final currentKm =
-        context.read<SearchUsedGoodsAdCubit>().state.radiusKm;
+    final currentKm = context.read<SearchUsedGoodsAdCubit>().state.radiusKm;
     if (currentKm != null && _snapPoints.contains(currentKm)) {
       _selectedKm = currentKm;
     }
@@ -387,8 +382,9 @@ class _RadiusFilterBottomSheetState extends State<_RadiusFilterBottomSheet> {
                   divisions: _snapPoints.length - 1,
                   activeColor: AppColors.primary,
                   onChanged: (value) {
-                    final snapped = _snapPoints.reduce((a, b) =>
-                        (a - value).abs() < (b - value).abs() ? a : b);
+                    final snapped = _snapPoints.reduce(
+                      (a, b) => (a - value).abs() < (b - value).abs() ? a : b,
+                    );
                     setState(() => _selectedKm = snapped);
                   },
                 ),
@@ -453,7 +449,11 @@ class _EmptyState extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.inventory_2_outlined, size: 64, color: AppColors.textSecondary),
+                  const Icon(
+                    Icons.inventory_2_outlined,
+                    size: 64,
+                    color: AppColors.textSecondary,
+                  ),
                   const SizedBox(height: AppSpacing.md),
                   Text(
                     'Belum ada barang bekas',

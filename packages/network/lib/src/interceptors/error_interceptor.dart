@@ -35,7 +35,8 @@ class ErrorInterceptor extends Interceptor {
         message = 'Request dibatalkan.';
         break;
       case DioExceptionType.connectionError:
-        message = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+        message =
+            'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
         break;
       case DioExceptionType.unknown:
         message = 'Terjadi kesalahan. Coba lagi nanti.';

@@ -83,8 +83,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   horizontal: AppSpacing.md,
                   vertical: AppSpacing.lg,
                 ),
-                itemCount: state.notifications.length +
-                    (state.hasNext ? 1 : 0),
+                itemCount: state.notifications.length + (state.hasNext ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (index == state.notifications.length) {
                     return const Padding(
@@ -99,9 +98,9 @@ class _NotificationPageState extends State<NotificationPage> {
                     timeText: _formatTime(notification.createdAt),
                     type: notificationTypeFromString(notification.type),
                     isUnread: !notification.isRead,
-                    onTap: () => context
-                        .read<NotificationCubit>()
-                        .markAsRead(notification.id),
+                    onTap: () => context.read<NotificationCubit>().markAsRead(
+                      notification.id,
+                    ),
                   );
                 },
               ),

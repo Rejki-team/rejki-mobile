@@ -41,7 +41,9 @@ class _NewsView extends StatelessWidget {
               child: BlocBuilder<NewsCubit, NewsState>(
                 builder: (context, state) {
                   if (state.isLoading) {
-                    return const AppCustomShimmerList(style: ShimmerCardStyle.leftImage);
+                    return const AppCustomShimmerList(
+                      style: ShimmerCardStyle.leftImage,
+                    );
                   }
                   if (state.errorMessage != null) {
                     return AppErrorState(

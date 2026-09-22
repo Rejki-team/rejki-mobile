@@ -163,7 +163,7 @@ class AuthRemoteDataSource {
             type: DioExceptionType.badResponse,
           );
         } else {
-          // Tidak memerlukan token jika purpose bukan password_reset 
+          // Tidak memerlukan token jika purpose bukan password_reset
           // (contoh: registration), langsung kembalikan message kesuksesannya.
           return data['message'] as String? ?? 'OTP verified successfully';
         }

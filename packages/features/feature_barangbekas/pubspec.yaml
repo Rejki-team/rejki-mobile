@@ -31,6 +31,8 @@ dependencies:
     path: ../../network
   shared_widgets:
     path: ../../shared_widgets
+  feature_report:
+    path: ../feature_report
   fpdart: ^1.1.0
   get_it: ^8.3.0
   injectable: ^2.5.0

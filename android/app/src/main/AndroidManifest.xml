@@ -43,6 +43,12 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- AdMob App ID (F-33, PRD §5.16). WAJIB ada, plugin crash saat startup
+             tanpa ini. Nilai di bawah adalah ID UJI RESMI Google (sample app) —
+             GANTI dengan App ID AdMob production sebelum rilis. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

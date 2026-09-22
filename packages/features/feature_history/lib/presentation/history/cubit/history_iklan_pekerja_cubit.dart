@@ -8,29 +8,35 @@ class HistoryIklanPekerjaCubit extends Cubit<HistoryIklanPekerjaState> {
   final GetMyWorkerProfileUseCase _getMyWorkerProfileUseCase;
 
   HistoryIklanPekerjaCubit(this._getMyWorkerProfileUseCase)
-      : super(const HistoryIklanPekerjaState());
+    : super(const HistoryIklanPekerjaState());
 
   Future<void> loadMyWorkerProfile({bool refresh = false}) async {
     if (!refresh && state.status == HistoryIklanPekerjaStatus.loading) return;
 
-    emit(state.copyWith(
-      status: HistoryIklanPekerjaStatus.loading,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        status: HistoryIklanPekerjaStatus.loading,
+        errorMessage: null,
+      ),
+    );
 
     final result = await _getMyWorkerProfileUseCase.call();
 
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: HistoryIklanPekerjaStatus.failure,
-        errorMessage: _mapFailure(failure),
-      )),
-      (profile) => emit(state.copyWith(
-        status: HistoryIklanPekerjaStatus.success,
-        workerProfile: profile,
-      )),
+      (failure) => emit(
+        state.copyWith(
+          status: HistoryIklanPekerjaStatus.failure,
+          errorMessage: _mapFailure(failure),
+        ),
+      ),
+      (profile) => emit(
+        state.copyWith(
+          status: HistoryIklanPekerjaStatus.success,
+          workerProfile: profile,
+        ),
+      ),
     );
   }
 

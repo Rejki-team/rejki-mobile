@@ -16,12 +16,11 @@ abstract class TrainingRemoteDataSource {
     String? search,
     int page = 1,
     int limit = 10,
+    double? latitude,
+    double? longitude,
   });
 
-  Future<List<TrainingModel>> getMyTrainings({
-    int page = 1,
-    int limit = 10,
-  });
+  Future<List<TrainingModel>> getMyTrainings({int page = 1, int limit = 10});
 
   Future<TrainingModel> createTraining(CreateTrainingParams params);
 
@@ -55,10 +54,7 @@ class TrainingRemoteDataSourceImpl implements TrainingRemoteDataSource {
     int page = 1,
     int limit = 10,
   }) async {
-    final queryParameters = <String, dynamic>{
-      'page': page,
-      'limit': limit,
-    };
+    final queryParameters = <String, dynamic>{'page': page, 'limit': limit};
     if (status != null && status.isNotEmpty) {
       queryParameters['status'] = status;
     }
@@ -83,13 +79,16 @@ class TrainingRemoteDataSourceImpl implements TrainingRemoteDataSource {
     String? search,
     int page = 1,
     int limit = 10,
+    double? latitude,
+    double? longitude,
   }) async {
-    final queryParameters = <String, dynamic>{
-      'page': page,
-      'limit': limit,
-    };
+    final queryParameters = <String, dynamic>{'page': page, 'limit': limit};
     if (search != null && search.isNotEmpty) {
       queryParameters['search'] = search;
+    }
+    if (latitude != null && longitude != null) {
+      queryParameters['latitude'] = latitude;
+      queryParameters['longitude'] = longitude;
     }
 
     final response = await _dioClient.dio.get(
@@ -145,7 +144,10 @@ class TrainingRemoteDataSourceImpl implements TrainingRemoteDataSource {
     };
 
     for (final facility in params.facilities) {
-      formFields['facilities'] = [...(formFields['facilities'] ?? []), facility];
+      formFields['facilities'] = [
+        ...(formFields['facilities'] ?? []),
+        facility,
+      ];
     }
 
     final imageFiles = <MultipartFile>[];

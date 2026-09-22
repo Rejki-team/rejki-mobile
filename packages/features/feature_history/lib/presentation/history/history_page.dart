@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
@@ -14,6 +15,8 @@ import 'cubit/history_pelatihan_cubit.dart';
 import 'cubit/history_pelatihan_state.dart';
 import 'cubit/history_barang_bekas_cubit.dart';
 import 'cubit/history_barang_bekas_state.dart';
+import 'cubit/history_iklan_barang_bekas_cubit.dart';
+import 'cubit/history_iklan_barang_bekas_state.dart';
 import 'cubit/history_iklan_pekerjaan_cubit.dart';
 import 'cubit/history_iklan_pekerjaan_state.dart';
 import 'cubit/history_iklan_pekerja_cubit.dart';
@@ -29,10 +32,7 @@ import 'package:domain/domain.dart';
 class HistoryPage extends StatelessWidget {
   final int initialTabIndex;
 
-  const HistoryPage({
-    super.key,
-    this.initialTabIndex = 0,
-  });
+  const HistoryPage({super.key, this.initialTabIndex = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +50,26 @@ class HistoryPage extends StatelessWidget {
           },
         ),
         BlocProvider<HistoryPekerjaanCubit>(
-          create: (context) => GetIt.I<HistoryPekerjaanCubit>()..loadBids(),
+          create: (context) => GetIt.I<HistoryPekerjaanCubit>()..loadLamaran(),
         ),
         BlocProvider<HistoryPekerjaCubit>(
           create: (context) => GetIt.I<HistoryPekerjaCubit>()..loadContacts(),
         ),
         BlocProvider<HistoryPelatihanCubit>(
-          create: (context) => GetIt.I<HistoryPelatihanCubit>()..loadEnrollments(),
+          create: (context) =>
+              GetIt.I<HistoryPelatihanCubit>()..loadEnrollments(),
         ),
         BlocProvider<HistoryBarangBekasCubit>(
-          create: (context) => GetIt.I<HistoryBarangBekasCubit>()..loadClaims(),
+          create: (context) =>
+              GetIt.I<HistoryBarangBekasCubit>()..loadBiderSaya(),
+        ),
+        BlocProvider<HistoryIklanBarangBekasCubit>(
+          create: (context) =>
+              GetIt.I<HistoryIklanBarangBekasCubit>()..loadMyAds(),
         ),
         BlocProvider<HistoryIklanPekerjaanCubit>(
-          create: (context) => GetIt.I<HistoryIklanPekerjaanCubit>()..loadMyJobs(),
+          create: (context) =>
+              GetIt.I<HistoryIklanPekerjaanCubit>()..loadMyJobs(),
         ),
         BlocProvider<HistoryIklanPekerjaCubit>(
           create: (context) =>
@@ -98,7 +105,9 @@ class _HistoryView extends StatelessWidget {
             child: BlocBuilder<HistoryCubit, HistoryState>(
               builder: (context, state) {
                 if (state.isLoading) {
-                  return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
+                  return const AppCustomShimmerList(
+                    style: ShimmerCardStyle.textOnly,
+                  );
                 }
                 if (state.errorMessage != null) {
                   return AppErrorState(
@@ -126,8 +135,7 @@ class _TopTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HistoryCubit, HistoryState>(
-      buildWhen: (prev, curr) =>
-          prev.selectedTabIndex != curr.selectedTabIndex,
+      buildWhen: (prev, curr) => prev.selectedTabIndex != curr.selectedTabIndex,
       builder: (context, state) {
         return AppTabBar(
           tabs: const ['Aktifitas', 'Iklan Saya'],
@@ -171,7 +179,8 @@ class _FilterChips extends StatelessWidget {
                   child: AppFilterChip(
                     label: filter,
                     isSelected: isSelected,
-                    onSelected: () => context.read<HistoryCubit>().setFilter(filter),
+                    onSelected: () =>
+                        context.read<HistoryCubit>().setFilter(filter),
                   ),
                 );
               }).toList(),
@@ -188,6 +197,57 @@ class _HistoryList extends StatelessWidget {
   final String filter;
 
   const _HistoryList({required this.tabIndex, required this.filter});
+
+  /// PRD §5.11.4 — baca GPS device, kirim ke backend untuk validasi geofence
+  /// 50m (bukan divalidasi di sini — backend adalah source of truth).
+  Future<void> _onMulaiBekerjaPressed(
+    BuildContext context,
+    LamaranEntity lamaran,
+  ) async {
+    final permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      if (context.mounted) {
+        showFailedDialog(
+          context,
+          title: 'Izin Lokasi Diperlukan',
+          message: 'Aktifkan izin lokasi untuk memulai bekerja.',
+        );
+      }
+      return;
+    }
+
+    Position? position;
+    try {
+      position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 8),
+        ),
+      );
+    } catch (_) {
+      position = await Geolocator.getLastKnownPosition();
+    }
+
+    if (position == null) {
+      if (context.mounted) {
+        showFailedDialog(
+          context,
+          title: 'Lokasi Tidak Ditemukan',
+          message: 'Gagal membaca lokasi device. Coba lagi.',
+        );
+      }
+      return;
+    }
+
+    if (!context.mounted) return;
+    context.read<HistoryPekerjaanCubit>().mulaiBekerja(
+      iklanId: lamaran.iklanId,
+      lamaranId: lamaran.id,
+      latitude: position.latitude,
+      longitude: position.longitude,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +266,8 @@ class _HistoryList extends StatelessWidget {
               message: state.mutationSuccessMessage ?? 'Berhasil!',
             );
             context.read<HistoryPekerjaanCubit>().clearMutationState();
-          } else if (state.mutationStatus == HistoryPekerjaanMutationStatus.failure) {
+          } else if (state.mutationStatus ==
+              HistoryPekerjaanMutationStatus.failure) {
             showFailedDialog(
               context,
               title: 'Gagal',
@@ -224,19 +285,24 @@ class _HistoryList extends StatelessWidget {
           if (state.status == HistoryPekerjaanStatus.failure) {
             return AppErrorState(
               description: state.errorMessage ?? 'Gagal memuat pekerjaan',
-              onRetry: () => context.read<HistoryPekerjaanCubit>().loadBids(refresh: true),
+              onRetry: () =>
+                  context.read<HistoryPekerjaanCubit>().loadLamaran(),
             );
           }
 
-          if (state.bids.isEmpty) {
+          if (state.lamaranList.isEmpty) {
             return AppPullToRefresh(
-              onRefresh: () async => context.read<HistoryPekerjaanCubit>().loadBids(refresh: true),
+              onRefresh: () async =>
+                  context.read<HistoryPekerjaanCubit>().loadLamaran(),
               child: CustomScrollView(
                 slivers: [
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: Center(
-                      child: Text('Belum ada pekerjaan.', style: AppTypography.bodyMedium),
+                      child: Text(
+                        'Belum ada pekerjaan.',
+                        style: AppTypography.bodyMedium,
+                      ),
                     ),
                   ),
                 ],
@@ -245,86 +311,99 @@ class _HistoryList extends StatelessWidget {
           }
 
           return AppPullToRefresh(
-            onRefresh: () async => context.read<HistoryPekerjaanCubit>().loadBids(refresh: true),
+            onRefresh: () async =>
+                context.read<HistoryPekerjaanCubit>().loadLamaran(),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
                 vertical: AppSpacing.xs,
               ),
-              itemCount: state.bids.length + (state.hasNext ? 1 : 0),
+              itemCount: state.lamaranList.length,
               itemBuilder: (context, index) {
-                if (index >= state.bids.length) {
-                  // Trigger load more
-                  context.read<HistoryPekerjaanCubit>().loadBids();
-                  return const Padding(
-                    padding: EdgeInsets.all(AppSpacing.md),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
+                final lamaran = state.lamaranList[index];
 
-                final bid = state.bids[index];
-                final job = bid.job;
-
-                // Status mapping sesuai backend: request, approve, completed, decline
+                // PRD Bab 9: diajukan, diterima, proses, selesai, ditolak.
                 HistoryJobStatus mapStatus(String status) {
-                  switch (status.toLowerCase()) {
-                    case 'approve':
+                  switch (status) {
+                    case 'diterima':
+                      return HistoryJobStatus.diterima;
+                    case 'proses':
                       return HistoryJobStatus.proses;
-                    case 'completed':
+                    case 'selesai':
                       return HistoryJobStatus.selesai;
-                    case 'decline':
+                    case 'ditolak':
                       return HistoryJobStatus.ditolak;
-                    case 'request':
+                    case 'diajukan':
                     default:
                       return HistoryJobStatus.baru;
                   }
                 }
 
-                // Tombol "Tandai Selesai" hanya aktif saat lamaran sudah disetujui (approve)
-                final canMarkDone = bid.status == 'approve';
-                // Tombol "Beri Rating" hanya aktif saat pekerjaan sudah selesai (completed)
-                final canRate = bid.status == 'completed';
+                String pad2(int n) => n.toString().padLeft(2, '0');
+                final tanggal = lamaran.tanggal;
+                final dateText =
+                    '${pad2(tanggal.day)}/${pad2(tanggal.month)}/${tanggal.year}';
+                final jamMulai = lamaran.jamMulai.substring(0, 5);
+                final jamAkhir = lamaran.jamAkhir.substring(0, 5);
 
                 return HistoryJobCard(
-                  title: job?.title ?? 'Pekerjaan',
-                  adCode: job?.adCode ?? 'N/A',
-                  dateText: (job?.dateOfJob ?? bid.dateOfJob).toString().split(' ')[0],
-                  priceText: 'Rp. ${job?.salary ?? 0} - ${job?.salaryType ?? 'Borongan'}',
-                  timeText: '11:00',
-                  locationText: job != null ? '${job.village}, ${job.subdistrict}' : 'Lokasi tidak tersedia',
-                  status: mapStatus(bid.status),
+                  title: lamaran.iklanJudul ?? 'Pekerjaan',
+                  adCode: lamaran.iklanId.substring(
+                    0,
+                    lamaran.iklanId.length >= 8 ? 8 : lamaran.iklanId.length,
+                  ),
+                  dateText: dateText,
+                  priceText:
+                      'Rp. ${lamaran.iklanGajiMin ?? 0} - ${lamaran.iklanTipe ?? 'Borongan'}',
+                  timeText: '$jamMulai - $jamAkhir',
+                  locationText: lamaran.iklanLokasi ?? 'Lokasi tidak tersedia',
+                  status: mapStatus(lamaran.status),
                   tabType: tabType,
-                  onDetailPressed: () {},
+                  onDetailPressed: () =>
+                      context.push('/pekerjaan/${lamaran.iklanId}'),
                   onApplicantsPressed: () {},
-                  onMarkDonePressed: canMarkDone ? () {
-                    showWarningDialog(
-                      context,
-                      title: 'Pekerjaan Selesai?',
-                      message: 'Apakah kamu yakin pekerjaan ini sudah selesai dan dibayar sesuai persetujuan?',
-                      cancelText: 'Batal',
-                      confirmText: 'Ya, Selesai',
-                      onConfirm: () {
-                        context.read<HistoryPekerjaanCubit>().markJobAsDone(
-                          jobId: bid.jobId,
-                          bidId: bid.id,
-                          adCode: job?.adCode ?? 'N/A',
-                        );
-                      },
-                    );
-                  } : null,
-                  onRatingPressed: canRate ? () {
-                    AppReviewDialog.show(
-                      context,
-                      adCode: job?.adCode ?? 'N/A',
-                      onSubmit: (rating, review) {
-                        context.read<HistoryPekerjaanCubit>().submitReview(
-                          jobId: bid.jobId,
-                          rating: rating,
-                          review: review,
-                        );
-                      },
-                    );
-                  } : null,
+                  onMulaiBekerjaPressed: lamaran.isDiterima
+                      ? () => _onMulaiBekerjaPressed(context, lamaran)
+                      : null,
+                  onMarkDonePressed: lamaran.isProses
+                      ? () {
+                          showWarningDialog(
+                            context,
+                            title: 'Pekerjaan Selesai?',
+                            message:
+                                'Apakah kamu yakin pekerjaan ini sudah selesai dan dibayar sesuai persetujuan?',
+                            cancelText: 'Batal',
+                            confirmText: 'Ya, Selesai',
+                            onConfirm: () {
+                              context
+                                  .read<HistoryPekerjaanCubit>()
+                                  .tandaiSelesai(
+                                    iklanId: lamaran.iklanId,
+                                    lamaranId: lamaran.id,
+                                  );
+                            },
+                          );
+                        }
+                      : null,
+                  onRatingPressed:
+                      lamaran.isSelesai && lamaran.iklanPosterId != null
+                      ? () {
+                          AppReviewDialog.show(
+                            context,
+                            adCode: lamaran.iklanId,
+                            onSubmit: (rating, review) {
+                              context
+                                  .read<HistoryPekerjaanCubit>()
+                                  .submitReview(
+                                    iklanId: lamaran.iklanId,
+                                    posterId: lamaran.iklanPosterId!,
+                                    bintang: rating,
+                                    ulasan: review.isNotEmpty ? review : null,
+                                  );
+                            },
+                          );
+                        }
+                      : null,
                 );
               },
             ),
@@ -334,25 +413,7 @@ class _HistoryList extends StatelessWidget {
     }
 
     if (tabIndex == 0 && filter == 'Pekerja') {
-      return BlocConsumer<HistoryPekerjaCubit, HistoryPekerjaState>(
-        listenWhen: (prev, curr) => prev.mutationStatus != curr.mutationStatus,
-        listener: (context, state) {
-          if (state.mutationStatus == HistoryPekerjaMutationStatus.success) {
-            showSuccessDialog(
-              context,
-              title: 'Berhasil',
-              message: state.mutationSuccessMessage ?? 'Berhasil!',
-            );
-            context.read<HistoryPekerjaCubit>().clearMutationState();
-          } else if (state.mutationStatus == HistoryPekerjaMutationStatus.failure) {
-            showFailedDialog(
-              context,
-              title: 'Gagal',
-              message: state.mutationErrorMessage ?? 'Terjadi kesalahan.',
-            );
-            context.read<HistoryPekerjaCubit>().clearMutationState();
-          }
-        },
+      return BlocBuilder<HistoryPekerjaCubit, HistoryPekerjaState>(
         builder: (context, state) {
           if (state.status == HistoryPekerjaStatus.initial ||
               state.status == HistoryPekerjaStatus.loading) {
@@ -362,19 +423,26 @@ class _HistoryList extends StatelessWidget {
           if (state.status == HistoryPekerjaStatus.failure) {
             return AppErrorState(
               description: state.errorMessage ?? 'Gagal memuat daftar pekerja',
-              onRetry: () => context.read<HistoryPekerjaCubit>().loadContacts(refresh: true),
+              onRetry: () => context.read<HistoryPekerjaCubit>().loadContacts(
+                refresh: true,
+              ),
             );
           }
 
           if (state.contacts.isEmpty) {
             return AppPullToRefresh(
-              onRefresh: () async => context.read<HistoryPekerjaCubit>().loadContacts(refresh: true),
+              onRefresh: () async => context
+                  .read<HistoryPekerjaCubit>()
+                  .loadContacts(refresh: true),
               child: CustomScrollView(
                 slivers: [
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: Center(
-                      child: Text('Belum ada pekerja yang dihubungi.', style: AppTypography.bodyMedium),
+                      child: Text(
+                        'Belum ada pekerja yang dihubungi.',
+                        style: AppTypography.bodyMedium,
+                      ),
                     ),
                   ),
                 ],
@@ -383,7 +451,8 @@ class _HistoryList extends StatelessWidget {
           }
 
           return AppPullToRefresh(
-            onRefresh: () async => context.read<HistoryPekerjaCubit>().loadContacts(refresh: true),
+            onRefresh: () async =>
+                context.read<HistoryPekerjaCubit>().loadContacts(refresh: true),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
@@ -403,11 +472,17 @@ class _HistoryList extends StatelessWidget {
                 final worker = contact.worker;
 
                 // Mengkategorikan status, completed -> selesai, sisanya proses
-                final isCompleted = contact.status.toLowerCase() == 'completed' || contact.status.toLowerCase() == 'selesai';
-                final cardStatus = isCompleted ? HistoryPekerjaCardStatus.selesai : HistoryPekerjaCardStatus.proses;
+                final isCompleted =
+                    contact.status.toLowerCase() == 'completed' ||
+                    contact.status.toLowerCase() == 'selesai';
+                final cardStatus = isCompleted
+                    ? HistoryPekerjaCardStatus.selesai
+                    : HistoryPekerjaCardStatus.proses;
 
                 return HistoryPekerjaCard(
-                  avatarUrl: worker.avatarUrl != null ? ApiConfig.buildImageUrl(worker.avatarUrl!) : null,
+                  avatarUrl: worker.avatarUrl != null
+                      ? ApiConfig.buildImageUrl(worker.avatarUrl!)
+                      : null,
                   name: worker.name,
                   adCode: worker.adCode,
                   ageText: '${worker.age} Tahun',
@@ -417,19 +492,6 @@ class _HistoryList extends StatelessWidget {
                   onDetailPressed: () {
                     context.push('/worker-detail/${worker.id}');
                   },
-                  onRatingPressed: isCompleted ? () {
-                    AppReviewDialog.show(
-                      context,
-                      adCode: worker.adCode,
-                      onSubmit: (rating, review) {
-                        context.read<HistoryPekerjaCubit>().submitReview(
-                          workerId: worker.id,
-                          rating: rating,
-                          review: review,
-                        );
-                      },
-                    );
-                  } : null,
                 );
               },
             ),
@@ -449,20 +511,28 @@ class _HistoryList extends StatelessWidget {
 
           if (state.status == HistoryPelatihanStatus.failure) {
             return AppErrorState(
-              description: state.errorMessage ?? 'Gagal memuat daftar pelatihan',
-              onRetry: () => context.read<HistoryPelatihanCubit>().loadEnrollments(refresh: true),
+              description:
+                  state.errorMessage ?? 'Gagal memuat daftar pelatihan',
+              onRetry: () => context
+                  .read<HistoryPelatihanCubit>()
+                  .loadEnrollments(refresh: true),
             );
           }
 
           if (state.enrollments.isEmpty) {
             return AppPullToRefresh(
-              onRefresh: () async => context.read<HistoryPelatihanCubit>().loadEnrollments(refresh: true),
+              onRefresh: () async => context
+                  .read<HistoryPelatihanCubit>()
+                  .loadEnrollments(refresh: true),
               child: CustomScrollView(
                 slivers: [
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: Center(
-                      child: Text('Belum ada pelatihan yang diikuti.', style: AppTypography.bodyMedium),
+                      child: Text(
+                        'Belum ada pelatihan yang diikuti.',
+                        style: AppTypography.bodyMedium,
+                      ),
                     ),
                   ),
                 ],
@@ -471,7 +541,9 @@ class _HistoryList extends StatelessWidget {
           }
 
           return AppPullToRefresh(
-            onRefresh: () async => context.read<HistoryPelatihanCubit>().loadEnrollments(refresh: true),
+            onRefresh: () async => context
+                .read<HistoryPelatihanCubit>()
+                .loadEnrollments(refresh: true),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
@@ -536,7 +608,8 @@ class _HistoryList extends StatelessWidget {
                         showInfoDialog(
                           context,
                           title: 'Verifikasi Pembayaran',
-                          message: 'Proses Verifikasi Pembayaran Sedang dilakukan.',
+                          message:
+                              'Proses Verifikasi Pembayaran Sedang dilakukan.',
                         );
                         break;
                       case HistoryPelatihanCardStatus.approved:
@@ -569,22 +642,24 @@ class _HistoryList extends StatelessWidget {
 
           if (state.status == HistoryBarangBekasStatus.failure) {
             return AppErrorState(
-              description: state.errorMessage ?? 'Gagal memuat daftar barang bekas',
-              onRetry: () => context.read<HistoryBarangBekasCubit>().loadClaims(refresh: true),
+              description:
+                  state.errorMessage ?? 'Gagal memuat daftar barang bekas',
+              onRetry: () =>
+                  context.read<HistoryBarangBekasCubit>().loadBiderSaya(),
             );
           }
 
-          if (state.claims.isEmpty) {
+          if (state.biderList.isEmpty) {
             return AppPullToRefresh(
               onRefresh: () async =>
-                  context.read<HistoryBarangBekasCubit>().loadClaims(refresh: true),
+                  context.read<HistoryBarangBekasCubit>().loadBiderSaya(),
               child: CustomScrollView(
                 slivers: [
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: Center(
                       child: Text(
-                        'Belum ada barang bekas yang di-claim.',
+                        'Belum ada barang bekas yang diambil.',
                         style: AppTypography.bodyMedium,
                       ),
                     ),
@@ -596,47 +671,41 @@ class _HistoryList extends StatelessWidget {
 
           return AppPullToRefresh(
             onRefresh: () async =>
-                context.read<HistoryBarangBekasCubit>().loadClaims(refresh: true),
+                context.read<HistoryBarangBekasCubit>().loadBiderSaya(),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
                 vertical: AppSpacing.xs,
               ),
-              itemCount: state.claims.length + (state.hasNext ? 1 : 0),
+              itemCount: state.biderList.length,
               itemBuilder: (context, index) {
-                if (index >= state.claims.length) {
-                  // Trigger load more
-                  context.read<HistoryBarangBekasCubit>().loadClaims();
-                  return const Padding(
-                    padding: EdgeInsets.all(AppSpacing.md),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-
-                final item = state.claims[index];
+                final bider = state.biderList[index];
 
                 HistoryBarangBekasCardStatus mapStatus(String status) {
-                  switch (status.toLowerCase()) {
-                    case 'pending':
-                      return HistoryBarangBekasCardStatus.pending;
-                    case 'sold':
+                  switch (status) {
+                    case 'disetujui':
                       return HistoryBarangBekasCardStatus.sold;
-                    default:
-                      return HistoryBarangBekasCardStatus.available;
+                    case 'withdrawn':
+                      return HistoryBarangBekasCardStatus.withdrawn;
+                    default: // menunggu
+                      return HistoryBarangBekasCardStatus.pending;
                   }
                 }
 
                 return HistoryBarangBekasCard(
-                  imageUrl: item.firstImageUri != null
-                      ? ApiConfig.buildImageUrl(item.firstImageUri!)
+                  imageUrl: bider.iklanFotoUrls.isNotEmpty
+                      ? bider.iklanFotoUrls.first
                       : null,
-                  title: item.title,
-                  adCode: item.adCode,
-                  condition: item.condition,
-                  locationText: '${item.village}, ${item.subdistrict}',
-                  status: mapStatus(item.status),
+                  title: bider.iklanJudul ?? '-',
+                  adCode: bider.iklanId.substring(
+                    0,
+                    bider.iklanId.length >= 8 ? 8 : bider.iklanId.length,
+                  ),
+                  condition: bider.iklanJenisBarang ?? '',
+                  locationText: bider.iklanLokasiPengambilan ?? '-',
+                  status: mapStatus(bider.status),
                   onDetailPressed: () {
-                    context.push('/used-goods/${item.id}');
+                    context.push('/barang-bekas/${bider.iklanId}');
                   },
                 );
               },
@@ -648,7 +717,10 @@ class _HistoryList extends StatelessWidget {
 
     // ── Tab Iklan Saya → Filter Pekerjaan (real data) ──────────────────────
     if (tabIndex == 1 && filter == 'Pekerjaan') {
-      return BlocBuilder<HistoryIklanPekerjaanCubit, HistoryIklanPekerjaanState>(
+      return BlocBuilder<
+        HistoryIklanPekerjaanCubit,
+        HistoryIklanPekerjaanState
+      >(
         builder: (context, state) {
           if (state.status == HistoryIklanPekerjaanStatus.initial ||
               state.status == HistoryIklanPekerjaanStatus.loading) {
@@ -658,15 +730,17 @@ class _HistoryList extends StatelessWidget {
           if (state.status == HistoryIklanPekerjaanStatus.failure) {
             return AppErrorState(
               description: state.errorMessage ?? 'Gagal memuat iklan pekerjaan',
-              onRetry: () =>
-                  context.read<HistoryIklanPekerjaanCubit>().loadMyJobs(refresh: true),
+              onRetry: () => context
+                  .read<HistoryIklanPekerjaanCubit>()
+                  .loadMyJobs(refresh: true),
             );
           }
 
           if (state.jobs.isEmpty) {
             return AppPullToRefresh(
-              onRefresh: () async =>
-                  context.read<HistoryIklanPekerjaanCubit>().loadMyJobs(refresh: true),
+              onRefresh: () async => context
+                  .read<HistoryIklanPekerjaanCubit>()
+                  .loadMyJobs(refresh: true),
               child: CustomScrollView(
                 slivers: [
                   SliverFillRemaining(
@@ -697,8 +771,9 @@ class _HistoryList extends StatelessWidget {
           }
 
           return AppPullToRefresh(
-            onRefresh: () async =>
-                context.read<HistoryIklanPekerjaanCubit>().loadMyJobs(refresh: true),
+            onRefresh: () async => context
+                .read<HistoryIklanPekerjaanCubit>()
+                .loadMyJobs(refresh: true),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
@@ -720,8 +795,14 @@ class _HistoryList extends StatelessWidget {
                   adCode: job.adCode,
                   dateText: JobFormatter.formatDate(job.dateOfJob),
                   timeText: JobFormatter.formatTime(job.dateOfJob),
-                  priceText: JobFormatter.formatSalary(job.salary, job.salaryType),
-                  locationText: JobFormatter.formatLocation(job.address, job.village),
+                  priceText: JobFormatter.formatSalary(
+                    job.salary,
+                    job.salaryType,
+                  ),
+                  locationText: JobFormatter.formatLocation(
+                    job.address,
+                    job.village,
+                  ),
                   status: mapJobStatus(job.status),
                   tabType: HistoryTabType.iklanSaya,
                   applicantsCount: job.bidCount ?? 0,
@@ -734,15 +815,14 @@ class _HistoryList extends StatelessWidget {
                         'jobTitle': job.title,
                         'adCode': job.adCode,
                         'jobStatus': job.status,
-                        'jobDateOfJob': job.dateOfJob,
                       },
                     );
                     // Refresh setelah kembali dari DaftarPelamar agar
                     // status job (in_progress → done) langsung terbaru
                     if (context.mounted) {
-                      context
-                          .read<HistoryIklanPekerjaanCubit>()
-                          .loadMyJobs(refresh: true);
+                      context.read<HistoryIklanPekerjaanCubit>().loadMyJobs(
+                        refresh: true,
+                      );
                     }
                   },
                 );
@@ -790,8 +870,7 @@ class _HistoryList extends StatelessWidget {
                           ),
                           const SizedBox(height: AppSpacing.sm),
                           ElevatedButton(
-                            onPressed: () =>
-                                context.push('/pekerja/create'),
+                            onPressed: () => context.push('/pekerja/create'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.buttonGradientEnd,
                               shape: RoundedRectangleBorder(
@@ -801,8 +880,9 @@ class _HistoryList extends StatelessWidget {
                             ),
                             child: Text(
                               'Buat Iklan Pekerja',
-                              style: AppTypography.labelMedium
-                                  .copyWith(color: AppColors.white),
+                              style: AppTypography.labelMedium.copyWith(
+                                color: AppColors.white,
+                              ),
                             ),
                           ),
                         ],
@@ -836,18 +916,13 @@ class _HistoryList extends StatelessWidget {
                   reviewCountText: worker.reviewCount.toString(),
                   wageText:
                       'Rp ${worker.wage.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]}.')} / Jam',
-                  isActive:
-                      worker.statusLabel?.toLowerCase() == 'active',
-                  onDetailPressed: () =>
-                      context.push('/pekerja/${worker.id}'),
+                  isActive: worker.statusLabel?.toLowerCase() == 'active',
+                  onDetailPressed: () => context.push('/pekerja/${worker.id}'),
                   onEditPressed: () =>
                       context.push('/pekerja/create?useProfile=true'),
                   onContactRequestsPressed: () => context.push(
                     '/pekerja/${worker.id}/contact-requests',
-                    extra: {
-                      'workerName': worker.name,
-                      'adCode': worker.adCode,
-                    },
+                    extra: {'workerName': worker.name, 'adCode': worker.adCode},
                   ),
                 ),
               ],
@@ -859,7 +934,10 @@ class _HistoryList extends StatelessWidget {
 
     // ── Tab Iklan Saya → Filter Pelatihan (real data) ──────────────────────
     if (tabIndex == 1 && filter == 'Pelatihan') {
-      return BlocBuilder<HistoryIklanPelatihanCubit, HistoryIklanPelatihanState>(
+      return BlocBuilder<
+        HistoryIklanPelatihanCubit,
+        HistoryIklanPelatihanState
+      >(
         builder: (context, state) {
           if (state.status == HistoryIklanPelatihanStatus.initial ||
               state.status == HistoryIklanPelatihanStatus.loading) {
@@ -905,13 +983,10 @@ class _HistoryList extends StatelessWidget {
                 horizontal: AppSpacing.md,
                 vertical: AppSpacing.xs,
               ),
-              itemCount:
-                  state.trainings.length + (state.hasNext ? 1 : 0),
+              itemCount: state.trainings.length + (state.hasNext ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index >= state.trainings.length) {
-                  context
-                      .read<HistoryIklanPelatihanCubit>()
-                      .loadMyTrainings();
+                  context.read<HistoryIklanPelatihanCubit>().loadMyTrainings();
                   return const Padding(
                     padding: EdgeInsets.all(AppSpacing.md),
                     child: Center(child: CircularProgressIndicator()),
@@ -940,9 +1015,101 @@ class _HistoryList extends StatelessWidget {
       );
     }
 
-    // Combining Mock logic based on picture (Barang Bekas + remaining filters)
+    // ── Tab Iklan Saya → Filter Barang Bekas (P4.8, real data) ─────────────
+    // Entry point "Kelola Iklan Saya" (daftar bider, PRD §5.14.2) — pola
+    // kembar tab Iklan Saya → Pekerjaan (Kelola Pelamar).
+    if (tabIndex == 1 && filter == 'Barang Bekas') {
+      return BlocBuilder<
+        HistoryIklanBarangBekasCubit,
+        HistoryIklanBarangBekasState
+      >(
+        builder: (context, state) {
+          if (state.status == HistoryIklanBarangBekasStatus.initial ||
+              state.status == HistoryIklanBarangBekasStatus.loading) {
+            return const AppCustomShimmerList(style: ShimmerCardStyle.textOnly);
+          }
+
+          if (state.status == HistoryIklanBarangBekasStatus.failure) {
+            return AppErrorState(
+              description:
+                  state.errorMessage ?? 'Gagal memuat iklan barang bekas',
+              onRetry: () => context
+                  .read<HistoryIklanBarangBekasCubit>()
+                  .loadMyAds(refresh: true),
+            );
+          }
+
+          if (state.ads.isEmpty) {
+            return AppPullToRefresh(
+              onRefresh: () async => context
+                  .read<HistoryIklanBarangBekasCubit>()
+                  .loadMyAds(refresh: true),
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Text(
+                        'Belum ada iklan barang bekas.',
+                        style: AppTypography.bodyMedium,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return AppPullToRefresh(
+            onRefresh: () async => context
+                .read<HistoryIklanBarangBekasCubit>()
+                .loadMyAds(refresh: true),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
+              itemCount: state.ads.length + (state.hasNext ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index >= state.ads.length) {
+                  context.read<HistoryIklanBarangBekasCubit>().loadMyAds();
+                  return const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final ad = state.ads[index];
+                return HistoryBarangBekasCard(
+                  imageUrl: ad.firstImageUrl,
+                  title: ad.judul,
+                  adCode: ad.id.substring(
+                    0,
+                    ad.id.length >= 8 ? 8 : ad.id.length,
+                  ),
+                  condition: ad.jenisBarang,
+                  locationText: ad.lokasiPengambilan,
+                  status: ad.isSudahDiambil
+                      ? HistoryBarangBekasCardStatus.sold
+                      : HistoryBarangBekasCardStatus.available,
+                  tabType: HistoryTabType.iklanSaya,
+                  onDetailPressed: () => context.push('/barang-bekas/${ad.id}'),
+                  onKelolaBiderPressed: () => context.push(
+                    '/barang-bekas/${ad.id}/bider',
+                    extra: {'judul': ad.judul},
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      );
+    }
+
+    // Combining Mock logic based on picture (remaining filters)
     return AppPullToRefresh(
-      onRefresh: () async => await Future.delayed(const Duration(milliseconds: 500)),
+      onRefresh: () async =>
+          await Future.delayed(const Duration(milliseconds: 500)),
       child: ListView(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
@@ -959,7 +1126,9 @@ class _HistoryList extends StatelessWidget {
             status: HistoryJobStatus.baru,
             tabType: tabType,
             applicantsCount: tabType == HistoryTabType.iklanSaya ? 5 : 0,
-            postedDate: tabType == HistoryTabType.iklanSaya ? '20 jan 2025' : '',
+            postedDate: tabType == HistoryTabType.iklanSaya
+                ? '20 jan 2025'
+                : '',
             onDetailPressed: () {},
             onApplicantsPressed: () {},
           ),
@@ -985,7 +1154,9 @@ class _HistoryList extends StatelessWidget {
                 : HistoryJobStatus.proses,
             tabType: tabType,
             applicantsCount: tabType == HistoryTabType.iklanSaya ? 5 : 0,
-            postedDate: tabType == HistoryTabType.iklanSaya ? '20 jan 2025' : '',
+            postedDate: tabType == HistoryTabType.iklanSaya
+                ? '20 jan 2025'
+                : '',
             onDetailPressed: () {},
             onRatingPressed: () {},
             onMarkDonePressed: () {},

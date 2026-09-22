@@ -106,17 +106,15 @@ class _ProfileView extends StatelessWidget {
                         }
 
                         final summary = state.summary;
-                        final photoUrl = (summary?.profilePhotoPath.isNotEmpty == true)
+                        final photoUrl =
+                            (summary?.profilePhotoPath.isNotEmpty == true)
                             ? ApiConfig.buildImageUrl(summary!.profilePhotoPath)
                             : null;
 
                         return ProfileHeader(
                           name: summary?.fullName ?? '—',
                           genderAge: summary != null
-                              ? _buildGenderAgeText(
-                                  summary.gender,
-                                  summary.age,
-                                )
+                              ? _buildGenderAgeText(summary.gender, summary.age)
                               : '—',
                           rating: summary?.rating ?? 0.0,
                           profilePhotoUrl: photoUrl,
@@ -177,10 +175,7 @@ class _ProfileView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            Text(
-              'Ubah Foto Profil',
-              style: AppTypography.headlineSmall,
-            ),
+            Text('Ubah Foto Profil', style: AppTypography.headlineSmall),
             const SizedBox(height: AppSpacing.sm),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
@@ -360,6 +355,12 @@ class _ProfileContent extends StatelessWidget {
                   description: 'Atur Password kamu disini.',
                   onTap: () => debugPrint('Navigate to forgot password'),
                 ),
+                ProfileMenuItemData(
+                  iconPath: AppAssets.iconDangerCircle,
+                  title: 'Pelaporan Masalah',
+                  description: 'Laporkan masalah yang kamu alami di aplikasi.',
+                  onTap: () => context.push('/profile/pelaporan-masalah'),
+                ),
               ],
             ),
 
@@ -375,13 +376,15 @@ class _ProfileContent extends StatelessWidget {
                 }
                 if (state.isFailure) {
                   return AppErrorState(
-                    description: state.errorMessage ?? 'Gagal memuat data profil',
+                    description:
+                        state.errorMessage ?? 'Gagal memuat data profil',
                     onRetry: () => context.read<ProfileCubit>().loadProfile(),
                   );
                 }
                 return ProfileStatsCard(
                   adCount: state.summary?.totalAds ?? 0,
-                  onAdsTap: () => context.go(_ProfileRoutes.historyTabIklanSaya),
+                  onAdsTap: () =>
+                      context.go(_ProfileRoutes.historyTabIklanSaya),
                 );
               },
             ),

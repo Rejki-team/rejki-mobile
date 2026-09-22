@@ -2,40 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:designsystems/designsystems.dart';
 import 'package:domain/domain.dart';
-import 'package:core/core.dart';
+import 'package:intl/intl.dart';
 
+/// Kartu pelamar di "Kelola Pelamar" (PRD §5.11.5). Pengganti kartu "Bid" lama
+/// — field `pelamar*` (nama, foto, kode Iklan Pekerja) berasal dari enrichment
+/// `list_lamaran_for_iklan` (Kelompok 3 Phase 2), BUKAN embed profil pekerja
+/// penuh (tidak ada umur/rating/upah per-pekerja di kontrak backend saat ini
+/// — gap dicatat, bukan dihilangkan diam-diam: upah/jenis pekerjaan/alamat
+/// PRD minta di sini adalah milik IKLAN, sudah terlihat di header halaman).
 class PelamarCard extends StatelessWidget {
-  final BidEntity bid;
-  final String adCode;
+  final LamaranEntity lamaran;
   final bool showActionButtons;
-  final VoidCallback onDetailPekerjaPressed;
+  final VoidCallback? onDetailPekerjaPressed;
   final VoidCallback? onTolakPressed;
   final VoidCallback? onTerimaPressed;
-  // Phase 2 — aksi dari tab Diterima
-  final VoidCallback? onDisputePressed;
-  final VoidCallback? onCancelPressed;
+  final VoidCallback? onBatalkanPressed;
+  final VoidCallback? onRatingPressed;
 
   const PelamarCard({
     super.key,
-    required this.bid,
-    required this.adCode,
+    required this.lamaran,
     required this.showActionButtons,
-    required this.onDetailPekerjaPressed,
+    this.onDetailPekerjaPressed,
     this.onTolakPressed,
     this.onTerimaPressed,
-    this.onDisputePressed,
-    this.onCancelPressed,
+    this.onBatalkanPressed,
+    this.onRatingPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    final worker = bid.worker;
-    final name = worker?.name ?? '-';
-    final age = worker?.age ?? 0;
-    final rating = worker?.rating ?? 0.0;
-    final reviewCount = worker?.reviewCount ?? 0;
-    final wage = worker?.wage ?? 0;
-    final avatarUrl = worker?.avatarUrl;
+    final name = lamaran.pelamarNama ?? '-';
+    final avatarUrl = lamaran.pelamarFotoUrl;
+    final kodeIklanPekerja = lamaran.pelamarIklanPekerjaId;
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -71,12 +70,14 @@ class PelamarCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: AppSpacing.xs),
-                        _buildStatusBadge(bid.status),
+                        _buildStatusBadge(lamaran.status),
                       ],
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Kode Iklan : $adCode',
+                      kodeIklanPekerja != null
+                          ? 'Kode Iklan Pekerja : ${kodeIklanPekerja.substring(0, kodeIklanPekerja.length >= 8 ? 8 : kodeIklanPekerja.length)}'
+                          : 'Belum punya Iklan Pekerja aktif',
                       style: AppTypography.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -89,103 +90,52 @@ class PelamarCard extends StatelessWidget {
 
           const SizedBox(height: AppSpacing.md),
 
-          // ── Info row: age + rating ─────────────────────────────────────────
-          Row(
-            children: [
-              Expanded(
-                child: _buildInfoItem(
-                  iconPath: AppAssets.iconCalendar,
-                  iconColor: AppColors.primary,
-                  text: '$age Tahun',
-                ),
-              ),
-              Expanded(
-                child: _buildInfoItem(
-                  iconPath: AppAssets.iconStar,
-                  iconColor: AppColors.starRating,
-                  text:
-                      '${rating.toStringAsFixed(1)} ($reviewCount Ulasan)',
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: AppSpacing.sm),
-
-          // ── Wage row ───────────────────────────────────────────────────────
+          // ── Jadwal lamaran ───────────────────────────────────────────────
           _buildInfoItem(
-            iconPath: AppAssets.iconMoney,
-            iconColor: AppColors.success,
-            text: 'Upah : Rp ${JobFormatter.formatNumber(wage)} / Jam',
+            iconPath: AppAssets.iconCalendar,
+            iconColor: AppColors.primary,
+            text:
+                '${DateFormat('dd/MM/yyyy').format(lamaran.tanggal)} · ${lamaran.jamMulai.substring(0, 5)}-${lamaran.jamAkhir.substring(0, 5)}',
           ),
-
-          const SizedBox(height: AppSpacing.md),
-
-          // ── Info notice ────────────────────────────────────────────────────
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.smd),
-            decoration: BoxDecoration(
-              color: AppColors.infoBlueBg,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.infoBlueBorder),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SvgPicture.asset(
-                  AppAssets.iconInfoLine,
-                  width: 16,
-                  height: 16,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.infoBlue,
-                    BlendMode.srcIn,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(
-                    'Cek detail Pekerja, hubungi pekerja, lalu ajak bekerjasama setelah sepakat',
-                    style: AppTypography.caption.copyWith(
-                      color: AppColors.infoBlue,
-                      height: 1.4,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          const SizedBox(height: AppSpacing.sm),
+          _buildInfoItem(
+            iconPath: AppAssets.iconUser,
+            iconColor: AppColors.success,
+            text: 'Kuota diambil: ${lamaran.kuotaDiambil}',
           ),
 
           const SizedBox(height: AppSpacing.md),
 
           // ── Cek Detail Pekerja button ──────────────────────────────────────
-          ElevatedButton(
-            onPressed: onDetailPekerjaPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.buttonGradientEnd,
-              minimumSize: const Size(double.infinity, 40),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          if (onDetailPekerjaPressed != null)
+            ElevatedButton(
+              onPressed: onDetailPekerjaPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonGradientEnd,
+                minimumSize: const Size(double.infinity, 40),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 0,
               ),
-              elevation: 0,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Cek Detail Pekerja',
-                  style: AppTypography.labelMedium.copyWith(
-                    color: AppColors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Cek Detail Pekerja',
+                    style: AppTypography.labelMedium.copyWith(
+                      color: AppColors.white,
+                    ),
                   ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                const Icon(
-                  Icons.arrow_forward,
-                  color: AppColors.white,
-                  size: 16,
-                ),
-              ],
+                  const SizedBox(width: AppSpacing.sm),
+                  const Icon(
+                    Icons.arrow_forward,
+                    color: AppColors.white,
+                    size: 16,
+                  ),
+                ],
+              ),
             ),
-          ),
 
           // ── Tolak / Terima buttons (Tab Pelamar only) ──────────────────────
           if (showActionButtons) ...[
@@ -235,58 +185,51 @@ class PelamarCard extends StatelessWidget {
             ),
           ],
 
-          // ── Phase 2: Dispute / Cancel buttons (Tab Diterima only) ─────────
+          // ── Batalkan (Tab Diterima only, PRD §5.11.5, H-24 jam) ───────────
           if (!showActionButtons &&
-              (bid.status == 'approve' ||
-                  bid.status == 'pending_owner_confirm')) ...[
+              lamaran.isDiterima &&
+              onBatalkanPressed != null) ...[
             const SizedBox(height: AppSpacing.sm),
-            Row(
-              children: [
-                if (onDisputePressed != null &&
-                    bid.status == 'pending_owner_confirm')
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: onDisputePressed,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.error,
-                        side: const BorderSide(color: AppColors.error),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        minimumSize: const Size(0, 40),
-                      ),
-                      child: Text(
-                        'Sengketa',
-                        style: AppTypography.labelMedium.copyWith(
-                          color: AppColors.error,
-                        ),
-                      ),
-                    ),
-                  ),
-                if (onDisputePressed != null &&
-                    bid.status == 'pending_owner_confirm')
-                  const SizedBox(width: AppSpacing.sm),
-                if (onCancelPressed != null)
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: onCancelPressed,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.textSecondary,
-                        side: BorderSide(color: AppColors.textSecondary),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        minimumSize: const Size(0, 40),
-                      ),
-                      child: Text(
-                        'Batalkan',
-                        style: AppTypography.labelMedium.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
+            OutlinedButton(
+              onPressed: onBatalkanPressed,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.textSecondary,
+                side: BorderSide(color: AppColors.textSecondary),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                minimumSize: const Size(double.infinity, 40),
+              ),
+              child: Text(
+                'Batalkan',
+                style: AppTypography.labelMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
+          ],
+
+          // ── Beri Rating (Tab Diterima, status Selesai, F-17 PRD §5.15) ────
+          if (!showActionButtons &&
+              lamaran.isSelesai &&
+              onRatingPressed != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            ElevatedButton(
+              onPressed: onRatingPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.iconImageOrange,
+                minimumSize: const Size(double.infinity, 40),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 0,
+              ),
+              child: Text(
+                'Beri Rating',
+                style: AppTypography.labelMedium.copyWith(
+                  color: AppColors.white,
+                ),
+              ),
             ),
           ],
         ],
@@ -298,20 +241,18 @@ class PelamarCard extends StatelessWidget {
     return CircleAvatar(
       radius: 22,
       backgroundColor: AppColors.jobStatusBadgeBg,
-      backgroundImage:
-          avatarUrl != null && avatarUrl.isNotEmpty
-              ? NetworkImage(avatarUrl)
-              : null,
-      child:
-          avatarUrl == null || avatarUrl.isEmpty
-              ? Text(
-                  name.isNotEmpty ? name[0].toUpperCase() : '?',
-                  style: AppTypography.labelMedium.copyWith(
-                    color: AppColors.buttonGradientEnd,
-                    fontWeight: FontWeight.w700,
-                  ),
-                )
-              : null,
+      backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
+          ? NetworkImage(avatarUrl)
+          : null,
+      child: avatarUrl == null || avatarUrl.isEmpty
+          ? Text(
+              name.isNotEmpty ? name[0].toUpperCase() : '?',
+              style: AppTypography.labelMedium.copyWith(
+                color: AppColors.buttonGradientEnd,
+                fontWeight: FontWeight.w700,
+              ),
+            )
+          : null,
     );
   }
 
@@ -320,43 +261,31 @@ class PelamarCard extends StatelessWidget {
     final Color textColor;
     final String label;
 
-    switch (status.toLowerCase()) {
-      case 'approve':
+    switch (status) {
+      case 'diterima':
         bgColor = AppColors.availabilityBadgeBg;
         textColor = AppColors.primary;
-        label = 'Berlangsung';
+        label = 'Diterima';
         break;
-      case 'pending_owner_confirm':
+      case 'proses':
         bgColor = const Color(0xFFFFF9C4);
         textColor = const Color(0xFFF57F17);
-        label = 'Menunggu Konfirmasi';
+        label = 'Proses';
         break;
-      case 'completed':
+      case 'selesai':
         bgColor = AppColors.serviceCardIconBgGreen;
         textColor = AppColors.chatButtonGreen;
         label = 'Selesai';
         break;
-      case 'disputed':
-        bgColor = AppColors.error.withValues(alpha: 0.12);
-        textColor = AppColors.error;
-        label = 'Sengketa';
-        break;
-      case 'cancelled_by_owner':
-      case 'cancelled_by_worker':
-      case 'cancelled_by_admin':
-        bgColor = AppColors.textTertiary.withValues(alpha: 0.15);
-        textColor = AppColors.textSecondary;
-        label = 'Dibatalkan';
-        break;
-      case 'decline':
+      case 'ditolak':
         bgColor = AppColors.error.withValues(alpha: 0.15);
         textColor = AppColors.error;
         label = 'Ditolak';
         break;
-      default: // request
+      default: // diajukan
         bgColor = AppColors.jobStatusBadgeBg;
         textColor = AppColors.buttonGradientEnd;
-        label = 'Melamar';
+        label = 'Diajukan';
     }
 
     return Container(

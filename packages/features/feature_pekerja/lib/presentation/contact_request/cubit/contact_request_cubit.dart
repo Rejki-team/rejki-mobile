@@ -25,21 +25,25 @@ class ContactRequestCubit extends Cubit<ContactRequestState> {
     }
 
     if (refresh) {
-      emit(state.copyWith(
-        permintaanStatus: ContactRequestStatus.loading,
-        permintaanPage: 1,
-        permintaanList: [],
-        permintaanHasNext: true,
-        permintaanError: null,
-      ));
+      emit(
+        state.copyWith(
+          permintaanStatus: ContactRequestStatus.loading,
+          permintaanPage: 1,
+          permintaanList: [],
+          permintaanHasNext: true,
+          permintaanError: null,
+        ),
+      );
     } else {
       if (!state.permintaanHasNext) return;
-      emit(state.copyWith(
-        permintaanStatus: state.permintaanList.isEmpty
-            ? ContactRequestStatus.loading
-            : ContactRequestStatus.loadingMore,
-        permintaanError: null,
-      ));
+      emit(
+        state.copyWith(
+          permintaanStatus: state.permintaanList.isEmpty
+              ? ContactRequestStatus.loading
+              : ContactRequestStatus.loadingMore,
+          permintaanError: null,
+        ),
+      );
     }
 
     final result = await _getIncomingContactsUseCase.execute(
@@ -51,20 +55,24 @@ class ContactRequestCubit extends Cubit<ContactRequestState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        permintaanStatus: ContactRequestStatus.failure,
-        permintaanError: _mapFailure(failure),
-      )),
+      (failure) => emit(
+        state.copyWith(
+          permintaanStatus: ContactRequestStatus.failure,
+          permintaanError: _mapFailure(failure),
+        ),
+      ),
       (data) {
         final merged = refresh
             ? data.contacts
             : [...state.permintaanList, ...data.contacts];
-        emit(state.copyWith(
-          permintaanStatus: ContactRequestStatus.success,
-          permintaanList: merged,
-          permintaanPage: state.permintaanPage + 1,
-          permintaanHasNext: data.hasNext,
-        ));
+        emit(
+          state.copyWith(
+            permintaanStatus: ContactRequestStatus.success,
+            permintaanList: merged,
+            permintaanPage: state.permintaanPage + 1,
+            permintaanHasNext: data.hasNext,
+          ),
+        );
       },
     );
   }
@@ -81,21 +89,25 @@ class ContactRequestCubit extends Cubit<ContactRequestState> {
     }
 
     if (refresh) {
-      emit(state.copyWith(
-        diterimaStatus: ContactRequestStatus.loading,
-        diterimaPage: 1,
-        diterimaList: [],
-        diterimaHasNext: true,
-        diterimaError: null,
-      ));
+      emit(
+        state.copyWith(
+          diterimaStatus: ContactRequestStatus.loading,
+          diterimaPage: 1,
+          diterimaList: [],
+          diterimaHasNext: true,
+          diterimaError: null,
+        ),
+      );
     } else {
       if (!state.diterimaHasNext) return;
-      emit(state.copyWith(
-        diterimaStatus: state.diterimaList.isEmpty
-            ? ContactRequestStatus.loading
-            : ContactRequestStatus.loadingMore,
-        diterimaError: null,
-      ));
+      emit(
+        state.copyWith(
+          diterimaStatus: state.diterimaList.isEmpty
+              ? ContactRequestStatus.loading
+              : ContactRequestStatus.loadingMore,
+          diterimaError: null,
+        ),
+      );
     }
 
     final result = await _getIncomingContactsUseCase.execute(
@@ -107,20 +119,24 @@ class ContactRequestCubit extends Cubit<ContactRequestState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        diterimaStatus: ContactRequestStatus.failure,
-        diterimaError: _mapFailure(failure),
-      )),
+      (failure) => emit(
+        state.copyWith(
+          diterimaStatus: ContactRequestStatus.failure,
+          diterimaError: _mapFailure(failure),
+        ),
+      ),
       (data) {
         final merged = refresh
             ? data.contacts
             : [...state.diterimaList, ...data.contacts];
-        emit(state.copyWith(
-          diterimaStatus: ContactRequestStatus.success,
-          diterimaList: merged,
-          diterimaPage: state.diterimaPage + 1,
-          diterimaHasNext: data.hasNext,
-        ));
+        emit(
+          state.copyWith(
+            diterimaStatus: ContactRequestStatus.success,
+            diterimaList: merged,
+            diterimaPage: state.diterimaPage + 1,
+            diterimaHasNext: data.hasNext,
+          ),
+        );
       },
     );
   }
@@ -133,11 +149,13 @@ class ContactRequestCubit extends Cubit<ContactRequestState> {
   }) async {
     if (state.mutationStatus == ContactRequestMutationStatus.loading) return;
 
-    emit(state.copyWith(
-      mutationStatus: ContactRequestMutationStatus.loading,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        mutationStatus: ContactRequestMutationStatus.loading,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
+    );
 
     final result = await _updateWorkerContactStatusUseCase.execute(
       workerId: workerId,
@@ -148,23 +166,28 @@ class ContactRequestCubit extends Cubit<ContactRequestState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        mutationStatus: ContactRequestMutationStatus.failure,
-        mutationErrorMessage: _mapFailure(failure),
-      )),
+      (failure) => emit(
+        state.copyWith(
+          mutationStatus: ContactRequestMutationStatus.failure,
+          mutationErrorMessage: _mapFailure(failure),
+        ),
+      ),
       (_) {
         final accepted = state.permintaanList
             .where((c) => c.id == contactId)
             .map((c) => c.copyWith(status: 'approve'))
             .toList();
 
-        emit(state.copyWith(
-          permintaanList:
-              state.permintaanList.where((c) => c.id != contactId).toList(),
-          diterimaList: [...state.diterimaList, ...accepted],
-          mutationStatus: ContactRequestMutationStatus.success,
-          mutationSuccessMessage: 'Permintaan kontak berhasil diterima.',
-        ));
+        emit(
+          state.copyWith(
+            permintaanList: state.permintaanList
+                .where((c) => c.id != contactId)
+                .toList(),
+            diterimaList: [...state.diterimaList, ...accepted],
+            mutationStatus: ContactRequestMutationStatus.success,
+            mutationSuccessMessage: 'Permintaan kontak berhasil diterima.',
+          ),
+        );
       },
     );
   }
@@ -175,11 +198,13 @@ class ContactRequestCubit extends Cubit<ContactRequestState> {
   }) async {
     if (state.mutationStatus == ContactRequestMutationStatus.loading) return;
 
-    emit(state.copyWith(
-      mutationStatus: ContactRequestMutationStatus.loading,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        mutationStatus: ContactRequestMutationStatus.loading,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
+    );
 
     final result = await _updateWorkerContactStatusUseCase.execute(
       workerId: workerId,
@@ -190,25 +215,32 @@ class ContactRequestCubit extends Cubit<ContactRequestState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        mutationStatus: ContactRequestMutationStatus.failure,
-        mutationErrorMessage: _mapFailure(failure),
-      )),
-      (_) => emit(state.copyWith(
-        permintaanList:
-            state.permintaanList.where((c) => c.id != contactId).toList(),
-        mutationStatus: ContactRequestMutationStatus.success,
-        mutationSuccessMessage: 'Permintaan kontak berhasil ditolak.',
-      )),
+      (failure) => emit(
+        state.copyWith(
+          mutationStatus: ContactRequestMutationStatus.failure,
+          mutationErrorMessage: _mapFailure(failure),
+        ),
+      ),
+      (_) => emit(
+        state.copyWith(
+          permintaanList: state.permintaanList
+              .where((c) => c.id != contactId)
+              .toList(),
+          mutationStatus: ContactRequestMutationStatus.success,
+          mutationSuccessMessage: 'Permintaan kontak berhasil ditolak.',
+        ),
+      ),
     );
   }
 
   void clearMutationState() {
-    emit(state.copyWith(
-      mutationStatus: ContactRequestMutationStatus.initial,
-      mutationErrorMessage: null,
-      mutationSuccessMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        mutationStatus: ContactRequestMutationStatus.initial,
+        mutationErrorMessage: null,
+        mutationSuccessMessage: null,
+      ),
+    );
   }
 
   String _mapFailure(WorkerFailure failure) {

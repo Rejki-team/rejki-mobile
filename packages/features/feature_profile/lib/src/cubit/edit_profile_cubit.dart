@@ -14,7 +14,7 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   final UpdateProfileUseCase _updateProfileUseCase;
 
   EditProfileCubit(this._updateProfileUseCase)
-      : super(const EditProfileState());
+    : super(const EditProfileState());
 
   // Input Handlers — clear errorMessage on change to dismiss sticky errors
   void fullNameChanged(String value) =>
@@ -51,9 +51,11 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   /// Submit data profile untuk verifikasi ke API.
   Future<void> submit() async {
     if (!state.isFormValid) {
-      emit(state.copyWith(
-        errorMessage: 'Harap lengkapi semua data wajib terlebih dahulu.',
-      ));
+      emit(
+        state.copyWith(
+          errorMessage: 'Harap lengkapi semua data wajib terlebih dahulu.',
+        ),
+      );
       return;
     }
 

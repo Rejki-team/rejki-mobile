@@ -17,7 +17,8 @@ import '../router/router.dart';
 class FcmNotificationService {
   final RegisterDeviceTokenUseCase _registerDeviceTokenUseCase;
 
-  final _foregroundMessageController = StreamController<RemoteMessage>.broadcast();
+  final _foregroundMessageController =
+      StreamController<RemoteMessage>.broadcast();
 
   /// Stream foreground messages. UI dapat listen untuk refresh badge/unread count.
   Stream<RemoteMessage> get foregroundMessageStream =>
@@ -94,7 +95,10 @@ class FcmNotificationService {
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       // Delay singkat agar router sudah siap sebelum navigate
-      Future.delayed(const Duration(milliseconds: 500), _navigateToNotification);
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        _navigateToNotification,
+      );
     }
   }
 

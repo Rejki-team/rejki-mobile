@@ -16,11 +16,11 @@ class HelperRepositoryImpl extends HelperRepository {
   Future<Either<HelperFailure, Unit>> syncEnums() async {
     try {
       final enumsMap = await _remoteDataSource.getEnums();
-      
+
       for (final entry in enumsMap.entries) {
         await _enumStorage.saveEnums(entry.key, entry.value);
       }
-      
+
       return const Right(unit);
     } on DioException catch (e) {
       return Left(_handleDioException(e));

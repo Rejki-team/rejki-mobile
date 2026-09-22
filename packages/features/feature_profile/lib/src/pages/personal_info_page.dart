@@ -92,7 +92,8 @@ class PersonalInfoPage extends StatelessWidget {
     showWarningDialog(
       context,
       title: 'Ubah Jam Kerja?',
-      message: 'Kamu akan mengubah jam kerja menjadi "$label". '
+      message:
+          'Kamu akan mengubah jam kerja menjadi "$label". '
           'Perubahan ini akan langsung berlaku.',
       cancelText: 'Batal',
       confirmText: 'Ya, Ubah',
@@ -113,16 +114,17 @@ class PersonalInfoPage extends StatelessWidget {
     showWarningDialog(
       context,
       title: 'Ubah Visibilitas?',
-      message: 'Kamu akan $action nomor telepon ke publik. '
+      message:
+          'Kamu akan $action nomor telepon ke publik. '
           'Perubahan ini akan langsung berlaku.',
       cancelText: 'Batal',
       confirmText: 'Ya, Ubah',
       onCancel: () => Navigator.of(context).pop(),
       onConfirm: () {
         Navigator.of(context).pop();
-        context
-            .read<PersonalInfoCubit>()
-            .updatePhoneVisibility(isVisible: isVisible);
+        context.read<PersonalInfoCubit>().updatePhoneVisibility(
+          isVisible: isVisible,
+        );
       },
     );
   }
@@ -142,7 +144,8 @@ class PersonalInfoPage extends StatelessWidget {
       case PersonalInfoUpdateResult.workingHoursFailed:
         _showFailedAndReset(
           context,
-          message: state.workingHoursError ??
+          message:
+              state.workingHoursError ??
               'Gagal memperbarui jam kerja. Silakan coba lagi.',
         );
 
@@ -155,7 +158,8 @@ class PersonalInfoPage extends StatelessWidget {
       case PersonalInfoUpdateResult.phoneVisibilityFailed:
         _showFailedAndReset(
           context,
-          message: state.phoneVisibilityError ??
+          message:
+              state.phoneVisibilityError ??
               'Gagal memperbarui visibilitas nomor telepon. Silakan coba lagi.',
         );
 
@@ -294,10 +298,7 @@ class _PersonalInfoErrorView extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
 
-  const _PersonalInfoErrorView({
-    required this.message,
-    required this.onRetry,
-  });
+  const _PersonalInfoErrorView({required this.message, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {

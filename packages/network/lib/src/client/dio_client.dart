@@ -11,20 +11,20 @@ import '../interceptors/error_interceptor.dart';
 typedef OnTokenExpired = void Function();
 
 /// DioClient - HTTP client wrapper dengan fitur lengkap
-/// 
+///
 /// Fitur:
 /// - Auto authentication dengan token
 /// - Auto refresh token saat expired
 /// - Error handling yang user-friendly
 /// - Request/Response logging (debug mode)
-/// 
+///
 /// Contoh penggunaan:
 /// ```dart
 /// final client = getIt<DioClient>();
-/// 
+///
 /// // GET request
 /// final response = await client.get('/users');
-/// 
+///
 /// // POST request
 /// final response = await client.post('/users', data: {'name': 'John'});
 /// ```
@@ -32,7 +32,7 @@ typedef OnTokenExpired = void Function();
 class DioClient {
   late final Dio _dio;
   final SessionStorage _sessionStorage;
-  
+
   /// Callback saat token expired
   OnTokenExpired? onTokenExpired;
 
@@ -65,10 +65,10 @@ class DioClient {
         sessionStorage: _sessionStorage,
         onTokenExpired: () => onTokenExpired?.call(),
       ),
-      
+
       // Error interceptor untuk user-friendly messages
       ErrorInterceptor(),
-      
+
       // Logger (hanya di debug mode)
       PrettyDioLogger(
         requestHeader: true,

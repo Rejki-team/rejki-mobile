@@ -29,6 +29,8 @@ _UserInfoModel _$UserInfoModelFromJson(Map<String, dynamic> json) =>
       workExperience: json['work_experience'] as String? ?? '',
       addressKtp: json['address_ktp'] as String? ?? '',
       country: json['country'] as String? ?? 'Indonesia',
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$UserInfoModelToJson(_UserInfoModel instance) =>
@@ -54,4 +56,6 @@ Map<String, dynamic> _$UserInfoModelToJson(_UserInfoModel instance) =>
       'work_experience': instance.workExperience,
       'address_ktp': instance.addressKtp,
       'country': instance.country,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
     };

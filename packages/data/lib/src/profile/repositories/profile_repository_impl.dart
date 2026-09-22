@@ -5,6 +5,8 @@ import 'package:local/local.dart';
 import 'package:domain/domain.dart';
 import '../../auth/models/user_info_model.dart';
 import '../../auth/models/user_model.dart';
+import '../../rating/datasources/rating_remote_datasource.dart';
+import '../../rating/models/rating_aggregate_model.dart';
 import '../datasources/profile_remote_datasource.dart';
 import '../models/ads_summary_model.dart';
 
@@ -15,8 +17,13 @@ import '../models/ads_summary_model.dart';
 class ProfileRepositoryImpl implements ProfileRepository {
   final ProfileRemoteDataSource _remoteDataSource;
   final SessionStorage _sessionStorage;
+  final RatingRemoteDataSource _ratingRemoteDataSource;
 
-  ProfileRepositoryImpl(this._remoteDataSource, this._sessionStorage);
+  ProfileRepositoryImpl(
+    this._remoteDataSource,
+    this._sessionStorage,
+    this._ratingRemoteDataSource,
+  );
 
   @override
   Future<Either<ProfileFailure, Unit>> updateProfile(
@@ -68,7 +75,23 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
       await _syncSessionCache(userModel);
 
-      return Right(_toUserProfileSummary(userModel, adsSummary));
+      // F-17 (PRD §5.15): "rating keaktifan" — fetch terpisah, degradasi
+      // anggun ke 0.0 bila gagal (bukan bagian kritis profil).
+      double rating = 0.0;
+      try {
+        final ratingResponse = await _ratingRemoteDataSource.getAggregate(
+          userModel.id,
+        );
+        if (ratingResponse.data != null) {
+          rating = RatingAggregateModel.fromJson(
+            ratingResponse.data as Map<String, dynamic>,
+          ).average;
+        }
+      } catch (_) {
+        // Degradasi anggun — rating tetap 0.0.
+      }
+
+      return Right(_toUserProfileSummary(userModel, adsSummary, rating));
     } on DioException catch (e) {
       return Left(_mapDioError(e));
     } catch (e) {
@@ -183,10 +206,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
   UserProfileSummary _toUserProfileSummary(
     UserModel userModel,
     AdsSummaryModel adsSummary,
+    double rating,
   ) {
     final info = userModel.userInfo;
     return UserProfileSummary(
       id: userModel.id,
+      rating: rating,
       email: userModel.email,
       phoneNumber: userModel.phoneNumber,
       fullName: info.fullName,
@@ -233,6 +258,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
       workExperience: info.workExperience,
       addressKtp: info.addressKtp,
       country: info.country,
+      latitude: info.latitude,
+      longitude: info.longitude,
     );
   }
 

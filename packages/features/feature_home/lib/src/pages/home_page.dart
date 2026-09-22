@@ -96,9 +96,12 @@ class _HomeScaffold extends StatelessWidget {
       body: const _HomeBodyContent(),
       floatingActionButton: CreateAdFab(
         onJobAdPressed: () => _guardedPush(context, _HomeRoutes.createJob),
-        onWorkerAdPressed: () => _guardedPush(context, _HomeRoutes.createWorker),
-        onTrainingAdPressed: () => _guardedPush(context, _HomeRoutes.createTraining),
-        onSecondHandAdPressed: () => _guardedPush(context, _HomeRoutes.createUsedGoods),
+        onWorkerAdPressed: () =>
+            _guardedPush(context, _HomeRoutes.createWorker),
+        onTrainingAdPressed: () =>
+            _guardedPush(context, _HomeRoutes.createTraining),
+        onSecondHandAdPressed: () =>
+            _guardedPush(context, _HomeRoutes.createUsedGoods),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
@@ -156,7 +159,8 @@ class _HomeErrorView extends StatelessWidget {
 
     return AppErrorState(
       description: errorMessage ?? 'Terjadi kesalahan memuat Home',
-      onRetry: () => context.read<HomeBloc>().add(const HomeEvent.loadRequested()),
+      onRetry: () =>
+          context.read<HomeBloc>().add(const HomeEvent.loadRequested()),
     );
   }
 }
@@ -315,7 +319,8 @@ class _ServicesSection extends StatelessWidget {
               description: 'Cari dan iklankan barang',
               outlinedIconColor: AppColors.iconPurple,
               outlinedIconWrapperColor: AppColors.serviceCardIconBgPurple,
-              onTap: () => _guardedServicePush(context, _HomeRoutes.barangBekas),
+              onTap: () =>
+                  _guardedServicePush(context, _HomeRoutes.barangBekas),
             ),
           ],
         ),
@@ -386,18 +391,21 @@ class _LatestJobsSection extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: jobs.length,
-              separatorBuilder: (_, _) =>
-                  const SizedBox(height: AppSpacing.sm),
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
               itemBuilder: (context, index) {
                 final job = jobs[index];
                 final dateText = JobFormatter.formatDate(job.dateOfJob);
                 final timeText = JobFormatter.formatTime(job.dateOfJob);
-                final salaryText =
-                    JobFormatter.formatSalary(job.salary, job.salaryType);
+                final salaryText = JobFormatter.formatSalary(
+                  job.salary,
+                  job.salaryType,
+                );
                 // Consistent with job_listing_page: use registered address + village name.
                 // ward/subdistrict contain ID codes (e.g. '3174051006'), not readable text.
-                final locationText =
-                    JobFormatter.formatLocation(job.address, job.village);
+                final locationText = JobFormatter.formatLocation(
+                  job.address,
+                  job.village,
+                );
 
                 return JobCard(
                   data: JobCardData(

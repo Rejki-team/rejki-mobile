@@ -12,24 +12,18 @@ class UpdateProfileUseCase {
   UpdateProfileUseCase(this._repository);
 
   /// Validates params and delegates to repository.
-  Future<Either<ProfileFailure, Unit>> call(
-    UpdateProfileParams params,
-  ) {
+  Future<Either<ProfileFailure, Unit>> call(UpdateProfileParams params) {
     // Validasi NIK: harus 16 digit
     if (params.nik.length != 16) {
       return Future.value(
-        left(const ProfileFailure.validationError(
-          'NIK harus 16 digit',
-        )),
+        left(const ProfileFailure.validationError('NIK harus 16 digit')),
       );
     }
 
     // Validasi nama tidak boleh kosong
     if (params.fullName.trim().isEmpty) {
       return Future.value(
-        left(const ProfileFailure.validationError(
-          'Nama lengkap harus diisi',
-        )),
+        left(const ProfileFailure.validationError('Nama lengkap harus diisi')),
       );
     }
 

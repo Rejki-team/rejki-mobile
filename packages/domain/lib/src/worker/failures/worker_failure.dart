@@ -14,7 +14,8 @@ abstract class WorkerFailure with _$WorkerFailure {
   const factory WorkerFailure.networkError() = _NetworkError;
 
   /// Input Validation error
-  const factory WorkerFailure.validationError(String message) = _ValidationError;
+  const factory WorkerFailure.validationError(String message) =
+      _ValidationError;
 
   /// Unknown error
   const factory WorkerFailure.unknown() = _Unknown;

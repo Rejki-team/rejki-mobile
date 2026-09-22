@@ -1,45 +1,43 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:domain/domain.dart';
-import 'package:intl/intl.dart';
 
 import 'take_job_state.dart';
 
-/// Cubit yang mengelola seluruh flow bid pekerjaan:
+/// Cubit yang mengelola seluruh flow melamar pekerjaan (F-3, PRD §5.11.3):
 ///
 /// 1. Cek profil pekerja via [checkWorkerProfileAndProceed]
 /// 2. Jika ada profil → emit [TakeJobState.workerProfileFound] → UI tampilkan dialog
 /// 3. Jika belum punya profil → emit [TakeJobState.workerProfileNotFound] → UI redirect
-/// 4. Submit bid via [submitBid] dengan workerId yang benar dari profil pekerja
+/// 4. Submit via [submitLamaran]
 ///
 /// **Thread Safety**: Method ini aman dipanggil dari UI thread karena
 /// semua operasi async dikontrol via `isClosed` guard sebelum emit.
 @injectable
 class TakeJobCubit extends Cubit<TakeJobState> {
-  final BidJobUseCase _bidJobUseCase;
+  final LamarUseCase _lamarUseCase;
   final GetMyWorkerProfileUseCase _getMyWorkerProfileUseCase;
 
-  TakeJobCubit(
-    this._bidJobUseCase,
-    this._getMyWorkerProfileUseCase,
-  ) : super(const TakeJobState.initial());
+  TakeJobCubit(this._lamarUseCase, this._getMyWorkerProfileUseCase)
+    : super(const TakeJobState.initial());
 
   // ===========================================================================
-  // Step 1: Cek profil pekerja sebelum menampilkan dialog bid
+  // Step 1: Cek profil pekerja sebelum menampilkan dialog
   // ===========================================================================
 
-  /// Memeriksa apakah user sudah memiliki profil pekerja.
+  /// Memeriksa apakah user sudah memiliki profil pekerja (PRD §5.11.3: wajib
+  /// sudah membuat Iklan Pekerja sebelum dapat melamar — pre-check UX di sini,
+  /// validasi otoritatif tetap di backend via JWT saat submit).
   ///
   /// - [jobId]: ID job yang akan dilamar (untuk di-pass ke dialog, tidak digunakan di sini).
-  /// - [workerCount]: Jumlah pekerja yang dibutuhkan dari job entity.
-  /// - [defaultDateTime]: DateTime pekerjaan dari job entity untuk jadwal default.
+  /// - [defaultDateTime]: Jadwal default iklan (bisa `null` — backend belum
+  ///   punya field jadwal default pada Iklan Pekerjaan, gap terpisah).
   ///
   /// Emits:
   /// - [TakeJobState.workerProfileNotFound] jika belum ada profil → UI redirect ke /pekerja/create
-  /// - [TakeJobState.workerProfileFound] jika sudah ada → UI tampilkan dialog bid
+  /// - [TakeJobState.workerProfileFound] jika sudah ada → UI tampilkan dialog
   /// - [TakeJobState.failure] jika terjadi network/server error
   Future<void> checkWorkerProfileAndProceed({
-    required int workerCount,
     required DateTime? defaultDateTime,
   }) async {
     emit(const TakeJobState.checkingWorkerProfile());
@@ -60,70 +58,52 @@ class TakeJobCubit extends Cubit<TakeJobState> {
       },
       (workerProfile) {
         if (workerProfile == null) {
-          // User belum punya profil pekerja → redirect ke create
           emit(const TakeJobState.workerProfileNotFound());
         } else {
-          // User sudah punya profil → lanjut ke dialog bid dengan workerId yang benar
-          emit(TakeJobState.workerProfileFound(
-            workerId: workerProfile.id,
-            workerCount: workerCount,
-            defaultDateTime: defaultDateTime,
-          ));
+          emit(
+            TakeJobState.workerProfileFound(defaultDateTime: defaultDateTime),
+          );
         }
       },
     );
   }
 
   // ===========================================================================
-  // Step 2: Submit bid setelah user konfirmasi di dialog
+  // Step 2: Submit lamaran setelah user konfirmasi di dialog
   // ===========================================================================
 
-  /// Mengirimkan bid pekerjaan ke server.
-  ///
-  /// - [jobId]: ID job yang dilamar.
-  /// - [workerId]: ID profil pekerja (bukan userId!) yang didapat dari [workerProfileFound].
-  /// - [dateOfJob]: Tanggal dan jam pekerjaan yang dipilih (default atau custom).
-  ///
-  /// Emits:
-  /// - [TakeJobState.success] jika berhasil
-  /// - [TakeJobState.failure] jika gagal
-  Future<void> submitBid({
-    required String jobId,
-    required String workerId,
-    required DateTime dateOfJob,
-    int slotCount = 1,
+  /// Mengirimkan lamaran ke server (F-3). Tidak ada lagi `workerId` yang
+  /// dikirim — backend mengidentifikasi pelamar dari JWT (lihat `LamarParams`).
+  Future<void> submitLamaran({
+    required String iklanId,
+    required DateTime tanggal,
+    required String jamMulai,
+    required String jamAkhir,
+    int kuotaDiambil = 1,
   }) async {
     emit(const TakeJobState.submitting());
 
-    try {
-      final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(dateOfJob);
-      final params = BidJobParams(
-        jobId: jobId,
-        workerId: workerId,
-        dateOfJob: formattedDate,
-        slotCount: slotCount,
+    final params = LamarParams(
+      iklanId: iklanId,
+      tanggal: tanggal,
+      jamMulai: jamMulai,
+      jamAkhir: jamAkhir,
+      kuotaDiambil: kuotaDiambil,
+    );
+
+    final result = await _lamarUseCase(params);
+
+    if (isClosed) return;
+
+    result.fold((failure) {
+      final errorMessage = failure.maybeWhen(
+        serverError: (message) => message ?? 'Terjadi kesalahan dari server.',
+        networkError: () => 'Gangguan koneksi internet.',
+        unauthorized: () => 'Sesi Anda telah habis. Silakan login kembali.',
+        notFound: () => 'Pekerjaan tidak ditemukan.',
+        orElse: () => 'Gagal mengambil pekerjaan.',
       );
-
-      final result = await _bidJobUseCase(params);
-
-      if (isClosed) return;
-
-      result.fold(
-        (failure) {
-          final errorMessage = failure.maybeWhen(
-            serverError: (message) => message ?? 'Terjadi kesalahan dari server.',
-            networkError: () => 'Gangguan koneksi internet.',
-            unauthorized: () => 'Sesi Anda telah habis. Silakan login kembali.',
-            notFound: () => 'Pekerjaan tidak ditemukan.',
-            orElse: () => 'Gagal mengambil pekerjaan.',
-          );
-          emit(TakeJobState.failure(errorMessage));
-        },
-        (_) => emit(const TakeJobState.success()),
-      );
-    } catch (e) {
-      if (isClosed) return;
-      emit(TakeJobState.failure('Terjadi kesalahan: ${e.toString()}'));
-    }
+      emit(TakeJobState.failure(errorMessage));
+    }, (_) => emit(const TakeJobState.success()));
   }
 }

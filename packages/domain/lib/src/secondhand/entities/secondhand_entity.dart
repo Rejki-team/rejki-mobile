@@ -1,74 +1,40 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'secondhand_image_entity.dart';
 
 part 'secondhand_entity.freezed.dart';
 
-/// Secondhand Entity (Domain Layer)
+/// Secondhand Entity (Domain Layer, F-15, Kelompok 3 Phase 4)
 ///
-/// Represents a single barang bekas ad returned by the API.
+/// Merepresentasikan satu Iklan Barang Bekas sesuai kontrak backend nyata
+/// (`IklanBarangBekasResponse`) — bukan skema mock lama.
 @freezed
 abstract class SecondhandEntity with _$SecondhandEntity {
   const SecondhandEntity._();
 
   const factory SecondhandEntity({
-    /// Unique identifier
     required String id,
+    required String sellerId,
+    required String judul,
+    required String deskripsi,
 
-    /// Advertisement code (e.g. "31/03/2026/1774973623")
-    required String adCode,
+    /// "bekas" | "baru"
+    required String jenisBarang,
+    required int jumlah,
 
-    /// User ID of the seller
-    required String userId,
+    /// Alamat pengambilan barang (wajib diisi pemilik)
+    required String lokasiPengambilan,
 
-    /// Ad title
-    required String title,
+    /// Teks lokasi bebas dipakai untuk geocoding (opsional)
+    String? lokasi,
+    String? regionId,
+    @Default([]) List<String> fotoUrls,
 
-    /// Item description
-    required String description,
-
-    /// Item condition: "used" or "new"
-    required String condition,
-
-    /// Quantity available
-    required int amount,
-
-    /// Street address
-    required String address,
-
-    /// Province name
-    required String province,
-
-    /// City / kabupaten name
-    required String city,
-
-    /// Subdistrict / kecamatan name
-    required String subdistrict,
-
-    /// Ward / kelurahan name (may be empty from API)
-    @Default('') String ward,
-
-    /// Village name
-    required String village,
-
-    /// Ad status (e.g. "available")
-    required String status,
-
-    /// Attached images
-    @Default([]) List<SecondhandImageEntity> images,
-
-    /// Created at timestamp
-    DateTime? createdAt,
-
-    /// Updated at timestamp
-    DateTime? updatedAt,
-
-    /// Seller full name (from user.user_info.full_name)
-    @Default('') String sellerName,
-
-    /// Seller phone number (from user.phone_number)
-    @Default('') String sellerPhone,
+    /// "tersedia" | "sudah_diambil"
+    required String availabilityStatus,
+    required String moderationStatus,
+    required DateTime createdAt,
   }) = _SecondhandEntity;
 
-  /// Returns the uri_path of the first image, or null if there are no images.
-  String? get firstImageUri => images.isNotEmpty ? images.first.uriPath : null;
+  String? get firstImageUrl => fotoUrls.isNotEmpty ? fotoUrls.first : null;
+  bool get isTersedia => availabilityStatus == 'tersedia';
+  bool get isSudahDiambil => availabilityStatus == 'sudah_diambil';
 }

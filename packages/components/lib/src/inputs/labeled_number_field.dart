@@ -92,10 +92,9 @@ class _LabeledNumberFieldState extends State<LabeledNumberField> {
     super.initState();
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_handleFocusChange);
-    _controller = widget.controller ??
-        TextEditingController(
-          text: widget.initialValue?.toString() ?? '',
-        );
+    _controller =
+        widget.controller ??
+        TextEditingController(text: widget.initialValue?.toString() ?? '');
   }
 
   @override

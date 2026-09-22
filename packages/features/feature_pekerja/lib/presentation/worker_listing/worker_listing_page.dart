@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
@@ -20,8 +21,62 @@ class WorkerListingPage extends StatelessWidget {
   }
 }
 
-class _WorkerListingView extends StatelessWidget {
+class _WorkerListingView extends StatefulWidget {
   const _WorkerListingView();
+
+  @override
+  State<_WorkerListingView> createState() => _WorkerListingViewState();
+}
+
+class _WorkerListingViewState extends State<_WorkerListingView> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchDeviceLocation();
+  }
+
+  /// Fetches device GPS coordinates and dispatches them to [WorkerListingCubit]
+  /// (F-1/F-2). Mirrors the pattern established in `create_job_page.dart`.
+  ///
+  /// ## Safety guarantees
+  /// - Called from [initState] — never blocks the UI (listing already loads
+  ///   without coordinates first, via `loadWorkers()` in [WorkerListingPage]).
+  /// - All exceptions are caught silently; GPS failure does **not** prevent
+  ///   the listing from showing (lat/lng simply stay omitted from the API call).
+  /// - [mounted] guard prevents using a disposed widget's context.
+  Future<void> _fetchDeviceLocation() async {
+    try {
+      final permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        debugPrint(
+          '[WorkerListingPage] Location permission denied — lat/lng omitted.',
+        );
+        return;
+      }
+
+      Position? position;
+      try {
+        position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 8),
+          ),
+        );
+      } catch (_) {
+        position = await Geolocator.getLastKnownPosition();
+      }
+
+      if (!mounted || position == null) return;
+
+      context.read<WorkerListingCubit>().updateLocation(
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+    } catch (e) {
+      debugPrint('[WorkerListingPage] Failed to fetch location: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -263,7 +318,8 @@ class _WorkerListingView extends StatelessWidget {
 
         if (state.isFailure) {
           return AppErrorState(
-            description: state.errorMessage ?? 'Terjadi kesalahan saat memuat pekerja',
+            description:
+                state.errorMessage ?? 'Terjadi kesalahan saat memuat pekerja',
             onRetry: () => context.read<WorkerListingCubit>().loadWorkers(),
           );
         }
@@ -286,7 +342,8 @@ class _WorkerListingView extends StatelessWidget {
                       ),
                     ),
                     title: 'Belum ada pekerja tersedia',
-                    description: 'Silahkan coba cari dengan kata kunci atau lokasi lain',
+                    description:
+                        'Silahkan coba cari dengan kata kunci atau lokasi lain',
                   ),
                 ),
               ],

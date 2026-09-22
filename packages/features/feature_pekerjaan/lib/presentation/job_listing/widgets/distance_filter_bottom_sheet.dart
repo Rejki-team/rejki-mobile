@@ -80,8 +80,7 @@ class DistanceFilterBottomSheet extends StatefulWidget {
       _DistanceFilterBottomSheetState();
 }
 
-class _DistanceFilterBottomSheetState
-    extends State<DistanceFilterBottomSheet> {
+class _DistanceFilterBottomSheetState extends State<DistanceFilterBottomSheet> {
   late double _currentDistance;
 
   /// Tracks whether the slider has been moved by the user during this session.
@@ -198,10 +197,10 @@ class _DistanceFilterBottomSheetState
 
   /// Slider section with distance label and range indicators.
   Widget _buildSliderSection() {
-    final activeColor =
-        _isActiveColor ? AppColors.badgeBlue : AppColors.border;
-    final labelColor =
-        _isActiveColor ? AppColors.badgeBlue : AppColors.textCaption;
+    final activeColor = _isActiveColor ? AppColors.badgeBlue : AppColors.border;
+    final labelColor = _isActiveColor
+        ? AppColors.badgeBlue
+        : AppColors.textCaption;
 
     return Column(
       children: [

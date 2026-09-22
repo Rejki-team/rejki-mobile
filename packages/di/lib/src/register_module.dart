@@ -10,17 +10,24 @@ import 'package:feature_pekerjaan/feature_pekerjaan.dart';
 import 'package:feature_pekerja/feature_pekerja.dart';
 import 'package:feature_pelatihan/feature_pelatihan.dart' hide LocationBloc;
 // ignore: implementation_imports
-import 'package:feature_pelatihan/presentation/location/bloc/location_bloc.dart' as pelatihan_loc;
+import 'package:feature_pelatihan/presentation/location/bloc/location_bloc.dart'
+    as pelatihan_loc;
 import 'package:feature_barangbekas/feature_barangbekas.dart' hide LocationBloc;
-import 'package:feature_barangbekas/presentation/location/bloc/location_bloc.dart' as barangbekas_loc;
+import 'package:feature_barangbekas/presentation/location/bloc/location_bloc.dart'
+    as barangbekas_loc;
 import 'package:feature_notification/feature_notification.dart';
 import 'package:feature_register/feature_register.dart';
 import 'package:feature_pekerjaan/presentation/job_detail/cubit/take_job_cubit.dart';
-import 'package:feature_pekerja/presentation/location/bloc/location_bloc.dart' as worker_loc;
+import 'package:feature_pekerja/presentation/location/bloc/location_bloc.dart'
+    as worker_loc;
 // ignore: implementation_imports
-import 'package:feature_profile/src/location/bloc/location_bloc.dart' as profile_loc;
+import 'package:feature_profile/src/location/bloc/location_bloc.dart'
+    as profile_loc;
 import 'package:feature_profile/feature_profile.dart' hide LocationBloc;
 import 'package:feature_history/feature_history.dart';
+import 'package:feature_report/feature_report.dart';
+import 'package:feature_chat/feature_chat.dart';
+import 'package:location_manager/location_manager.dart';
 
 /// Register module untuk third-party dependencies
 ///
@@ -54,6 +61,11 @@ abstract class RegisterModule {
     FlutterSecureStorage secureStorage,
     SharedPreferences prefs,
   ) => SessionStorage(secureStorage, prefs);
+
+  /// AdImpressionStorage - counter lokal max 10x tayang iklan/hari (F-33, PRD §5.16)
+  @lazySingleton
+  AdImpressionStorage adImpressionStorage(SharedPreferences prefs) =>
+      AdImpressionStorage(prefs);
 
   /// DioClient - HTTP client dengan auth interceptor
   ///
@@ -100,22 +112,22 @@ abstract class RegisterModule {
   // JOB DATA LAYER
   // ============================================
 
-  /// JobRemoteDataSource - untuk fetch job data dari API
+  /// JobRemoteDataSource - untuk fetch job + lamaran data dari API (/pekerjaan)
   @lazySingleton
   JobRemoteDataSource jobRemoteDataSource(DioClient dioClient) =>
       JobRemoteDataSourceImpl(dioClient);
 
-  /// BidJobDataSource - untuk bidding job
+  /// LamaranDataSource - untuk mengajukan lamaran (F-3)
   @lazySingleton
-  BidJobDataSource bidJobDataSource(DioClient dioClient) =>
-      BidJobDataSourceImpl(dio: dioClient.dio);
+  LamaranDataSource lamaranDataSource(DioClient dioClient) =>
+      LamaranDataSourceImpl(dio: dioClient.dio);
 
   /// JobRepository - implementation untuk job repository
   @LazySingleton(as: JobRepository)
   JobRepositoryImpl jobRepository(
     JobRemoteDataSource remoteDataSource,
-    BidJobDataSource bidJobDataSource,
-  ) => JobRepositoryImpl(remoteDataSource, bidJobDataSource);
+    LamaranDataSource lamaranDataSource,
+  ) => JobRepositoryImpl(remoteDataSource, lamaranDataSource);
 
   // ============================================
   // JOB USE CASES
@@ -136,20 +148,21 @@ abstract class RegisterModule {
   GetJobByIdUseCase getJobByIdUseCase(JobRepository repository) =>
       GetJobByIdUseCase(repository);
 
-  /// BidJobUseCase - untuk melamar pekerjaan
+  /// LamarUseCase - untuk melamar pekerjaan (F-3)
   @lazySingleton
-  BidJobUseCase bidJobUseCase(JobRepository repository) =>
-      BidJobUseCase(repository);
+  LamarUseCase lamarUseCase(JobRepository repository) =>
+      LamarUseCase(repository);
 
-  /// GetMyBidsUseCase - untuk mengambil daftar pekerjaan (bids) user
+  /// GetLamaranSayaUseCase - "Riwayat Aktifitas Pelamar" (PRD §5.11.4)
   @lazySingleton
-  GetMyBidsUseCase getMyBidsUseCase(JobRepository repository) =>
-      GetMyBidsUseCase(repository);
+  GetLamaranSayaUseCase getLamaranSayaUseCase(JobRepository repository) =>
+      GetLamaranSayaUseCase(repository);
 
-  /// GetIncomingBidsUseCase - untuk mengambil daftar pelamar masuk ke job milik user
+  /// GetLamaranForIklanUseCase - "Kelola Pelamar" (PRD §5.11.5)
   @lazySingleton
-  GetIncomingBidsUseCase getIncomingBidsUseCase(JobRepository repository) =>
-      GetIncomingBidsUseCase(repository);
+  GetLamaranForIklanUseCase getLamaranForIklanUseCase(
+    JobRepository repository,
+  ) => GetLamaranForIklanUseCase(repository);
 
   /// GetMyJobsUseCase - untuk mengambil daftar job yang dipasang user
   @lazySingleton
@@ -176,40 +189,32 @@ abstract class RegisterModule {
   CreateJobUseCase createJobUseCase(JobMutationRepository repository) =>
       CreateJobUseCase(repository);
 
-  /// UpdateBidStatusUseCase - untuk mengubah status pekerjaan (mis. selesai)
+  /// ReviewLamaranUseCase - terima/tolak lamaran (PRD §5.11.5)
   @lazySingleton
-  UpdateBidStatusUseCase updateBidStatusUseCase(JobMutationRepository repository) =>
-      UpdateBidStatusUseCase(repository);
+  ReviewLamaranUseCase reviewLamaranUseCase(JobMutationRepository repository) =>
+      ReviewLamaranUseCase(repository);
 
-  /// OwnerCompleteJobUseCase - untuk pemilik menandai semua pekerjaan selesai
+  /// MulaiBekerjaUseCase - mulai bekerja dengan validasi geofence (PRD §5.11.4)
   @lazySingleton
-  OwnerCompleteJobUseCase ownerCompleteJobUseCase(JobMutationRepository repository) =>
-      OwnerCompleteJobUseCase(repository);
+  MulaiBekerjaUseCase mulaiBekerjaUseCase(JobMutationRepository repository) =>
+      MulaiBekerjaUseCase(repository);
 
-  /// OwnerConfirmBidUseCase - untuk pemilik konfirmasi klaim selesai per-bid
+  /// TandaiSelesaiUseCase - tandai pekerjaan selesai (PRD §5.11.4)
   @lazySingleton
-  OwnerConfirmBidUseCase ownerConfirmBidUseCase(JobMutationRepository repository) =>
-      OwnerConfirmBidUseCase(repository);
+  TandaiSelesaiUseCase tandaiSelesaiUseCase(JobMutationRepository repository) =>
+      TandaiSelesaiUseCase(repository);
 
-  /// DisputeBidUseCase - untuk pemilik menolak klaim selesai dan membuka sengketa
+  /// BatalkanLamaranUseCase - pembatalan lamaran diterima, H-24 jam (PRD §5.11.5)
   @lazySingleton
-  DisputeBidUseCase disputeBidUseCase(JobMutationRepository repository) =>
-      DisputeBidUseCase(repository);
-
-  /// CancelBidUseCase - untuk pemilik atau pekerja membatalkan bid yang sudah disetujui
-  @lazySingleton
-  CancelBidUseCase cancelBidUseCase(JobMutationRepository repository) =>
-      CancelBidUseCase(repository);
-
-  /// UploadBidEvidenceUseCase - untuk pekerja upload bukti pekerjaan
-  @lazySingleton
-  UploadBidEvidenceUseCase uploadBidEvidenceUseCase(JobMutationRepository repository) =>
-      UploadBidEvidenceUseCase(repository);
+  BatalkanLamaranUseCase batalkanLamaranUseCase(
+    JobMutationRepository repository,
+  ) => BatalkanLamaranUseCase(repository);
 
   /// CreateJobReviewUseCase - untuk memberikan rating dan review pada pekerjaan
   @lazySingleton
-  CreateJobReviewUseCase createJobReviewUseCase(JobMutationRepository repository) =>
-      CreateJobReviewUseCase(repository);
+  CreateJobReviewUseCase createJobReviewUseCase(
+    JobMutationRepository repository,
+  ) => CreateJobReviewUseCase(repository);
 
   // ============================================
   // LOCATION DATA LAYER
@@ -288,8 +293,7 @@ abstract class RegisterModule {
   HomeBloc homeBloc(
     GetLatestJobsUseCase getLatestJobsUseCase,
     GetUserFullProfileUseCase getUserFullProfileUseCase,
-  ) =>
-      HomeBloc(getLatestJobsUseCase, getUserFullProfileUseCase);
+  ) => HomeBloc(getLatestJobsUseCase, getUserFullProfileUseCase);
 
   /// CreateJobBloc - for creating job postings
   @factoryMethod
@@ -346,9 +350,14 @@ abstract class RegisterModule {
   /// ProfileRepositoryImpl
   @lazySingleton
   ProfileRepository profileRepository(
-      ProfileRemoteDataSource remoteDataSource,
-      SessionStorage sessionStorage) =>
-      ProfileRepositoryImpl(remoteDataSource, sessionStorage);
+    ProfileRemoteDataSource remoteDataSource,
+    SessionStorage sessionStorage,
+    RatingRemoteDataSource ratingRemoteDataSource,
+  ) => ProfileRepositoryImpl(
+    remoteDataSource,
+    sessionStorage,
+    ratingRemoteDataSource,
+  );
 
   /// UpdateProfileUseCase
   @lazySingleton
@@ -357,8 +366,9 @@ abstract class RegisterModule {
 
   /// EditProfileCubit
   @factoryMethod
-  EditProfileCubit editProfileCubit(UpdateProfileUseCase updateProfileUseCase) =>
-      EditProfileCubit(updateProfileUseCase);
+  EditProfileCubit editProfileCubit(
+    UpdateProfileUseCase updateProfileUseCase,
+  ) => EditProfileCubit(updateProfileUseCase);
 
   /// ProfileCubit - untuk halaman Profile (READ data profil + statistik iklan + upload foto)
   ///
@@ -368,33 +378,63 @@ abstract class RegisterModule {
     GetUserSummaryUseCase getUserSummaryUseCase,
     UploadProfilePhotoUseCase uploadProfilePhotoUseCase,
     SessionStorage sessionStorage,
-  ) =>
-      ProfileCubit(getUserSummaryUseCase, uploadProfilePhotoUseCase, sessionStorage);
+  ) => ProfileCubit(
+    getUserSummaryUseCase,
+    uploadProfilePhotoUseCase,
+    sessionStorage,
+  );
 
   /// JobListingCubit - for job listing page
   @factoryMethod
-  JobListingCubit jobListingCubit(GetJobsUseCase getJobsUseCase, SyncEnumsUseCase syncEnumsUseCase) =>
-      JobListingCubit(getJobsUseCase: getJobsUseCase, syncEnumsUseCase: syncEnumsUseCase);
+  JobListingCubit jobListingCubit(
+    GetJobsUseCase getJobsUseCase,
+    SyncEnumsUseCase syncEnumsUseCase,
+  ) => JobListingCubit(
+    getJobsUseCase: getJobsUseCase,
+    syncEnumsUseCase: syncEnumsUseCase,
+  );
 
   /// JobDetailCubit - for job detail page
   @factoryMethod
-  JobDetailCubit jobDetailCubit(GetJobByIdUseCase getJobByIdUseCase) =>
-      JobDetailCubit(getJobByIdUseCase: getJobByIdUseCase);
+  JobDetailCubit jobDetailCubit(
+    GetJobByIdUseCase getJobByIdUseCase,
+    GetRatingAggregateUseCase getRatingAggregateUseCase,
+  ) => JobDetailCubit(
+    getJobByIdUseCase: getJobByIdUseCase,
+    getRatingAggregateUseCase: getRatingAggregateUseCase,
+  );
 
   /// TakeJobCubit - for take job dialog
   /// Menggunakan GetMyWorkerProfileUseCase (bukan SessionStorage) untuk mendapatkan
   /// workerId yang benar dari profil pekerja.
   @factoryMethod
   TakeJobCubit takeJobCubit(
-    BidJobUseCase bidJobUseCase,
+    LamarUseCase lamarUseCase,
     GetMyWorkerProfileUseCase getMyWorkerProfileUseCase,
-  ) =>
-      TakeJobCubit(bidJobUseCase, getMyWorkerProfileUseCase);
+  ) => TakeJobCubit(lamarUseCase, getMyWorkerProfileUseCase);
 
   /// RegisterCubit - for registration page
   @factoryMethod
   RegisterCubit registerCubit(RegisterUseCase registerUseCase) =>
       RegisterCubit(registerUseCase: registerUseCase);
+
+  // ============================================
+  // RATING DATA LAYER & USE CASES (F-17, PRD §5.15)
+  // ============================================
+
+  @lazySingleton
+  RatingRemoteDataSource ratingRemoteDataSource(DioClient dioClient) =>
+      RatingRemoteDataSourceImpl(dioClient);
+
+  @LazySingleton(as: RatingRepository)
+  RatingRepositoryImpl ratingRepository(
+    RatingRemoteDataSource remoteDataSource,
+  ) => RatingRepositoryImpl(remoteDataSource);
+
+  @lazySingleton
+  GetRatingAggregateUseCase getRatingAggregateUseCase(
+    RatingRepository repository,
+  ) => GetRatingAggregateUseCase(repository);
 
   // ============================================
   // WORKER DATA LAYER & USE CASES
@@ -414,8 +454,9 @@ abstract class RegisterModule {
       GetWorkersUseCase(repository);
 
   @lazySingleton
-  GetWorkerByIdUseCase getWorkerByIdUseCaseWorker(WorkerRepository repository) =>
-      GetWorkerByIdUseCase(repository);
+  GetWorkerByIdUseCase getWorkerByIdUseCaseWorker(
+    WorkerRepository repository,
+  ) => GetWorkerByIdUseCase(repository);
 
   @lazySingleton
   CreateWorkerAdUseCase createWorkerAdUseCase(WorkerRepository repository) =>
@@ -426,43 +467,37 @@ abstract class RegisterModule {
   @lazySingleton
   GetMyWorkerProfileUseCase getMyWorkerProfileUseCase(
     WorkerRepository repository,
-  ) =>
-      GetMyWorkerProfileUseCase(repository);
+  ) => GetMyWorkerProfileUseCase(repository);
 
   /// UpdateWorkerProfileUseCase - untuk memperbarui profil pekerja (PUT /workers/{id})
   @lazySingleton
   UpdateWorkerProfileUseCase updateWorkerProfileUseCase(
     WorkerRepository repository,
-  ) =>
-      UpdateWorkerProfileUseCase(repository);
+  ) => UpdateWorkerProfileUseCase(repository);
 
   /// GetWorkerContactsUseCase - untuk mendapatkan daftar pekerja yang dihubungi
   @lazySingleton
   GetWorkerContactsUseCase getWorkerContactsUseCase(
     WorkerRepository repository,
-  ) =>
-      GetWorkerContactsUseCase(repository);
+  ) => GetWorkerContactsUseCase(repository);
 
   /// GetIncomingContactsUseCase - untuk mendapatkan permintaan kontak masuk ke profil pekerja
   @lazySingleton
   GetIncomingContactsUseCase getIncomingContactsUseCase(
     WorkerRepository repository,
-  ) =>
-      GetIncomingContactsUseCase(repository);
+  ) => GetIncomingContactsUseCase(repository);
 
   /// UpdateWorkerContactStatusUseCase - untuk terima/tolak permintaan kontak pekerja
   @lazySingleton
   UpdateWorkerContactStatusUseCase updateWorkerContactStatusUseCase(
     WorkerRepository repository,
-  ) =>
-      UpdateWorkerContactStatusUseCase(repository);
+  ) => UpdateWorkerContactStatusUseCase(repository);
 
   /// SubmitWorkerReviewUseCase - untuk memberikan rating kepada pekerja
   @lazySingleton
   SubmitWorkerReviewUseCase submitWorkerReviewUseCase(
     WorkerRepository repository,
-  ) =>
-      SubmitWorkerReviewUseCase(repository);
+  ) => SubmitWorkerReviewUseCase(repository);
 
   // ============================================
   // FEATURE PEKERJA CUBITS
@@ -470,13 +505,15 @@ abstract class RegisterModule {
 
   /// WorkerListingCubit - untuk halaman daftar pekerja
   @factoryMethod
-  WorkerListingCubit workerListingCubit(GetWorkersUseCase getWorkersUseCase) => 
+  WorkerListingCubit workerListingCubit(GetWorkersUseCase getWorkersUseCase) =>
       WorkerListingCubit(getWorkersUseCase);
 
   /// WorkerDetailCubit - untuk halaman detail pekerja
   @factoryMethod
-  WorkerDetailCubit workerDetailCubit(GetWorkerByIdUseCase getWorkerByIdUseCaseWorker) => 
-      WorkerDetailCubit(getWorkerByIdUseCaseWorker);
+  WorkerDetailCubit workerDetailCubit(
+    GetWorkerByIdUseCase getWorkerByIdUseCaseWorker,
+    GetRatingAggregateUseCase getRatingAggregateUseCase,
+  ) => WorkerDetailCubit(getWorkerByIdUseCaseWorker, getRatingAggregateUseCase);
 
   /// CreateWorkerAdCubit - untuk membuat/memperbarui profil pekerja
   ///
@@ -515,13 +552,15 @@ abstract class RegisterModule {
 
   /// GetMyTrainingEnrollmentsUseCase
   @lazySingleton
-  GetMyTrainingEnrollmentsUseCase getMyTrainingEnrollmentsUseCase(TrainingRepository repository) =>
-      GetMyTrainingEnrollmentsUseCase(repository);
+  GetMyTrainingEnrollmentsUseCase getMyTrainingEnrollmentsUseCase(
+    TrainingRepository repository,
+  ) => GetMyTrainingEnrollmentsUseCase(repository);
 
   /// GetTrainingDetailUseCase
   @lazySingleton
-  GetTrainingDetailUseCase getTrainingDetailUseCase(TrainingRepository repository) =>
-      GetTrainingDetailUseCase(repository);
+  GetTrainingDetailUseCase getTrainingDetailUseCase(
+    TrainingRepository repository,
+  ) => GetTrainingDetailUseCase(repository);
 
   /// GetTrainingsUseCase - untuk daftar pelatihan publik
   @lazySingleton
@@ -545,28 +584,33 @@ abstract class RegisterModule {
 
   /// UploadPaymentProofUseCase - untuk upload bukti pembayaran
   @lazySingleton
-  UploadPaymentProofUseCase uploadPaymentProofUseCase(TrainingRepository repository) =>
-      UploadPaymentProofUseCase(repository);
+  UploadPaymentProofUseCase uploadPaymentProofUseCase(
+    TrainingRepository repository,
+  ) => UploadPaymentProofUseCase(repository);
 
   /// GetEnrollmentsByTrainingUseCase - untuk daftar pendaftar pelatihan milik user
   @lazySingleton
-  GetEnrollmentsByTrainingUseCase getEnrollmentsByTrainingUseCase(TrainingRepository repository) =>
-      GetEnrollmentsByTrainingUseCase(repository);
+  GetEnrollmentsByTrainingUseCase getEnrollmentsByTrainingUseCase(
+    TrainingRepository repository,
+  ) => GetEnrollmentsByTrainingUseCase(repository);
 
   /// SubmitTrainingBadgeUseCase - untuk upload badge pelatihan
   @lazySingleton
-  SubmitTrainingBadgeUseCase submitTrainingBadgeUseCase(TrainingRepository repository) =>
-      SubmitTrainingBadgeUseCase(repository);
+  SubmitTrainingBadgeUseCase submitTrainingBadgeUseCase(
+    TrainingRepository repository,
+  ) => SubmitTrainingBadgeUseCase(repository);
 
   /// HistoryPelatihanCubit
   @factoryMethod
-  HistoryPelatihanCubit historyPelatihanCubit(GetMyTrainingEnrollmentsUseCase useCase) =>
-      HistoryPelatihanCubit(useCase);
+  HistoryPelatihanCubit historyPelatihanCubit(
+    GetMyTrainingEnrollmentsUseCase useCase,
+  ) => HistoryPelatihanCubit(useCase);
 
   /// TrainingListingCubit - untuk halaman daftar pelatihan
   @factoryMethod
-  TrainingListingCubit trainingListingCubit(GetTrainingsUseCase getTrainingsUseCase) =>
-      TrainingListingCubit(getTrainingsUseCase);
+  TrainingListingCubit trainingListingCubit(
+    GetTrainingsUseCase getTrainingsUseCase,
+  ) => TrainingListingCubit(getTrainingsUseCase);
 
   /// CreateTrainingAdCubit - untuk membuat iklan pelatihan (form only, navigates to preview)
   @factoryMethod
@@ -584,12 +628,17 @@ abstract class RegisterModule {
     GetTrainingDetailUseCase getTrainingDetailUseCase,
     EnrollTrainingUseCase enrollTrainingUseCase,
     SessionStorage sessionStorage,
-  ) => TrainingDetailCubit(getTrainingDetailUseCase, enrollTrainingUseCase, sessionStorage);
+  ) => TrainingDetailCubit(
+    getTrainingDetailUseCase,
+    enrollTrainingUseCase,
+    sessionStorage,
+  );
 
   /// PaymentCubit - untuk halaman pembayaran pelatihan
   @factoryMethod
-  PaymentCubit paymentCubit(UploadPaymentProofUseCase uploadPaymentProofUseCase) =>
-      PaymentCubit(uploadPaymentProofUseCase);
+  PaymentCubit paymentCubit(
+    UploadPaymentProofUseCase uploadPaymentProofUseCase,
+  ) => PaymentCubit(uploadPaymentProofUseCase);
 
   /// DaftarPendaftarCubit - untuk halaman daftar pendaftar pelatihan
   @factoryMethod
@@ -599,8 +648,9 @@ abstract class RegisterModule {
 
   /// BadgeUploadCubit - untuk halaman upload badge pelatihan
   @factoryMethod
-  BadgeUploadCubit badgeUploadCubit(SubmitTrainingBadgeUseCase submitTrainingBadgeUseCase) =>
-      BadgeUploadCubit(submitTrainingBadgeUseCase);
+  BadgeUploadCubit badgeUploadCubit(
+    SubmitTrainingBadgeUseCase submitTrainingBadgeUseCase,
+  ) => BadgeUploadCubit(submitTrainingBadgeUseCase);
 
   // ============================================
   // SECONDHAND DATA LAYER
@@ -611,11 +661,11 @@ abstract class RegisterModule {
   SecondhandRemoteDataSource secondhandRemoteDataSource(DioClient dioClient) =>
       SecondhandRemoteDataSourceImpl(dioClient);
 
-  /// SecondhandMutationDataSource - untuk POST secondhand
+  /// SecondhandMutationDataSource - untuk POST/PATCH secondhand + bider
   @lazySingleton
   SecondhandMutationDataSource secondhandMutationDataSource(
     DioClient dioClient,
-  ) => SecondhandMutationDataSourceImpl(dio: dioClient.dio);
+  ) => SecondhandMutationDataSourceImpl(dioClient);
 
   /// SecondhandRepository - implementation untuk secondhand repository
   @LazySingleton(as: SecondhandRepository)
@@ -651,19 +701,39 @@ abstract class RegisterModule {
     SecondhandRepository repository,
   ) => GetSecondhandByIdUseCase(repository);
 
-  /// ClaimSecondhandUseCase - untuk mengambil barang bekas
+  /// AmbilBarangUseCase - "Ambil Barang" (P3.2), pengganti ClaimSecondhandUseCase
   @lazySingleton
-  ClaimSecondhandUseCase claimSecondhandUseCase(
+  AmbilBarangUseCase ambilBarangUseCase(
     SecondhandMutationRepository repository,
-  ) =>
-      ClaimSecondhandUseCase(repository);
+  ) => AmbilBarangUseCase(repository);
 
-  /// GetMyClaimedSecondhandsUseCase - untuk mendapatkan daftar barang bekas yang di-claim user
+  /// GetMyAdsUseCase - "Iklan Saya" (P4.10), entry point Kelola Iklan Saya
   @lazySingleton
-  GetMyClaimedSecondhandsUseCase getMyClaimedSecondhandsUseCase(
+  GetMyAdsUseCase getMyAdsUseCase(SecondhandRepository repository) =>
+      GetMyAdsUseCase(repository);
+
+  /// GetBiderForIklanUseCase - "Kelola Iklan Saya" daftar bider (P3.3)
+  @lazySingleton
+  GetBiderForIklanUseCase getBiderForIklanUseCase(
     SecondhandRepository repository,
-  ) =>
-      GetMyClaimedSecondhandsUseCase(repository);
+  ) => GetBiderForIklanUseCase(repository);
+
+  /// GetBiderSayaUseCase - Riwayat Aktifitas → Barang Bekas (P4.11)
+  @lazySingleton
+  GetBiderSayaUseCase getBiderSayaUseCase(SecondhandRepository repository) =>
+      GetBiderSayaUseCase(repository);
+
+  /// SetujuiBiderUseCase - "Tombol Setujui Bider" (P3.4)
+  @lazySingleton
+  SetujuiBiderUseCase setujuiBiderUseCase(
+    SecondhandMutationRepository repository,
+  ) => SetujuiBiderUseCase(repository);
+
+  /// WithdrawBiderUseCase - "Tombol Withdraw Bider" (P3.5)
+  @lazySingleton
+  WithdrawBiderUseCase withdrawBiderUseCase(
+    SecondhandMutationRepository repository,
+  ) => WithdrawBiderUseCase(repository);
 
   /// GetUserProfileUseCase - untuk mendapatkan profil user (radius filter)
   @lazySingleton
@@ -681,32 +751,28 @@ abstract class RegisterModule {
   @lazySingleton
   UploadProfilePhotoUseCase uploadProfilePhotoUseCase(
     ProfileRepository repository,
-  ) =>
-      UploadProfilePhotoUseCase(repository);
+  ) => UploadProfilePhotoUseCase(repository);
 
   /// GetUserFullProfileUseCase - untuk mengambil profil lengkap dari GET /users/profile
   /// Digunakan oleh [PersonalInfoCubit] pada halaman Informasi Pribadi.
   @lazySingleton
   GetUserFullProfileUseCase getUserFullProfileUseCase(
     ProfileRepository repository,
-  ) =>
-      GetUserFullProfileUseCase(repository);
+  ) => GetUserFullProfileUseCase(repository);
 
   /// UpdateWorkingHoursUseCase - untuk update jam kerja via PUT /users/working-hours
   /// Digunakan oleh [PersonalInfoCubit].
   @lazySingleton
   UpdateWorkingHoursUseCase updateWorkingHoursUseCase(
     ProfileRepository repository,
-  ) =>
-      UpdateWorkingHoursUseCase(repository);
+  ) => UpdateWorkingHoursUseCase(repository);
 
   /// UpdatePhoneVisibilityUseCase - untuk toggle visibilitas telepon
   /// via PUT /users/phone-visibility. Digunakan oleh [PersonalInfoCubit].
   @lazySingleton
   UpdatePhoneVisibilityUseCase updatePhoneVisibilityUseCase(
     ProfileRepository repository,
-  ) =>
-      UpdatePhoneVisibilityUseCase(repository);
+  ) => UpdatePhoneVisibilityUseCase(repository);
 
   /// PersonalInfoCubit - untuk halaman Informasi Pribadi
   ///
@@ -717,8 +783,11 @@ abstract class RegisterModule {
     GetUserFullProfileUseCase getFullProfile,
     UpdateWorkingHoursUseCase updateWorkingHours,
     UpdatePhoneVisibilityUseCase updatePhoneVisibility,
-  ) =>
-      PersonalInfoCubit(getFullProfile, updateWorkingHours, updatePhoneVisibility);
+  ) => PersonalInfoCubit(
+    getFullProfile,
+    updateWorkingHours,
+    updatePhoneVisibility,
+  );
 
   // ============================================
   // FEATURE BARANG BEKAS CUBITS
@@ -743,11 +812,22 @@ abstract class RegisterModule {
     GetSecondhandByIdUseCase getSecondhandByIdUseCase,
   ) => DetailUsedGoodsAdCubit(getSecondhandByIdUseCase);
 
-  /// ClaimSecondhandCubit - untuk mengambil barang bekas
+  /// AmbilBarangCubit - "Ambil Barang" (P3.2), pengganti ClaimSecondhandCubit
   @factoryMethod
-  ClaimSecondhandCubit claimSecondhandCubit(
-    ClaimSecondhandUseCase claimSecondhandUseCase,
-  ) => ClaimSecondhandCubit(claimSecondhandUseCase);
+  AmbilBarangCubit ambilBarangCubit(AmbilBarangUseCase ambilBarangUseCase) =>
+      AmbilBarangCubit(ambilBarangUseCase);
+
+  /// DaftarBiderCubit - "Kelola Iklan Saya" (P4.8, PRD §5.14.2)
+  @factoryMethod
+  DaftarBiderCubit daftarBiderCubit(
+    GetBiderForIklanUseCase getBiderForIklanUseCase,
+    SetujuiBiderUseCase setujuiBiderUseCase,
+    WithdrawBiderUseCase withdrawBiderUseCase,
+  ) => DaftarBiderCubit(
+    getBiderForIklanUseCase,
+    setujuiBiderUseCase,
+    withdrawBiderUseCase,
+  );
 
   /// LocationBloc - for cascading location selection (Pelatihan)
   @factoryMethod
@@ -782,8 +862,9 @@ abstract class RegisterModule {
   // ============================================
 
   @lazySingleton
-  NotificationRemoteDataSource notificationRemoteDataSource(DioClient dioClient) =>
-      NotificationRemoteDataSourceImpl(dioClient);
+  NotificationRemoteDataSource notificationRemoteDataSource(
+    DioClient dioClient,
+  ) => NotificationRemoteDataSourceImpl(dioClient);
 
   @LazySingleton(as: NotificationRepository)
   NotificationRepositoryImpl notificationRepository(
@@ -791,24 +872,29 @@ abstract class RegisterModule {
   ) => NotificationRepositoryImpl(remoteDataSource);
 
   @lazySingleton
-  GetNotificationsUseCase getNotificationsUseCase(NotificationRepository repository) =>
-      GetNotificationsUseCase(repository);
+  GetNotificationsUseCase getNotificationsUseCase(
+    NotificationRepository repository,
+  ) => GetNotificationsUseCase(repository);
 
   @lazySingleton
-  MarkNotificationReadUseCase markNotificationReadUseCase(NotificationRepository repository) =>
-      MarkNotificationReadUseCase(repository);
+  MarkNotificationReadUseCase markNotificationReadUseCase(
+    NotificationRepository repository,
+  ) => MarkNotificationReadUseCase(repository);
 
   @lazySingleton
-  MarkAllNotificationsReadUseCase markAllNotificationsReadUseCase(NotificationRepository repository) =>
-      MarkAllNotificationsReadUseCase(repository);
+  MarkAllNotificationsReadUseCase markAllNotificationsReadUseCase(
+    NotificationRepository repository,
+  ) => MarkAllNotificationsReadUseCase(repository);
 
   @lazySingleton
-  GetUnreadCountUseCase getUnreadCountUseCase(NotificationRepository repository) =>
-      GetUnreadCountUseCase(repository);
+  GetUnreadCountUseCase getUnreadCountUseCase(
+    NotificationRepository repository,
+  ) => GetUnreadCountUseCase(repository);
 
   @lazySingleton
-  RegisterDeviceTokenUseCase registerDeviceTokenUseCase(NotificationRepository repository) =>
-      RegisterDeviceTokenUseCase(repository);
+  RegisterDeviceTokenUseCase registerDeviceTokenUseCase(
+    NotificationRepository repository,
+  ) => RegisterDeviceTokenUseCase(repository);
 
   @lazySingleton
   NotificationCubit notificationCubit(
@@ -830,84 +916,214 @@ abstract class RegisterModule {
   /// HistoryPekerjaanCubit - untuk tab pekerjaan di halaman riwayat
   @factoryMethod
   HistoryPekerjaanCubit historyPekerjaanCubit(
-    GetMyBidsUseCase getMyBidsUseCase,
-    UpdateBidStatusUseCase updateBidStatusUseCase,
+    GetLamaranSayaUseCase getLamaranSayaUseCase,
+    MulaiBekerjaUseCase mulaiBekerjaUseCase,
+    TandaiSelesaiUseCase tandaiSelesaiUseCase,
     CreateJobReviewUseCase createJobReviewUseCase,
-  ) =>
-      HistoryPekerjaanCubit(
-        getMyBidsUseCase,
-        updateBidStatusUseCase,
-        createJobReviewUseCase,
-      );
+  ) => HistoryPekerjaanCubit(
+    getLamaranSayaUseCase,
+    mulaiBekerjaUseCase,
+    tandaiSelesaiUseCase,
+    createJobReviewUseCase,
+  );
 
   /// HistoryPekerjaCubit - untuk tab pekerja di halaman riwayat
   @factoryMethod
   HistoryPekerjaCubit historyPekerjaCubit(
     GetWorkerContactsUseCase getWorkerContactsUseCase,
-    SubmitWorkerReviewUseCase submitWorkerReviewUseCase,
-  ) =>
-      HistoryPekerjaCubit(
-        getWorkerContactsUseCase,
-        submitWorkerReviewUseCase,
-      );
+  ) => HistoryPekerjaCubit(getWorkerContactsUseCase);
 
-  /// HistoryBarangBekasCubit - untuk tab barang bekas di halaman riwayat
+  /// HistoryBarangBekasCubit - tab Aktifitas → Barang Bekas (P4.11, daftar
+  /// Bider milik peminat, pengganti GetMyClaimedSecondhandsUseCase lama)
   @factoryMethod
   HistoryBarangBekasCubit historyBarangBekasCubit(
-    GetMyClaimedSecondhandsUseCase getMyClaimedSecondhandsUseCase,
-  ) =>
-      HistoryBarangBekasCubit(getMyClaimedSecondhandsUseCase);
+    GetBiderSayaUseCase getBiderSayaUseCase,
+  ) => HistoryBarangBekasCubit(getBiderSayaUseCase);
+
+  /// HistoryIklanBarangBekasCubit - tab Iklan Saya → Barang Bekas (P4.8),
+  /// entry point "Kelola Iklan Saya"
+  @factoryMethod
+  HistoryIklanBarangBekasCubit historyIklanBarangBekasCubit(
+    GetMyAdsUseCase getMyAdsUseCase,
+  ) => HistoryIklanBarangBekasCubit(getMyAdsUseCase);
 
   /// DaftarPelamarCubit - untuk halaman daftar pelamar iklan pekerjaan
   @factoryMethod
   DaftarPelamarCubit daftarPelamarCubit(
-    GetIncomingBidsUseCase getIncomingBidsUseCase,
-    UpdateBidStatusUseCase updateBidStatusUseCase,
-    OwnerCompleteJobUseCase ownerCompleteJobUseCase,
-    OwnerConfirmBidUseCase ownerConfirmBidUseCase,
-    DisputeBidUseCase disputeBidUseCase,
-    CancelBidUseCase cancelBidUseCase,
-  ) =>
-      DaftarPelamarCubit(
-        getIncomingBidsUseCase,
-        updateBidStatusUseCase,
-        ownerCompleteJobUseCase,
-        ownerConfirmBidUseCase,
-        disputeBidUseCase,
-        cancelBidUseCase,
-      );
+    GetLamaranForIklanUseCase getLamaranForIklanUseCase,
+    ReviewLamaranUseCase reviewLamaranUseCase,
+    BatalkanLamaranUseCase batalkanLamaranUseCase,
+    SubmitWorkerReviewUseCase submitWorkerReviewUseCase,
+  ) => DaftarPelamarCubit(
+    getLamaranForIklanUseCase,
+    reviewLamaranUseCase,
+    batalkanLamaranUseCase,
+    submitWorkerReviewUseCase,
+  );
 
   /// HistoryIklanPekerjaanCubit - untuk tab Iklan Saya di halaman riwayat
   @factoryMethod
   HistoryIklanPekerjaanCubit historyIklanPekerjaanCubit(
     GetMyJobsUseCase getMyJobsUseCase,
-  ) =>
-      HistoryIklanPekerjaanCubit(getMyJobsUseCase);
+  ) => HistoryIklanPekerjaanCubit(getMyJobsUseCase);
 
   /// HistoryIklanPekerjaCubit - untuk tab Iklan Saya > Pekerja di halaman riwayat
   @factoryMethod
   HistoryIklanPekerjaCubit historyIklanPekerjaCubit(
     GetMyWorkerProfileUseCase getMyWorkerProfileUseCase,
-  ) =>
-      HistoryIklanPekerjaCubit(getMyWorkerProfileUseCase);
+  ) => HistoryIklanPekerjaCubit(getMyWorkerProfileUseCase);
 
   /// HistoryIklanPelatihanCubit - untuk tab Iklan Saya > Pelatihan di halaman riwayat
   @factoryMethod
   HistoryIklanPelatihanCubit historyIklanPelatihanCubit(
     GetMyTrainingsUseCase getMyTrainingsUseCase,
-  ) =>
-      HistoryIklanPelatihanCubit(getMyTrainingsUseCase);
+  ) => HistoryIklanPelatihanCubit(getMyTrainingsUseCase);
 
   /// ContactRequestCubit - untuk halaman permintaan kontak masuk ke profil pekerja
   @factoryMethod
   ContactRequestCubit contactRequestCubit(
     GetIncomingContactsUseCase getIncomingContactsUseCase,
     UpdateWorkerContactStatusUseCase updateWorkerContactStatusUseCase,
-  ) =>
-      ContactRequestCubit(
-        getIncomingContactsUseCase,
-        updateWorkerContactStatusUseCase,
-      );
+  ) => ContactRequestCubit(
+    getIncomingContactsUseCase,
+    updateWorkerContactStatusUseCase,
+  );
+
+  // ============================================
+  // FEATURE REPORT (F-20, PRD §5.10/§6.10)
+  // ============================================
+
+  /// PresignedUploadClient - upload langsung ke storage (in-file @lazySingleton
+  /// tidak dipindai injectable_generator saat dijalankan dari `di`, sama seperti
+  /// temuan Fase 6 untuk kelas domain/data lain — wajib manual di sini).
+  @lazySingleton
+  PresignedUploadClient get presignedUploadClient => PresignedUploadClient();
+
+  /// ReportRemoteDataSource
+  @lazySingleton
+  ReportRemoteDataSource reportRemoteDataSource(
+    DioClient dioClient,
+    PresignedUploadClient presignedUploadClient,
+  ) => ReportRemoteDataSourceImpl(dioClient, presignedUploadClient);
+
+  /// ReportRepository
+  @LazySingleton(as: ReportRepository)
+  ReportRepositoryImpl reportRepository(
+    ReportRemoteDataSource remoteDataSource,
+  ) => ReportRepositoryImpl(remoteDataSource);
+
+  /// LaporkanIklanUseCase
+  @lazySingleton
+  LaporkanIklanUseCase laporkanIklanUseCase(ReportRepository repository) =>
+      LaporkanIklanUseCase(repository);
+
+  /// PelaporanMasalahUseCase
+  @lazySingleton
+  PelaporanMasalahUseCase pelaporanMasalahUseCase(
+    ReportRepository repository,
+  ) => PelaporanMasalahUseCase(repository);
+
+  /// LaporkanIklanCubit - dipakai dari detail Iklan Pekerjaan & Iklan Pekerja
+  @factoryMethod
+  LaporkanIklanCubit laporkanIklanCubit(
+    LaporkanIklanUseCase laporkanIklanUseCase,
+  ) => LaporkanIklanCubit(laporkanIklanUseCase);
+
+  /// PelaporanMasalahCubit - untuk halaman Pelaporan Masalah (entry ProfileMenuCard)
+  @factoryMethod
+  PelaporanMasalahCubit pelaporanMasalahCubit(
+    PelaporanMasalahUseCase pelaporanMasalahUseCase,
+  ) => PelaporanMasalahCubit(pelaporanMasalahUseCase);
+
+  // ============================================
+  // FEATURE CHAT (F-18/F-19, PRD §5.9, Kelompok 4 Phase 5)
+  // ============================================
+
+  /// ChatWebSocketClient - transport WS mentah, satu instance per koneksi
+  /// (in-file @injectable tidak dipindai injectable_generator saat dijalankan
+  /// dari `di`, sama seperti seluruh kelas network/data lain di atas).
+  @factoryMethod
+  ChatWebSocketClient get chatWebSocketClient => ChatWebSocketClient();
+
+  /// AppLocationManager - dipakai "kirim lokasi" (P5.3). Package
+  /// `location_manager` sebelumnya belum dipakai fitur manapun (in-file
+  /// @LazySingleton idle sama seperti kelas lain di atas) — didaftarkan
+  /// manual di sini untuk pertama kalinya.
+  @lazySingleton
+  AppLocationManager get appLocationManager => AppLocationManagerImpl();
+
+  /// ChatRemoteDataSource
+  @lazySingleton
+  ChatRemoteDataSource chatRemoteDataSource(
+    DioClient dioClient,
+    PresignedUploadClient presignedUploadClient,
+  ) => ChatRemoteDataSourceImpl(dioClient, presignedUploadClient);
+
+  /// ChatRepository
+  @LazySingleton(as: ChatRepository)
+  ChatRepositoryImpl chatRepository(ChatRemoteDataSource remoteDataSource) =>
+      ChatRepositoryImpl(remoteDataSource);
+
+  /// ChatRealtimeGateway (WS) - satu instance per percakapan, dibuang saat
+  /// `ConversationRoomCubit.close()` (Hazard #3/#10, No Memory Leak).
+  @Injectable(as: ChatRealtimeGateway)
+  ChatRealtimeGatewayImpl chatRealtimeGateway(
+    ChatWebSocketClient client,
+    SessionStorage sessionStorage,
+  ) => ChatRealtimeGatewayImpl(client, sessionStorage);
+
+  @lazySingleton
+  GetConversationsUseCase getConversationsUseCase(ChatRepository repository) =>
+      GetConversationsUseCase(repository);
+
+  @lazySingleton
+  GetOrCreateConversationUseCase getOrCreateConversationUseCase(
+    ChatRepository repository,
+  ) => GetOrCreateConversationUseCase(repository);
+
+  @lazySingleton
+  GetMessagesUseCase getMessagesUseCase(ChatRepository repository) =>
+      GetMessagesUseCase(repository);
+
+  @lazySingleton
+  MarkReadUseCase markReadUseCase(ChatRepository repository) =>
+      MarkReadUseCase(repository);
+
+  @lazySingleton
+  EndConversationUseCase endConversationUseCase(ChatRepository repository) =>
+      EndConversationUseCase(repository);
+
+  @lazySingleton
+  UploadChatPhotoUseCase uploadChatPhotoUseCase(ChatRepository repository) =>
+      UploadChatPhotoUseCase(repository);
+
+  /// ConversationListCubit - "Halaman daftar percakapan" (P5.2)
+  @factoryMethod
+  ConversationListCubit conversationListCubit(
+    GetConversationsUseCase getConversationsUseCase,
+  ) => ConversationListCubit(getConversationsUseCase);
+
+  /// ConversationRoomCubit - ruang percakapan real-time (P5.3/P5.4)
+  @factoryMethod
+  ConversationRoomCubit conversationRoomCubit(
+    GetOrCreateConversationUseCase getOrCreateConversationUseCase,
+    GetMessagesUseCase getMessagesUseCase,
+    MarkReadUseCase markReadUseCase,
+    EndConversationUseCase endConversationUseCase,
+    UploadChatPhotoUseCase uploadChatPhotoUseCase,
+    ChatRealtimeGateway realtimeGateway,
+    SessionStorage sessionStorage,
+    AppLocationManager locationManager,
+  ) => ConversationRoomCubit(
+    getOrCreateConversationUseCase,
+    getMessagesUseCase,
+    markReadUseCase,
+    endConversationUseCase,
+    uploadChatPhotoUseCase,
+    realtimeGateway,
+    sessionStorage,
+    locationManager,
+  );
 
   /// Configuration should prefer @injectable on source classes.
 }

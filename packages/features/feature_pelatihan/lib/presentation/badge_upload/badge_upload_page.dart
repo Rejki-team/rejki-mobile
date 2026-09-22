@@ -122,8 +122,9 @@ class _ParticipantNameField extends StatelessWidget {
                 context.read<BadgeUploadCubit>().setParticipantName(v),
             decoration: InputDecoration(
               hintText: 'Masukkan nama peserta',
-              hintStyle: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
+              hintStyle: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
                 vertical: AppSpacing.sm,
@@ -160,9 +161,9 @@ class _BadgeImagePicker extends StatelessWidget {
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal memilih gambar')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Gagal memilih gambar')));
       }
     }
   }
@@ -235,8 +236,11 @@ class _BadgeImagePicker extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.add_photo_alternate_outlined,
-                        size: 48, color: AppColors.textSecondary),
+                    const Icon(
+                      Icons.add_photo_alternate_outlined,
+                      size: 48,
+                      color: AppColors.textSecondary,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       'Ketuk untuk pilih gambar badge',
@@ -262,7 +266,8 @@ class _SubmitBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isEnabled = state.badgeImage != null &&
+    final isEnabled =
+        state.badgeImage != null &&
         state.participantName.trim().isNotEmpty &&
         !state.isSubmitting;
     return Container(
@@ -293,7 +298,7 @@ class _SubmitBar extends StatelessWidget {
             child: ElevatedButton(
               onPressed: isEnabled
                   ? () =>
-                      context.read<BadgeUploadCubit>().submitBadge(trainingId)
+                        context.read<BadgeUploadCubit>().submitBadge(trainingId)
                   : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: isEnabled
@@ -317,8 +322,9 @@ class _SubmitBar extends StatelessWidget {
                   : Text(
                       'Upload Badge',
                       style: AppTypography.buttonLarge.copyWith(
-                        color:
-                            isEnabled ? AppColors.white : AppColors.textBlack,
+                        color: isEnabled
+                            ? AppColors.white
+                            : AppColors.textBlack,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

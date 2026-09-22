@@ -6,7 +6,10 @@ abstract class NotificationRemoteDataSource {
   Future<void> markAsRead(String id);
   Future<void> markAllAsRead();
   Future<int> getUnreadCount();
-  Future<void> registerDeviceToken({required String token, required String platform});
+  Future<void> registerDeviceToken({
+    required String token,
+    required String platform,
+  });
 }
 
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {

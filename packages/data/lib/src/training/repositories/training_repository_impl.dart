@@ -9,7 +9,8 @@ class TrainingRepositoryImpl implements TrainingRepository {
   TrainingRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Either<TrainingFailure, List<TrainingEnrollmentEntity>>> getMyTrainingEnrollments({
+  Future<Either<TrainingFailure, List<TrainingEnrollmentEntity>>>
+  getMyTrainingEnrollments({
     String? status,
     int page = 1,
     int limit = 10,
@@ -22,19 +23,25 @@ class TrainingRepositoryImpl implements TrainingRepository {
       );
       return Right(models.map((m) => m.toEntity()).toList());
     } on DioException catch (e) {
-      return Left(TrainingFailure.serverError(e.response?.data['message'] ?? e.message));
+      return Left(
+        TrainingFailure.serverError(e.response?.data['message'] ?? e.message),
+      );
     } catch (e) {
       return Left(TrainingFailure.serverError(e.toString()));
     }
   }
 
   @override
-  Future<Either<TrainingFailure, TrainingEntity>> getTrainingDetail(String id) async {
+  Future<Either<TrainingFailure, TrainingEntity>> getTrainingDetail(
+    String id,
+  ) async {
     try {
       final model = await remoteDataSource.getTrainingDetail(id);
       return Right(model.toEntity());
     } on DioException catch (e) {
-      return Left(TrainingFailure.serverError(e.response?.data['message'] ?? e.message));
+      return Left(
+        TrainingFailure.serverError(e.response?.data['message'] ?? e.message),
+      );
     } catch (e) {
       return Left(TrainingFailure.serverError(e.toString()));
     }
@@ -45,16 +52,22 @@ class TrainingRepositoryImpl implements TrainingRepository {
     String? search,
     int page = 1,
     int limit = 10,
+    double? latitude,
+    double? longitude,
   }) async {
     try {
       final models = await remoteDataSource.getTrainings(
         search: search,
         page: page,
         limit: limit,
+        latitude: latitude,
+        longitude: longitude,
       );
       return Right(models.map((m) => m.toEntity()).toList());
     } on DioException catch (e) {
-      return Left(TrainingFailure.serverError(e.response?.data['message'] ?? e.message));
+      return Left(
+        TrainingFailure.serverError(e.response?.data['message'] ?? e.message),
+      );
     } catch (e) {
       return Left(TrainingFailure.serverError(e.toString()));
     }
@@ -66,34 +79,47 @@ class TrainingRepositoryImpl implements TrainingRepository {
     int limit = 10,
   }) async {
     try {
-      final models = await remoteDataSource.getMyTrainings(page: page, limit: limit);
+      final models = await remoteDataSource.getMyTrainings(
+        page: page,
+        limit: limit,
+      );
       return Right(models.map((m) => m.toEntity()).toList());
     } on DioException catch (e) {
-      return Left(TrainingFailure.serverError(e.response?.data['message'] ?? e.message));
+      return Left(
+        TrainingFailure.serverError(e.response?.data['message'] ?? e.message),
+      );
     } catch (e) {
       return Left(TrainingFailure.serverError(e.toString()));
     }
   }
 
   @override
-  Future<Either<TrainingFailure, TrainingEntity>> createTraining(CreateTrainingParams params) async {
+  Future<Either<TrainingFailure, TrainingEntity>> createTraining(
+    CreateTrainingParams params,
+  ) async {
     try {
       final model = await remoteDataSource.createTraining(params);
       return Right(model.toEntity());
     } on DioException catch (e) {
-      return Left(TrainingFailure.serverError(e.response?.data['message'] ?? e.message));
+      return Left(
+        TrainingFailure.serverError(e.response?.data['message'] ?? e.message),
+      );
     } catch (e) {
       return Left(TrainingFailure.serverError(e.toString()));
     }
   }
 
   @override
-  Future<Either<TrainingFailure, TrainingEnrollmentEntity>> enrollTraining(String trainingId) async {
+  Future<Either<TrainingFailure, TrainingEnrollmentEntity>> enrollTraining(
+    String trainingId,
+  ) async {
     try {
       final model = await remoteDataSource.enrollTraining(trainingId);
       return Right(model.toEntity());
     } on DioException catch (e) {
-      return Left(TrainingFailure.serverError(e.response?.data['message'] ?? e.message));
+      return Left(
+        TrainingFailure.serverError(e.response?.data['message'] ?? e.message),
+      );
     } catch (e) {
       return Left(TrainingFailure.serverError(e.toString()));
     }
@@ -113,21 +139,26 @@ class TrainingRepositoryImpl implements TrainingRepository {
       );
       return Right(model.toEntity());
     } on DioException catch (e) {
-      return Left(TrainingFailure.serverError(e.response?.data['message'] ?? e.message));
+      return Left(
+        TrainingFailure.serverError(e.response?.data['message'] ?? e.message),
+      );
     } catch (e) {
       return Left(TrainingFailure.serverError(e.toString()));
     }
   }
 
   @override
-  Future<Either<TrainingFailure, List<TrainingEnrollmentEntity>>> getEnrollmentsByTraining(
-    String trainingId,
-  ) async {
+  Future<Either<TrainingFailure, List<TrainingEnrollmentEntity>>>
+  getEnrollmentsByTraining(String trainingId) async {
     try {
-      final models = await remoteDataSource.getEnrollmentsByTraining(trainingId);
+      final models = await remoteDataSource.getEnrollmentsByTraining(
+        trainingId,
+      );
       return Right(models.map((m) => m.toEntity()).toList());
     } on DioException catch (e) {
-      return Left(TrainingFailure.serverError(e.response?.data['message'] ?? e.message));
+      return Left(
+        TrainingFailure.serverError(e.response?.data['message'] ?? e.message),
+      );
     } catch (e) {
       return Left(TrainingFailure.serverError(e.toString()));
     }
@@ -147,7 +178,9 @@ class TrainingRepositoryImpl implements TrainingRepository {
       );
       return const Right(null);
     } on DioException catch (e) {
-      return Left(TrainingFailure.serverError(e.response?.data['message'] ?? e.message));
+      return Left(
+        TrainingFailure.serverError(e.response?.data['message'] ?? e.message),
+      );
     } catch (e) {
       return Left(TrainingFailure.serverError(e.toString()));
     }

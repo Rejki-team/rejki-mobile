@@ -9,6 +9,10 @@ abstract class WorkerEntity with _$WorkerEntity {
     required String id,
     required String name,
     required String adCode,
+
+    /// Pemilik iklan (`poster_id` backend) — dipakai fetch agregat rating
+    /// (F-17, PRD §5.15). `null` bila backend belum mengirimkannya.
+    String? posterId,
     required int age,
     required double rating,
     required int reviewCount,
@@ -18,7 +22,7 @@ abstract class WorkerEntity with _$WorkerEntity {
     @Default(false) bool isAd,
     String? adTitle,
     String? adImageUrl,
-    
+
     // New fields for Detail Worker API
     String? education,
     String? available,

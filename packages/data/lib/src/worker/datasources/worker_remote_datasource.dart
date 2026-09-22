@@ -5,9 +5,9 @@ import 'package:domain/domain.dart'; // To get CreateWorkerParams
 
 abstract class WorkerRemoteDataSource {
   Future<ApiResponse<List<dynamic>>> getWorkers({
-    double latitude = 0.0,
-    double longitude = 0.0,
-    double maxDistance = 2.0,
+    double? latitude,
+    double? longitude,
+    double? maxDistance,
     String? sortBy,
     String? keyword,
   });
@@ -52,14 +52,15 @@ abstract class WorkerRemoteDataSource {
     required String status,
   });
 
-  /// Submits a review for a specific worker
+  /// Pemberi kerja menilai pelamar (F-17, PRD §5.15, arah
+  /// `pemberi_kerja_ke_pelamar`) — `POST /rating`.
   Future<ApiResponse<dynamic>> submitWorkerReview({
-    required String workerId,
-    required int rating,
-    required String review,
+    required String iklanId,
+    required String pelamarId,
+    required int bintang,
+    String? ulasan,
   });
 }
-
 
 @LazySingleton(as: WorkerRemoteDataSource)
 class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
@@ -69,21 +70,25 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
 
   @override
   Future<ApiResponse<List<dynamic>>> getWorkers({
-    double latitude = 0.0,
-    double longitude = 0.0,
-    double maxDistance = 2.0,
+    double? latitude,
+    double? longitude,
+    double? maxDistance,
     String? sortBy,
     String? keyword,
   }) async {
     try {
-      final Map<String, dynamic> queryParams = {
-        'latitude': latitude,
-        'longitude': longitude,
-        'max_distance': maxDistance, // User specification: 2km default
-      };
+      final Map<String, dynamic> queryParams = {};
+      // Radius filter (F-1) hanya aktif bila KEDUA koordinat tersedia —
+      // GPS null/ditolak → listing tetap tampil tanpa filter radius.
+      if (latitude != null && longitude != null) {
+        queryParams['latitude'] = latitude;
+        queryParams['longitude'] = longitude;
+        if (maxDistance != null) queryParams['max_distance'] = maxDistance;
+      }
 
       if (sortBy != null && sortBy.isNotEmpty) queryParams['sort'] = sortBy;
-      if (keyword != null && keyword.isNotEmpty) queryParams['keyword'] = keyword;
+      if (keyword != null && keyword.isNotEmpty)
+        queryParams['keyword'] = keyword;
 
       final response = await _dioClient.get(
         ApiConfig.workers,
@@ -105,9 +110,7 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
   @override
   Future<ApiResponse<dynamic>> getWorkerById(String id) async {
     try {
-      final response = await _dioClient.get(
-        ApiConfig.workerById(id),
-      );
+      final response = await _dioClient.get(ApiConfig.workerById(id));
 
       return ApiResponse.fromJson(
         response.data as Map<String, dynamic>,
@@ -141,16 +144,12 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
     for (int i = 0; i < params.images.length; i++) {
       final file = params.images[i];
       // Note: mapping array files to "images[]" as standard web API pattern
-      formData.files.add(MapEntry(
-        'images[]',
-        await MultipartFile.fromFile(file.path),
-      ));
+      formData.files.add(
+        MapEntry('images[]', await MultipartFile.fromFile(file.path)),
+      );
     }
 
-    final response = await _dioClient.upload(
-      ApiConfig.workers,
-      data: formData,
-    );
+    final response = await _dioClient.upload(ApiConfig.workers, data: formData);
 
     return ApiResponse.fromJson(
       response.data as Map<String, dynamic>,
@@ -200,10 +199,9 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
 
     for (int i = 0; i < params.images.length; i++) {
       final file = params.images[i];
-      formData.files.add(MapEntry(
-        'images[]',
-        await MultipartFile.fromFile(file.path),
-      ));
+      formData.files.add(
+        MapEntry('images[]', await MultipartFile.fromFile(file.path)),
+      );
     }
 
     final response = await _dioClient.uploadPut(
@@ -253,10 +251,7 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
     int limit = 10,
   }) async {
     try {
-      final Map<String, dynamic> queryParams = {
-        'page': page,
-        'limit': limit,
-      };
+      final Map<String, dynamic> queryParams = {'page': page, 'limit': limit};
       if (status != null && status.isNotEmpty) queryParams['status'] = status;
 
       final response = await _dioClient.get(
@@ -296,16 +291,20 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
 
   @override
   Future<ApiResponse<dynamic>> submitWorkerReview({
-    required String workerId,
-    required int rating,
-    required String review,
+    required String iklanId,
+    required String pelamarId,
+    required int bintang,
+    String? ulasan,
   }) async {
     try {
       final response = await _dioClient.post(
-        ApiConfig.workerReview(workerId),
+        ApiConfig.ratingSubmit,
         data: {
-          'rating': rating,
-          'review': review,
+          'iklan_id': iklanId,
+          'dinilai_id': pelamarId,
+          'arah': 'pemberi_kerja_ke_pelamar',
+          'bintang': bintang,
+          if (ulasan != null && ulasan.isNotEmpty) 'ulasan': ulasan,
         },
       );
 

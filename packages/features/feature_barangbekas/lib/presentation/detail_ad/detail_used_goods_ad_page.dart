@@ -5,10 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
 import 'package:domain/domain.dart';
-import 'package:network/network.dart';
+import 'package:feature_report/feature_report.dart';
 
-import 'cubit/claim_secondhand_cubit.dart';
-import 'cubit/claim_secondhand_state.dart';
+import 'cubit/ambil_barang_cubit.dart';
+import 'cubit/ambil_barang_state.dart';
 import 'cubit/detail_used_goods_ad_cubit.dart';
 import 'cubit/detail_used_goods_ad_state.dart';
 
@@ -24,20 +24,20 @@ class DetailUsedGoodsAdPage extends StatefulWidget {
 
 class _DetailUsedGoodsAdPageState extends State<DetailUsedGoodsAdPage> {
   late final DetailUsedGoodsAdCubit _detailCubit;
-  late final ClaimSecondhandCubit _claimCubit;
+  late final AmbilBarangCubit _ambilCubit;
 
   @override
   void initState() {
     super.initState();
     _detailCubit = GetIt.I<DetailUsedGoodsAdCubit>();
-    _claimCubit = GetIt.I<ClaimSecondhandCubit>();
+    _ambilCubit = GetIt.I<AmbilBarangCubit>();
     _detailCubit.loadAdDetail(widget.id);
   }
 
   @override
   void dispose() {
     _detailCubit.close();
-    _claimCubit.close();
+    _ambilCubit.close();
     super.dispose();
   }
 
@@ -46,7 +46,7 @@ class _DetailUsedGoodsAdPageState extends State<DetailUsedGoodsAdPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _detailCubit),
-        BlocProvider.value(value: _claimCubit),
+        BlocProvider.value(value: _ambilCubit),
       ],
       child: _DetailUsedGoodsAdView(id: widget.id),
     );
@@ -115,7 +115,7 @@ class _DetailContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _ImageGallery(images: secondhand.images),
+                _ImageGallery(fotoUrls: secondhand.fotoUrls),
                 _DetailSection(secondhand: secondhand),
               ],
             ),
@@ -132,9 +132,9 @@ class _DetailContent extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _ImageGallery extends StatefulWidget {
-  final List<SecondhandImageEntity> images;
+  final List<String> fotoUrls;
 
-  const _ImageGallery({required this.images});
+  const _ImageGallery({required this.fotoUrls});
 
   @override
   State<_ImageGallery> createState() => _ImageGalleryState();
@@ -152,7 +152,7 @@ class _ImageGalleryState extends State<_ImageGallery> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.images.isEmpty) {
+    if (widget.fotoUrls.isEmpty) {
       return _buildPlaceholder();
     }
 
@@ -163,16 +163,13 @@ class _ImageGalleryState extends State<_ImageGallery> {
           height: 240,
           child: PageView.builder(
             controller: _pageController,
-            itemCount: widget.images.length,
+            itemCount: widget.fotoUrls.length,
             onPageChanged: (index) {
               if (mounted) setState(() => _currentIndex = index);
             },
             itemBuilder: (context, index) {
-              final imageUrl = ApiConfig.buildImageUrl(
-                widget.images[index].uriPath,
-              );
               return AuthenticatedNetworkImage(
-                imageUrl: imageUrl,
+                imageUrl: widget.fotoUrls[index],
                 width: double.infinity,
                 height: 240,
                 fit: BoxFit.cover,
@@ -181,11 +178,11 @@ class _ImageGalleryState extends State<_ImageGallery> {
             },
           ),
         ),
-        if (widget.images.length > 1)
+        if (widget.fotoUrls.length > 1)
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: _DotsIndicator(
-              count: widget.images.length,
+              count: widget.fotoUrls.length,
               currentIndex: _currentIndex,
             ),
           ),
@@ -230,7 +227,9 @@ class _DotsIndicator extends StatelessWidget {
           width: isActive ? 16 : 8,
           height: 8,
           decoration: BoxDecoration(
-            color: isActive ? AppColors.primary : AppColors.white.withValues(alpha: 0.7),
+            color: isActive
+                ? AppColors.primary
+                : AppColors.white.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(4),
           ),
         );
@@ -250,43 +249,54 @@ class _DetailSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final conditionLabel = _conditionLabel(secondhand.condition);
-    final conditionColor = _conditionColor(secondhand.condition);
-    final fullAddress = [
-      secondhand.address,
-      secondhand.subdistrict,
-      secondhand.city,
-      secondhand.province,
-    ].where((s) => s.isNotEmpty).join(', ');
+    final conditionLabel = _conditionLabel(secondhand.jenisBarang);
+    final conditionColor = _conditionColor(secondhand.jenisBarang);
 
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Condition badge
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
-              vertical: AppSpacing.xs,
-            ),
-            decoration: BoxDecoration(
-              color: conditionColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-              border: Border.all(color: conditionColor.withValues(alpha: 0.4)),
-            ),
-            child: Text(
-              conditionLabel,
-              style: AppTypography.labelSmall.copyWith(
-                color: conditionColor,
-                fontWeight: FontWeight.w600,
+          // Condition badge + Laporkan Iklan (F-20, PRD §5.10, Kelompok 6 P9.0b)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.xs,
+                ),
+                decoration: BoxDecoration(
+                  color: conditionColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                  border: Border.all(
+                    color: conditionColor.withValues(alpha: 0.4),
+                  ),
+                ),
+                child: Text(
+                  conditionLabel,
+                  style: AppTypography.labelSmall.copyWith(
+                    color: conditionColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-            ),
+              GestureDetector(
+                onTap: () => _showLaporkanIklanDialog(context, secondhand.id),
+                child: Text(
+                  'Laporkan Iklan',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.error,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: AppSpacing.sm),
 
           // Title
-          Text(secondhand.title, style: AppTypography.titleMedium),
+          Text(secondhand.judul, style: AppTypography.titleMedium),
           const SizedBox(height: AppSpacing.xs),
 
           // Amount
@@ -299,7 +309,7 @@ class _DetailSection extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.xs),
               Text(
-                '${secondhand.amount} unit tersedia',
+                '${secondhand.jumlah} unit tersedia',
                 style: AppTypography.bodySmall.copyWith(
                   color: AppColors.textCaption,
                 ),
@@ -321,7 +331,7 @@ class _DetailSection extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            secondhand.description,
+            secondhand.deskripsi,
             style: AppTypography.bodySmall.copyWith(
               color: AppColors.textCaption,
               height: 1.5,
@@ -335,7 +345,7 @@ class _DetailSection extends StatelessWidget {
 
           // Address
           Text(
-            'Lokasi Barang',
+            'Lokasi Pengambilan',
             style: AppTypography.labelMedium.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -352,7 +362,7 @@ class _DetailSection extends StatelessWidget {
               const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: Text(
-                  fullAddress,
+                  secondhand.lokasiPengambilan,
                   style: AppTypography.bodySmall.copyWith(
                     color: AppColors.textCaption,
                     height: 1.5,
@@ -362,33 +372,6 @@ class _DetailSection extends StatelessWidget {
             ],
           ),
 
-          if (secondhand.sellerName.isNotEmpty || secondhand.sellerPhone.isNotEmpty) ...[
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-              child: Divider(color: AppColors.border, height: 1),
-            ),
-            // Seller info
-            Text(
-              'Informasi Penjual',
-              style: AppTypography.labelMedium.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            if (secondhand.sellerName.isNotEmpty)
-              _SellerInfoRow(
-                icon: Icons.person_outline,
-                value: secondhand.sellerName,
-              ),
-            if (secondhand.sellerPhone.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.xs),
-              _SellerInfoRow(
-                icon: Icons.phone_outlined,
-                value: secondhand.sellerPhone,
-              ),
-            ],
-          ],
-
           // Bottom padding for sticky bar clearance
           const SizedBox(height: AppSpacing.lg),
         ],
@@ -396,45 +379,50 @@ class _DetailSection extends StatelessWidget {
     );
   }
 
-  String _conditionLabel(String condition) {
-    return switch (condition.toLowerCase()) {
-      'new' => 'Baru',
+  String _conditionLabel(String jenisBarang) {
+    return switch (jenisBarang) {
+      'baru' => 'Baru',
       _ => 'Bekas',
     };
   }
 
-  Color _conditionColor(String condition) {
-    return condition.toLowerCase() == 'new'
-        ? AppColors.badgeGreen
-        : AppColors.badgeOrange;
+  Color _conditionColor(String jenisBarang) {
+    return jenisBarang == 'baru' ? AppColors.badgeGreen : AppColors.badgeOrange;
   }
 }
 
-// ---------------------------------------------------------------------------
-// Seller Info Row
-// ---------------------------------------------------------------------------
-
-class _SellerInfoRow extends StatelessWidget {
-  final IconData icon;
-  final String value;
-
-  const _SellerInfoRow({required this.icon, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: AppDimensions.iconSm, color: AppColors.textCaption),
-        const SizedBox(width: AppSpacing.xs),
-        Expanded(
-          child: Text(
-            value,
-            style: AppTypography.bodySmall.copyWith(color: AppColors.textCaption),
-          ),
-        ),
-      ],
-    );
-  }
+/// Menampilkan dialog "Laporkan Iklan" (F-20, PRD §5.10) untuk iklan barang
+/// bekas — Kelompok 6 P9.0b, pola identik `worker_detail_page.dart`.
+void _showLaporkanIklanDialog(BuildContext context, String iklanId) {
+  final cubit = GetIt.I<LaporkanIklanCubit>();
+  LaporkanIklanDialog.show(
+    context,
+    onSubmit: (alasan) async {
+      await cubit.submit(
+        targetType: 'iklan',
+        targetId: iklanId,
+        alasan: alasan,
+        targetAdType: 'barang_bekas',
+      );
+      if (!context.mounted) return;
+      final state = cubit.state;
+      showDialog(
+        context: context,
+        builder: (dialogCtx) => state.isSuccess
+            ? AppDialogSuccess(
+                title: 'Berhasil',
+                message: 'Laporan kamu telah dikirim.',
+                onPressed: () => Navigator.pop(dialogCtx),
+              )
+            : AppDialogFailed(
+                title: 'Gagal',
+                message: state.errorMessage ?? 'Terjadi kesalahan.',
+                onPressed: () => Navigator.pop(dialogCtx),
+              ),
+      );
+      cubit.close();
+    },
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -448,7 +436,7 @@ class _StickyContactBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ClaimSecondhandCubit, ClaimSecondhandState>(
+    return BlocConsumer<AmbilBarangCubit, AmbilBarangState>(
       listener: (context, state) {
         state.maybeWhen(
           success: () {
@@ -470,12 +458,11 @@ class _StickyContactBar extends StatelessWidget {
           orElse: () {},
         );
       },
-      builder: (context, claimState) {
-        final isSubmitting = claimState.maybeWhen(
+      builder: (context, ambilState) {
+        final isSubmitting = ambilState.maybeWhen(
           submitting: () => true,
           orElse: () => false,
         );
-        final isAvailable = secondhand.status == 'available';
 
         return Container(
           padding: EdgeInsets.fromLTRB(
@@ -488,30 +475,55 @@ class _StickyContactBar extends StatelessWidget {
             color: AppColors.white,
             border: Border(top: BorderSide(color: AppColors.border, width: 1)),
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: AppOutlinedButton(
-                  text: 'Hubungi Pemilik',
-                  onPressed: () => context.push('/chat/${secondhand.userId}'),
+          child: secondhand.isSudahDiambil
+              ? AppFilledGradientButton(
+                  text: 'Hubungi Pengiklan via Chat',
+                  onPressed: () => context.push(
+                    '/chat/${secondhand.sellerId}'
+                    '?adType=barang_bekas&adId=${secondhand.id}',
+                  ),
+                )
+              : Row(
+                  children: [
+                    Expanded(
+                      child: AppOutlinedButton(
+                        text: 'Hubungi Pemilik',
+                        onPressed: () => context.push(
+                          '/chat/${secondhand.sellerId}'
+                          '?adType=barang_bekas&adId=${secondhand.id}',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: AppFilledGradientButton(
+                        text: 'Ambil Barang',
+                        isLoading: isSubmitting,
+                        onPressed: isSubmitting
+                            ? null
+                            : () => _confirmAmbil(context),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: AppFilledGradientButton(
-                  text: 'Ambil Barang',
-                  isLoading: isSubmitting,
-                  onPressed: isAvailable && !isSubmitting
-                      ? () => context
-                          .read<ClaimSecondhandCubit>()
-                          .claim(secondhand.id)
-                      : null,
-                ),
-              ),
-            ],
-          ),
         );
       },
+    );
+  }
+
+  /// PRD §5.14.1 — "Menekan Ambil Barang memunculkan dialog konfirmasi berisi
+  /// tombol Ambil dan Periksa."
+  void _confirmAmbil(BuildContext context) {
+    final cubit = context.read<AmbilBarangCubit>();
+    showWarningDialog(
+      context,
+      title: 'Ambil Barang Ini?',
+      message:
+          'Setelah mengambil, Anda wajib menghubungi pengiklan dan menunggu '
+          'persetujuan pengambilan.',
+      cancelText: 'Periksa',
+      confirmText: 'Ambil',
+      onConfirm: () => cubit.ambil(secondhand.id),
     );
   }
 }

@@ -13,9 +13,8 @@ class HistoryPekerjaCard extends StatelessWidget {
   final String ratingText;
   final String reviewCountText;
   final HistoryPekerjaCardStatus status;
-  
+
   final VoidCallback onDetailPressed;
-  final VoidCallback? onRatingPressed;
 
   const HistoryPekerjaCard({
     super.key,
@@ -27,7 +26,6 @@ class HistoryPekerjaCard extends StatelessWidget {
     required this.reviewCountText,
     required this.status,
     required this.onDetailPressed,
-    this.onRatingPressed,
   });
 
   @override
@@ -50,7 +48,6 @@ class HistoryPekerjaCard extends StatelessWidget {
           const SizedBox(height: 16),
 
           if (status == HistoryPekerjaCardStatus.proses) _buildProcessBox(),
-          if (status == HistoryPekerjaCardStatus.selesai) _buildRatingBox(),
 
           const SizedBox(height: 16),
 
@@ -167,9 +164,7 @@ class HistoryPekerjaCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: bgColor,
-        ),
+        border: Border.all(color: bgColor),
       ),
       child: Text(
         text,
@@ -183,7 +178,9 @@ class HistoryPekerjaCard extends StatelessWidget {
 
   Widget _buildMetadataSection() {
     return Padding(
-      padding: const EdgeInsets.only(left: 56), // align with text next to avatar
+      padding: const EdgeInsets.only(
+        left: 56,
+      ), // align with text next to avatar
       child: Row(
         children: [
           Row(
@@ -276,71 +273,6 @@ class HistoryPekerjaCard extends StatelessWidget {
             style: AppTypography.caption.copyWith(
               color: AppColors.chatButtonGreen,
               height: 1.4,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRatingBox() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFBEB), // Light yellow
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.accent),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              SvgPicture.asset(
-                AppAssets.iconStar,
-                width: 16,
-                height: 16,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.iconOrange,
-                  BlendMode.srcIn,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Pekerjaan Selesai - Berikan Rating',
-                style: AppTypography.labelMedium.copyWith(
-                  color: const Color(0xFFB45309), // Dark orange/brown
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Pekerjaan sudah selesai. Berikan rating dan review pekerja apakah bekerja dengan baik atau tidak.',
-            style: AppTypography.caption.copyWith(
-              color: const Color(0xFFB45309),
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: onRatingPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.iconImageOrange, // ORANGE Button
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                'Beri Rating',
-                style: AppTypography.labelMedium.copyWith(
-                  color: AppColors.white,
-                ),
-              ),
             ),
           ),
         ],

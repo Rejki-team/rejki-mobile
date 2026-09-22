@@ -114,8 +114,12 @@ class HistoryIklanPekerjaCard extends StatelessWidget {
   }
 
   Widget _buildStatusBadge() {
-    final bgColor = isActive ? AppColors.serviceCardIconBgGreen : AppColors.background;
-    final textColor = isActive ? AppColors.chatButtonGreen : AppColors.textSecondary;
+    final bgColor = isActive
+        ? AppColors.serviceCardIconBgGreen
+        : AppColors.background;
+    final textColor = isActive
+        ? AppColors.chatButtonGreen
+        : AppColors.textSecondary;
     final label = isActive ? 'Aktif' : 'Tidak Aktif';
 
     return Container(

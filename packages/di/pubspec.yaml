@@ -55,6 +55,12 @@ dependencies:
     path: ../features/feature_profile
   feature_history:
     path: ../features/feature_history
+  feature_report:
+    path: ../features/feature_report
+  feature_chat:
+    path: ../features/feature_chat
+  location_manager:
+    path: ../location_manager
 
 dev_dependencies:
   flutter_test:

@@ -11,10 +11,14 @@ import 'job_detail_state.dart';
 @injectable
 class JobDetailCubit extends Cubit<JobDetailState> {
   final GetJobByIdUseCase _getJobByIdUseCase;
+  final GetRatingAggregateUseCase _getRatingAggregateUseCase;
 
-  JobDetailCubit({required GetJobByIdUseCase getJobByIdUseCase})
-    : _getJobByIdUseCase = getJobByIdUseCase,
-      super(JobDetailState.initial());
+  JobDetailCubit({
+    required GetJobByIdUseCase getJobByIdUseCase,
+    required GetRatingAggregateUseCase getRatingAggregateUseCase,
+  }) : _getJobByIdUseCase = getJobByIdUseCase,
+       _getRatingAggregateUseCase = getRatingAggregateUseCase,
+       super(JobDetailState.initial());
 
   /// Load job detail by ID
   Future<void> loadJob(String jobId) async {
@@ -31,6 +35,19 @@ class JobDetailCubit extends Cubit<JobDetailState> {
       ),
       (job) => emit(state.copyWith(isLoading: false, job: job)),
     );
+
+    // F-17 (PRD §5.15): agregat rating pemberi kerja — fetch terpisah, tidak
+    // memblokir tampilnya detail iklan bila gagal.
+    if (isClosed) return;
+    final job = state.job;
+    if (job != null && job.userId.isNotEmpty) {
+      final ratingResult = await _getRatingAggregateUseCase.execute(job.userId);
+      if (isClosed) return;
+      ratingResult.fold(
+        (_) {},
+        (agg) => emit(state.copyWith(employerRating: agg)),
+      );
+    }
   }
 
   /// Map JobFailure to user-friendly message

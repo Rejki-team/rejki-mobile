@@ -11,7 +11,9 @@ class CreateTrainingUseCase {
 
   CreateTrainingUseCase(this.repository);
 
-  Future<Either<TrainingFailure, TrainingEntity>> call(CreateTrainingParams params) {
+  Future<Either<TrainingFailure, TrainingEntity>> call(
+    CreateTrainingParams params,
+  ) {
     return repository.createTraining(params);
   }
 }

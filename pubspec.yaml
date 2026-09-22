@@ -43,6 +43,7 @@ workspace:
   - packages/features/feature_pelatihan
   - packages/features/feature_profile
   - packages/features/feature_register
+  - packages/features/feature_report
   - packages/features/feature_splashscreen
   - packages/local
   - packages/network

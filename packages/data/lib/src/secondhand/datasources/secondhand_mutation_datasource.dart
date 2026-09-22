@@ -1,79 +1,81 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:network/network.dart';
 import 'package:domain/domain.dart';
+import 'package:network/network.dart';
+import '../models/bider_model.dart';
 import '../models/secondhand_model.dart';
 
-/// Abstract interface for secondhand WRITE operations.
+/// Abstract interface untuk operasi WRITE Iklan Barang Bekas + Bider (F-15).
 abstract class SecondhandMutationDataSource {
   Future<SecondhandModel> createSecondhand(CreateSecondhandParams params);
-
-  /// Claim a secondhand ad (POST /secondhands/{id}/claim).
-  Future<void> claimSecondhand(String id);
+  Future<BiderModel> ambilBarang(String iklanId);
+  Future<BiderModel> setujuiBider({
+    required String iklanId,
+    required String biderId,
+    required bool sudahMenghubungi,
+  });
+  Future<BiderModel> withdrawBider({
+    required String iklanId,
+    required String biderId,
+  });
 }
 
-/// Implementation using raw [Dio] for multipart/form-data uploads.
+/// Implementasi menggunakan [DioClient]. Upload foto DIHAPUS dari `createSecondhand`
+/// (backend `foto_urls` butuh presigned-URL flow terpisah, belum di-wire — pola
+/// sama `create_job` Kelompok 3 Phase 2).
 class SecondhandMutationDataSourceImpl implements SecondhandMutationDataSource {
-  final Dio _dio;
+  final DioClient _dioClient;
 
-  SecondhandMutationDataSourceImpl({required Dio dio}) : _dio = dio;
+  SecondhandMutationDataSourceImpl(this._dioClient);
 
   @override
   Future<SecondhandModel> createSecondhand(
     CreateSecondhandParams params,
   ) async {
-    final imageFiles = <MultipartFile>[];
-    for (final image in params.images) {
-      imageFiles.add(
-        await MultipartFile.fromFile(
-          image.path,
-          filename: image.path.split('/').last,
-        ),
-      );
-    }
-
-    final formData = FormData.fromMap({
-      'title': params.title,
-      'description': params.description,
-      'condition': params.condition,
-      'amount': params.amount,
-      'address': params.address,
-      'province': params.province,
-      'city': params.city,
-      'subdistrict': params.subdistrict,
-      'village': params.village,
-      'images': imageFiles,
-      if (params.latitude != null) 'latitude': params.latitude,
-      if (params.longitude != null) 'longitude': params.longitude,
-    });
-
-    debugPrint('[SecondhandMutationDataSource] POST ${ApiConfig.secondhands}');
-
-    final response = await _dio.post(
+    final response = await _dioClient.post(
       ApiConfig.secondhands,
-      data: formData,
-      options: Options(contentType: 'multipart/form-data'),
+      data: {
+        'judul': params.judul,
+        'deskripsi': params.deskripsi,
+        'jenis_barang': params.jenisBarang,
+        'jumlah': params.jumlah,
+        'lokasi_pengambilan': params.lokasiPengambilan,
+        if (params.lokasi != null) 'lokasi': params.lokasi,
+        if (params.regionId != null) 'region_id': params.regionId,
+      },
     );
-
-    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
-      response.data as Map<String, dynamic>,
-      fromJsonT: (data) => data as Map<String, dynamic>,
-    );
-
-    if (apiResponse.hasError) {
-      throw Exception(apiResponse.errorMessage);
-    }
-
-    if (!apiResponse.hasData) {
-      throw Exception('No data in response');
-    }
-
-    return SecondhandModel.fromJson(apiResponse.data!);
+    final data = response.data['data'] as Map<String, dynamic>;
+    return SecondhandModel.fromJson(data);
   }
 
   @override
-  Future<void> claimSecondhand(String id) async {
-    debugPrint('[SecondhandMutationDataSource] POST ${ApiConfig.secondhandClaim(id)}');
-    await _dio.post(ApiConfig.secondhandClaim(id));
+  Future<BiderModel> ambilBarang(String iklanId) async {
+    final response = await _dioClient.post(ApiConfig.secondhandAmbil(iklanId));
+    final data = response.data['data'] as Map<String, dynamic>;
+    return BiderModel.fromJson(data);
+  }
+
+  @override
+  Future<BiderModel> setujuiBider({
+    required String iklanId,
+    required String biderId,
+    required bool sudahMenghubungi,
+  }) async {
+    final response = await _dioClient.patch(
+      ApiConfig.secondhandBiderSetujui(iklanId, biderId),
+      data: {'sudah_menghubungi': sudahMenghubungi},
+    );
+    final data = response.data['data'] as Map<String, dynamic>;
+    return BiderModel.fromJson(data);
+  }
+
+  @override
+  Future<BiderModel> withdrawBider({
+    required String iklanId,
+    required String biderId,
+  }) async {
+    final response = await _dioClient.patch(
+      ApiConfig.secondhandBiderWithdraw(iklanId, biderId),
+    );
+    final data = response.data['data'] as Map<String, dynamic>;
+    return BiderModel.fromJson(data);
   }
 }

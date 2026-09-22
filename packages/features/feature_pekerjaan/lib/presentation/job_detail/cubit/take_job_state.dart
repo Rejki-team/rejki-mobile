@@ -21,23 +21,21 @@ abstract class TakeJobState with _$TakeJobState {
   /// UI harus mengarahkan pengguna ke halaman buat profil pekerja.
   const factory TakeJobState.workerProfileNotFound() = _WorkerProfileNotFound;
 
-  /// User memiliki profil pekerja. Siap menampilkan dialog bid.
+  /// User memiliki profil pekerja. Siap menampilkan dialog lamar.
   ///
-  /// - [workerId]: ID profil pekerja (bukan userId) — digunakan sebagai payload bid.
-  /// - [workerCount]: Jumlah pekerja yang dibutuhkan dari job listing.
-  /// - [defaultDateTime]: DateTime pekerjaan dari job entity untuk jadwal default.
+  /// - [defaultDateTime]: jadwal default iklan (`null` — backend belum punya
+  ///   field jadwal default pada Iklan Pekerjaan, gap terpisah, pelamar wajib
+  ///   isi tanggal/jam sendiri).
   const factory TakeJobState.workerProfileFound({
-    required String workerId,
-    required int workerCount,
     required DateTime? defaultDateTime,
   }) = _WorkerProfileFound;
 
-  /// Sedang mengirimkan bid ke server (POST /jobs/{jobId}/bids).
+  /// Sedang mengirimkan lamaran ke server (POST /pekerjaan/{id}/lamar).
   const factory TakeJobState.submitting() = _Submitting;
 
-  /// Bid berhasil dikirim.
+  /// Lamaran berhasil dikirim.
   const factory TakeJobState.success() = _Success;
 
-  /// Terjadi kegagalan saat bid atau saat cek profil.
+  /// Terjadi kegagalan saat melamar atau saat cek profil.
   const factory TakeJobState.failure(String message) = _Failure;
 }

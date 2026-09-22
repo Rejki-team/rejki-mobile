@@ -8,7 +8,8 @@ enum HistoryIklanPekerjaStatus { initial, loading, success, failure }
 @freezed
 abstract class HistoryIklanPekerjaState with _$HistoryIklanPekerjaState {
   const factory HistoryIklanPekerjaState({
-    @Default(HistoryIklanPekerjaStatus.initial) HistoryIklanPekerjaStatus status,
+    @Default(HistoryIklanPekerjaStatus.initial)
+    HistoryIklanPekerjaStatus status,
     WorkerEntity? workerProfile,
     String? errorMessage,
   }) = _HistoryIklanPekerjaState;

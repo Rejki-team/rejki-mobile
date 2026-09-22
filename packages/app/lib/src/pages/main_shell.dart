@@ -10,6 +10,7 @@ import 'package:designsystems/designsystems.dart';
 
 import '../router/app_routes.dart';
 import '../services/fcm_notification_service.dart';
+import '../services/ad_service.dart';
 
 enum NavTab { home, news, chat, history, profile }
 
@@ -115,6 +116,13 @@ class _MainShellState extends State<MainShell> {
         context.go(AppRoutes.history);
       case NavTab.profile:
         context.go(AppRoutes.profile);
+    }
+
+    // F-33 (PRD §5.16): titik pemasangan iklan — transisi antar tab utama.
+    // Fire-and-forget, tampil DI ATAS halaman tujuan (bukan memblokir
+    // navigasi); AdService sendiri menggate login + kuota harian.
+    if (GetIt.I.isRegistered<AdService>()) {
+      GetIt.I<AdService>().showInterstitialIfEligible();
     }
   }
 }

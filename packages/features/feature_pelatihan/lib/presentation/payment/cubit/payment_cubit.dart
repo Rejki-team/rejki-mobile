@@ -22,17 +22,19 @@ class PaymentCubit extends Cubit<PaymentState> {
     String bankAccountHolderName = '',
     DateTime? paymentDeadline,
   }) {
-    emit(state.copyWith(
-      trainingId: trainingId,
-      enrollmentId: enrollmentId,
-      status: status,
-      trainingTitle: trainingTitle,
-      fee: fee,
-      bankName: bankName,
-      bankAccountNumber: bankAccountNumber,
-      bankAccountHolderName: bankAccountHolderName,
-      paymentDeadline: paymentDeadline,
-    ));
+    emit(
+      state.copyWith(
+        trainingId: trainingId,
+        enrollmentId: enrollmentId,
+        status: status,
+        trainingTitle: trainingTitle,
+        fee: fee,
+        bankName: bankName,
+        bankAccountNumber: bankAccountNumber,
+        bankAccountHolderName: bankAccountHolderName,
+        paymentDeadline: paymentDeadline,
+      ),
+    );
   }
 
   void setProofImage(File image) {
@@ -57,18 +59,22 @@ class PaymentCubit extends Cubit<PaymentState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        isSubmitting: false,
-        errorMessage: failure.maybeWhen(
-          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
-          orElse: () => 'Gagal mengupload bukti pembayaran.',
+      (failure) => emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorMessage: failure.maybeWhen(
+            serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+            orElse: () => 'Gagal mengupload bukti pembayaran.',
+          ),
         ),
-      )),
-      (_) => emit(state.copyWith(
-        isSubmitting: false,
-        isUploadSuccess: true,
-        status: 'payment_uploaded',
-      )),
+      ),
+      (_) => emit(
+        state.copyWith(
+          isSubmitting: false,
+          isUploadSuccess: true,
+          status: 'payment_uploaded',
+        ),
+      ),
     );
   }
 }

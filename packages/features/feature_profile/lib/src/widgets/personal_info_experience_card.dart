@@ -11,10 +11,7 @@ class PersonalInfoExperienceCard extends StatelessWidget {
   /// String pengalaman kerja dari API (dipisahkan koma)
   final String workExperience;
 
-  const PersonalInfoExperienceCard({
-    super.key,
-    required this.workExperience,
-  });
+  const PersonalInfoExperienceCard({super.key, required this.workExperience});
 
   /// Parsing string pengalaman kerja menjadi list item yang ditampilkan.
   ///

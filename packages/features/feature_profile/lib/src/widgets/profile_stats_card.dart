@@ -8,14 +8,11 @@ import 'package:designsystems/designsystems.dart';
 class ProfileStatsCard extends StatelessWidget {
   /// Number of ads
   final int adCount;
+
   /// Callback when "Iklan Saya" is tapped
   final VoidCallback? onAdsTap;
 
-  const ProfileStatsCard({
-    super.key,
-    required this.adCount,
-    this.onAdsTap,
-  });
+  const ProfileStatsCard({super.key, required this.adCount, this.onAdsTap});
 
   @override
   Widget build(BuildContext context) {

@@ -125,10 +125,7 @@ class _HomeProfileAvatarState extends State<HomeProfileAvatar> {
         AppAssets.iconUser,
         width: AppDimensions.iconXs,
         height: AppDimensions.iconXs,
-        colorFilter: const ColorFilter.mode(
-          AppColors.white,
-          BlendMode.srcIn,
-        ),
+        colorFilter: const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
       ),
     );
   }

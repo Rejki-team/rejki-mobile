@@ -11,8 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   geolocator: ^14.0.2
-  get_it: ^9.2.1
-  injectable: ^2.7.1+4
+  get_it: ^8.0.3
+  injectable: ^2.5.0
 
 dev_dependencies:
   flutter_test:

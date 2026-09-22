@@ -12,6 +12,5 @@ class GetSecondhandsUseCase {
 
   Future<Either<SecondhandFailure, SecondhandsResultEntity>> call(
     SecondhandQueryParams params,
-  ) =>
-      _repository.getSecondhand(params);
+  ) => _repository.getSecondhand(params);
 }

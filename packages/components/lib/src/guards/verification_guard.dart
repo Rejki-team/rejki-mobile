@@ -115,9 +115,7 @@ class VerificationRequiredContent extends StatelessWidget {
 
               // Pesan
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 child: Text(
                   message,
                   style: AppTypography.bodyMedium.copyWith(
@@ -215,17 +213,20 @@ Future<void> showVerificationRequiredDialog(
 
   if (userStatus == 'pending') {
     title = 'Akun Menunggu Persetujuan';
-    message = 'Akun Anda sedang dalam proses peninjauan. '
+    message =
+        'Akun Anda sedang dalam proses peninjauan. '
         'Silakan tunggu hingga akun disetujui.';
     confirmText = 'Mengerti';
   } else if (userStatus == 'suspended') {
     title = 'Akun Ditangguhkan';
-    message = 'Akun Anda telah ditangguhkan. '
+    message =
+        'Akun Anda telah ditangguhkan. '
         'Hubungi dukungan pelanggan untuk informasi lebih lanjut.';
     confirmText = 'Mengerti';
   } else {
     title = 'Verifikasi Diperlukan';
-    message = 'Lengkapi verifikasi data diri Anda terlebih dahulu '
+    message =
+        'Lengkapi verifikasi data diri Anda terlebih dahulu '
         'untuk mengakses fitur ini.';
     confirmText = 'Verifikasi Sekarang';
   }

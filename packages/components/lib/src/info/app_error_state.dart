@@ -71,7 +71,7 @@ class AppErrorState extends StatelessWidget {
                 onPressed: onRetry,
                 icon: Icons.refresh,
               ),
-            ]
+            ],
           ],
         ),
       ),

@@ -14,7 +14,12 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TrainingListingState {
 
- List<TrainingModel> get trainings; bool get isLoading; bool get isFailure; String? get errorMessage; String get summaryDisplayText; String get locationDisplayText;
+ List<TrainingModel> get trainings; bool get isLoading; bool get isFailure; String? get errorMessage; String get summaryDisplayText;/// Nama lokasi untuk display (mis. hasil reverse-geocode atau default).
+ String get locationName;/// Koordinat device saat ini (F-1/F-14) — `null` bila GPS belum tersedia/ditolak.
+ double? get latitude; double? get longitude;/// Radius filter (0-10 KM, default 10 = max / "belum diterapkan") — PRD §5.13.1
+/// mem-fix radius Pelatihan di 10km sisi backend (tidak ada override param),
+/// slider ini murni indikator visual, konsisten dengan pola Iklan Pekerjaan.
+ int get distanceKm; bool get isDistanceFilterApplied;
 /// Create a copy of TrainingListingState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +30,16 @@ $TrainingListingStateCopyWith<TrainingListingState> get copyWith => _$TrainingLi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrainingListingState&&const DeepCollectionEquality().equals(other.trainings, trainings)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isFailure, isFailure) || other.isFailure == isFailure)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.summaryDisplayText, summaryDisplayText) || other.summaryDisplayText == summaryDisplayText)&&(identical(other.locationDisplayText, locationDisplayText) || other.locationDisplayText == locationDisplayText));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrainingListingState&&const DeepCollectionEquality().equals(other.trainings, trainings)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isFailure, isFailure) || other.isFailure == isFailure)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.summaryDisplayText, summaryDisplayText) || other.summaryDisplayText == summaryDisplayText)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.isDistanceFilterApplied, isDistanceFilterApplied) || other.isDistanceFilterApplied == isDistanceFilterApplied));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(trainings),isLoading,isFailure,errorMessage,summaryDisplayText,locationDisplayText);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(trainings),isLoading,isFailure,errorMessage,summaryDisplayText,locationName,latitude,longitude,distanceKm,isDistanceFilterApplied);
 
 @override
 String toString() {
-  return 'TrainingListingState(trainings: $trainings, isLoading: $isLoading, isFailure: $isFailure, errorMessage: $errorMessage, summaryDisplayText: $summaryDisplayText, locationDisplayText: $locationDisplayText)';
+  return 'TrainingListingState(trainings: $trainings, isLoading: $isLoading, isFailure: $isFailure, errorMessage: $errorMessage, summaryDisplayText: $summaryDisplayText, locationName: $locationName, latitude: $latitude, longitude: $longitude, distanceKm: $distanceKm, isDistanceFilterApplied: $isDistanceFilterApplied)';
 }
 
 
@@ -45,7 +50,7 @@ abstract mixin class $TrainingListingStateCopyWith<$Res>  {
   factory $TrainingListingStateCopyWith(TrainingListingState value, $Res Function(TrainingListingState) _then) = _$TrainingListingStateCopyWithImpl;
 @useResult
 $Res call({
- List<TrainingModel> trainings, bool isLoading, bool isFailure, String? errorMessage, String summaryDisplayText, String locationDisplayText
+ List<TrainingModel> trainings, bool isLoading, bool isFailure, String? errorMessage, String summaryDisplayText, String locationName, double? latitude, double? longitude, int distanceKm, bool isDistanceFilterApplied
 });
 
 
@@ -62,15 +67,19 @@ class _$TrainingListingStateCopyWithImpl<$Res>
 
 /// Create a copy of TrainingListingState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? trainings = null,Object? isLoading = null,Object? isFailure = null,Object? errorMessage = freezed,Object? summaryDisplayText = null,Object? locationDisplayText = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? trainings = null,Object? isLoading = null,Object? isFailure = null,Object? errorMessage = freezed,Object? summaryDisplayText = null,Object? locationName = null,Object? latitude = freezed,Object? longitude = freezed,Object? distanceKm = null,Object? isDistanceFilterApplied = null,}) {
   return _then(_self.copyWith(
 trainings: null == trainings ? _self.trainings : trainings // ignore: cast_nullable_to_non_nullable
 as List<TrainingModel>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isFailure: null == isFailure ? _self.isFailure : isFailure // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,summaryDisplayText: null == summaryDisplayText ? _self.summaryDisplayText : summaryDisplayText // ignore: cast_nullable_to_non_nullable
-as String,locationDisplayText: null == locationDisplayText ? _self.locationDisplayText : locationDisplayText // ignore: cast_nullable_to_non_nullable
-as String,
+as String,locationName: null == locationName ? _self.locationName : locationName // ignore: cast_nullable_to_non_nullable
+as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,distanceKm: null == distanceKm ? _self.distanceKm : distanceKm // ignore: cast_nullable_to_non_nullable
+as int,isDistanceFilterApplied: null == isDistanceFilterApplied ? _self.isDistanceFilterApplied : isDistanceFilterApplied // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -155,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TrainingModel> trainings,  bool isLoading,  bool isFailure,  String? errorMessage,  String summaryDisplayText,  String locationDisplayText)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TrainingModel> trainings,  bool isLoading,  bool isFailure,  String? errorMessage,  String summaryDisplayText,  String locationName,  double? latitude,  double? longitude,  int distanceKm,  bool isDistanceFilterApplied)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TrainingListingState() when $default != null:
-return $default(_that.trainings,_that.isLoading,_that.isFailure,_that.errorMessage,_that.summaryDisplayText,_that.locationDisplayText);case _:
+return $default(_that.trainings,_that.isLoading,_that.isFailure,_that.errorMessage,_that.summaryDisplayText,_that.locationName,_that.latitude,_that.longitude,_that.distanceKm,_that.isDistanceFilterApplied);case _:
   return orElse();
 
 }
@@ -176,10 +185,10 @@ return $default(_that.trainings,_that.isLoading,_that.isFailure,_that.errorMessa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TrainingModel> trainings,  bool isLoading,  bool isFailure,  String? errorMessage,  String summaryDisplayText,  String locationDisplayText)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TrainingModel> trainings,  bool isLoading,  bool isFailure,  String? errorMessage,  String summaryDisplayText,  String locationName,  double? latitude,  double? longitude,  int distanceKm,  bool isDistanceFilterApplied)  $default,) {final _that = this;
 switch (_that) {
 case _TrainingListingState():
-return $default(_that.trainings,_that.isLoading,_that.isFailure,_that.errorMessage,_that.summaryDisplayText,_that.locationDisplayText);case _:
+return $default(_that.trainings,_that.isLoading,_that.isFailure,_that.errorMessage,_that.summaryDisplayText,_that.locationName,_that.latitude,_that.longitude,_that.distanceKm,_that.isDistanceFilterApplied);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +205,10 @@ return $default(_that.trainings,_that.isLoading,_that.isFailure,_that.errorMessa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TrainingModel> trainings,  bool isLoading,  bool isFailure,  String? errorMessage,  String summaryDisplayText,  String locationDisplayText)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TrainingModel> trainings,  bool isLoading,  bool isFailure,  String? errorMessage,  String summaryDisplayText,  String locationName,  double? latitude,  double? longitude,  int distanceKm,  bool isDistanceFilterApplied)?  $default,) {final _that = this;
 switch (_that) {
 case _TrainingListingState() when $default != null:
-return $default(_that.trainings,_that.isLoading,_that.isFailure,_that.errorMessage,_that.summaryDisplayText,_that.locationDisplayText);case _:
+return $default(_that.trainings,_that.isLoading,_that.isFailure,_that.errorMessage,_that.summaryDisplayText,_that.locationName,_that.latitude,_that.longitude,_that.distanceKm,_that.isDistanceFilterApplied);case _:
   return null;
 
 }
@@ -210,8 +219,8 @@ return $default(_that.trainings,_that.isLoading,_that.isFailure,_that.errorMessa
 /// @nodoc
 
 
-class _TrainingListingState implements TrainingListingState {
-  const _TrainingListingState({final  List<TrainingModel> trainings = const [], this.isLoading = true, this.isFailure = false, this.errorMessage, this.summaryDisplayText = '16 Pelatihan tersedia', this.locationDisplayText = 'Bekasi - 2 km'}): _trainings = trainings;
+class _TrainingListingState extends TrainingListingState {
+  const _TrainingListingState({final  List<TrainingModel> trainings = const [], this.isLoading = true, this.isFailure = false, this.errorMessage, this.summaryDisplayText = '16 Pelatihan tersedia', this.locationName = 'Lokasi Anda', this.latitude, this.longitude, this.distanceKm = 10, this.isDistanceFilterApplied = false}): _trainings = trainings,super._();
   
 
  final  List<TrainingModel> _trainings;
@@ -225,7 +234,16 @@ class _TrainingListingState implements TrainingListingState {
 @override@JsonKey() final  bool isFailure;
 @override final  String? errorMessage;
 @override@JsonKey() final  String summaryDisplayText;
-@override@JsonKey() final  String locationDisplayText;
+/// Nama lokasi untuk display (mis. hasil reverse-geocode atau default).
+@override@JsonKey() final  String locationName;
+/// Koordinat device saat ini (F-1/F-14) — `null` bila GPS belum tersedia/ditolak.
+@override final  double? latitude;
+@override final  double? longitude;
+/// Radius filter (0-10 KM, default 10 = max / "belum diterapkan") — PRD §5.13.1
+/// mem-fix radius Pelatihan di 10km sisi backend (tidak ada override param),
+/// slider ini murni indikator visual, konsisten dengan pola Iklan Pekerjaan.
+@override@JsonKey() final  int distanceKm;
+@override@JsonKey() final  bool isDistanceFilterApplied;
 
 /// Create a copy of TrainingListingState
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +255,16 @@ _$TrainingListingStateCopyWith<_TrainingListingState> get copyWith => __$Trainin
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrainingListingState&&const DeepCollectionEquality().equals(other._trainings, _trainings)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isFailure, isFailure) || other.isFailure == isFailure)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.summaryDisplayText, summaryDisplayText) || other.summaryDisplayText == summaryDisplayText)&&(identical(other.locationDisplayText, locationDisplayText) || other.locationDisplayText == locationDisplayText));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrainingListingState&&const DeepCollectionEquality().equals(other._trainings, _trainings)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isFailure, isFailure) || other.isFailure == isFailure)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.summaryDisplayText, summaryDisplayText) || other.summaryDisplayText == summaryDisplayText)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.isDistanceFilterApplied, isDistanceFilterApplied) || other.isDistanceFilterApplied == isDistanceFilterApplied));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_trainings),isLoading,isFailure,errorMessage,summaryDisplayText,locationDisplayText);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_trainings),isLoading,isFailure,errorMessage,summaryDisplayText,locationName,latitude,longitude,distanceKm,isDistanceFilterApplied);
 
 @override
 String toString() {
-  return 'TrainingListingState(trainings: $trainings, isLoading: $isLoading, isFailure: $isFailure, errorMessage: $errorMessage, summaryDisplayText: $summaryDisplayText, locationDisplayText: $locationDisplayText)';
+  return 'TrainingListingState(trainings: $trainings, isLoading: $isLoading, isFailure: $isFailure, errorMessage: $errorMessage, summaryDisplayText: $summaryDisplayText, locationName: $locationName, latitude: $latitude, longitude: $longitude, distanceKm: $distanceKm, isDistanceFilterApplied: $isDistanceFilterApplied)';
 }
 
 
@@ -257,7 +275,7 @@ abstract mixin class _$TrainingListingStateCopyWith<$Res> implements $TrainingLi
   factory _$TrainingListingStateCopyWith(_TrainingListingState value, $Res Function(_TrainingListingState) _then) = __$TrainingListingStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<TrainingModel> trainings, bool isLoading, bool isFailure, String? errorMessage, String summaryDisplayText, String locationDisplayText
+ List<TrainingModel> trainings, bool isLoading, bool isFailure, String? errorMessage, String summaryDisplayText, String locationName, double? latitude, double? longitude, int distanceKm, bool isDistanceFilterApplied
 });
 
 
@@ -274,15 +292,19 @@ class __$TrainingListingStateCopyWithImpl<$Res>
 
 /// Create a copy of TrainingListingState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? trainings = null,Object? isLoading = null,Object? isFailure = null,Object? errorMessage = freezed,Object? summaryDisplayText = null,Object? locationDisplayText = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? trainings = null,Object? isLoading = null,Object? isFailure = null,Object? errorMessage = freezed,Object? summaryDisplayText = null,Object? locationName = null,Object? latitude = freezed,Object? longitude = freezed,Object? distanceKm = null,Object? isDistanceFilterApplied = null,}) {
   return _then(_TrainingListingState(
 trainings: null == trainings ? _self._trainings : trainings // ignore: cast_nullable_to_non_nullable
 as List<TrainingModel>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isFailure: null == isFailure ? _self.isFailure : isFailure // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,summaryDisplayText: null == summaryDisplayText ? _self.summaryDisplayText : summaryDisplayText // ignore: cast_nullable_to_non_nullable
-as String,locationDisplayText: null == locationDisplayText ? _self.locationDisplayText : locationDisplayText // ignore: cast_nullable_to_non_nullable
-as String,
+as String,locationName: null == locationName ? _self.locationName : locationName // ignore: cast_nullable_to_non_nullable
+as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,distanceKm: null == distanceKm ? _self.distanceKm : distanceKm // ignore: cast_nullable_to_non_nullable
+as int,isDistanceFilterApplied: null == isDistanceFilterApplied ? _self.isDistanceFilterApplied : isDistanceFilterApplied // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

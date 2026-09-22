@@ -3,9 +3,9 @@ import 'package:designsystems/designsystems.dart';
 import '../buttons/app_buttons.dart';
 
 /// AppEmptyState
-/// 
-/// A reusable component for rendering empty data states (such as empty search 
-/// result, empty list). Enforces the visual design consistency using 
+///
+/// A reusable component for rendering empty data states (such as empty search
+/// result, empty list). Enforces the visual design consistency using
 /// `designsystems` color and typography system.
 class AppEmptyState extends StatelessWidget {
   /// The main title of the empty state.
@@ -43,10 +43,7 @@ class AppEmptyState extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min, // Hug content
           children: [
-            if (icon != null) ...[
-              icon!,
-              const SizedBox(height: AppSpacing.md),
-            ],
+            if (icon != null) ...[icon!, const SizedBox(height: AppSpacing.md)],
             Text(
               title,
               style: AppTypography.titleMedium.copyWith(
@@ -65,11 +62,8 @@ class AppEmptyState extends StatelessWidget {
             ),
             if (actionLabel != null && onActionPressed != null) ...[
               const SizedBox(height: AppSpacing.xl),
-              AppOutlinedButton(
-                text: actionLabel!,
-                onPressed: onActionPressed,
-              ),
-            ]
+              AppOutlinedButton(text: actionLabel!, onPressed: onActionPressed),
+            ],
           ],
         ),
       ),

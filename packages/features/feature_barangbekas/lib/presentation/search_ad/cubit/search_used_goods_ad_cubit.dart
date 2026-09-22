@@ -18,10 +18,8 @@ class SearchUsedGoodsAdCubit extends Cubit<SearchUsedGoodsAdState> {
     final params = SecondhandQueryParams(
       page: 1,
       limit: 10,
-      search: state.searchQuery,
-      province: state.filterProvince,
-      city: state.filterCity,
-      subdistrict: state.filterSubdistrict,
+      latitude: state.filterLatitude,
+      longitude: state.filterLongitude,
     );
 
     final result = await _getSecondhandsUseCase(params);
@@ -47,70 +45,41 @@ class SearchUsedGoodsAdCubit extends Cubit<SearchUsedGoodsAdState> {
     );
   }
 
+  /// Difilter client-side saja — lihat catatan gap di [SearchUsedGoodsAdState].
   void updateSearchQuery(String query) {
     emit(state.copyWith(searchQuery: query));
-    loadGoods();
   }
 
-  /// Terapkan filter radius berdasarkan lokasi terdaftar user.
-  ///
-  /// Radius menentukan granularitas filter lokasi:
-  /// - ≤ 5 km  → filter subdistrict + city + province
-  /// - ≤ 25 km → filter city + province
-  /// - > 25 km → filter province only
+  /// Terapkan filter radius berdasarkan koordinat alamat terdaftar user
+  /// (PRD §5.14.1 "koordinat alamat terdaftar"). Backend `GET /barang` hanya
+  /// menerima `latitude`/`longitude` — bukan filter teks province/city.
   Future<void> applyRadiusFilter(int km) async {
-    // Ambil profil user untuk mendapatkan lokasi terdaftar
     final profileResult = await _getUserProfileUseCase();
 
     if (isClosed) return;
 
     profileResult.fold(
       (failure) {
-        // Jika gagal ambil profil, tetap terapkan radius tanpa location filter
+        // Gagal ambil profil (mis. `/users/profile` belum sinkron dengan
+        // kontrak backend — gap terpisah di luar scope) → tetap terapkan
+        // radius tanpa koordinat, degradasi anggun (listing tanpa filter).
         emit(
           state.copyWith(
             radiusKm: km,
             isRadiusFilterApplied: true,
-            filterProvince: '',
-            filterCity: '',
-            filterSubdistrict: '',
+            filterLatitude: null,
+            filterLongitude: null,
           ),
         );
         loadGoods();
       },
       (userInfo) {
-        final province = userInfo.province;
-        final city = userInfo.city;
-        final subdistrict = userInfo.districts;
-
-        String filterProvince = '';
-        String filterCity = '';
-        String filterSubdistrict = '';
-
-        if (km <= 5) {
-          // Filter paling ketat: subdistrict + city + province
-          filterProvince = province;
-          filterCity = city;
-          filterSubdistrict = subdistrict;
-        } else if (km <= 25) {
-          // Filter sedang: city + province
-          filterProvince = province;
-          filterCity = city;
-          filterSubdistrict = '';
-        } else {
-          // Filter longgar: province only
-          filterProvince = province;
-          filterCity = '';
-          filterSubdistrict = '';
-        }
-
         emit(
           state.copyWith(
             radiusKm: km,
             isRadiusFilterApplied: true,
-            filterProvince: filterProvince,
-            filterCity: filterCity,
-            filterSubdistrict: filterSubdistrict,
+            filterLatitude: userInfo.latitude,
+            filterLongitude: userInfo.longitude,
           ),
         );
         loadGoods();
@@ -118,15 +87,13 @@ class SearchUsedGoodsAdCubit extends Cubit<SearchUsedGoodsAdState> {
     );
   }
 
-  /// Reset filter radius dan muat ulang data tanpa location filter.
   void resetRadiusFilter() {
     emit(
       state.copyWith(
         radiusKm: null,
         isRadiusFilterApplied: false,
-        filterProvince: '',
-        filterCity: '',
-        filterSubdistrict: '',
+        filterLatitude: null,
+        filterLongitude: null,
       ),
     );
     loadGoods();
