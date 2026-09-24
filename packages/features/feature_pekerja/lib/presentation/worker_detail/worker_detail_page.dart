@@ -540,7 +540,7 @@ class _DetailCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (trailingRow != null) trailingRow!,
+              ?trailingRow,
             ],
           ),
           if (content != null) ...[

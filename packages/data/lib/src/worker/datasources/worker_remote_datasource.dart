@@ -87,8 +87,9 @@ class WorkerRemoteDataSourceImpl implements WorkerRemoteDataSource {
       }
 
       if (sortBy != null && sortBy.isNotEmpty) queryParams['sort'] = sortBy;
-      if (keyword != null && keyword.isNotEmpty)
+      if (keyword != null && keyword.isNotEmpty) {
         queryParams['keyword'] = keyword;
+      }
 
       final response = await _dioClient.get(
         ApiConfig.workers,

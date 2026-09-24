@@ -263,7 +263,7 @@ class _JobDetailBottomSheetLoaderState
           alasan: alasan,
           targetAdType: 'pekerjaan',
         );
-        if (!mounted) return;
+        if (!context.mounted) return;
         final state = cubit.state;
         showDialog(
           context: context,
