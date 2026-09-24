@@ -23,6 +23,8 @@ import 'package:feature_pekerja/feature_pekerja.dart';
 import 'package:feature_pelatihan/feature_pelatihan.dart';
 import 'package:feature_barangbekas/feature_barangbekas.dart';
 import 'package:feature_history/feature_history.dart';
+import 'package:feature_report/feature_report.dart';
+import 'package:feature_chat/feature_chat.dart';
 
 import 'app_routes.dart';
 import '../pages/main_shell.dart';
@@ -230,14 +232,14 @@ class AppRouter {
             ],
           ),
 
-          // Chat Tab
+          // Chat Tab (F-18/F-19, PRD §5.9, Kelompok 4 Phase 5)
           GoRoute(
             path: AppRoutes.chat,
             name: 'chat',
             pageBuilder: (context, state) => NoTransitionPage(
               child: VerificationGuard(
                 onVerifyPressed: () => context.go(AppRoutes.personalInfo),
-                child: const PlaceholderPage(title: 'Chat'),
+                child: const ConversationListPage(),
               ),
             ),
             routes: [
@@ -246,8 +248,14 @@ class AppRouter {
                 name: 'chatRoom',
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) {
-                  final id = state.pathParameters['id']!;
-                  return PlaceholderPage(title: 'Chat Room: $id');
+                  final otherUserId = state.pathParameters['id']!;
+                  final query = state.uri.queryParameters;
+                  return ConversationRoomPage(
+                    otherUserId: otherUserId,
+                    otherUsername: query['otherUsername'],
+                    relatedAdType: query['adType'],
+                    relatedAdId: query['adId'],
+                  );
                 },
               ),
             ],
@@ -258,7 +266,8 @@ class AppRouter {
             path: AppRoutes.history,
             name: 'history',
             pageBuilder: (context, state) {
-              final tabIndex = int.tryParse(state.uri.queryParameters['tab'] ?? '0') ?? 0;
+              final tabIndex =
+                  int.tryParse(state.uri.queryParameters['tab'] ?? '0') ?? 0;
               return NoTransitionPage(
                 child: VerificationGuard(
                   onVerifyPressed: () => context.go(AppRoutes.personalInfo),
@@ -313,8 +322,7 @@ class AppRouter {
                 name: 'personalInfo',
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) => BlocProvider(
-                  create: (_) =>
-                      GetIt.I<PersonalInfoCubit>()..loadProfile(),
+                  create: (_) => GetIt.I<PersonalInfoCubit>()..loadProfile(),
                   child: const PersonalInfoPage(),
                 ),
               ),
@@ -323,6 +331,14 @@ class AppRouter {
                 name: 'editPersonalInfo',
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) => const EditPersonalDataPage(),
+              ),
+              GoRoute(
+                path: 'pelaporan-masalah',
+                name: 'pelaporanMasalah',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) => PelaporanMasalahPage(
+                  targetId: state.uri.queryParameters['targetId'],
+                ),
               ),
             ],
           ),
@@ -369,15 +385,13 @@ class AppRouter {
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) {
                   final jobId = state.pathParameters['id']!;
-                  final extra =
-                      state.extra as Map<String, dynamic>? ?? {};
+                  final extra = state.extra as Map<String, dynamic>? ?? {};
                   return DaftarPelamarPage(
                     args: DaftarPelamarArgs(
                       jobId: jobId,
                       jobTitle: extra['jobTitle'] as String? ?? '',
                       adCode: extra['adCode'] as String? ?? '',
                       jobStatus: extra['jobStatus'] as String? ?? '',
-                      jobDateOfJob: extra['jobDateOfJob'] as DateTime?,
                     ),
                   );
                 },
@@ -431,8 +445,7 @@ class AppRouter {
                 builder: (context, state) {
                   final trainingId = state.pathParameters['id']!;
                   final enrollmentId = state.pathParameters['enrollmentId']!;
-                  final enrollment =
-                      state.extra as TrainingEnrollmentEntity?;
+                  final enrollment = state.extra as TrainingEnrollmentEntity?;
                   return BlocProvider(
                     create: (context) {
                       final cubit = GetIt.I<PaymentCubit>();
@@ -440,13 +453,10 @@ class AppRouter {
                         trainingId: trainingId,
                         enrollmentId: enrollmentId,
                         status: enrollment?.status ?? 'pending',
-                        trainingTitle:
-                            enrollment?.training?.title ?? '',
-                        fee: enrollment?.training?.feePerPerson
-                                .toString() ??
-                            '',
-                        bankName:
-                            enrollment?.training?.bankName ?? '',
+                        trainingTitle: enrollment?.training?.title ?? '',
+                        fee:
+                            enrollment?.training?.feePerPerson.toString() ?? '',
+                        bankName: enrollment?.training?.bankName ?? '',
                         bankAccountNumber:
                             enrollment?.training?.bankAccountNumber ?? '',
                         bankAccountHolderName:
@@ -465,10 +475,8 @@ class AppRouter {
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) {
                   final trainingId = state.pathParameters['id']!;
-                  final extra =
-                      state.extra as Map<String, dynamic>? ?? {};
-                  final trainingTitle =
-                      extra['title'] as String? ?? '';
+                  final extra = state.extra as Map<String, dynamic>? ?? {};
+                  final trainingTitle = extra['title'] as String? ?? '';
                   return BlocProvider(
                     create: (context) =>
                         GetIt.I<DaftarPendaftarCubit>()
@@ -486,10 +494,8 @@ class AppRouter {
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) {
                   final trainingId = state.pathParameters['id']!;
-                  final extra =
-                      state.extra as Map<String, dynamic>? ?? {};
-                  final trainingTitle =
-                      extra['title'] as String? ?? '';
+                  final extra = state.extra as Map<String, dynamic>? ?? {};
+                  final trainingTitle = extra['title'] as String? ?? '';
                   return BlocProvider(
                     create: (context) => GetIt.I<BadgeUploadCubit>(),
                     child: BadgeUploadPage(
@@ -584,8 +590,26 @@ class AppRouter {
             parentNavigatorKey: rootNavigatorKey,
             builder: (context, state) {
               final id = state.pathParameters['id']!;
-              return PlaceholderPage(title: 'Detail Barang Bekas: $id');
+              return DetailUsedGoodsAdPage(id: id);
             },
+            routes: [
+              // "Kelola Iklan Saya" (P4.8, PRD §5.14.2) — daftar bider.
+              GoRoute(
+                path: 'bider',
+                name: 'daftarBider',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) {
+                  final iklanId = state.pathParameters['id']!;
+                  final extra = state.extra as Map<String, dynamic>? ?? {};
+                  return DaftarBiderPage(
+                    args: DaftarBiderArgs(
+                      iklanId: iklanId,
+                      judul: extra['judul'] as String? ?? '',
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -841,13 +865,8 @@ class _JobDetailBottomSheetContentState
       workerProfileNotFound: () {
         _showNoWorkerProfileDialog(context);
       },
-      workerProfileFound: (workerId, workerCount, defaultDateTime) {
-        _showBidDialog(
-          context: context,
-          workerId: workerId,
-          workerCount: workerCount,
-          defaultDateTime: defaultDateTime,
-        );
+      workerProfileFound: (defaultDateTime) {
+        _showLamarDialog(context: context, defaultDateTime: defaultDateTime);
       },
       submitting: () {},
       success: () {
@@ -885,7 +904,8 @@ class _JobDetailBottomSheetContentState
       barrierDismissible: false,
       builder: (dialogCtx) => AppDialogWarning(
         title: 'Profil Pekerja Diperlukan',
-        message: 'Kamu belum memiliki profil pekerja. '
+        message:
+            'Kamu belum memiliki profil pekerja. '
             'Buat profil terlebih dahulu untuk dapat melamar pekerjaan ini.',
         cancelText: 'Nanti',
         confirmText: 'Buat Profil',
@@ -901,10 +921,8 @@ class _JobDetailBottomSheetContentState
     );
   }
 
-  void _showBidDialog({
+  void _showLamarDialog({
     required BuildContext context,
-    required String workerId,
-    required int workerCount,
     required DateTime? defaultDateTime,
   }) {
     final jobState = context.read<JobDetailCubit>().state;
@@ -919,29 +937,55 @@ class _JobDetailBottomSheetContentState
         value: _takeJobCubit,
         child: BlocBuilder<TakeJobCubit, TakeJobState>(
           builder: (ctx, takeJobState) => TakeJobDialog(
-            data: TakeJobDialogData(
-              defaultDateTime: job.dateOfJob,
-              defaultDateText: JobFormatter.formatDate(job.dateOfJob),
-              defaultTimeText: JobFormatter.formatTime(job.dateOfJob),
-              workerCount: workerCount,
-            ),
-            workerId: workerId,
+            data: TakeJobDialogData(defaultDateTime: defaultDateTime),
             isSubmitting: takeJobState.maybeWhen(
               submitting: () => true,
               orElse: () => false,
             ),
-            onSubmit: (selectedDateTime, resolvedWorkerId, slotCount) {
+            onSubmit: (tanggal, jamMulai, jamAkhir, kuotaDiambil) {
               Navigator.of(dialogContext).pop();
-              _takeJobCubit.submitBid(
-                jobId: job.id,
-                workerId: resolvedWorkerId,
-                dateOfJob: selectedDateTime,
-                slotCount: slotCount,
+              _takeJobCubit.submitLamaran(
+                iklanId: job.id,
+                tanggal: tanggal,
+                jamMulai: jamMulai,
+                jamAkhir: jamAkhir,
+                kuotaDiambil: kuotaDiambil,
               );
             },
           ),
         ),
       ),
+    );
+  }
+
+  void _showLaporkanIklanDialog(BuildContext context, String jobId) {
+    final cubit = GetIt.I<LaporkanIklanCubit>();
+    LaporkanIklanDialog.show(
+      context,
+      onSubmit: (alasan) async {
+        await cubit.submit(
+          targetType: 'iklan',
+          targetId: jobId,
+          alasan: alasan,
+        );
+        if (!context.mounted) return;
+        final state = cubit.state;
+        showDialog(
+          context: context,
+          builder: (dialogCtx) => state.isSuccess
+              ? AppDialogSuccess(
+                  title: 'Berhasil',
+                  message: 'Laporan kamu telah dikirim.',
+                  onPressed: () => Navigator.pop(dialogCtx),
+                )
+              : AppDialogFailed(
+                  title: 'Gagal',
+                  message: state.errorMessage ?? 'Terjadi kesalahan.',
+                  onPressed: () => Navigator.pop(dialogCtx),
+                ),
+        );
+        cubit.close();
+      },
     );
   }
 
@@ -970,7 +1014,11 @@ class _JobDetailBottomSheetContentState
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: AppDimensions.iconXxl, color: AppColors.error),
+          Icon(
+            Icons.error_outline,
+            size: AppDimensions.iconXxl,
+            color: AppColors.error,
+          ),
           const SizedBox(height: AppSpacing.md),
           Text(
             state.errorMessage ?? 'Terjadi kesalahan',
@@ -1020,20 +1068,23 @@ class _JobDetailBottomSheetContentState
             phoneNumber: job.employerPhone.isNotEmpty ? job.employerPhone : '-',
             requirements: job.requirements ?? '-',
             photoUrls: photoUrls,
+            jobId: job.id,
           ),
           onChatPressed: () {
             Navigator.of(context).pop();
-            debugPrint('[JobDetail] Chat pressed for job: ${job.id}');
+            context.push(
+              '/chat/${job.userId}'
+              '?otherUsername=${Uri.encodeComponent(job.employerName)}'
+              '&adType=pekerjaan&adId=${job.id}',
+            );
           },
           isLoading: isCheckingProfile,
-          onTakeJobPressed: () =>
-              context.read<TakeJobCubit>().checkWorkerProfileAndProceed(
-                    workerCount: job.workerCount,
-                    defaultDateTime: job.dateOfJob,
-                  ),
+          onTakeJobPressed: () => context
+              .read<TakeJobCubit>()
+              .checkWorkerProfileAndProceed(defaultDateTime: job.dateOfJob),
+          onReportPressed: () => _showLaporkanIklanDialog(context, job.id),
         );
       },
     );
   }
 }
-

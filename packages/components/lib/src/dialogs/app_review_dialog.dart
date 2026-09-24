@@ -20,10 +20,7 @@ class AppReviewDialog extends StatefulWidget {
     return showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AppReviewDialog(
-        adCode: adCode,
-        onSubmit: onSubmit,
-      ),
+      builder: (context) => AppReviewDialog(adCode: adCode, onSubmit: onSubmit),
     );
   }
 
@@ -36,17 +33,27 @@ class _AppReviewDialogState extends State<AppReviewDialog> {
   final TextEditingController _reviewController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _reviewController.addListener(() => setState(() {}));
+  }
+
+  @override
   void dispose() {
     _reviewController.dispose();
     super.dispose();
   }
 
+  /// PRD §5.15: ulasan opsional, tapi bila diisi wajib 20-255 karakter.
+  bool get _isReviewValid {
+    final length = _reviewController.text.trim().length;
+    return length == 0 || (length >= 20 && length <= 255);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       backgroundColor: AppColors.white,
       insetPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Padding(
@@ -82,7 +89,11 @@ class _AppReviewDialogState extends State<AppReviewDialog> {
                 ),
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
-                  child: const Icon(Icons.close, color: AppColors.textPrimary, size: 20),
+                  child: const Icon(
+                    Icons.close,
+                    color: AppColors.textPrimary,
+                    size: 20,
+                  ),
                 ),
               ],
             ),
@@ -91,7 +102,9 @@ class _AppReviewDialogState extends State<AppReviewDialog> {
             // Rating Stars
             Text(
               'Rating',
-              style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w500),
+              style: AppTypography.labelLarge.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: AppSpacing.sm),
             RatingBar.builder(
@@ -103,10 +116,8 @@ class _AppReviewDialogState extends State<AppReviewDialog> {
               itemSize: 40,
               unratedColor: AppColors.border,
               itemPadding: const EdgeInsets.only(right: 8.0),
-              itemBuilder: (context, _) => const Icon(
-                Icons.star,
-                color: AppColors.iconOrange,
-              ),
+              itemBuilder: (context, _) =>
+                  const Icon(Icons.star, color: AppColors.iconOrange),
               onRatingUpdate: (rating) {
                 setState(() {
                   _rating = rating.toInt();
@@ -118,15 +129,20 @@ class _AppReviewDialogState extends State<AppReviewDialog> {
             // Review Input
             Text(
               'Review (Opsional)',
-              style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w500),
+              style: AppTypography.labelLarge.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: AppSpacing.sm),
             TextField(
               controller: _reviewController,
               maxLines: 4,
+              maxLength: 255,
               decoration: InputDecoration(
                 hintText: 'Input Form',
-                hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textCaption),
+                hintStyle: AppTypography.bodyMedium.copyWith(
+                  color: AppColors.textCaption,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(color: AppColors.border),
@@ -144,8 +160,14 @@ class _AppReviewDialogState extends State<AppReviewDialog> {
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'Review akan membantu pekerja lain dalam mengambil keputusan',
-              style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+              _isReviewValid
+                  ? 'Review akan membantu pekerja lain dalam mengambil keputusan'
+                  : 'Review minimal 20 karakter bila diisi',
+              style: AppTypography.caption.copyWith(
+                color: _isReviewValid
+                    ? AppColors.textSecondary
+                    : AppColors.error,
+              ),
             ),
             const SizedBox(height: AppSpacing.xl),
 
@@ -153,9 +175,9 @@ class _AppReviewDialogState extends State<AppReviewDialog> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _rating > 0
+                onPressed: _rating > 0 && _isReviewValid
                     ? () {
-                        widget.onSubmit(_rating, _reviewController.text);
+                        widget.onSubmit(_rating, _reviewController.text.trim());
                         Navigator.of(context).pop();
                       }
                     : null,
@@ -170,7 +192,9 @@ class _AppReviewDialogState extends State<AppReviewDialog> {
                 ),
                 child: Text(
                   'Submit Rating',
-                  style: AppTypography.labelMedium.copyWith(color: AppColors.white),
+                  style: AppTypography.labelMedium.copyWith(
+                    color: AppColors.white,
+                  ),
                 ),
               ),
             ),
@@ -188,7 +212,9 @@ class _AppReviewDialogState extends State<AppReviewDialog> {
                 ),
                 child: Text(
                   'Cancel',
-                  style: AppTypography.labelMedium.copyWith(color: AppColors.textPrimary),
+                  style: AppTypography.labelMedium.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
             ),

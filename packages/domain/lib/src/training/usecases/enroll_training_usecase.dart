@@ -8,7 +8,9 @@ class EnrollTrainingUseCase {
 
   EnrollTrainingUseCase(this.repository);
 
-  Future<Either<TrainingFailure, TrainingEnrollmentEntity>> call(String trainingId) {
+  Future<Either<TrainingFailure, TrainingEnrollmentEntity>> call(
+    String trainingId,
+  ) {
     return repository.enrollTraining(trainingId);
   }
 }

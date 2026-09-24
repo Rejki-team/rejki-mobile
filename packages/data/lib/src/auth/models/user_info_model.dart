@@ -26,12 +26,19 @@ abstract class UserInfoModel with _$UserInfoModel {
     @JsonKey(name: 'created_at') required String createdAt,
     @JsonKey(name: 'updated_at') required String updatedAt,
     // Additional fields from API response
-    @JsonKey(name: 'selfie_ktp_file_path') @Default('') String selfieKtpFilePath,
+    @JsonKey(name: 'selfie_ktp_file_path')
+    @Default('')
+    String selfieKtpFilePath,
     @JsonKey(name: 'education_level') @Default('') String educationLevel,
     @JsonKey(name: 'education_focus') @Default('') String educationFocus,
     @JsonKey(name: 'work_experience') @Default('') String workExperience,
     @JsonKey(name: 'address_ktp') @Default('') String addressKtp,
     @Default('Indonesia') String country,
+
+    /// Koordinat hasil geocoding (F-1, P4.6 Kelompok 3 Phase 4) — `null` bila
+    /// backend belum kirim (alamat belum diisi/geocoding gagal, degradasi anggun).
+    double? latitude,
+    double? longitude,
   }) = _UserInfoModel;
 
   factory UserInfoModel.fromJson(Map<String, dynamic> json) =>

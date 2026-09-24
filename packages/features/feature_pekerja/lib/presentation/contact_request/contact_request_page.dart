@@ -77,8 +77,7 @@ class _ContactRequestPageState extends State<ContactRequestPage>
     return BlocProvider.value(
       value: _cubit,
       child: BlocListener<ContactRequestCubit, ContactRequestState>(
-        listenWhen:
-            (prev, curr) => prev.mutationStatus != curr.mutationStatus,
+        listenWhen: (prev, curr) => prev.mutationStatus != curr.mutationStatus,
         listener: (context, state) {
           if (state.mutationStatus == ContactRequestMutationStatus.success) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -134,10 +133,7 @@ class _ContactRequestPageState extends State<ContactRequestPage>
           AppAssets.iconArrowLeft,
           width: 20,
           height: 20,
-          colorFilter: const ColorFilter.mode(
-            AppColors.white,
-            BlendMode.srcIn,
-          ),
+          colorFilter: const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
         ),
       ),
       titleSpacing: 0,
@@ -201,10 +197,8 @@ class _PermintaanTab extends StatelessWidget {
         if (state.permintaanStatus == ContactRequestStatus.failure) {
           return _ErrorView(
             message: state.permintaanError ?? 'Terjadi kesalahan',
-            onRetry: () => cubit.loadPermintaan(
-              workerId: args.workerId,
-              refresh: true,
-            ),
+            onRetry: () =>
+                cubit.loadPermintaan(workerId: args.workerId, refresh: true),
           );
         }
 
@@ -214,14 +208,13 @@ class _PermintaanTab extends StatelessWidget {
         }
 
         return RefreshIndicator(
-          onRefresh: () => cubit.loadPermintaan(
-            workerId: args.workerId,
-            refresh: true,
-          ),
+          onRefresh: () =>
+              cubit.loadPermintaan(workerId: args.workerId, refresh: true),
           child: ListView.builder(
             controller: scrollController,
             padding: const EdgeInsets.all(AppSpacing.md),
-            itemCount: state.permintaanList.length +
+            itemCount:
+                state.permintaanList.length +
                 (state.permintaanStatus == ContactRequestStatus.loadingMore
                     ? 1
                     : 0),
@@ -236,10 +229,8 @@ class _PermintaanTab extends StatelessWidget {
               return ContactRequestCard(
                 contact: contact,
                 showActionButtons: true,
-                onTolakPressed: () => cubit.tolak(
-                  workerId: args.workerId,
-                  contactId: contact.id,
-                ),
+                onTolakPressed: () =>
+                    cubit.tolak(workerId: args.workerId, contactId: contact.id),
                 onTerimaPressed: () => cubit.terima(
                   workerId: args.workerId,
                   contactId: contact.id,
@@ -281,10 +272,8 @@ class _DiterimaTab extends StatelessWidget {
         if (state.diterimaStatus == ContactRequestStatus.failure) {
           return _ErrorView(
             message: state.diterimaError ?? 'Terjadi kesalahan',
-            onRetry: () => cubit.loadDiterima(
-              workerId: args.workerId,
-              refresh: true,
-            ),
+            onRetry: () =>
+                cubit.loadDiterima(workerId: args.workerId, refresh: true),
           );
         }
 
@@ -296,14 +285,13 @@ class _DiterimaTab extends StatelessWidget {
         }
 
         return RefreshIndicator(
-          onRefresh: () => cubit.loadDiterima(
-            workerId: args.workerId,
-            refresh: true,
-          ),
+          onRefresh: () =>
+              cubit.loadDiterima(workerId: args.workerId, refresh: true),
           child: ListView.builder(
             controller: scrollController,
             padding: const EdgeInsets.all(AppSpacing.md),
-            itemCount: state.diterimaList.length +
+            itemCount:
+                state.diterimaList.length +
                 (state.diterimaStatus == ContactRequestStatus.loadingMore
                     ? 1
                     : 0),
@@ -378,10 +366,7 @@ class _ErrorView extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.md),
-            ElevatedButton(
-              onPressed: onRetry,
-              child: const Text('Coba lagi'),
-            ),
+            ElevatedButton(onPressed: onRetry, child: const Text('Coba lagi')),
           ],
         ),
       ),

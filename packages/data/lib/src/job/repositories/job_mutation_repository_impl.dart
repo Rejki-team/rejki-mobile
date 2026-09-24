@@ -8,7 +8,7 @@ import 'package:injectable/injectable.dart';
 
 /// Implementation of JobMutationRepository
 ///
-/// Handles CREATE operations for jobs using the mutation data source.
+/// Handles CREATE + Lamaran mutation operations using the mutation data source.
 @LazySingleton(as: JobMutationRepository)
 class JobMutationRepositoryImpl implements JobMutationRepository {
   final JobMutationDataSource remoteDataSource;
@@ -25,18 +25,11 @@ class JobMutationRepositoryImpl implements JobMutationRepository {
       debugPrint('✅ [JobMutationRepository] Job created successfully!');
       debugPrint('📦 [JobMutationRepository] Job ID: ${model.id}');
 
-      // Convert shared JobModel to shared JobEntity
       final entity = model.toEntity();
-      debugPrint(
-        '✅ [JobMutationRepository] Converted to entity, returning Right...',
-      );
       return Right(entity);
     } on DioException catch (e) {
-      // Use ApiError for consistent error handling
       final apiError = ApiError.fromDioException(e);
       debugPrint('❌ [JobMutationRepository] ApiError: $apiError');
-
-      // Map ApiError to JobFailure
       return Left(_mapApiErrorToJobFailure(apiError));
     } catch (e, stackTrace) {
       debugPrint('❌ [JobMutationRepository] Unexpected error: $e');
@@ -46,18 +39,81 @@ class JobMutationRepositoryImpl implements JobMutationRepository {
   }
 
   @override
-  Future<Either<JobFailure, Unit>> updateBidStatus({
-    required String jobId,
-    required String bidId,
-    required String status,
+  Future<Either<JobFailure, LamaranEntity>> reviewLamaran({
+    required String iklanId,
+    required String lamaranId,
+    required bool approved,
   }) async {
     try {
-      await remoteDataSource.updateBidStatus(
-        jobId: jobId,
-        bidId: bidId,
-        status: status,
+      final model = await remoteDataSource.reviewLamaran(
+        iklanId: iklanId,
+        lamaranId: lamaranId,
+        approved: approved,
       );
-      return const Right(unit);
+      return Right(model.toEntity());
+    } on DioException catch (e) {
+      final apiError = ApiError.fromDioException(e);
+      return Left(_mapApiErrorToJobFailure(apiError));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<JobFailure, LamaranEntity>> mulaiBekerja({
+    required String iklanId,
+    required String lamaranId,
+    required double latitude,
+    required double longitude,
+  }) async {
+    try {
+      final model = await remoteDataSource.mulaiBekerja(
+        iklanId: iklanId,
+        lamaranId: lamaranId,
+        latitude: latitude,
+        longitude: longitude,
+      );
+      return Right(model.toEntity());
+    } on DioException catch (e) {
+      final apiError = ApiError.fromDioException(e);
+      return Left(_mapApiErrorToJobFailure(apiError));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<JobFailure, LamaranEntity>> tandaiSelesai({
+    required String iklanId,
+    required String lamaranId,
+  }) async {
+    try {
+      final model = await remoteDataSource.tandaiSelesai(
+        iklanId: iklanId,
+        lamaranId: lamaranId,
+      );
+      return Right(model.toEntity());
+    } on DioException catch (e) {
+      final apiError = ApiError.fromDioException(e);
+      return Left(_mapApiErrorToJobFailure(apiError));
+    } catch (e) {
+      return Left(JobFailure.serverError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<JobFailure, LamaranEntity>> batalkanLamaran({
+    required String iklanId,
+    required String lamaranId,
+    required String alasan,
+  }) async {
+    try {
+      final model = await remoteDataSource.batalkanLamaran(
+        iklanId: iklanId,
+        lamaranId: lamaranId,
+        alasan: alasan,
+      );
+      return Right(model.toEntity());
     } on DioException catch (e) {
       final apiError = ApiError.fromDioException(e);
       return Left(_mapApiErrorToJobFailure(apiError));
@@ -68,133 +124,19 @@ class JobMutationRepositoryImpl implements JobMutationRepository {
 
   @override
   Future<Either<JobFailure, Unit>> createJobReview({
-    required String jobId,
-    required int rating,
-    required String review,
+    required String iklanId,
+    required String posterId,
+    required int bintang,
+    String? ulasan,
   }) async {
     try {
       await remoteDataSource.createJobReview(
-        jobId: jobId,
-        rating: rating,
-        review: review,
+        iklanId: iklanId,
+        posterId: posterId,
+        bintang: bintang,
+        ulasan: ulasan,
       );
       return const Right(unit);
-    } on DioException catch (e) {
-      final apiError = ApiError.fromDioException(e);
-      return Left(_mapApiErrorToJobFailure(apiError));
-    } catch (e) {
-      return Left(JobFailure.serverError(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<JobFailure, Unit>> ownerCompleteJob({
-    required String jobId,
-  }) async {
-    try {
-      await remoteDataSource.ownerCompleteJob(jobId: jobId);
-      return const Right(unit);
-    } on DioException catch (e) {
-      final apiError = ApiError.fromDioException(e);
-      return Left(_mapApiErrorToJobFailure(apiError));
-    } catch (e) {
-      return Left(JobFailure.serverError(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<JobFailure, Unit>> ownerConfirmBidComplete({
-    required String jobId,
-    required String bidId,
-  }) async {
-    try {
-      await remoteDataSource.ownerConfirmBidComplete(
-        jobId: jobId,
-        bidId: bidId,
-      );
-      return const Right(unit);
-    } on DioException catch (e) {
-      final apiError = ApiError.fromDioException(e);
-      return Left(_mapApiErrorToJobFailure(apiError));
-    } catch (e) {
-      return Left(JobFailure.serverError(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<JobFailure, Unit>> disputeBid({
-    required String jobId,
-    required String bidId,
-    required String reason,
-  }) async {
-    try {
-      await remoteDataSource.disputeBid(
-        jobId: jobId,
-        bidId: bidId,
-        reason: reason,
-      );
-      return const Right(unit);
-    } on DioException catch (e) {
-      final apiError = ApiError.fromDioException(e);
-      return Left(_mapApiErrorToJobFailure(apiError));
-    } catch (e) {
-      return Left(JobFailure.serverError(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<JobFailure, Unit>> cancelBid({
-    required String jobId,
-    required String bidId,
-    required String reason,
-  }) async {
-    try {
-      await remoteDataSource.cancelBid(
-        jobId: jobId,
-        bidId: bidId,
-        reason: reason,
-      );
-      return const Right(unit);
-    } on DioException catch (e) {
-      final apiError = ApiError.fromDioException(e);
-      return Left(_mapApiErrorToJobFailure(apiError));
-    } catch (e) {
-      return Left(JobFailure.serverError(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<JobFailure, List<JobBidEvidenceEntity>>> uploadBidEvidence({
-    required String jobId,
-    required String bidId,
-    required List<String> imagePaths,
-  }) async {
-    try {
-      final models = await remoteDataSource.uploadBidEvidence(
-        jobId: jobId,
-        bidId: bidId,
-        imagePaths: imagePaths,
-      );
-      return Right(models.map((m) => m.toEntity()).toList());
-    } on DioException catch (e) {
-      final apiError = ApiError.fromDioException(e);
-      return Left(_mapApiErrorToJobFailure(apiError));
-    } catch (e) {
-      return Left(JobFailure.serverError(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<JobFailure, List<JobBidEvidenceEntity>>> getBidEvidence({
-    required String jobId,
-    required String bidId,
-  }) async {
-    try {
-      final models = await remoteDataSource.getBidEvidence(
-        jobId: jobId,
-        bidId: bidId,
-      );
-      return Right(models.map((m) => m.toEntity()).toList());
     } on DioException catch (e) {
       final apiError = ApiError.fromDioException(e);
       return Left(_mapApiErrorToJobFailure(apiError));

@@ -56,9 +56,7 @@ class ImageCompressor {
   /// - The platform compression API returns null on all attempts.
   static Future<File> compress(File source) async {
     if (!source.existsSync()) {
-      throw ImageCompressionException(
-        'Source file not found: ${source.path}',
-      );
+      throw ImageCompressionException('Source file not found: ${source.path}');
     }
 
     int quality = _initialQuality;
@@ -112,8 +110,8 @@ class ImageCompressor {
     final lastDot = sourcePath.lastIndexOf('.');
     final base = lastSep >= 0
         ? (lastDot > lastSep
-            ? sourcePath.substring(lastSep + 1, lastDot)
-            : sourcePath.substring(lastSep + 1))
+              ? sourcePath.substring(lastSep + 1, lastDot)
+              : sourcePath.substring(lastSep + 1))
         : sourcePath;
     final timestamp = DateTime.now().microsecondsSinceEpoch;
     final sep = Platform.pathSeparator;

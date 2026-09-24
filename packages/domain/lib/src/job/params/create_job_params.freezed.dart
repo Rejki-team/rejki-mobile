@@ -15,7 +15,12 @@ T _$identity<T>(T value) => value;
 mixin _$CreateJobParams {
 
 /// Judul Pekerjaan
- String get title;/// Deskripsi Pekerjaan
+ String get title;/// Nama perusahaan/pemberi kerja — backend `rejki-app` mewajibkan field
+/// ini (`perusahaan`, min 2 karakter) tapi TIDAK ADA form field khusus
+/// untuk ini di UI create_job (di luar scope Kelompok 3 Phase 2, hanya
+/// perbaikan path+field mapping) — `CreateJobBloc` default ke [title]
+/// bila kosong/null. Gap dicatat, bukan diperbaiki penuh.
+ String? get perusahaan;/// Deskripsi Pekerjaan
  String get jobDesc;/// Syarat Pekerjaan
  String get requirements;/// Upah Pekerjaan (input currency amount)
  int get salary;/// Tipe Upah Pekerjaan (dropdown value: e.g., "hourly", "daily", "project")
@@ -41,16 +46,16 @@ $CreateJobParamsCopyWith<CreateJobParams> get copyWith => _$CreateJobParamsCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateJobParams&&(identical(other.title, title) || other.title == title)&&(identical(other.jobDesc, jobDesc) || other.jobDesc == jobDesc)&&(identical(other.requirements, requirements) || other.requirements == requirements)&&(identical(other.salary, salary) || other.salary == salary)&&(identical(other.salaryOfWorker, salaryOfWorker) || other.salaryOfWorker == salaryOfWorker)&&(identical(other.numberOfWorker, numberOfWorker) || other.numberOfWorker == numberOfWorker)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateJobParams&&(identical(other.title, title) || other.title == title)&&(identical(other.perusahaan, perusahaan) || other.perusahaan == perusahaan)&&(identical(other.jobDesc, jobDesc) || other.jobDesc == jobDesc)&&(identical(other.requirements, requirements) || other.requirements == requirements)&&(identical(other.salary, salary) || other.salary == salary)&&(identical(other.salaryOfWorker, salaryOfWorker) || other.salaryOfWorker == salaryOfWorker)&&(identical(other.numberOfWorker, numberOfWorker) || other.numberOfWorker == numberOfWorker)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,title,jobDesc,requirements,salary,salaryOfWorker,numberOfWorker,dateOfJob,address,province,city,subdistrict,ward,village,const DeepCollectionEquality().hash(images),latitude,longitude);
+int get hashCode => Object.hash(runtimeType,title,perusahaan,jobDesc,requirements,salary,salaryOfWorker,numberOfWorker,dateOfJob,address,province,city,subdistrict,ward,village,const DeepCollectionEquality().hash(images),latitude,longitude);
 
 @override
 String toString() {
-  return 'CreateJobParams(title: $title, jobDesc: $jobDesc, requirements: $requirements, salary: $salary, salaryOfWorker: $salaryOfWorker, numberOfWorker: $numberOfWorker, dateOfJob: $dateOfJob, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, images: $images, latitude: $latitude, longitude: $longitude)';
+  return 'CreateJobParams(title: $title, perusahaan: $perusahaan, jobDesc: $jobDesc, requirements: $requirements, salary: $salary, salaryOfWorker: $salaryOfWorker, numberOfWorker: $numberOfWorker, dateOfJob: $dateOfJob, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, images: $images, latitude: $latitude, longitude: $longitude)';
 }
 
 
@@ -61,7 +66,7 @@ abstract mixin class $CreateJobParamsCopyWith<$Res>  {
   factory $CreateJobParamsCopyWith(CreateJobParams value, $Res Function(CreateJobParams) _then) = _$CreateJobParamsCopyWithImpl;
 @useResult
 $Res call({
- String title, String jobDesc, String requirements, int salary, String salaryOfWorker, int numberOfWorker, String dateOfJob, String address, String province, String city, String subdistrict, String ward, String village, List<File> images, double? latitude, double? longitude
+ String title, String? perusahaan, String jobDesc, String requirements, int salary, String salaryOfWorker, int numberOfWorker, String dateOfJob, String address, String province, String city, String subdistrict, String ward, String village, List<File> images, double? latitude, double? longitude
 });
 
 
@@ -78,10 +83,11 @@ class _$CreateJobParamsCopyWithImpl<$Res>
 
 /// Create a copy of CreateJobParams
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? jobDesc = null,Object? requirements = null,Object? salary = null,Object? salaryOfWorker = null,Object? numberOfWorker = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = null,Object? images = null,Object? latitude = freezed,Object? longitude = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? perusahaan = freezed,Object? jobDesc = null,Object? requirements = null,Object? salary = null,Object? salaryOfWorker = null,Object? numberOfWorker = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = null,Object? images = null,Object? latitude = freezed,Object? longitude = freezed,}) {
   return _then(_self.copyWith(
 title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,jobDesc: null == jobDesc ? _self.jobDesc : jobDesc // ignore: cast_nullable_to_non_nullable
+as String,perusahaan: freezed == perusahaan ? _self.perusahaan : perusahaan // ignore: cast_nullable_to_non_nullable
+as String?,jobDesc: null == jobDesc ? _self.jobDesc : jobDesc // ignore: cast_nullable_to_non_nullable
 as String,requirements: null == requirements ? _self.requirements : requirements // ignore: cast_nullable_to_non_nullable
 as String,salary: null == salary ? _self.salary : salary // ignore: cast_nullable_to_non_nullable
 as int,salaryOfWorker: null == salaryOfWorker ? _self.salaryOfWorker : salaryOfWorker // ignore: cast_nullable_to_non_nullable
@@ -181,10 +187,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title,  String jobDesc,  String requirements,  int salary,  String salaryOfWorker,  int numberOfWorker,  String dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String village,  List<File> images,  double? latitude,  double? longitude)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title,  String? perusahaan,  String jobDesc,  String requirements,  int salary,  String salaryOfWorker,  int numberOfWorker,  String dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String village,  List<File> images,  double? latitude,  double? longitude)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CreateJobParams() when $default != null:
-return $default(_that.title,_that.jobDesc,_that.requirements,_that.salary,_that.salaryOfWorker,_that.numberOfWorker,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.images,_that.latitude,_that.longitude);case _:
+return $default(_that.title,_that.perusahaan,_that.jobDesc,_that.requirements,_that.salary,_that.salaryOfWorker,_that.numberOfWorker,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.images,_that.latitude,_that.longitude);case _:
   return orElse();
 
 }
@@ -202,10 +208,10 @@ return $default(_that.title,_that.jobDesc,_that.requirements,_that.salary,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title,  String jobDesc,  String requirements,  int salary,  String salaryOfWorker,  int numberOfWorker,  String dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String village,  List<File> images,  double? latitude,  double? longitude)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title,  String? perusahaan,  String jobDesc,  String requirements,  int salary,  String salaryOfWorker,  int numberOfWorker,  String dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String village,  List<File> images,  double? latitude,  double? longitude)  $default,) {final _that = this;
 switch (_that) {
 case _CreateJobParams():
-return $default(_that.title,_that.jobDesc,_that.requirements,_that.salary,_that.salaryOfWorker,_that.numberOfWorker,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.images,_that.latitude,_that.longitude);case _:
+return $default(_that.title,_that.perusahaan,_that.jobDesc,_that.requirements,_that.salary,_that.salaryOfWorker,_that.numberOfWorker,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.images,_that.latitude,_that.longitude);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -222,10 +228,10 @@ return $default(_that.title,_that.jobDesc,_that.requirements,_that.salary,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title,  String jobDesc,  String requirements,  int salary,  String salaryOfWorker,  int numberOfWorker,  String dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String village,  List<File> images,  double? latitude,  double? longitude)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title,  String? perusahaan,  String jobDesc,  String requirements,  int salary,  String salaryOfWorker,  int numberOfWorker,  String dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String village,  List<File> images,  double? latitude,  double? longitude)?  $default,) {final _that = this;
 switch (_that) {
 case _CreateJobParams() when $default != null:
-return $default(_that.title,_that.jobDesc,_that.requirements,_that.salary,_that.salaryOfWorker,_that.numberOfWorker,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.images,_that.latitude,_that.longitude);case _:
+return $default(_that.title,_that.perusahaan,_that.jobDesc,_that.requirements,_that.salary,_that.salaryOfWorker,_that.numberOfWorker,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.images,_that.latitude,_that.longitude);case _:
   return null;
 
 }
@@ -237,11 +243,17 @@ return $default(_that.title,_that.jobDesc,_that.requirements,_that.salary,_that.
 
 
 class _CreateJobParams extends CreateJobParams {
-  const _CreateJobParams({required this.title, required this.jobDesc, required this.requirements, required this.salary, required this.salaryOfWorker, required this.numberOfWorker, required this.dateOfJob, required this.address, required this.province, required this.city, required this.subdistrict, required this.ward, required this.village, required final  List<File> images, this.latitude, this.longitude}): _images = images,super._();
+  const _CreateJobParams({required this.title, this.perusahaan, required this.jobDesc, required this.requirements, required this.salary, required this.salaryOfWorker, required this.numberOfWorker, required this.dateOfJob, required this.address, required this.province, required this.city, required this.subdistrict, required this.ward, required this.village, required final  List<File> images, this.latitude, this.longitude}): _images = images,super._();
   
 
 /// Judul Pekerjaan
 @override final  String title;
+/// Nama perusahaan/pemberi kerja — backend `rejki-app` mewajibkan field
+/// ini (`perusahaan`, min 2 karakter) tapi TIDAK ADA form field khusus
+/// untuk ini di UI create_job (di luar scope Kelompok 3 Phase 2, hanya
+/// perbaikan path+field mapping) — `CreateJobBloc` default ke [title]
+/// bila kosong/null. Gap dicatat, bukan diperbaiki penuh.
+@override final  String? perusahaan;
 /// Deskripsi Pekerjaan
 @override final  String jobDesc;
 /// Syarat Pekerjaan
@@ -290,16 +302,16 @@ _$CreateJobParamsCopyWith<_CreateJobParams> get copyWith => __$CreateJobParamsCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateJobParams&&(identical(other.title, title) || other.title == title)&&(identical(other.jobDesc, jobDesc) || other.jobDesc == jobDesc)&&(identical(other.requirements, requirements) || other.requirements == requirements)&&(identical(other.salary, salary) || other.salary == salary)&&(identical(other.salaryOfWorker, salaryOfWorker) || other.salaryOfWorker == salaryOfWorker)&&(identical(other.numberOfWorker, numberOfWorker) || other.numberOfWorker == numberOfWorker)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateJobParams&&(identical(other.title, title) || other.title == title)&&(identical(other.perusahaan, perusahaan) || other.perusahaan == perusahaan)&&(identical(other.jobDesc, jobDesc) || other.jobDesc == jobDesc)&&(identical(other.requirements, requirements) || other.requirements == requirements)&&(identical(other.salary, salary) || other.salary == salary)&&(identical(other.salaryOfWorker, salaryOfWorker) || other.salaryOfWorker == salaryOfWorker)&&(identical(other.numberOfWorker, numberOfWorker) || other.numberOfWorker == numberOfWorker)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,title,jobDesc,requirements,salary,salaryOfWorker,numberOfWorker,dateOfJob,address,province,city,subdistrict,ward,village,const DeepCollectionEquality().hash(_images),latitude,longitude);
+int get hashCode => Object.hash(runtimeType,title,perusahaan,jobDesc,requirements,salary,salaryOfWorker,numberOfWorker,dateOfJob,address,province,city,subdistrict,ward,village,const DeepCollectionEquality().hash(_images),latitude,longitude);
 
 @override
 String toString() {
-  return 'CreateJobParams(title: $title, jobDesc: $jobDesc, requirements: $requirements, salary: $salary, salaryOfWorker: $salaryOfWorker, numberOfWorker: $numberOfWorker, dateOfJob: $dateOfJob, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, images: $images, latitude: $latitude, longitude: $longitude)';
+  return 'CreateJobParams(title: $title, perusahaan: $perusahaan, jobDesc: $jobDesc, requirements: $requirements, salary: $salary, salaryOfWorker: $salaryOfWorker, numberOfWorker: $numberOfWorker, dateOfJob: $dateOfJob, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, images: $images, latitude: $latitude, longitude: $longitude)';
 }
 
 
@@ -310,7 +322,7 @@ abstract mixin class _$CreateJobParamsCopyWith<$Res> implements $CreateJobParams
   factory _$CreateJobParamsCopyWith(_CreateJobParams value, $Res Function(_CreateJobParams) _then) = __$CreateJobParamsCopyWithImpl;
 @override @useResult
 $Res call({
- String title, String jobDesc, String requirements, int salary, String salaryOfWorker, int numberOfWorker, String dateOfJob, String address, String province, String city, String subdistrict, String ward, String village, List<File> images, double? latitude, double? longitude
+ String title, String? perusahaan, String jobDesc, String requirements, int salary, String salaryOfWorker, int numberOfWorker, String dateOfJob, String address, String province, String city, String subdistrict, String ward, String village, List<File> images, double? latitude, double? longitude
 });
 
 
@@ -327,10 +339,11 @@ class __$CreateJobParamsCopyWithImpl<$Res>
 
 /// Create a copy of CreateJobParams
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? jobDesc = null,Object? requirements = null,Object? salary = null,Object? salaryOfWorker = null,Object? numberOfWorker = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = null,Object? images = null,Object? latitude = freezed,Object? longitude = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? perusahaan = freezed,Object? jobDesc = null,Object? requirements = null,Object? salary = null,Object? salaryOfWorker = null,Object? numberOfWorker = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = null,Object? images = null,Object? latitude = freezed,Object? longitude = freezed,}) {
   return _then(_CreateJobParams(
 title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,jobDesc: null == jobDesc ? _self.jobDesc : jobDesc // ignore: cast_nullable_to_non_nullable
+as String,perusahaan: freezed == perusahaan ? _self.perusahaan : perusahaan // ignore: cast_nullable_to_non_nullable
+as String?,jobDesc: null == jobDesc ? _self.jobDesc : jobDesc // ignore: cast_nullable_to_non_nullable
 as String,requirements: null == requirements ? _self.requirements : requirements // ignore: cast_nullable_to_non_nullable
 as String,salary: null == salary ? _self.salary : salary // ignore: cast_nullable_to_non_nullable
 as int,salaryOfWorker: null == salaryOfWorker ? _self.salaryOfWorker : salaryOfWorker // ignore: cast_nullable_to_non_nullable

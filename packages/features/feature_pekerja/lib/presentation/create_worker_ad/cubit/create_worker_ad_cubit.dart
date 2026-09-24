@@ -46,15 +46,12 @@ class CreateWorkerAdCubit extends Cubit<CreateWorkerAdState> {
     _workingHours = _enumStorage.getEnums('working_hours');
   }
 
-  List<String> get educationOptions =>
-      _educationTypes.isEmpty
-          ? ['SD', 'SMP', 'SMA', 'Diploma', 'Sarjana']
-          : _educationTypes;
+  List<String> get educationOptions => _educationTypes.isEmpty
+      ? ['SD', 'SMP', 'SMA', 'Diploma', 'Sarjana']
+      : _educationTypes;
 
   List<String> get workingHourOptions =>
-      _workingHours.isEmpty
-          ? ['fleksibel', 'morning', 'night']
-          : _workingHours;
+      _workingHours.isEmpty ? ['fleksibel', 'morning', 'night'] : _workingHours;
 
   // ---------------------------------------------------------------------------
   // Input Handlers
@@ -70,7 +67,8 @@ class CreateWorkerAdCubit extends Cubit<CreateWorkerAdState> {
       emit(state.copyWith(isNegotiable: value));
   void phoneNumberChanged(String value) =>
       emit(state.copyWith(phoneNumber: value));
-  void experienceChanged(String value) => emit(state.copyWith(experience: value));
+  void experienceChanged(String value) =>
+      emit(state.copyWith(experience: value));
   void photosChanged(List<File> images) => emit(state.copyWith(photos: images));
   void domicileAddressChanged(String value) =>
       emit(state.copyWith(domicileAddress: value));
@@ -134,38 +132,50 @@ class CreateWorkerAdCubit extends Cubit<CreateWorkerAdState> {
           validationError: (e) => e.message,
           unknown: (_) => 'Terjadi kesalahan yang tidak diketahui.',
         );
-        emit(state.copyWith(
-          isLoadingProfile: false,
-          workerId: resolvedWorkerId,
-          isUpdateMode: resolvedIsUpdateMode,
-          errorMessage: message,
-        ));
+        emit(
+          state.copyWith(
+            isLoadingProfile: false,
+            workerId: resolvedWorkerId,
+            isUpdateMode: resolvedIsUpdateMode,
+            errorMessage: message,
+          ),
+        );
       },
       (userInfo) {
         // Prefill form dari data profil user
-        emit(state.copyWith(
-          isLoadingProfile: false,
-          workerId: resolvedWorkerId,
-          isUpdateMode: resolvedIsUpdateMode,
-          // Prefill dari data profil
-          fullName: userInfo.fullName.isNotEmpty ? userInfo.fullName : state.fullName,
-          phoneNumber: userInfo.phoneNumber.isNotEmpty
-              ? userInfo.phoneNumber
-              : state.phoneNumber,
-          education: userInfo.educationLevel.isNotEmpty
-              ? userInfo.educationLevel
-              : state.education,
-          experience: userInfo.workExperience.isNotEmpty
-              ? userInfo.workExperience
-              : state.experience,
-          domicileAddress: userInfo.addressKtp.isNotEmpty
-              ? userInfo.addressKtp
-              : state.domicileAddress,
-          province: userInfo.province.isNotEmpty ? userInfo.province : state.province,
-          city: userInfo.city.isNotEmpty ? userInfo.city : state.city,
-          district: userInfo.districts.isNotEmpty ? userInfo.districts : state.district,
-          village: userInfo.village.isNotEmpty ? userInfo.village : state.village,
-        ));
+        emit(
+          state.copyWith(
+            isLoadingProfile: false,
+            workerId: resolvedWorkerId,
+            isUpdateMode: resolvedIsUpdateMode,
+            // Prefill dari data profil
+            fullName: userInfo.fullName.isNotEmpty
+                ? userInfo.fullName
+                : state.fullName,
+            phoneNumber: userInfo.phoneNumber.isNotEmpty
+                ? userInfo.phoneNumber
+                : state.phoneNumber,
+            education: userInfo.educationLevel.isNotEmpty
+                ? userInfo.educationLevel
+                : state.education,
+            experience: userInfo.workExperience.isNotEmpty
+                ? userInfo.workExperience
+                : state.experience,
+            domicileAddress: userInfo.addressKtp.isNotEmpty
+                ? userInfo.addressKtp
+                : state.domicileAddress,
+            province: userInfo.province.isNotEmpty
+                ? userInfo.province
+                : state.province,
+            city: userInfo.city.isNotEmpty ? userInfo.city : state.city,
+            district: userInfo.districts.isNotEmpty
+                ? userInfo.districts
+                : state.district,
+            village: userInfo.village.isNotEmpty
+                ? userInfo.village
+                : state.village,
+          ),
+        );
       },
     );
   }
@@ -178,10 +188,7 @@ class CreateWorkerAdCubit extends Cubit<CreateWorkerAdState> {
   ///
   /// - Create mode: POST /workers
   /// - Update mode: PUT /workers/{workerId}
-  Future<void> submit({
-    double latitude = 0.0,
-    double longitude = 0.0,
-  }) async {
+  Future<void> submit({double latitude = 0.0, double longitude = 0.0}) async {
     if (!state.isFormValid) return;
 
     emit(state.copyWith(isLoading: true, errorMessage: null));
@@ -190,8 +197,7 @@ class CreateWorkerAdCubit extends Cubit<CreateWorkerAdState> {
       fullName: state.fullName,
       education: state.education,
       available: state.workingHours,
-      desiredSalary:
-          int.tryParse(state.minimumWage.replaceAll('.', '')) ?? 0,
+      desiredSalary: int.tryParse(state.minimumWage.replaceAll('.', '')) ?? 0,
       isNegotiable: state.isNegotiable.toLowerCase() == 'ya',
       phoneNumber: state.phoneNumber,
       workExperience: state.experience,
@@ -200,7 +206,8 @@ class CreateWorkerAdCubit extends Cubit<CreateWorkerAdState> {
       city: state.city,
       subdistrict: state.district,
       ward: state.subdistrict,
-      village: state.subdistrict, // Village value mapped identical to ward per API spec
+      village: state
+          .subdistrict, // Village value mapped identical to ward per API spec
       latitude: latitude,
       longitude: longitude,
       images: state.photos,

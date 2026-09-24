@@ -15,9 +15,9 @@ class WorkerRepositoryImpl implements WorkerRepository {
 
   @override
   Future<Either<WorkerFailure, List<WorkerEntity>>> getWorkers({
-    required double latitude,
-    required double longitude,
-    required double maxDistance,
+    double? latitude,
+    double? longitude,
+    double? maxDistance,
     String? sortBy,
     String? keyword,
   }) async {
@@ -170,11 +170,8 @@ class WorkerRepositoryImpl implements WorkerRepository {
   }
 
   @override
-  Future<Either<WorkerFailure, IncomingContactsResultEntity>> getIncomingContacts({
-    String? status,
-    int page = 1,
-    int limit = 10,
-  }) async {
+  Future<Either<WorkerFailure, IncomingContactsResultEntity>>
+  getIncomingContacts({String? status, int page = 1, int limit = 10}) async {
     try {
       final response = await _remoteDataSource.getIncomingContacts(
         status: status,
@@ -202,13 +199,15 @@ class WorkerRepositoryImpl implements WorkerRepository {
         );
       }).toList();
 
-      return right(IncomingContactsResultEntity(
-        contacts: contacts,
-        totalRows: pagination['total_rows'] as int? ?? 0,
-        totalPages: pagination['total_pages'] as int? ?? 0,
-        currentPage: pagination['current_page'] as int? ?? page,
-        hasNext: pagination['has_next'] as bool? ?? false,
-      ));
+      return right(
+        IncomingContactsResultEntity(
+          contacts: contacts,
+          totalRows: pagination['total_rows'] as int? ?? 0,
+          totalPages: pagination['total_pages'] as int? ?? 0,
+          currentPage: pagination['current_page'] as int? ?? page,
+          hasNext: pagination['has_next'] as bool? ?? false,
+        ),
+      );
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
@@ -246,15 +245,17 @@ class WorkerRepositoryImpl implements WorkerRepository {
 
   @override
   Future<Either<WorkerFailure, Unit>> submitWorkerReview({
-    required String workerId,
-    required int rating,
-    required String review,
+    required String iklanId,
+    required String pelamarId,
+    required int bintang,
+    String? ulasan,
   }) async {
     try {
       final response = await _remoteDataSource.submitWorkerReview(
-        workerId: workerId,
-        rating: rating,
-        review: review,
+        iklanId: iklanId,
+        pelamarId: pelamarId,
+        bintang: bintang,
+        ulasan: ulasan,
       );
 
       if (response.success == false) {
@@ -281,6 +282,7 @@ class WorkerRepositoryImpl implements WorkerRepository {
 
     return WorkerEntity(
       id: json['id']?.toString() ?? '',
+      posterId: json['poster_id']?.toString(),
       name: json['full_name'] ?? json['name'] ?? '',
       adCode: json['ad_code'] ?? '',
       age: json['age'] ?? 0,

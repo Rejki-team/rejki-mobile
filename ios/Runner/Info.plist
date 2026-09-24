@@ -59,5 +59,12 @@
 		<string>Aplikasi memerlukan akses lokasi untuk menentukan lokasi pekerjaan atau pekerja dengan akurat.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
 		<string>Aplikasi memerlukan akses lokasi untuk menentukan lokasi pekerjaan atau pekerja dengan akurat.</string>
+		<!-- AdMob App ID (F-33, PRD §5.16). WAJIB ada, plugin crash saat startup
+		     tanpa ini. Nilai di bawah adalah ID UJI RESMI Google (sample app) —
+		     GANTI dengan App ID AdMob production sebelum rilis. -->
+		<key>GADApplicationIdentifier</key>
+		<string>ca-app-pub-3940256099942544~3347511713</string>
+		<key>NSUserTrackingUsageDescription</key>
+		<string>Data ini digunakan untuk menampilkan iklan yang lebih relevan untukmu.</string>
 	</dict>
 </plist>

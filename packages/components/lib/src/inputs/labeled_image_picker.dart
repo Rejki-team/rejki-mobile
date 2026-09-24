@@ -327,107 +327,108 @@ class LabeledImagePicker extends StatelessWidget {
             topRight: Radius.circular(AppDimensions.radiusLg),
           ),
         ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title
-          SizedBox(
-            width: double.infinity,
-            child: Text(label, style: AppTypography.bottomSheetTitle),
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title
+            SizedBox(
+              width: double.infinity,
+              child: Text(label, style: AppTypography.bottomSheetTitle),
+            ),
 
-          const SizedBox(height: AppSpacing.xl),
+            const SizedBox(height: AppSpacing.xl),
 
-          // Options Row
-          Row(
-            children: [
-              // Gallery Option
-              Expanded(
-                child: _buildBottomSheetOption(
-                  context,
-                  icon: AppAssets.iconImage,
-                  label: 'Galeri',
-                  onTap: () {
-                    Navigator.pop(context);
-                    onPickFromGallery?.call();
-                  },
-                ),
-              ),
-
-              const SizedBox(width: AppSpacing.md),
-
-              // Camera Option
-              Expanded(
-                child: _buildBottomSheetOption(
-                  context,
-                  icon: AppAssets.iconCameraLine,
-                  label: 'Kamera',
-                  onTap: () {
-                    Navigator.pop(context);
-                    onPickFromCamera?.call();
-                  },
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: AppSpacing.xl),
-
-          // Info and Cancel button
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Info Row
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SvgPicture.asset(
-                    AppAssets.iconInfoLine,
-                    width: AppDimensions.iconInfoSmall,
-                    height: AppDimensions.iconInfoSmall,
-                    colorFilter: const ColorFilter.mode(
-                      AppColors.badgeBlue,
-                      BlendMode.srcIn,
-                    ),
+            // Options Row
+            Row(
+              children: [
+                // Gallery Option
+                Expanded(
+                  child: _buildBottomSheetOption(
+                    context,
+                    icon: AppAssets.iconImage,
+                    label: 'Galeri',
+                    onTap: () {
+                      Navigator.pop(context);
+                      onPickFromGallery?.call();
+                    },
                   ),
-
-                  const SizedBox(width: AppSpacing.xs),
-
-                  Expanded(
-                    child: Text(
-                      'Silahkan pilih upload dari galery atau ambil dari kamera',
-                      style: AppTypography.formCaptionSmall,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: AppSpacing.xs),
-
-              // Cancel Button (TODO: Import from components or create inline)
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.textBlack,
-                    side: const BorderSide(color: AppColors.border),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: AppDimensions.borderRadiusSm,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppDimensions.buttonPaddingVerticalSm,
-                    ),
-                  ),
-                  child: const Text('Batal'),
                 ),
-              ),
-            ],
-          ),
-        ],
+
+                const SizedBox(width: AppSpacing.md),
+
+                // Camera Option
+                Expanded(
+                  child: _buildBottomSheetOption(
+                    context,
+                    icon: AppAssets.iconCameraLine,
+                    label: 'Kamera',
+                    onTap: () {
+                      Navigator.pop(context);
+                      onPickFromCamera?.call();
+                    },
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: AppSpacing.xl),
+
+            // Info and Cancel button
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Info Row
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SvgPicture.asset(
+                      AppAssets.iconInfoLine,
+                      width: AppDimensions.iconInfoSmall,
+                      height: AppDimensions.iconInfoSmall,
+                      colorFilter: const ColorFilter.mode(
+                        AppColors.badgeBlue,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+
+                    const SizedBox(width: AppSpacing.xs),
+
+                    Expanded(
+                      child: Text(
+                        'Silahkan pilih upload dari galery atau ambil dari kamera',
+                        style: AppTypography.formCaptionSmall,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: AppSpacing.xs),
+
+                // Cancel Button (TODO: Import from components or create inline)
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.textBlack,
+                      side: const BorderSide(color: AppColors.border),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: AppDimensions.borderRadiusSm,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppDimensions.buttonPaddingVerticalSm,
+                      ),
+                    ),
+                    child: const Text('Batal'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   /// Builds a single bottom sheet option

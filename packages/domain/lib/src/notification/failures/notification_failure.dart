@@ -6,7 +6,8 @@ part 'notification_failure.freezed.dart';
 abstract class NotificationFailure with _$NotificationFailure {
   const NotificationFailure._();
 
-  const factory NotificationFailure.serverError([String? message]) = _ServerError;
+  const factory NotificationFailure.serverError([String? message]) =
+      _ServerError;
   const factory NotificationFailure.networkError() = _NetworkError;
   const factory NotificationFailure.unauthorized() = _Unauthorized;
   const factory NotificationFailure.notFound() = _NotFound;

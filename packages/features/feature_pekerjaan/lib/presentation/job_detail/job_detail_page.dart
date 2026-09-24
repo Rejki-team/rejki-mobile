@@ -6,6 +6,7 @@ import 'package:network/network.dart';
 import 'package:core/core.dart';
 import 'package:components/components.dart';
 import 'package:designsystems/designsystems.dart';
+import 'package:feature_report/feature_report.dart';
 
 import 'cubit/job_detail_cubit.dart';
 import 'cubit/job_detail_state.dart';
@@ -77,10 +78,7 @@ class _JobDetailBottomSheetLoader extends StatefulWidget {
   final String jobId;
   final VoidCallback? onChatPressed;
 
-  const _JobDetailBottomSheetLoader({
-    required this.jobId,
-    this.onChatPressed,
-  });
+  const _JobDetailBottomSheetLoader({required this.jobId, this.onChatPressed});
 
   @override
   State<_JobDetailBottomSheetLoader> createState() =>
@@ -100,9 +98,7 @@ class _JobDetailBottomSheetLoaderState
     return MultiBlocListener(
       listeners: [
         // Listener untuk TakeJobCubit — handle semua state transisi bid
-        BlocListener<TakeJobCubit, TakeJobState>(
-          listener: _handleTakeJobState,
-        ),
+        BlocListener<TakeJobCubit, TakeJobState>(listener: _handleTakeJobState),
       ],
       child: DraggableScrollableSheet(
         initialChildSize: 0.9,
@@ -110,22 +106,22 @@ class _JobDetailBottomSheetLoaderState
         maxChildSize: 0.95,
         builder: (context, scrollController) =>
             BlocBuilder<JobDetailCubit, JobDetailState>(
-          builder: (context, state) {
-            if (state.isLoading || state.isInitial) {
-              return _buildLoadingSheet();
-            }
+              builder: (context, state) {
+                if (state.isLoading || state.isInitial) {
+                  return _buildLoadingSheet();
+                }
 
-            if (state.isError) {
-              return _buildErrorSheet(context, state);
-            }
+                if (state.isError) {
+                  return _buildErrorSheet(context, state);
+                }
 
-            if (state.isSuccess && state.job != null) {
-              return _buildSuccessSheet(context, state);
-            }
+                if (state.isSuccess && state.job != null) {
+                  return _buildSuccessSheet(context, state);
+                }
 
-            return _buildLoadingSheet();
-          },
-        ),
+                return _buildLoadingSheet();
+              },
+            ),
       ),
     );
   }
@@ -143,14 +139,9 @@ class _JobDetailBottomSheetLoaderState
       workerProfileNotFound: () {
         _showNoWorkerProfileDialog(context);
       },
-      workerProfileFound: (workerId, workerCount, defaultDateTime) {
-        // Profil ditemukan → tampilkan dialog bid
-        _showBidDialog(
-          context: context,
-          workerId: workerId,
-          workerCount: workerCount,
-          defaultDateTime: defaultDateTime,
-        );
+      workerProfileFound: (defaultDateTime) {
+        // Profil ditemukan → tampilkan dialog lamar
+        _showLamarDialog(context: context, defaultDateTime: defaultDateTime);
       },
       submitting: () {},
       success: () {
@@ -195,7 +186,8 @@ class _JobDetailBottomSheetLoaderState
       barrierDismissible: false,
       builder: (dialogCtx) => AppDialogWarning(
         title: 'Profil Pekerja Diperlukan',
-        message: 'Kamu belum memiliki profil pekerja. '
+        message:
+            'Kamu belum memiliki profil pekerja. '
             'Buat profil terlebih dahulu untuk dapat melamar pekerjaan ini.',
         cancelText: 'Nanti',
         confirmText: 'Buat Profil',
@@ -212,13 +204,11 @@ class _JobDetailBottomSheetLoaderState
   }
 
   // ---------------------------------------------------------------------------
-  // Bid Dialog
+  // Lamar Dialog (F-3, PRD §5.11.3)
   // ---------------------------------------------------------------------------
 
-  void _showBidDialog({
+  void _showLamarDialog({
     required BuildContext context,
-    required String workerId,
-    required int workerCount,
     required DateTime? defaultDateTime,
   }) {
     // Ambil data job dari state
@@ -239,27 +229,58 @@ class _JobDetailBottomSheetLoaderState
               orElse: () => false,
             );
             return TakeJobDialog(
-              data: TakeJobDialogData(
-                defaultDateTime: job.dateOfJob,
-                defaultDateText: _formatDate(job.dateOfJob),
-                defaultTimeText: _formatTime(job.dateOfJob),
-                workerCount: workerCount,
-              ),
-              workerId: workerId,
+              data: TakeJobDialogData(defaultDateTime: defaultDateTime),
               isSubmitting: isSubmitting,
-              onSubmit: (selectedDateTime, resolvedWorkerId, slotCount) {
+              onSubmit: (tanggal, jamMulai, jamAkhir, kuotaDiambil) {
                 Navigator.of(dialogContext).pop();
-                ctx.read<TakeJobCubit>().submitBid(
-                      jobId: job.id,
-                      workerId: resolvedWorkerId,
-                      dateOfJob: selectedDateTime,
-                      slotCount: slotCount,
-                    );
+                ctx.read<TakeJobCubit>().submitLamaran(
+                  iklanId: job.id,
+                  tanggal: tanggal,
+                  jamMulai: jamMulai,
+                  jamAkhir: jamAkhir,
+                  kuotaDiambil: kuotaDiambil,
+                );
               },
             );
           },
         ),
       ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Laporkan Iklan Dialog (F-20, PRD §5.10)
+  // ---------------------------------------------------------------------------
+
+  void _showLaporkanIklanDialog(BuildContext context, String jobId) {
+    final cubit = GetIt.I<LaporkanIklanCubit>();
+    LaporkanIklanDialog.show(
+      context,
+      onSubmit: (alasan) async {
+        await cubit.submit(
+          targetType: 'iklan',
+          targetId: jobId,
+          alasan: alasan,
+          targetAdType: 'pekerjaan',
+        );
+        if (!context.mounted) return;
+        final state = cubit.state;
+        showDialog(
+          context: context,
+          builder: (dialogCtx) => state.isSuccess
+              ? AppDialogSuccess(
+                  title: 'Berhasil',
+                  message: 'Laporan kamu telah dikirim.',
+                  onPressed: () => Navigator.pop(dialogCtx),
+                )
+              : AppDialogFailed(
+                  title: 'Gagal',
+                  message: state.errorMessage ?? 'Terjadi kesalahan.',
+                  onPressed: () => Navigator.pop(dialogCtx),
+                ),
+        );
+        cubit.close();
+      },
     );
   }
 
@@ -277,9 +298,7 @@ class _JobDetailBottomSheetLoaderState
           topRight: Radius.circular(AppDimensions.radiusLg),
         ),
       ),
-      child: const SingleChildScrollView(
-        child: AppDetailShimmer.standard(),
-      ),
+      child: const SingleChildScrollView(child: AppDetailShimmer.standard()),
     );
   }
 
@@ -329,27 +348,25 @@ class _JobDetailBottomSheetLoaderState
             locationText: locationText,
             address: job.address,
             workerCount: job.workerCount.toString(),
-            employerName:
-                job.employerName.isNotEmpty ? job.employerName : '-',
-            employerRating: 0.0,
-            reviewCount: 0,
-            phoneNumber:
-                job.employerPhone.isNotEmpty ? job.employerPhone : '-',
+            employerName: job.employerName.isNotEmpty ? job.employerName : '-',
+            employerRating: state.employerRating?.average ?? 0.0,
+            reviewCount: state.employerRating?.count ?? 0,
+            phoneNumber: job.employerPhone.isNotEmpty ? job.employerPhone : '-',
             requirements: job.requirements ?? '-',
             photoUrls: job.images
                 .map((e) => ApiConfig.buildImageUrl(e.uriPath))
                 .toList(),
+            jobId: job.id,
           ),
           onChatPressed: () {
             Navigator.of(context).pop();
             widget.onChatPressed?.call();
           },
           isLoading: isCheckingProfile,
-          onTakeJobPressed: () =>
-              context.read<TakeJobCubit>().checkWorkerProfileAndProceed(
-                    workerCount: job.workerCount,
-                    defaultDateTime: job.dateOfJob,
-                  ),
+          onTakeJobPressed: () => context
+              .read<TakeJobCubit>()
+              .checkWorkerProfileAndProceed(defaultDateTime: job.dateOfJob),
+          onReportPressed: () => _showLaporkanIklanDialog(context, job.id),
         );
       },
     );
@@ -371,8 +388,18 @@ class _JobDetailBottomSheetLoaderState
   String _formatDate(DateTime? date) {
     if (date == null) return '-';
     const months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }

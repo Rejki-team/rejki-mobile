@@ -14,10 +14,12 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SearchUsedGoodsAdState {
 
- String get searchQuery; List<SecondhandEntity> get items; bool get isLoading; bool get hasNextPage; int get currentPage; String? get errorMessage;/// Radius filter: km yang dipilih user (null = belum diterapkan)
- int? get radiusKm;/// Apakah radius filter sedang aktif
- bool get isRadiusFilterApplied;/// Lokasi terdaftar user — diisi saat radius filter diterapkan
- String get filterProvince; String get filterCity; String get filterSubdistrict;
+ List<SecondhandEntity> get items; bool get isLoading; bool get hasNextPage; int get currentPage; String? get errorMessage;/// Backend TIDAK punya parameter `search` (kontrak `GET /barang` hanya
+/// `limit/offset/latitude/longitude`) — difilter CLIENT-SIDE dari [items]
+/// yang sudah dimuat (gap dicatat P4.6, bukan hilang diam-diam).
+ String get searchQuery;/// Radius filter (F-1, PRD §5.14.1): km yang dipilih user (null = belum
+/// diterapkan).
+ int? get radiusKm; bool get isRadiusFilterApplied; double? get filterLatitude; double? get filterLongitude;
 /// Create a copy of SearchUsedGoodsAdState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +30,16 @@ $SearchUsedGoodsAdStateCopyWith<SearchUsedGoodsAdState> get copyWith => _$Search
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchUsedGoodsAdState&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.hasNextPage, hasNextPage) || other.hasNextPage == hasNextPage)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.radiusKm, radiusKm) || other.radiusKm == radiusKm)&&(identical(other.isRadiusFilterApplied, isRadiusFilterApplied) || other.isRadiusFilterApplied == isRadiusFilterApplied)&&(identical(other.filterProvince, filterProvince) || other.filterProvince == filterProvince)&&(identical(other.filterCity, filterCity) || other.filterCity == filterCity)&&(identical(other.filterSubdistrict, filterSubdistrict) || other.filterSubdistrict == filterSubdistrict));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchUsedGoodsAdState&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.hasNextPage, hasNextPage) || other.hasNextPage == hasNextPage)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.radiusKm, radiusKm) || other.radiusKm == radiusKm)&&(identical(other.isRadiusFilterApplied, isRadiusFilterApplied) || other.isRadiusFilterApplied == isRadiusFilterApplied)&&(identical(other.filterLatitude, filterLatitude) || other.filterLatitude == filterLatitude)&&(identical(other.filterLongitude, filterLongitude) || other.filterLongitude == filterLongitude));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,searchQuery,const DeepCollectionEquality().hash(items),isLoading,hasNextPage,currentPage,errorMessage,radiusKm,isRadiusFilterApplied,filterProvince,filterCity,filterSubdistrict);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(items),isLoading,hasNextPage,currentPage,errorMessage,searchQuery,radiusKm,isRadiusFilterApplied,filterLatitude,filterLongitude);
 
 @override
 String toString() {
-  return 'SearchUsedGoodsAdState(searchQuery: $searchQuery, items: $items, isLoading: $isLoading, hasNextPage: $hasNextPage, currentPage: $currentPage, errorMessage: $errorMessage, radiusKm: $radiusKm, isRadiusFilterApplied: $isRadiusFilterApplied, filterProvince: $filterProvince, filterCity: $filterCity, filterSubdistrict: $filterSubdistrict)';
+  return 'SearchUsedGoodsAdState(items: $items, isLoading: $isLoading, hasNextPage: $hasNextPage, currentPage: $currentPage, errorMessage: $errorMessage, searchQuery: $searchQuery, radiusKm: $radiusKm, isRadiusFilterApplied: $isRadiusFilterApplied, filterLatitude: $filterLatitude, filterLongitude: $filterLongitude)';
 }
 
 
@@ -48,7 +50,7 @@ abstract mixin class $SearchUsedGoodsAdStateCopyWith<$Res>  {
   factory $SearchUsedGoodsAdStateCopyWith(SearchUsedGoodsAdState value, $Res Function(SearchUsedGoodsAdState) _then) = _$SearchUsedGoodsAdStateCopyWithImpl;
 @useResult
 $Res call({
- String searchQuery, List<SecondhandEntity> items, bool isLoading, bool hasNextPage, int currentPage, String? errorMessage, int? radiusKm, bool isRadiusFilterApplied, String filterProvince, String filterCity, String filterSubdistrict
+ List<SecondhandEntity> items, bool isLoading, bool hasNextPage, int currentPage, String? errorMessage, String searchQuery, int? radiusKm, bool isRadiusFilterApplied, double? filterLatitude, double? filterLongitude
 });
 
 
@@ -65,20 +67,19 @@ class _$SearchUsedGoodsAdStateCopyWithImpl<$Res>
 
 /// Create a copy of SearchUsedGoodsAdState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? searchQuery = null,Object? items = null,Object? isLoading = null,Object? hasNextPage = null,Object? currentPage = null,Object? errorMessage = freezed,Object? radiusKm = freezed,Object? isRadiusFilterApplied = null,Object? filterProvince = null,Object? filterCity = null,Object? filterSubdistrict = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? items = null,Object? isLoading = null,Object? hasNextPage = null,Object? currentPage = null,Object? errorMessage = freezed,Object? searchQuery = null,Object? radiusKm = freezed,Object? isRadiusFilterApplied = null,Object? filterLatitude = freezed,Object? filterLongitude = freezed,}) {
   return _then(_self.copyWith(
-searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
+items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<SecondhandEntity>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,hasNextPage: null == hasNextPage ? _self.hasNextPage : hasNextPage // ignore: cast_nullable_to_non_nullable
 as bool,currentPage: null == currentPage ? _self.currentPage : currentPage // ignore: cast_nullable_to_non_nullable
 as int,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,radiusKm: freezed == radiusKm ? _self.radiusKm : radiusKm // ignore: cast_nullable_to_non_nullable
+as String?,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
+as String,radiusKm: freezed == radiusKm ? _self.radiusKm : radiusKm // ignore: cast_nullable_to_non_nullable
 as int?,isRadiusFilterApplied: null == isRadiusFilterApplied ? _self.isRadiusFilterApplied : isRadiusFilterApplied // ignore: cast_nullable_to_non_nullable
-as bool,filterProvince: null == filterProvince ? _self.filterProvince : filterProvince // ignore: cast_nullable_to_non_nullable
-as String,filterCity: null == filterCity ? _self.filterCity : filterCity // ignore: cast_nullable_to_non_nullable
-as String,filterSubdistrict: null == filterSubdistrict ? _self.filterSubdistrict : filterSubdistrict // ignore: cast_nullable_to_non_nullable
-as String,
+as bool,filterLatitude: freezed == filterLatitude ? _self.filterLatitude : filterLatitude // ignore: cast_nullable_to_non_nullable
+as double?,filterLongitude: freezed == filterLongitude ? _self.filterLongitude : filterLongitude // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -163,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String searchQuery,  List<SecondhandEntity> items,  bool isLoading,  bool hasNextPage,  int currentPage,  String? errorMessage,  int? radiusKm,  bool isRadiusFilterApplied,  String filterProvince,  String filterCity,  String filterSubdistrict)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SecondhandEntity> items,  bool isLoading,  bool hasNextPage,  int currentPage,  String? errorMessage,  String searchQuery,  int? radiusKm,  bool isRadiusFilterApplied,  double? filterLatitude,  double? filterLongitude)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SearchUsedGoodsAdState() when $default != null:
-return $default(_that.searchQuery,_that.items,_that.isLoading,_that.hasNextPage,_that.currentPage,_that.errorMessage,_that.radiusKm,_that.isRadiusFilterApplied,_that.filterProvince,_that.filterCity,_that.filterSubdistrict);case _:
+return $default(_that.items,_that.isLoading,_that.hasNextPage,_that.currentPage,_that.errorMessage,_that.searchQuery,_that.radiusKm,_that.isRadiusFilterApplied,_that.filterLatitude,_that.filterLongitude);case _:
   return orElse();
 
 }
@@ -184,10 +185,10 @@ return $default(_that.searchQuery,_that.items,_that.isLoading,_that.hasNextPage,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String searchQuery,  List<SecondhandEntity> items,  bool isLoading,  bool hasNextPage,  int currentPage,  String? errorMessage,  int? radiusKm,  bool isRadiusFilterApplied,  String filterProvince,  String filterCity,  String filterSubdistrict)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SecondhandEntity> items,  bool isLoading,  bool hasNextPage,  int currentPage,  String? errorMessage,  String searchQuery,  int? radiusKm,  bool isRadiusFilterApplied,  double? filterLatitude,  double? filterLongitude)  $default,) {final _that = this;
 switch (_that) {
 case _SearchUsedGoodsAdState():
-return $default(_that.searchQuery,_that.items,_that.isLoading,_that.hasNextPage,_that.currentPage,_that.errorMessage,_that.radiusKm,_that.isRadiusFilterApplied,_that.filterProvince,_that.filterCity,_that.filterSubdistrict);case _:
+return $default(_that.items,_that.isLoading,_that.hasNextPage,_that.currentPage,_that.errorMessage,_that.searchQuery,_that.radiusKm,_that.isRadiusFilterApplied,_that.filterLatitude,_that.filterLongitude);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +205,10 @@ return $default(_that.searchQuery,_that.items,_that.isLoading,_that.hasNextPage,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String searchQuery,  List<SecondhandEntity> items,  bool isLoading,  bool hasNextPage,  int currentPage,  String? errorMessage,  int? radiusKm,  bool isRadiusFilterApplied,  String filterProvince,  String filterCity,  String filterSubdistrict)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SecondhandEntity> items,  bool isLoading,  bool hasNextPage,  int currentPage,  String? errorMessage,  String searchQuery,  int? radiusKm,  bool isRadiusFilterApplied,  double? filterLatitude,  double? filterLongitude)?  $default,) {final _that = this;
 switch (_that) {
 case _SearchUsedGoodsAdState() when $default != null:
-return $default(_that.searchQuery,_that.items,_that.isLoading,_that.hasNextPage,_that.currentPage,_that.errorMessage,_that.radiusKm,_that.isRadiusFilterApplied,_that.filterProvince,_that.filterCity,_that.filterSubdistrict);case _:
+return $default(_that.items,_that.isLoading,_that.hasNextPage,_that.currentPage,_that.errorMessage,_that.searchQuery,_that.radiusKm,_that.isRadiusFilterApplied,_that.filterLatitude,_that.filterLongitude);case _:
   return null;
 
 }
@@ -218,11 +219,10 @@ return $default(_that.searchQuery,_that.items,_that.isLoading,_that.hasNextPage,
 /// @nodoc
 
 
-class _SearchUsedGoodsAdState implements SearchUsedGoodsAdState {
-  const _SearchUsedGoodsAdState({this.searchQuery = '', final  List<SecondhandEntity> items = const [], this.isLoading = false, this.hasNextPage = false, this.currentPage = 1, this.errorMessage, this.radiusKm, this.isRadiusFilterApplied = false, this.filterProvince = '', this.filterCity = '', this.filterSubdistrict = ''}): _items = items;
+class _SearchUsedGoodsAdState extends SearchUsedGoodsAdState {
+  const _SearchUsedGoodsAdState({final  List<SecondhandEntity> items = const [], this.isLoading = false, this.hasNextPage = false, this.currentPage = 1, this.errorMessage, this.searchQuery = '', this.radiusKm, this.isRadiusFilterApplied = false, this.filterLatitude, this.filterLongitude}): _items = items,super._();
   
 
-@override@JsonKey() final  String searchQuery;
  final  List<SecondhandEntity> _items;
 @override@JsonKey() List<SecondhandEntity> get items {
   if (_items is EqualUnmodifiableListView) return _items;
@@ -234,14 +234,16 @@ class _SearchUsedGoodsAdState implements SearchUsedGoodsAdState {
 @override@JsonKey() final  bool hasNextPage;
 @override@JsonKey() final  int currentPage;
 @override final  String? errorMessage;
-/// Radius filter: km yang dipilih user (null = belum diterapkan)
+/// Backend TIDAK punya parameter `search` (kontrak `GET /barang` hanya
+/// `limit/offset/latitude/longitude`) — difilter CLIENT-SIDE dari [items]
+/// yang sudah dimuat (gap dicatat P4.6, bukan hilang diam-diam).
+@override@JsonKey() final  String searchQuery;
+/// Radius filter (F-1, PRD §5.14.1): km yang dipilih user (null = belum
+/// diterapkan).
 @override final  int? radiusKm;
-/// Apakah radius filter sedang aktif
 @override@JsonKey() final  bool isRadiusFilterApplied;
-/// Lokasi terdaftar user — diisi saat radius filter diterapkan
-@override@JsonKey() final  String filterProvince;
-@override@JsonKey() final  String filterCity;
-@override@JsonKey() final  String filterSubdistrict;
+@override final  double? filterLatitude;
+@override final  double? filterLongitude;
 
 /// Create a copy of SearchUsedGoodsAdState
 /// with the given fields replaced by the non-null parameter values.
@@ -253,16 +255,16 @@ _$SearchUsedGoodsAdStateCopyWith<_SearchUsedGoodsAdState> get copyWith => __$Sea
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchUsedGoodsAdState&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.hasNextPage, hasNextPage) || other.hasNextPage == hasNextPage)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.radiusKm, radiusKm) || other.radiusKm == radiusKm)&&(identical(other.isRadiusFilterApplied, isRadiusFilterApplied) || other.isRadiusFilterApplied == isRadiusFilterApplied)&&(identical(other.filterProvince, filterProvince) || other.filterProvince == filterProvince)&&(identical(other.filterCity, filterCity) || other.filterCity == filterCity)&&(identical(other.filterSubdistrict, filterSubdistrict) || other.filterSubdistrict == filterSubdistrict));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchUsedGoodsAdState&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.hasNextPage, hasNextPage) || other.hasNextPage == hasNextPage)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.radiusKm, radiusKm) || other.radiusKm == radiusKm)&&(identical(other.isRadiusFilterApplied, isRadiusFilterApplied) || other.isRadiusFilterApplied == isRadiusFilterApplied)&&(identical(other.filterLatitude, filterLatitude) || other.filterLatitude == filterLatitude)&&(identical(other.filterLongitude, filterLongitude) || other.filterLongitude == filterLongitude));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,searchQuery,const DeepCollectionEquality().hash(_items),isLoading,hasNextPage,currentPage,errorMessage,radiusKm,isRadiusFilterApplied,filterProvince,filterCity,filterSubdistrict);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_items),isLoading,hasNextPage,currentPage,errorMessage,searchQuery,radiusKm,isRadiusFilterApplied,filterLatitude,filterLongitude);
 
 @override
 String toString() {
-  return 'SearchUsedGoodsAdState(searchQuery: $searchQuery, items: $items, isLoading: $isLoading, hasNextPage: $hasNextPage, currentPage: $currentPage, errorMessage: $errorMessage, radiusKm: $radiusKm, isRadiusFilterApplied: $isRadiusFilterApplied, filterProvince: $filterProvince, filterCity: $filterCity, filterSubdistrict: $filterSubdistrict)';
+  return 'SearchUsedGoodsAdState(items: $items, isLoading: $isLoading, hasNextPage: $hasNextPage, currentPage: $currentPage, errorMessage: $errorMessage, searchQuery: $searchQuery, radiusKm: $radiusKm, isRadiusFilterApplied: $isRadiusFilterApplied, filterLatitude: $filterLatitude, filterLongitude: $filterLongitude)';
 }
 
 
@@ -273,7 +275,7 @@ abstract mixin class _$SearchUsedGoodsAdStateCopyWith<$Res> implements $SearchUs
   factory _$SearchUsedGoodsAdStateCopyWith(_SearchUsedGoodsAdState value, $Res Function(_SearchUsedGoodsAdState) _then) = __$SearchUsedGoodsAdStateCopyWithImpl;
 @override @useResult
 $Res call({
- String searchQuery, List<SecondhandEntity> items, bool isLoading, bool hasNextPage, int currentPage, String? errorMessage, int? radiusKm, bool isRadiusFilterApplied, String filterProvince, String filterCity, String filterSubdistrict
+ List<SecondhandEntity> items, bool isLoading, bool hasNextPage, int currentPage, String? errorMessage, String searchQuery, int? radiusKm, bool isRadiusFilterApplied, double? filterLatitude, double? filterLongitude
 });
 
 
@@ -290,20 +292,19 @@ class __$SearchUsedGoodsAdStateCopyWithImpl<$Res>
 
 /// Create a copy of SearchUsedGoodsAdState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? searchQuery = null,Object? items = null,Object? isLoading = null,Object? hasNextPage = null,Object? currentPage = null,Object? errorMessage = freezed,Object? radiusKm = freezed,Object? isRadiusFilterApplied = null,Object? filterProvince = null,Object? filterCity = null,Object? filterSubdistrict = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? items = null,Object? isLoading = null,Object? hasNextPage = null,Object? currentPage = null,Object? errorMessage = freezed,Object? searchQuery = null,Object? radiusKm = freezed,Object? isRadiusFilterApplied = null,Object? filterLatitude = freezed,Object? filterLongitude = freezed,}) {
   return _then(_SearchUsedGoodsAdState(
-searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
+items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<SecondhandEntity>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,hasNextPage: null == hasNextPage ? _self.hasNextPage : hasNextPage // ignore: cast_nullable_to_non_nullable
 as bool,currentPage: null == currentPage ? _self.currentPage : currentPage // ignore: cast_nullable_to_non_nullable
 as int,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,radiusKm: freezed == radiusKm ? _self.radiusKm : radiusKm // ignore: cast_nullable_to_non_nullable
+as String?,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
+as String,radiusKm: freezed == radiusKm ? _self.radiusKm : radiusKm // ignore: cast_nullable_to_non_nullable
 as int?,isRadiusFilterApplied: null == isRadiusFilterApplied ? _self.isRadiusFilterApplied : isRadiusFilterApplied // ignore: cast_nullable_to_non_nullable
-as bool,filterProvince: null == filterProvince ? _self.filterProvince : filterProvince // ignore: cast_nullable_to_non_nullable
-as String,filterCity: null == filterCity ? _self.filterCity : filterCity // ignore: cast_nullable_to_non_nullable
-as String,filterSubdistrict: null == filterSubdistrict ? _self.filterSubdistrict : filterSubdistrict // ignore: cast_nullable_to_non_nullable
-as String,
+as bool,filterLatitude: freezed == filterLatitude ? _self.filterLatitude : filterLatitude // ignore: cast_nullable_to_non_nullable
+as double?,filterLongitude: freezed == filterLongitude ? _self.filterLongitude : filterLongitude // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 

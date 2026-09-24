@@ -1,46 +1,27 @@
-import 'dart:io';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'create_secondhand_params.freezed.dart';
 
-/// Parameters for creating a new secondhand ad (POST /secondhands).
+/// Parameters untuk membuat Iklan Barang Bekas baru (POST /barang, F-15).
+///
+/// Upload foto DIHAPUS dari alur ini — backend `foto_urls` butuh presigned-URL
+/// flow terpisah yang belum di-wire (sama seperti keputusan `create_job`,
+/// Kelompok 3 Phase 2). `images` yang dipilih user di UI TIDAK dikirim.
 @freezed
 abstract class CreateSecondhandParams with _$CreateSecondhandParams {
   const factory CreateSecondhandParams({
-    /// Ad title
-    required String title,
+    required String judul,
+    required String deskripsi,
 
-    /// Item description
-    required String description,
+    /// "bekas" | "baru"
+    required String jenisBarang,
+    required int jumlah,
 
-    /// Item condition: "used" or "new"
-    required String condition,
+    /// Alamat pengambilan barang (wajib)
+    required String lokasiPengambilan,
 
-    /// Quantity available
-    required int amount,
-
-    /// Street address
-    required String address,
-
-    /// Province name
-    required String province,
-
-    /// City / kabupaten name
-    required String city,
-
-    /// Subdistrict / kecamatan name
-    required String subdistrict,
-
-    /// Village name
-    required String village,
-
-    /// Item photos (at least one required)
-    required List<File> images,
-
-    /// GPS latitude of the item location (optional — tidak block submit jika GPS gagal)
-    double? latitude,
-
-    /// GPS longitude of the item location (optional — tidak block submit jika GPS gagal)
-    double? longitude,
+    /// Teks lokasi bebas untuk geocoding server-side (opsional)
+    String? lokasi,
+    String? regionId,
   }) = _CreateSecondhandParams;
 }

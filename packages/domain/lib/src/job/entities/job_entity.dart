@@ -39,8 +39,10 @@ abstract class JobEntity with _$JobEntity {
     /// Number of workers needed
     required int workerCount,
 
-    /// Job date and time
-    required DateTime dateOfJob,
+    /// Job date and time — `null` bila backend tidak menyimpan jadwal default
+    /// untuk iklan ini (Kelompok 3 Phase 2: backend belum punya field ini sama
+    /// sekali, gap terpisah — lihat catatan di `JobModel`).
+    DateTime? dateOfJob,
 
     /// Full address
     required String address,

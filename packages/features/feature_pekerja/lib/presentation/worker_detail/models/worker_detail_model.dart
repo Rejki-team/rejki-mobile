@@ -8,6 +8,7 @@ abstract class WorkerDetailModel with _$WorkerDetailModel {
     required String id,
     required String name,
     required String adCode,
+    String? posterId,
     required String statusLabel,
     required int age,
     required double rating,

@@ -99,7 +99,8 @@ abstract class UserProfileEntity with _$UserProfileEntity {
   String get educationLabel {
     if (educationLevel.isEmpty) return '';
     final focus = educationFocus.trim();
-    final isFocusEmpty = focus.isEmpty ||
+    final isFocusEmpty =
+        focus.isEmpty ||
         focus.toLowerCase() == 'tidak ada' ||
         focus.toLowerCase() == '-';
     return isFocusEmpty ? educationLevel : '$educationLevel — $focus';

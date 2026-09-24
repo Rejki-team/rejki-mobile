@@ -15,8 +15,7 @@ T _$identity<T>(T value) => value;
 mixin _$HistoryPekerjaState {
 
  HistoryPekerjaStatus get status; List<WorkerContactEntity> get contacts; String? get errorMessage;// Pagination
- int get currentPage; bool get hasNext;// Mutation state (for rating/review)
- HistoryPekerjaMutationStatus get mutationStatus; String? get mutationErrorMessage; String? get mutationSuccessMessage;
+ int get currentPage; bool get hasNext;
 /// Create a copy of HistoryPekerjaState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,16 +26,16 @@ $HistoryPekerjaStateCopyWith<HistoryPekerjaState> get copyWith => _$HistoryPeker
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryPekerjaState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.contacts, contacts)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.hasNext, hasNext) || other.hasNext == hasNext)&&(identical(other.mutationStatus, mutationStatus) || other.mutationStatus == mutationStatus)&&(identical(other.mutationErrorMessage, mutationErrorMessage) || other.mutationErrorMessage == mutationErrorMessage)&&(identical(other.mutationSuccessMessage, mutationSuccessMessage) || other.mutationSuccessMessage == mutationSuccessMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryPekerjaState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.contacts, contacts)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.hasNext, hasNext) || other.hasNext == hasNext));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(contacts),errorMessage,currentPage,hasNext,mutationStatus,mutationErrorMessage,mutationSuccessMessage);
+int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(contacts),errorMessage,currentPage,hasNext);
 
 @override
 String toString() {
-  return 'HistoryPekerjaState(status: $status, contacts: $contacts, errorMessage: $errorMessage, currentPage: $currentPage, hasNext: $hasNext, mutationStatus: $mutationStatus, mutationErrorMessage: $mutationErrorMessage, mutationSuccessMessage: $mutationSuccessMessage)';
+  return 'HistoryPekerjaState(status: $status, contacts: $contacts, errorMessage: $errorMessage, currentPage: $currentPage, hasNext: $hasNext)';
 }
 
 
@@ -47,7 +46,7 @@ abstract mixin class $HistoryPekerjaStateCopyWith<$Res>  {
   factory $HistoryPekerjaStateCopyWith(HistoryPekerjaState value, $Res Function(HistoryPekerjaState) _then) = _$HistoryPekerjaStateCopyWithImpl;
 @useResult
 $Res call({
- HistoryPekerjaStatus status, List<WorkerContactEntity> contacts, String? errorMessage, int currentPage, bool hasNext, HistoryPekerjaMutationStatus mutationStatus, String? mutationErrorMessage, String? mutationSuccessMessage
+ HistoryPekerjaStatus status, List<WorkerContactEntity> contacts, String? errorMessage, int currentPage, bool hasNext
 });
 
 
@@ -64,17 +63,14 @@ class _$HistoryPekerjaStateCopyWithImpl<$Res>
 
 /// Create a copy of HistoryPekerjaState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? contacts = null,Object? errorMessage = freezed,Object? currentPage = null,Object? hasNext = null,Object? mutationStatus = null,Object? mutationErrorMessage = freezed,Object? mutationSuccessMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? contacts = null,Object? errorMessage = freezed,Object? currentPage = null,Object? hasNext = null,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as HistoryPekerjaStatus,contacts: null == contacts ? _self.contacts : contacts // ignore: cast_nullable_to_non_nullable
 as List<WorkerContactEntity>,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,currentPage: null == currentPage ? _self.currentPage : currentPage // ignore: cast_nullable_to_non_nullable
 as int,hasNext: null == hasNext ? _self.hasNext : hasNext // ignore: cast_nullable_to_non_nullable
-as bool,mutationStatus: null == mutationStatus ? _self.mutationStatus : mutationStatus // ignore: cast_nullable_to_non_nullable
-as HistoryPekerjaMutationStatus,mutationErrorMessage: freezed == mutationErrorMessage ? _self.mutationErrorMessage : mutationErrorMessage // ignore: cast_nullable_to_non_nullable
-as String?,mutationSuccessMessage: freezed == mutationSuccessMessage ? _self.mutationSuccessMessage : mutationSuccessMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as bool,
   ));
 }
 
@@ -159,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HistoryPekerjaStatus status,  List<WorkerContactEntity> contacts,  String? errorMessage,  int currentPage,  bool hasNext,  HistoryPekerjaMutationStatus mutationStatus,  String? mutationErrorMessage,  String? mutationSuccessMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HistoryPekerjaStatus status,  List<WorkerContactEntity> contacts,  String? errorMessage,  int currentPage,  bool hasNext)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HistoryPekerjaState() when $default != null:
-return $default(_that.status,_that.contacts,_that.errorMessage,_that.currentPage,_that.hasNext,_that.mutationStatus,_that.mutationErrorMessage,_that.mutationSuccessMessage);case _:
+return $default(_that.status,_that.contacts,_that.errorMessage,_that.currentPage,_that.hasNext);case _:
   return orElse();
 
 }
@@ -180,10 +176,10 @@ return $default(_that.status,_that.contacts,_that.errorMessage,_that.currentPage
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HistoryPekerjaStatus status,  List<WorkerContactEntity> contacts,  String? errorMessage,  int currentPage,  bool hasNext,  HistoryPekerjaMutationStatus mutationStatus,  String? mutationErrorMessage,  String? mutationSuccessMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HistoryPekerjaStatus status,  List<WorkerContactEntity> contacts,  String? errorMessage,  int currentPage,  bool hasNext)  $default,) {final _that = this;
 switch (_that) {
 case _HistoryPekerjaState():
-return $default(_that.status,_that.contacts,_that.errorMessage,_that.currentPage,_that.hasNext,_that.mutationStatus,_that.mutationErrorMessage,_that.mutationSuccessMessage);case _:
+return $default(_that.status,_that.contacts,_that.errorMessage,_that.currentPage,_that.hasNext);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +196,10 @@ return $default(_that.status,_that.contacts,_that.errorMessage,_that.currentPage
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HistoryPekerjaStatus status,  List<WorkerContactEntity> contacts,  String? errorMessage,  int currentPage,  bool hasNext,  HistoryPekerjaMutationStatus mutationStatus,  String? mutationErrorMessage,  String? mutationSuccessMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HistoryPekerjaStatus status,  List<WorkerContactEntity> contacts,  String? errorMessage,  int currentPage,  bool hasNext)?  $default,) {final _that = this;
 switch (_that) {
 case _HistoryPekerjaState() when $default != null:
-return $default(_that.status,_that.contacts,_that.errorMessage,_that.currentPage,_that.hasNext,_that.mutationStatus,_that.mutationErrorMessage,_that.mutationSuccessMessage);case _:
+return $default(_that.status,_that.contacts,_that.errorMessage,_that.currentPage,_that.hasNext);case _:
   return null;
 
 }
@@ -215,7 +211,7 @@ return $default(_that.status,_that.contacts,_that.errorMessage,_that.currentPage
 
 
 class _HistoryPekerjaState implements HistoryPekerjaState {
-  const _HistoryPekerjaState({this.status = HistoryPekerjaStatus.initial, final  List<WorkerContactEntity> contacts = const [], this.errorMessage, this.currentPage = 1, this.hasNext = true, this.mutationStatus = HistoryPekerjaMutationStatus.initial, this.mutationErrorMessage, this.mutationSuccessMessage}): _contacts = contacts;
+  const _HistoryPekerjaState({this.status = HistoryPekerjaStatus.initial, final  List<WorkerContactEntity> contacts = const [], this.errorMessage, this.currentPage = 1, this.hasNext = true}): _contacts = contacts;
   
 
 @override@JsonKey() final  HistoryPekerjaStatus status;
@@ -230,10 +226,6 @@ class _HistoryPekerjaState implements HistoryPekerjaState {
 // Pagination
 @override@JsonKey() final  int currentPage;
 @override@JsonKey() final  bool hasNext;
-// Mutation state (for rating/review)
-@override@JsonKey() final  HistoryPekerjaMutationStatus mutationStatus;
-@override final  String? mutationErrorMessage;
-@override final  String? mutationSuccessMessage;
 
 /// Create a copy of HistoryPekerjaState
 /// with the given fields replaced by the non-null parameter values.
@@ -245,16 +237,16 @@ _$HistoryPekerjaStateCopyWith<_HistoryPekerjaState> get copyWith => __$HistoryPe
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryPekerjaState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._contacts, _contacts)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.hasNext, hasNext) || other.hasNext == hasNext)&&(identical(other.mutationStatus, mutationStatus) || other.mutationStatus == mutationStatus)&&(identical(other.mutationErrorMessage, mutationErrorMessage) || other.mutationErrorMessage == mutationErrorMessage)&&(identical(other.mutationSuccessMessage, mutationSuccessMessage) || other.mutationSuccessMessage == mutationSuccessMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryPekerjaState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._contacts, _contacts)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.hasNext, hasNext) || other.hasNext == hasNext));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_contacts),errorMessage,currentPage,hasNext,mutationStatus,mutationErrorMessage,mutationSuccessMessage);
+int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_contacts),errorMessage,currentPage,hasNext);
 
 @override
 String toString() {
-  return 'HistoryPekerjaState(status: $status, contacts: $contacts, errorMessage: $errorMessage, currentPage: $currentPage, hasNext: $hasNext, mutationStatus: $mutationStatus, mutationErrorMessage: $mutationErrorMessage, mutationSuccessMessage: $mutationSuccessMessage)';
+  return 'HistoryPekerjaState(status: $status, contacts: $contacts, errorMessage: $errorMessage, currentPage: $currentPage, hasNext: $hasNext)';
 }
 
 
@@ -265,7 +257,7 @@ abstract mixin class _$HistoryPekerjaStateCopyWith<$Res> implements $HistoryPeke
   factory _$HistoryPekerjaStateCopyWith(_HistoryPekerjaState value, $Res Function(_HistoryPekerjaState) _then) = __$HistoryPekerjaStateCopyWithImpl;
 @override @useResult
 $Res call({
- HistoryPekerjaStatus status, List<WorkerContactEntity> contacts, String? errorMessage, int currentPage, bool hasNext, HistoryPekerjaMutationStatus mutationStatus, String? mutationErrorMessage, String? mutationSuccessMessage
+ HistoryPekerjaStatus status, List<WorkerContactEntity> contacts, String? errorMessage, int currentPage, bool hasNext
 });
 
 
@@ -282,17 +274,14 @@ class __$HistoryPekerjaStateCopyWithImpl<$Res>
 
 /// Create a copy of HistoryPekerjaState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? contacts = null,Object? errorMessage = freezed,Object? currentPage = null,Object? hasNext = null,Object? mutationStatus = null,Object? mutationErrorMessage = freezed,Object? mutationSuccessMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? contacts = null,Object? errorMessage = freezed,Object? currentPage = null,Object? hasNext = null,}) {
   return _then(_HistoryPekerjaState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as HistoryPekerjaStatus,contacts: null == contacts ? _self._contacts : contacts // ignore: cast_nullable_to_non_nullable
 as List<WorkerContactEntity>,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,currentPage: null == currentPage ? _self.currentPage : currentPage // ignore: cast_nullable_to_non_nullable
 as int,hasNext: null == hasNext ? _self.hasNext : hasNext // ignore: cast_nullable_to_non_nullable
-as bool,mutationStatus: null == mutationStatus ? _self.mutationStatus : mutationStatus // ignore: cast_nullable_to_non_nullable
-as HistoryPekerjaMutationStatus,mutationErrorMessage: freezed == mutationErrorMessage ? _self.mutationErrorMessage : mutationErrorMessage // ignore: cast_nullable_to_non_nullable
-as String?,mutationSuccessMessage: freezed == mutationSuccessMessage ? _self.mutationSuccessMessage : mutationSuccessMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as bool,
   ));
 }
 

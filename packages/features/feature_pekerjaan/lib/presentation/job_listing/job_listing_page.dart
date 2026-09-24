@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:core/core.dart';
@@ -35,8 +36,62 @@ class JobListingPage extends StatelessWidget {
   }
 }
 
-class _JobListingView extends StatelessWidget {
+class _JobListingView extends StatefulWidget {
   const _JobListingView();
+
+  @override
+  State<_JobListingView> createState() => _JobListingViewState();
+}
+
+class _JobListingViewState extends State<_JobListingView> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchDeviceLocation();
+  }
+
+  /// Fetches device GPS coordinates and dispatches them to [JobListingCubit]
+  /// (F-1/F-2). Mirrors the pattern established in `create_job_page.dart`.
+  ///
+  /// ## Safety guarantees
+  /// - Called from [initState] — never blocks the UI (listing already loads
+  ///   without coordinates first, via `loadJobs()` in [JobListingPage]).
+  /// - All exceptions are caught silently; GPS failure does **not** prevent
+  ///   the listing from showing (lat/lng simply stay omitted from the API call).
+  /// - [mounted] guard prevents using a disposed widget's context.
+  Future<void> _fetchDeviceLocation() async {
+    try {
+      final permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        debugPrint(
+          '[JobListingPage] Location permission denied — lat/lng omitted.',
+        );
+        return;
+      }
+
+      Position? position;
+      try {
+        position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 8),
+          ),
+        );
+      } catch (_) {
+        position = await Geolocator.getLastKnownPosition();
+      }
+
+      if (!mounted || position == null) return;
+
+      context.read<JobListingCubit>().updateLocation(
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+    } catch (e) {
+      debugPrint('[JobListingPage] Failed to fetch location: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -282,7 +337,8 @@ class _JobListingView extends StatelessWidget {
 
         if (state.isFailure) {
           return AppErrorState(
-            description: state.errorMessage ?? 'Terjadi kesalahan saat memuat pekerjaan',
+            description:
+                state.errorMessage ?? 'Terjadi kesalahan saat memuat pekerjaan',
             onRetry: () => context.read<JobListingCubit>().loadJobs(),
           );
         }
@@ -305,7 +361,8 @@ class _JobListingView extends StatelessWidget {
                       ),
                     ),
                     title: 'Belum ada pekerjaan tersedia',
-                    description: 'Silahkan coba cari dengan kata kunci atau lokasi lain',
+                    description:
+                        'Silahkan coba cari dengan kata kunci atau lokasi lain',
                   ),
                 ),
               ],
@@ -348,8 +405,11 @@ class _JobListingView extends StatelessWidget {
           context: context,
           jobId: job.id,
           onChatPressed: () {
-            debugPrint('[JobListing] Chat pressed for job: ${job.id}');
-            // TODO: Navigate to chat
+            context.push(
+              '/chat/${job.userId}'
+              '?otherUsername=${Uri.encodeComponent(job.employerName)}'
+              '&adType=pekerjaan&adId=${job.id}',
+            );
           },
         );
       },

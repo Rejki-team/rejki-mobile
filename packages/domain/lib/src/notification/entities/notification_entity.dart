@@ -26,11 +26,11 @@ abstract class NotificationsResultEntity with _$NotificationsResultEntity {
   }) = _NotificationsResultEntity;
 
   factory NotificationsResultEntity.empty() => const NotificationsResultEntity(
-        notifications: [],
-        unreadCount: 0,
-        page: 1,
-        limit: 10,
-        total: 0,
-        hasNext: false,
-      );
+    notifications: [],
+    unreadCount: 0,
+    page: 1,
+    limit: 10,
+    total: 0,
+    hasNext: false,
+  );
 }

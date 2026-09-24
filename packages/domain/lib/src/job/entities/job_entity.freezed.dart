@@ -23,8 +23,10 @@ mixin _$JobEntity {
  String? get requirements;/// Salary amount
  int get salary;/// Salary type (e.g., "Borongan", "Harian", "Per Jam")
  String get salaryType;/// Number of workers needed
- int get workerCount;/// Job date and time
- DateTime get dateOfJob;/// Full address
+ int get workerCount;/// Job date and time — `null` bila backend tidak menyimpan jadwal default
+/// untuk iklan ini (Kelompok 3 Phase 2: backend belum punya field ini sama
+/// sekali, gap terpisah — lihat catatan di `JobModel`).
+ DateTime? get dateOfJob;/// Full address
  String get address;/// Province
  String get province;/// City/Regency
  String get city;/// Subdistrict (Kecamatan)
@@ -70,7 +72,7 @@ abstract mixin class $JobEntityCopyWith<$Res>  {
   factory $JobEntityCopyWith(JobEntity value, $Res Function(JobEntity) _then) = _$JobEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String adCode, String userId, String title, String description, String? requirements, int salary, String salaryType, int workerCount, DateTime dateOfJob, String address, String province, String city, String subdistrict, String ward, String? village, String status, List<JobImageEntity> images, DateTime? createdAt, DateTime? updatedAt, String employerName, String employerPhone, int? bidCount
+ String id, String adCode, String userId, String title, String description, String? requirements, int salary, String salaryType, int workerCount, DateTime? dateOfJob, String address, String province, String city, String subdistrict, String ward, String? village, String status, List<JobImageEntity> images, DateTime? createdAt, DateTime? updatedAt, String employerName, String employerPhone, int? bidCount
 });
 
 
@@ -87,7 +89,7 @@ class _$JobEntityCopyWithImpl<$Res>
 
 /// Create a copy of JobEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? title = null,Object? description = null,Object? requirements = freezed,Object? salary = null,Object? salaryType = null,Object? workerCount = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = freezed,Object? status = null,Object? images = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? employerName = null,Object? employerPhone = null,Object? bidCount = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? title = null,Object? description = null,Object? requirements = freezed,Object? salary = null,Object? salaryType = null,Object? workerCount = null,Object? dateOfJob = freezed,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = freezed,Object? status = null,Object? images = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? employerName = null,Object? employerPhone = null,Object? bidCount = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,adCode: null == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
@@ -98,8 +100,8 @@ as String,requirements: freezed == requirements ? _self.requirements : requireme
 as String?,salary: null == salary ? _self.salary : salary // ignore: cast_nullable_to_non_nullable
 as int,salaryType: null == salaryType ? _self.salaryType : salaryType // ignore: cast_nullable_to_non_nullable
 as String,workerCount: null == workerCount ? _self.workerCount : workerCount // ignore: cast_nullable_to_non_nullable
-as int,dateOfJob: null == dateOfJob ? _self.dateOfJob : dateOfJob // ignore: cast_nullable_to_non_nullable
-as DateTime,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as int,dateOfJob: freezed == dateOfJob ? _self.dateOfJob : dateOfJob // ignore: cast_nullable_to_non_nullable
+as DateTime?,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
 as String,province: null == province ? _self.province : province // ignore: cast_nullable_to_non_nullable
 as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String,subdistrict: null == subdistrict ? _self.subdistrict : subdistrict // ignore: cast_nullable_to_non_nullable
@@ -197,7 +199,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone,  int? bidCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime? dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone,  int? bidCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _JobEntity() when $default != null:
 return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description,_that.requirements,_that.salary,_that.salaryType,_that.workerCount,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt,_that.employerName,_that.employerPhone,_that.bidCount);case _:
@@ -218,7 +220,7 @@ return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone,  int? bidCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime? dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone,  int? bidCount)  $default,) {final _that = this;
 switch (_that) {
 case _JobEntity():
 return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description,_that.requirements,_that.salary,_that.salaryType,_that.workerCount,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt,_that.employerName,_that.employerPhone,_that.bidCount);case _:
@@ -238,7 +240,7 @@ return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone,  int? bidCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String adCode,  String userId,  String title,  String description,  String? requirements,  int salary,  String salaryType,  int workerCount,  DateTime? dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageEntity> images,  DateTime? createdAt,  DateTime? updatedAt,  String employerName,  String employerPhone,  int? bidCount)?  $default,) {final _that = this;
 switch (_that) {
 case _JobEntity() when $default != null:
 return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description,_that.requirements,_that.salary,_that.salaryType,_that.workerCount,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt,_that.employerName,_that.employerPhone,_that.bidCount);case _:
@@ -253,7 +255,7 @@ return $default(_that.id,_that.adCode,_that.userId,_that.title,_that.description
 
 
 class _JobEntity extends JobEntity {
-  const _JobEntity({required this.id, required this.adCode, required this.userId, required this.title, required this.description, this.requirements, required this.salary, required this.salaryType, required this.workerCount, required this.dateOfJob, required this.address, required this.province, required this.city, required this.subdistrict, required this.ward, this.village, required this.status, final  List<JobImageEntity> images = const [], this.createdAt, this.updatedAt, this.employerName = '', this.employerPhone = '', this.bidCount}): _images = images,super._();
+  const _JobEntity({required this.id, required this.adCode, required this.userId, required this.title, required this.description, this.requirements, required this.salary, required this.salaryType, required this.workerCount, this.dateOfJob, required this.address, required this.province, required this.city, required this.subdistrict, required this.ward, this.village, required this.status, final  List<JobImageEntity> images = const [], this.createdAt, this.updatedAt, this.employerName = '', this.employerPhone = '', this.bidCount}): _images = images,super._();
   
 
 /// Unique job identifier
@@ -274,8 +276,10 @@ class _JobEntity extends JobEntity {
 @override final  String salaryType;
 /// Number of workers needed
 @override final  int workerCount;
-/// Job date and time
-@override final  DateTime dateOfJob;
+/// Job date and time — `null` bila backend tidak menyimpan jadwal default
+/// untuk iklan ini (Kelompok 3 Phase 2: backend belum punya field ini sama
+/// sekali, gap terpisah — lihat catatan di `JobModel`).
+@override final  DateTime? dateOfJob;
 /// Full address
 @override final  String address;
 /// Province
@@ -342,7 +346,7 @@ abstract mixin class _$JobEntityCopyWith<$Res> implements $JobEntityCopyWith<$Re
   factory _$JobEntityCopyWith(_JobEntity value, $Res Function(_JobEntity) _then) = __$JobEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String adCode, String userId, String title, String description, String? requirements, int salary, String salaryType, int workerCount, DateTime dateOfJob, String address, String province, String city, String subdistrict, String ward, String? village, String status, List<JobImageEntity> images, DateTime? createdAt, DateTime? updatedAt, String employerName, String employerPhone, int? bidCount
+ String id, String adCode, String userId, String title, String description, String? requirements, int salary, String salaryType, int workerCount, DateTime? dateOfJob, String address, String province, String city, String subdistrict, String ward, String? village, String status, List<JobImageEntity> images, DateTime? createdAt, DateTime? updatedAt, String employerName, String employerPhone, int? bidCount
 });
 
 
@@ -359,7 +363,7 @@ class __$JobEntityCopyWithImpl<$Res>
 
 /// Create a copy of JobEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? title = null,Object? description = null,Object? requirements = freezed,Object? salary = null,Object? salaryType = null,Object? workerCount = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = freezed,Object? status = null,Object? images = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? employerName = null,Object? employerPhone = null,Object? bidCount = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? title = null,Object? description = null,Object? requirements = freezed,Object? salary = null,Object? salaryType = null,Object? workerCount = null,Object? dateOfJob = freezed,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = freezed,Object? status = null,Object? images = null,Object? createdAt = freezed,Object? updatedAt = freezed,Object? employerName = null,Object? employerPhone = null,Object? bidCount = freezed,}) {
   return _then(_JobEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,adCode: null == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
@@ -370,8 +374,8 @@ as String,requirements: freezed == requirements ? _self.requirements : requireme
 as String?,salary: null == salary ? _self.salary : salary // ignore: cast_nullable_to_non_nullable
 as int,salaryType: null == salaryType ? _self.salaryType : salaryType // ignore: cast_nullable_to_non_nullable
 as String,workerCount: null == workerCount ? _self.workerCount : workerCount // ignore: cast_nullable_to_non_nullable
-as int,dateOfJob: null == dateOfJob ? _self.dateOfJob : dateOfJob // ignore: cast_nullable_to_non_nullable
-as DateTime,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as int,dateOfJob: freezed == dateOfJob ? _self.dateOfJob : dateOfJob // ignore: cast_nullable_to_non_nullable
+as DateTime?,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
 as String,province: null == province ? _self.province : province // ignore: cast_nullable_to_non_nullable
 as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String,subdistrict: null == subdistrict ? _self.subdistrict : subdistrict // ignore: cast_nullable_to_non_nullable

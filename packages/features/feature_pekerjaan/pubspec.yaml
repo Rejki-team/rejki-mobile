@@ -66,6 +66,8 @@ dependencies:
     path: ../../network
   shared_widgets:
     path: ../../shared_widgets
+  feature_report:
+    path: ../feature_report
 
 dev_dependencies:
   flutter_test:

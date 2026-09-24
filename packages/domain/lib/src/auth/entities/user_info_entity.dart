@@ -27,6 +27,12 @@ abstract class UserInfoEntity with _$UserInfoEntity {
     @Default('') String workExperience,
     @Default('') String addressKtp,
     @Default('Indonesia') String country,
+
+    /// Koordinat hasil geocoding alamat terdaftar (F-1) — dipakai filter radius
+    /// (mis. "search_ad" Barang Bekas, Kelompok 3 Phase 4 P4.6). `null` bila
+    /// alamat belum diisi atau geocoding belum pernah berhasil.
+    double? latitude,
+    double? longitude,
   }) = _UserInfoEntity;
 
   /// Empty user info

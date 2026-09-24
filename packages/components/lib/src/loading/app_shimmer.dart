@@ -16,7 +16,9 @@ class AppShimmer extends StatefulWidget {
     super.key,
     required this.child,
     this.baseColor = const Color(0xFFE2E8F0), // designsystems border / grey 200
-    this.highlightColor = const Color(0xFFF8FAFC), // designsystems background / grey 50
+    this.highlightColor = const Color(
+      0xFFF8FAFC,
+    ), // designsystems background / grey 50
     this.duration = const Duration(milliseconds: 1500),
   });
 
@@ -50,10 +52,8 @@ class _AppShimmerState extends State<AppShimmer>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    )..repeat(); // Continuously animate
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat(); // Continuously animate
   }
 
   @override
@@ -78,12 +78,10 @@ class _AppShimmerState extends State<AppShimmer>
                 widget.highlightColor,
                 widget.baseColor,
               ],
-              stops: const [
-                0.1,
-                0.3,
-                0.4,
-              ],
-              transform: _SlidingGradientTransform(slidePercent: _controller.value),
+              stops: const [0.1, 0.3, 0.4],
+              transform: _SlidingGradientTransform(
+                slidePercent: _controller.value,
+              ),
             ).createShader(bounds);
           },
           child: child,
@@ -97,14 +95,16 @@ class _AppShimmerState extends State<AppShimmer>
 class _SlidingGradientTransform extends GradientTransform {
   final double slidePercent;
 
-  const _SlidingGradientTransform({
-    required this.slidePercent,
-  });
+  const _SlidingGradientTransform({required this.slidePercent});
 
   @override
   Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
     // Sliding horizontally
-    return Matrix4.translationValues(bounds.width * slidePercent * 3.0 - bounds.width, 0.0, 0.0);
+    return Matrix4.translationValues(
+      bounds.width * slidePercent * 3.0 - bounds.width,
+      0.0,
+      0.0,
+    );
   }
 }
 
@@ -137,10 +137,7 @@ class AppShimmerList extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(
-                color: const Color(0xFFE2E8F0), 
-                width: 1.0,
-              ),
+              border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
             ),
             padding: const EdgeInsets.all(16.0),
             child: Row(

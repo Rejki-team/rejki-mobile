@@ -17,7 +17,9 @@ mixin _$JobDetailState {
 /// Current job data
  JobEntity? get job;/// Loading state
  bool get isLoading;/// Error message if any
- String? get errorMessage;
+ String? get errorMessage;/// Agregasi rating pemberi kerja (F-17, PRD §5.15) — `null` selagi belum
+/// selesai fetch atau `job.userId` kosong; tidak memblokir `isSuccess`.
+ RatingAggregateEntity? get employerRating;
 /// Create a copy of JobDetailState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +30,16 @@ $JobDetailStateCopyWith<JobDetailState> get copyWith => _$JobDetailStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is JobDetailState&&(identical(other.job, job) || other.job == job)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is JobDetailState&&(identical(other.job, job) || other.job == job)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.employerRating, employerRating) || other.employerRating == employerRating));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,job,isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,job,isLoading,errorMessage,employerRating);
 
 @override
 String toString() {
-  return 'JobDetailState(job: $job, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'JobDetailState(job: $job, isLoading: $isLoading, errorMessage: $errorMessage, employerRating: $employerRating)';
 }
 
 
@@ -48,11 +50,11 @@ abstract mixin class $JobDetailStateCopyWith<$Res>  {
   factory $JobDetailStateCopyWith(JobDetailState value, $Res Function(JobDetailState) _then) = _$JobDetailStateCopyWithImpl;
 @useResult
 $Res call({
- JobEntity? job, bool isLoading, String? errorMessage
+ JobEntity? job, bool isLoading, String? errorMessage, RatingAggregateEntity? employerRating
 });
 
 
-$JobEntityCopyWith<$Res>? get job;
+$JobEntityCopyWith<$Res>? get job;$RatingAggregateEntityCopyWith<$Res>? get employerRating;
 
 }
 /// @nodoc
@@ -65,12 +67,13 @@ class _$JobDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of JobDetailState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? job = freezed,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? job = freezed,Object? isLoading = null,Object? errorMessage = freezed,Object? employerRating = freezed,}) {
   return _then(_self.copyWith(
 job: freezed == job ? _self.job : job // ignore: cast_nullable_to_non_nullable
 as JobEntity?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,employerRating: freezed == employerRating ? _self.employerRating : employerRating // ignore: cast_nullable_to_non_nullable
+as RatingAggregateEntity?,
   ));
 }
 /// Create a copy of JobDetailState
@@ -84,6 +87,18 @@ $JobEntityCopyWith<$Res>? get job {
 
   return $JobEntityCopyWith<$Res>(_self.job!, (value) {
     return _then(_self.copyWith(job: value));
+  });
+}/// Create a copy of JobDetailState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$RatingAggregateEntityCopyWith<$Res>? get employerRating {
+    if (_self.employerRating == null) {
+    return null;
+  }
+
+  return $RatingAggregateEntityCopyWith<$Res>(_self.employerRating!, (value) {
+    return _then(_self.copyWith(employerRating: value));
   });
 }
 }
@@ -167,10 +182,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( JobEntity? job,  bool isLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( JobEntity? job,  bool isLoading,  String? errorMessage,  RatingAggregateEntity? employerRating)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _JobDetailState() when $default != null:
-return $default(_that.job,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.job,_that.isLoading,_that.errorMessage,_that.employerRating);case _:
   return orElse();
 
 }
@@ -188,10 +203,10 @@ return $default(_that.job,_that.isLoading,_that.errorMessage);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( JobEntity? job,  bool isLoading,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( JobEntity? job,  bool isLoading,  String? errorMessage,  RatingAggregateEntity? employerRating)  $default,) {final _that = this;
 switch (_that) {
 case _JobDetailState():
-return $default(_that.job,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.job,_that.isLoading,_that.errorMessage,_that.employerRating);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +223,10 @@ return $default(_that.job,_that.isLoading,_that.errorMessage);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( JobEntity? job,  bool isLoading,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( JobEntity? job,  bool isLoading,  String? errorMessage,  RatingAggregateEntity? employerRating)?  $default,) {final _that = this;
 switch (_that) {
 case _JobDetailState() when $default != null:
-return $default(_that.job,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.job,_that.isLoading,_that.errorMessage,_that.employerRating);case _:
   return null;
 
 }
@@ -223,7 +238,7 @@ return $default(_that.job,_that.isLoading,_that.errorMessage);case _:
 
 
 class _JobDetailState extends JobDetailState {
-  const _JobDetailState({this.job, this.isLoading = false, this.errorMessage}): super._();
+  const _JobDetailState({this.job, this.isLoading = false, this.errorMessage, this.employerRating}): super._();
   
 
 /// Current job data
@@ -232,6 +247,9 @@ class _JobDetailState extends JobDetailState {
 @override@JsonKey() final  bool isLoading;
 /// Error message if any
 @override final  String? errorMessage;
+/// Agregasi rating pemberi kerja (F-17, PRD §5.15) — `null` selagi belum
+/// selesai fetch atau `job.userId` kosong; tidak memblokir `isSuccess`.
+@override final  RatingAggregateEntity? employerRating;
 
 /// Create a copy of JobDetailState
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +261,16 @@ _$JobDetailStateCopyWith<_JobDetailState> get copyWith => __$JobDetailStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _JobDetailState&&(identical(other.job, job) || other.job == job)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _JobDetailState&&(identical(other.job, job) || other.job == job)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.employerRating, employerRating) || other.employerRating == employerRating));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,job,isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,job,isLoading,errorMessage,employerRating);
 
 @override
 String toString() {
-  return 'JobDetailState(job: $job, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'JobDetailState(job: $job, isLoading: $isLoading, errorMessage: $errorMessage, employerRating: $employerRating)';
 }
 
 
@@ -263,11 +281,11 @@ abstract mixin class _$JobDetailStateCopyWith<$Res> implements $JobDetailStateCo
   factory _$JobDetailStateCopyWith(_JobDetailState value, $Res Function(_JobDetailState) _then) = __$JobDetailStateCopyWithImpl;
 @override @useResult
 $Res call({
- JobEntity? job, bool isLoading, String? errorMessage
+ JobEntity? job, bool isLoading, String? errorMessage, RatingAggregateEntity? employerRating
 });
 
 
-@override $JobEntityCopyWith<$Res>? get job;
+@override $JobEntityCopyWith<$Res>? get job;@override $RatingAggregateEntityCopyWith<$Res>? get employerRating;
 
 }
 /// @nodoc
@@ -280,12 +298,13 @@ class __$JobDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of JobDetailState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? job = freezed,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? job = freezed,Object? isLoading = null,Object? errorMessage = freezed,Object? employerRating = freezed,}) {
   return _then(_JobDetailState(
 job: freezed == job ? _self.job : job // ignore: cast_nullable_to_non_nullable
 as JobEntity?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,employerRating: freezed == employerRating ? _self.employerRating : employerRating // ignore: cast_nullable_to_non_nullable
+as RatingAggregateEntity?,
   ));
 }
 
@@ -300,6 +319,18 @@ $JobEntityCopyWith<$Res>? get job {
 
   return $JobEntityCopyWith<$Res>(_self.job!, (value) {
     return _then(_self.copyWith(job: value));
+  });
+}/// Create a copy of JobDetailState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$RatingAggregateEntityCopyWith<$Res>? get employerRating {
+    if (_self.employerRating == null) {
+    return null;
+  }
+
+  return $RatingAggregateEntityCopyWith<$Res>(_self.employerRating!, (value) {
+    return _then(_self.copyWith(employerRating: value));
   });
 }
 }

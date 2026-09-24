@@ -12,6 +12,5 @@ class CreateSecondhandUseCase {
 
   Future<Either<SecondhandFailure, SecondhandEntity>> call(
     CreateSecondhandParams params,
-  ) =>
-      _repository.createSecondhand(params);
+  ) => _repository.createSecondhand(params);
 }

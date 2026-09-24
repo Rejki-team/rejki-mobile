@@ -9,11 +9,16 @@ class RegisterVerificationCubit extends Cubit<RegisterVerificationState> {
   final String email;
   Timer? _countdownTimer;
 
+  /// Jumlah permintaan kirim-ulang kode yang sudah dilakukan pada sesi OTP ini.
+  /// PRD §5.3.2: "Setiap permintaan ulang berikutnya menambah 5 detik" — dipakai
+  /// untuk menghitung durasi countdown progresif (30, 35, 40, ...).
+  int _resendAttempt = 0;
+
   RegisterVerificationCubit({
     required AuthRepository authRepository,
     required this.email,
-  })  : _authRepository = authRepository,
-        super(const RegisterVerificationState()) {
+  }) : _authRepository = authRepository,
+       super(const RegisterVerificationState()) {
     _startCountdown();
   }
 
@@ -23,10 +28,11 @@ class RegisterVerificationCubit extends Cubit<RegisterVerificationState> {
     return super.close();
   }
 
-  /// Mulai hitung mundur
-  void _startCountdown() {
+  /// Mulai hitung mundur. [seconds] default 30 (pengiriman awal); resend
+  /// berikutnya memanggil dengan durasi progresif (lihat [resendCode]).
+  void _startCountdown({int seconds = 30}) {
     _countdownTimer?.cancel();
-    emit(state.copyWith(countdown: 30, canResend: false));
+    emit(state.copyWith(countdown: seconds, canResend: false));
 
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.countdown > 0) {
@@ -135,17 +141,18 @@ class RegisterVerificationCubit extends Cubit<RegisterVerificationState> {
         );
       },
       (_) {
-        // Berhasil → mulai countdown 30 detik
-        // _startCountdown() sudah set countdown = 30 dan canResend = false
-        _startCountdown();
+        // Berhasil → mulai countdown progresif: 30 + (jumlah resend * 5) detik
+        // (PRD §5.3.2 — permintaan ulang ke-1 = 35s, ke-2 = 40s, dst).
+        _resendAttempt++;
+        _startCountdown(seconds: 30 + (_resendAttempt * 5));
       },
     );
   }
 
-
   /// Reset state
   void reset() {
     _countdownTimer?.cancel();
+    _resendAttempt = 0;
     emit(const RegisterVerificationState());
     _startCountdown();
   }

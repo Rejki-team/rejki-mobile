@@ -4,56 +4,50 @@ import 'package:network/network.dart';
 import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 import '../models/job_model.dart';
-import '../models/job_bid_evidence_model.dart';
+import '../models/lamaran_model.dart';
 
 /// Data source for Job MUTATIONS
 ///
-/// Handles CREATE operations for jobs.
+/// Handles CREATE + Lamaran mutation operations (F-3, Kelompok 3 Phase 1-2).
 /// Read operations use shared JobRemoteDataSource from packages/data.
 abstract class JobMutationDataSource {
   Future<JobModel> createJob(CreateJobParams params);
 
-  Future<void> updateBidStatus({
-    required String jobId,
-    required String bidId,
-    required String status,
+  /// Terima/tolak lamaran (PRD §5.11.5). Pengganti `updateBidStatus`.
+  Future<LamaranModel> reviewLamaran({
+    required String iklanId,
+    required String lamaranId,
+    required bool approved,
   });
 
+  /// Mulai bekerja, backend memvalidasi geofence 50m (PRD §5.11.4).
+  Future<LamaranModel> mulaiBekerja({
+    required String iklanId,
+    required String lamaranId,
+    required double latitude,
+    required double longitude,
+  });
+
+  /// Tandai pekerjaan selesai (PRD §5.11.4).
+  Future<LamaranModel> tandaiSelesai({
+    required String iklanId,
+    required String lamaranId,
+  });
+
+  /// Pembatalan lamaran Diterima oleh pemilik iklan, alasan wajib (PRD §5.11.5).
+  Future<LamaranModel> batalkanLamaran({
+    required String iklanId,
+    required String lamaranId,
+    required String alasan,
+  });
+
+  /// Pelamar menilai pemberi kerja (F-17, PRD §5.15, arah
+  /// `pelamar_ke_pemberi_kerja`) — `POST /rating`.
   Future<void> createJobReview({
-    required String jobId,
-    required int rating,
-    required String review,
-  });
-
-  Future<void> ownerCompleteJob({required String jobId});
-
-  Future<void> ownerConfirmBidComplete({
-    required String jobId,
-    required String bidId,
-  });
-
-  // Phase 2
-  Future<void> disputeBid({
-    required String jobId,
-    required String bidId,
-    required String reason,
-  });
-
-  Future<void> cancelBid({
-    required String jobId,
-    required String bidId,
-    required String reason,
-  });
-
-  Future<List<JobBidEvidenceModel>> uploadBidEvidence({
-    required String jobId,
-    required String bidId,
-    required List<String> imagePaths,
-  });
-
-  Future<List<JobBidEvidenceModel>> getBidEvidence({
-    required String jobId,
-    required String bidId,
+    required String iklanId,
+    required String posterId,
+    required int bintang,
+    String? ulasan,
   });
 }
 
@@ -66,109 +60,127 @@ class JobMutationDataSourceImpl implements JobMutationDataSource {
 
   @override
   Future<JobModel> createJob(CreateJobParams params) async {
-    // Convert images to MultipartFile
-    final imageFiles = <MultipartFile>[];
-    for (final image in params.images) {
-      imageFiles.add(
-        await MultipartFile.fromFile(
-          image.path,
-          filename: image.path.split('/').last,
-        ),
-      );
-    }
-
-    // Create FormData with updated fields
-    final formData = FormData.fromMap({
-      'title': params.title,
-      'job_desc': params.jobDesc,
-      'job_requirements': params.requirements,
-      'salary': params.salary,
-      'salary_of_worker': params.salaryOfWorker,
-      'number_of_worker': params.numberOfWorker,
-      'date_of_job': params.dateOfJob,
-      'address': params.address,
-      'province': params.province,
-      'city': params.city,
-      'subdistrict': params.subdistrict,
-      'ward': params.ward,
-      'village': params.village,
-      'images': imageFiles,
-      // Include coordinates only when GPS was available
-      if (params.latitude != null) 'latitude': params.latitude,
-      if (params.longitude != null) 'longitude': params.longitude,
-    });
-
-    // Make API call
-    debugPrint('🚀 [JobMutationDataSource] Calling POST /jobs...');
-    debugPrint('📍 [JobMutationDataSource] salary_of_worker: ${params.salaryOfWorker}');
-    debugPrint('📍 [JobMutationDataSource] lat: ${params.latitude}, lng: ${params.longitude}');
+    // Backend `POST /pekerjaan` (rejki-app) menerima field teks saja — TIDAK
+    // ada upload foto inline (butuh presigned-URL flow terpisah, di luar
+    // scope Kelompok 3 Phase 2). `images` di [params] TIDAK dikirim — gap
+    // dicatat, bukan diperbaiki di sini.
+    debugPrint('🚀 [JobMutationDataSource] Calling POST ${ApiConfig.jobs}...');
     final response = await dio.post(
-      '/jobs',
-      data: formData,
-      options: Options(contentType: 'multipart/form-data'),
+      ApiConfig.jobs,
+      data: {
+        'judul': params.title,
+        'perusahaan': params.perusahaan ?? params.title,
+        'deskripsi': params.jobDesc,
+        'tipe': params.salaryOfWorker,
+        if (params.address.isNotEmpty) 'lokasi': params.address,
+        'gaji_min': params.salary,
+        'gaji_max': params.salary,
+      },
     );
 
-    debugPrint('✅ [JobMutationDataSource] Response received!');
-    debugPrint('📦 [JobMutationDataSource] Status: ${response.statusCode}');
-    debugPrint('📦 [JobMutationDataSource] Response data: ${response.data}');
-
-    // Parse response using standard ApiResponse
     final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
       response.data as Map<String, dynamic>,
       fromJsonT: (data) => data as Map<String, dynamic>,
     );
 
-    // Check for API-level errors
     if (apiResponse.hasError) {
-      debugPrint(
-        '❌ [JobMutationDataSource] API Error: ${apiResponse.errorMessage}',
-      );
       throw Exception(apiResponse.errorMessage);
     }
-
-    // Check if data exists
     if (!apiResponse.hasData) {
-      debugPrint('⚠️ [JobMutationDataSource] No data in response');
       throw Exception('No data in response');
     }
 
-    debugPrint('✅ [JobMutationDataSource] Parsing job data...');
-    // Parse response using shared JobModel
     return JobModel.fromJson(apiResponse.data!);
   }
 
-  @override
-  Future<void> updateBidStatus({
-    required String jobId,
-    required String bidId,
-    required String status,
+  Future<LamaranModel> _postLamaranAction(
+    String path, {
+    Map<String, dynamic>? data,
   }) async {
-    final response = await dio.put(
-      '/jobs/$jobId/bids/$bidId/status',
-      data: {'status': status},
-    );
+    final response = await dio.post(path, data: data ?? {});
+    return _parseLamaranResponse(response);
+  }
 
-    final apiResponse = ApiResponse<dynamic>.fromJson(
+  LamaranModel _parseLamaranResponse(Response response) {
+    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
       response.data as Map<String, dynamic>,
-      fromJsonT: (data) => data,
+      fromJsonT: (data) => data as Map<String, dynamic>,
     );
 
     if (apiResponse.hasError) {
       throw Exception(apiResponse.errorMessage);
     }
+    if (!apiResponse.hasData) {
+      throw Exception('No data in response');
+    }
+
+    return LamaranModel.fromJson(apiResponse.data!);
+  }
+
+  @override
+  Future<LamaranModel> reviewLamaran({
+    required String iklanId,
+    required String lamaranId,
+    required bool approved,
+  }) async {
+    final response = await dio.patch(
+      ApiConfig.lamaranReview(iklanId, lamaranId),
+      data: {'approved': approved},
+    );
+    return _parseLamaranResponse(response);
+  }
+
+  @override
+  Future<LamaranModel> mulaiBekerja({
+    required String iklanId,
+    required String lamaranId,
+    required double latitude,
+    required double longitude,
+  }) {
+    return _postLamaranAction(
+      ApiConfig.lamaranMulaiBekerja(iklanId, lamaranId),
+      data: {'latitude': latitude, 'longitude': longitude},
+    );
+  }
+
+  @override
+  Future<LamaranModel> tandaiSelesai({
+    required String iklanId,
+    required String lamaranId,
+  }) {
+    return _postLamaranAction(
+      ApiConfig.lamaranTandaiSelesai(iklanId, lamaranId),
+    );
+  }
+
+  @override
+  Future<LamaranModel> batalkanLamaran({
+    required String iklanId,
+    required String lamaranId,
+    required String alasan,
+  }) async {
+    final response = await dio.patch(
+      ApiConfig.lamaranBatalkan(iklanId, lamaranId),
+      data: {'alasan': alasan},
+    );
+    return _parseLamaranResponse(response);
   }
 
   @override
   Future<void> createJobReview({
-    required String jobId,
-    required int rating,
-    required String review,
+    required String iklanId,
+    required String posterId,
+    required int bintang,
+    String? ulasan,
   }) async {
     final response = await dio.post(
-      '/jobs/$jobId/reviews',
+      ApiConfig.ratingSubmit,
       data: {
-        'rating': rating,
-        'review': review,
+        'iklan_id': iklanId,
+        'dinilai_id': posterId,
+        'arah': 'pelamar_ke_pemberi_kerja',
+        'bintang': bintang,
+        if (ulasan != null && ulasan.isNotEmpty) 'ulasan': ulasan,
       },
     );
 
@@ -180,134 +192,5 @@ class JobMutationDataSourceImpl implements JobMutationDataSource {
     if (apiResponse.hasError) {
       throw Exception(apiResponse.errorMessage);
     }
-  }
-
-  @override
-  Future<void> ownerCompleteJob({required String jobId}) async {
-    final response = await dio.post('/jobs/$jobId/complete');
-
-    final apiResponse = ApiResponse<dynamic>.fromJson(
-      response.data as Map<String, dynamic>,
-      fromJsonT: (data) => data,
-    );
-
-    if (apiResponse.hasError) {
-      throw Exception(apiResponse.errorMessage);
-    }
-  }
-
-  @override
-  Future<void> ownerConfirmBidComplete({
-    required String jobId,
-    required String bidId,
-  }) async {
-    final response = await dio.post('/jobs/$jobId/bids/$bidId/confirm-complete');
-
-    final apiResponse = ApiResponse<dynamic>.fromJson(
-      response.data as Map<String, dynamic>,
-      fromJsonT: (data) => data,
-    );
-
-    if (apiResponse.hasError) {
-      throw Exception(apiResponse.errorMessage);
-    }
-  }
-
-  @override
-  Future<void> disputeBid({
-    required String jobId,
-    required String bidId,
-    required String reason,
-  }) async {
-    final response = await dio.post(
-      '/jobs/$jobId/bids/$bidId/dispute',
-      data: {'reason': reason},
-    );
-
-    final apiResponse = ApiResponse<dynamic>.fromJson(
-      response.data as Map<String, dynamic>,
-      fromJsonT: (data) => data,
-    );
-
-    if (apiResponse.hasError) {
-      throw Exception(apiResponse.errorMessage);
-    }
-  }
-
-  @override
-  Future<void> cancelBid({
-    required String jobId,
-    required String bidId,
-    required String reason,
-  }) async {
-    final response = await dio.post(
-      '/jobs/$jobId/bids/$bidId/cancel',
-      data: {'reason': reason},
-    );
-
-    final apiResponse = ApiResponse<dynamic>.fromJson(
-      response.data as Map<String, dynamic>,
-      fromJsonT: (data) => data,
-    );
-
-    if (apiResponse.hasError) {
-      throw Exception(apiResponse.errorMessage);
-    }
-  }
-
-  @override
-  Future<List<JobBidEvidenceModel>> uploadBidEvidence({
-    required String jobId,
-    required String bidId,
-    required List<String> imagePaths,
-  }) async {
-    final imageFiles = <MultipartFile>[];
-    for (final path in imagePaths) {
-      imageFiles.add(
-        await MultipartFile.fromFile(path, filename: path.split('/').last),
-      );
-    }
-
-    final formData = FormData.fromMap({'images': imageFiles});
-
-    final response = await dio.post(
-      '/jobs/$jobId/bids/$bidId/evidence',
-      data: formData,
-      options: Options(contentType: 'multipart/form-data'),
-    );
-
-    final apiResponse = ApiResponse<List<dynamic>>.fromJson(
-      response.data as Map<String, dynamic>,
-      fromJsonT: (data) => data as List<dynamic>,
-    );
-
-    if (apiResponse.hasError) {
-      throw Exception(apiResponse.errorMessage);
-    }
-
-    return (apiResponse.data ?? [])
-        .map((e) => JobBidEvidenceModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
-
-  @override
-  Future<List<JobBidEvidenceModel>> getBidEvidence({
-    required String jobId,
-    required String bidId,
-  }) async {
-    final response = await dio.get('/jobs/$jobId/bids/$bidId/evidence');
-
-    final apiResponse = ApiResponse<List<dynamic>>.fromJson(
-      response.data as Map<String, dynamic>,
-      fromJsonT: (data) => data as List<dynamic>,
-    );
-
-    if (apiResponse.hasError) {
-      throw Exception(apiResponse.errorMessage);
-    }
-
-    return (apiResponse.data ?? [])
-        .map((e) => JobBidEvidenceModel.fromJson(e as Map<String, dynamic>))
-        .toList();
   }
 }

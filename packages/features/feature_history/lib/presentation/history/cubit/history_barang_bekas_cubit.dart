@@ -2,65 +2,53 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:domain/domain.dart';
 import 'history_barang_bekas_state.dart';
 
-/// HistoryBarangBekasCubit
-///
-/// Mengelola state untuk tab Barang Bekas pada halaman History.
-/// Mengambil daftar barang bekas yang telah di-claim oleh user
-/// dari [GetMyClaimedSecondhandsUseCase] dengan dukungan pagination.
+/// Tab "Aktifitas" → chip "Barang Bekas" (F-15, P4.11) — daftar Bider milik
+/// peminat yang login. Backend tidak memaginasi endpoint ini — selalu muat
+/// ulang seluruh daftar (pola sama `HistoryPekerjaanCubit.loadLamaran`).
 class HistoryBarangBekasCubit extends Cubit<HistoryBarangBekasState> {
-  final GetMyClaimedSecondhandsUseCase _getMyClaimedSecondhandsUseCase;
+  final GetBiderSayaUseCase _getBiderSayaUseCase;
 
-  HistoryBarangBekasCubit(this._getMyClaimedSecondhandsUseCase)
-      : super(const HistoryBarangBekasState());
+  HistoryBarangBekasCubit(this._getBiderSayaUseCase)
+    : super(const HistoryBarangBekasState());
 
-  /// Memuat daftar claimed secondhand dengan dukungan pagination.
-  ///
-  /// [refresh] = true → reset halaman ke 1 dan ganti seluruh data (pull-to-refresh).
-  /// [refresh] = false → load halaman berikutnya (infinite scroll).
-  Future<void> loadClaims({bool refresh = false}) async {
-    // Cegah request ganda saat sedang loading
+  Future<void> loadBiderSaya({bool refresh = false}) async {
     if (state.status == HistoryBarangBekasStatus.loading) return;
 
-    if (refresh) {
-      emit(state.copyWith(
+    emit(
+      state.copyWith(
         status: HistoryBarangBekasStatus.loading,
-        claims: [],
-        currentPage: 1,
-        hasNext: false,
         errorMessage: null,
-      ));
-    } else {
-      // Jangan load lebih jika tidak ada halaman berikutnya dan sudah ada data
-      if (!state.hasNext && state.claims.isNotEmpty) return;
-      emit(state.copyWith(status: HistoryBarangBekasStatus.loading));
-    }
-
-    final result = await _getMyClaimedSecondhandsUseCase.call(
-      page: state.currentPage,
-      limit: 10,
+      ),
     );
 
+    final result = await _getBiderSayaUseCase();
+
+    if (isClosed) return;
+
     result.fold(
-      (failure) {
-        emit(state.copyWith(
+      (failure) => emit(
+        state.copyWith(
           status: HistoryBarangBekasStatus.failure,
-          errorMessage: failure.mapOrNull(
-                serverError: (f) => f.message,
-              ) ??
-              'Terjadi kesalahan',
-        ));
-      },
-      (data) {
-        final newClaims = refresh
-            ? data.items
-            : [...state.claims, ...data.items];
-        emit(state.copyWith(
+          errorMessage: _mapFailure(failure),
+        ),
+      ),
+      (data) => emit(
+        state.copyWith(
           status: HistoryBarangBekasStatus.success,
-          claims: newClaims,
-          hasNext: data.items.length == 10,
-          currentPage: state.currentPage + 1,
-        ));
-      },
+          biderList: data,
+        ),
+      ),
+    );
+  }
+
+  String _mapFailure(SecondhandFailure failure) {
+    return failure.when(
+      serverError: (msg) => msg ?? 'Terjadi kesalahan dari server.',
+      networkError: () => 'Tidak ada koneksi internet.',
+      unauthorized: () => 'Sesi habis, silakan login ulang.',
+      notFound: () => 'Data tidak ditemukan.',
+      validationError: (msg) => msg,
+      unknown: () => 'Terjadi kesalahan. Coba lagi.',
     );
   }
 }

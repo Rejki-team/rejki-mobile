@@ -8,13 +8,11 @@ import '../worker_model.dart';
 @injectable
 class WorkerListingCubit extends Cubit<WorkerListingState> {
   final GetWorkersUseCase _getWorkersUseCase;
-  
-  WorkerListingCubit(this._getWorkersUseCase) : super(const WorkerListingState());
 
-  Future<void> loadWorkers({
-    double latitude = 0.0,
-    double longitude = 0.0,
-  }) async {
+  WorkerListingCubit(this._getWorkersUseCase)
+    : super(const WorkerListingState());
+
+  Future<void> loadWorkers() async {
     emit(state.copyWith(isLoading: true, isFailure: false));
 
     String? sortByApi;
@@ -27,8 +25,8 @@ class WorkerListingCubit extends Cubit<WorkerListingState> {
     }
 
     final result = await _getWorkersUseCase(
-      latitude: latitude,
-      longitude: longitude,
+      latitude: state.latitude,
+      longitude: state.longitude,
       maxDistance: state.distanceKm.toDouble(),
       sortBy: sortByApi,
       keyword: state.searchQuery,
@@ -52,25 +50,31 @@ class WorkerListingCubit extends Cubit<WorkerListingState> {
         );
       },
       (workers) {
-        final uiModels = workers.map((w) => WorkerModel(
-            id: w.id,
-            name: w.name,
-            adCode: w.adCode,
-            age: w.age,
-            rating: w.rating,
-            reviewCount: w.reviewCount,
-            wage: w.wage,
-            statusLabel: w.statusLabel ?? 'Available',
-            avatarUrl: w.avatarUrl,
-            isAd: w.isAd,
-            adTitle: w.adTitle,
-            adImageUrl: w.adImageUrl,
-          )).toList();
-        emit(state.copyWith(
-          isLoading: false, 
-          workers: uiModels,
-          jobCountDisplayText: '${uiModels.length} Pekerja disekitar',
-        ));
+        final uiModels = workers
+            .map(
+              (w) => WorkerModel(
+                id: w.id,
+                name: w.name,
+                adCode: w.adCode,
+                age: w.age,
+                rating: w.rating,
+                reviewCount: w.reviewCount,
+                wage: w.wage,
+                statusLabel: w.statusLabel ?? 'Available',
+                avatarUrl: w.avatarUrl,
+                isAd: w.isAd,
+                adTitle: w.adTitle,
+                adImageUrl: w.adImageUrl,
+              ),
+            )
+            .toList();
+        emit(
+          state.copyWith(
+            isLoading: false,
+            workers: uiModels,
+            jobCountDisplayText: '${uiModels.length} Pekerja disekitar',
+          ),
+        );
       },
     );
   }
@@ -79,37 +83,44 @@ class WorkerListingCubit extends Cubit<WorkerListingState> {
     emit(state.copyWith(searchQuery: query));
   }
 
+  /// Update device location for radius-based API filtering (F-1/F-2).
+  /// Reloads listing with the new coordinates — persisted in state so
+  /// subsequent `loadWorkers()` calls (filter/sort/refresh) keep using it
+  /// instead of falling back to a default.
+  void updateLocation({required double latitude, required double longitude}) {
+    emit(state.copyWith(latitude: latitude, longitude: longitude));
+    loadWorkers();
+  }
+
   void applyDistanceFilter(int distanceKm) {
-    emit(state.copyWith(
-      distanceKm: distanceKm,
-      isDistanceFilterApplied: true,
-      locationDisplayText: 'Radius $distanceKm km',
-    ));
+    emit(
+      state.copyWith(
+        distanceKm: distanceKm,
+        isDistanceFilterApplied: true,
+        locationDisplayText: 'Radius $distanceKm km',
+      ),
+    );
     loadWorkers();
   }
 
   void resetDistanceFilter() {
-    emit(state.copyWith(
-      distanceKm: 2,
-      isDistanceFilterApplied: false,
-      locationDisplayText: 'Radius 2 km',
-    ));
+    emit(
+      state.copyWith(
+        distanceKm: 2,
+        isDistanceFilterApplied: false,
+        locationDisplayText: 'Radius 2 km',
+      ),
+    );
     loadWorkers();
   }
 
   void applySortFilter(WorkerSortOption option) {
-    emit(state.copyWith(
-      appliedSortOption: option,
-      isSortFilterApplied: true,
-    ));
+    emit(state.copyWith(appliedSortOption: option, isSortFilterApplied: true));
     loadWorkers();
   }
 
   void resetSortFilter() {
-    emit(state.copyWith(
-      appliedSortOption: null,
-      isSortFilterApplied: false,
-    ));
+    emit(state.copyWith(appliedSortOption: null, isSortFilterApplied: false));
     loadWorkers();
   }
 }

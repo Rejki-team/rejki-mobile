@@ -9,17 +9,16 @@ class AppDetailShimmer extends StatelessWidget {
   /// Defines if this shimmer uses the worker variant (avatar instead of banner)
   final bool isWorkerVariant;
 
-  const AppDetailShimmer._({
-    super.key,
-    this.isWorkerVariant = false,
-  });
+  const AppDetailShimmer._({super.key, this.isWorkerVariant = false});
 
   /// Standard detail shimmer typically used for Jobs, Trainings, and Used Goods.
   /// Features a prominent top image banner.
-  const AppDetailShimmer.standard({Key? key}) : this._(key: key, isWorkerVariant: false);
+  const AppDetailShimmer.standard({Key? key})
+    : this._(key: key, isWorkerVariant: false);
 
   /// Worker detail shimmer. Features a circular avatar instead of a large banner.
-  const AppDetailShimmer.worker({Key? key}) : this._(key: key, isWorkerVariant: true);
+  const AppDetailShimmer.worker({Key? key})
+    : this._(key: key, isWorkerVariant: true);
 
   @override
   Widget build(BuildContext context) {
@@ -150,11 +149,7 @@ class AppDetailShimmer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 56),
             child: AppShimmer(
-              child: Container(
-                height: 14,
-                width: 200,
-                color: AppColors.white,
-              ),
+              child: Container(height: 14, width: 200, color: AppColors.white),
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -162,11 +157,7 @@ class AppDetailShimmer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 56),
             child: AppShimmer(
-              child: Container(
-                height: 14,
-                width: 120,
-                color: AppColors.white,
-              ),
+              child: Container(height: 14, width: 120, color: AppColors.white),
             ),
           ),
         ],
@@ -272,11 +263,7 @@ class AppDetailShimmer extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.xs),
         AppShimmer(
-          child: Container(
-            height: 16,
-            width: 150,
-            color: AppColors.white,
-          ),
+          child: Container(height: 16, width: 150, color: AppColors.white),
         ),
       ],
     );
@@ -348,11 +335,7 @@ class AppDetailShimmer extends StatelessWidget {
           ),
         ),
         AppShimmer(
-          child: Container(
-            height: 14,
-            width: 200,
-            color: AppColors.white,
-          ),
+          child: Container(height: 14, width: 200, color: AppColors.white),
         ),
         const SizedBox(height: AppSpacing.xl),
         AppShimmer(

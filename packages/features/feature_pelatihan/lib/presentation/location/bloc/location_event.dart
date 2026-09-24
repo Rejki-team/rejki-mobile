@@ -4,9 +4,13 @@ part of 'location_bloc.dart';
 abstract class LocationEvent with _$LocationEvent {
   const factory LocationEvent.selectCountry(dynamic country) = _SelectCountry;
   const factory LocationEvent.loadProvinces() = _LoadProvinces;
-  const factory LocationEvent.selectProvince(LocationEntity province) = _SelectProvince;
-  const factory LocationEvent.selectRegency(LocationEntity regency) = _SelectRegency;
-  const factory LocationEvent.selectDistrict(LocationEntity district) = _SelectDistrict;
-  const factory LocationEvent.selectVillage(LocationEntity village) = _SelectVillage;
+  const factory LocationEvent.selectProvince(LocationEntity province) =
+      _SelectProvince;
+  const factory LocationEvent.selectRegency(LocationEntity regency) =
+      _SelectRegency;
+  const factory LocationEvent.selectDistrict(LocationEntity district) =
+      _SelectDistrict;
+  const factory LocationEvent.selectVillage(LocationEntity village) =
+      _SelectVillage;
   const factory LocationEvent.reset() = _Reset;
 }

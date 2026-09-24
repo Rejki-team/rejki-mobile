@@ -39,10 +39,7 @@ class AppFilterChip extends StatelessWidget {
         onTap: onSelected,
         borderRadius: AppDimensions.borderRadiusSm,
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: isSelected
                 ? AppColors.textBlack

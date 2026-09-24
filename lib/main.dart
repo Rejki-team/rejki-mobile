@@ -53,9 +53,20 @@ void main() async {
   };
 
   // Inisialisasi FCM service — token registration (fail silently jika belum login)
-  final fcmService = FcmNotificationService(getIt<RegisterDeviceTokenUseCase>());
+  final fcmService = FcmNotificationService(
+    getIt<RegisterDeviceTokenUseCase>(),
+  );
   getIt.registerSingleton<FcmNotificationService>(fcmService);
   unawaited(fcmService.initialize());
+
+  // Inisialisasi AdMob (F-33, PRD §5.16) — hanya menyiapkan SDK, tampilan
+  // iklan sesungguhnya digate login+kuota harian di AdService itu sendiri.
+  final adService = AdService(
+    getIt<SessionStorage>(),
+    getIt<AdImpressionStorage>(),
+  );
+  getIt.registerSingleton<AdService>(adService);
+  unawaited(adService.initialize());
 
   runApp(const RejkiApp());
 }

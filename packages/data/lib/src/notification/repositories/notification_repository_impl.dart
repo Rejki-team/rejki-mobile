@@ -10,10 +10,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
   NotificationRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Either<NotificationFailure, NotificationsResultEntity>> getNotifications({
-    int page = 1,
-    int limit = 10,
-  }) async {
+  Future<Either<NotificationFailure, NotificationsResultEntity>>
+  getNotifications({int page = 1, int limit = 10}) async {
     try {
       final model = await remoteDataSource.getNotifications(
         page: page,
@@ -25,9 +23,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
           e.type == DioExceptionType.connectionTimeout) {
         return const Left(NotificationFailure.networkError());
       }
-      return Left(NotificationFailure.serverError(
-        e.response?.data?['message'] as String? ?? e.message,
-      ));
+      return Left(
+        NotificationFailure.serverError(
+          e.response?.data?['message'] as String? ?? e.message,
+        ),
+      );
     } catch (e) {
       return Left(NotificationFailure.serverError(e.toString()));
     }
@@ -39,9 +39,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
       await remoteDataSource.markAsRead(id);
       return const Right(unit);
     } on DioException catch (e) {
-      return Left(NotificationFailure.serverError(
-        e.response?.data?['message'] as String? ?? e.message,
-      ));
+      return Left(
+        NotificationFailure.serverError(
+          e.response?.data?['message'] as String? ?? e.message,
+        ),
+      );
     } catch (e) {
       return Left(NotificationFailure.serverError(e.toString()));
     }
@@ -53,9 +55,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
       await remoteDataSource.markAllAsRead();
       return const Right(unit);
     } on DioException catch (e) {
-      return Left(NotificationFailure.serverError(
-        e.response?.data?['message'] as String? ?? e.message,
-      ));
+      return Left(
+        NotificationFailure.serverError(
+          e.response?.data?['message'] as String? ?? e.message,
+        ),
+      );
     } catch (e) {
       return Left(NotificationFailure.serverError(e.toString()));
     }
@@ -71,9 +75,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
           e.type == DioExceptionType.connectionTimeout) {
         return const Left(NotificationFailure.networkError());
       }
-      return Left(NotificationFailure.serverError(
-        e.response?.data?['message'] as String? ?? e.message,
-      ));
+      return Left(
+        NotificationFailure.serverError(
+          e.response?.data?['message'] as String? ?? e.message,
+        ),
+      );
     } catch (e) {
       return Left(NotificationFailure.serverError(e.toString()));
     }
@@ -91,9 +97,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
       );
       return const Right(unit);
     } on DioException catch (e) {
-      return Left(NotificationFailure.serverError(
-        e.response?.data?['message'] as String? ?? e.message,
-      ));
+      return Left(
+        NotificationFailure.serverError(
+          e.response?.data?['message'] as String? ?? e.message,
+        ),
+      );
     } catch (e) {
       return Left(NotificationFailure.serverError(e.toString()));
     }

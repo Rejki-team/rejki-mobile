@@ -34,9 +34,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   ProfileRemoteDataSourceImpl(this._dioClient);
 
   @override
-  Future<ApiResponse<dynamic>> updateProfile(
-    UpdateProfileParams params,
-  ) async {
+  Future<ApiResponse<dynamic>> updateProfile(UpdateProfileParams params) async {
     final formData = FormData.fromMap({
       'full_name': params.fullName,
       'nik': params.nik,

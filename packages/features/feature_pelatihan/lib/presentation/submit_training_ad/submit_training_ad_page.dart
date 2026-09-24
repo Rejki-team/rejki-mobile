@@ -50,24 +50,19 @@ class _SubmitTrainingAdView extends StatelessWidget {
               showSuccessDialog(
                 context,
                 title: 'Berhasil',
-                message:
-                    'Proposal pelatihan berhasil dikirim ke admin.',
+                message: 'Proposal pelatihan berhasil dikirim ke admin.',
               ).then((_) {
                 if (context.mounted) context.go('/pelatihan');
               });
             } else if (state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage!)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
             }
           },
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              children: [
-                _MainAdContentCard(params: params),
-              ],
-            ),
+            child: Column(children: [_MainAdContentCard(params: params)]),
           ),
         ),
       ),
@@ -81,8 +76,7 @@ class _SubmitTrainingAdView extends StatelessWidget {
       leading: IconButton(
         icon: SvgPicture.asset(
           AppAssets.iconArrowLeft,
-          colorFilter:
-              const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
+          colorFilter: const ColorFilter.mode(AppColors.white, BlendMode.srcIn),
         ),
         onPressed: () => context.pop(),
       ),
@@ -162,8 +156,18 @@ class _TrainingPreviewCard extends StatelessWidget {
 
   String _formatDate(DateTime dt) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Ags',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
     return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
   }
@@ -197,7 +201,7 @@ class _TrainingPreviewCard extends StatelessWidget {
             value: _formatDate(params.dateOfTraining),
           ),
           _PreviewRow(
-            label: 'Biaya',
+            label: 'Biaya Komitmen',
             value: _formatFee(params.feePerPerson),
           ),
           const Divider(height: AppSpacing.lg),
@@ -211,10 +215,7 @@ class _TrainingPreviewCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.xs),
           _PreviewRow(label: 'Bank', value: params.bankName),
           _PreviewRow(label: 'No. Rekening', value: params.bankAccountNumber),
-          _PreviewRow(
-            label: 'Atas Nama',
-            value: params.bankAccountHolderName,
-          ),
+          _PreviewRow(label: 'Atas Nama', value: params.bankAccountHolderName),
         ],
       ),
     );
@@ -436,9 +437,7 @@ class _SubmitRequestButton extends StatelessWidget {
             onPressed: state.isRequesting
                 ? null
                 : () {
-                    context
-                        .read<SubmitTrainingAdCubit>()
-                        .submitRequest(params);
+                    context.read<SubmitTrainingAdCubit>().submitRequest(params);
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF28256F),

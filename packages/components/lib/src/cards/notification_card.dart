@@ -26,20 +26,34 @@ enum NotificationType {
 
 NotificationType notificationTypeFromString(String type) {
   switch (type) {
-    case 'contact_approved': return NotificationType.contactApproved;
-    case 'contact_declined': return NotificationType.contactDeclined;
-    case 'bid_approved': return NotificationType.bidApproved;
-    case 'bid_declined': return NotificationType.bidDeclined;
-    case 'training_approved': return NotificationType.trainingApproved;
-    case 'training_rejected': return NotificationType.trainingRejected;
-    case 'enrollment_approved': return NotificationType.enrollmentApproved;
-    case 'enrollment_rejected': return NotificationType.enrollmentRejected;
-    case 'verification_approved': return NotificationType.verificationApproved;
-    case 'verification_rejected': return NotificationType.verificationRejected;
-    case 'job_suspended': return NotificationType.jobSuspended;
-    case 'worker_banned': return NotificationType.workerBanned;
-    case 'manual': return NotificationType.manual;
-    default: return NotificationType.manual;
+    case 'contact_approved':
+      return NotificationType.contactApproved;
+    case 'contact_declined':
+      return NotificationType.contactDeclined;
+    case 'bid_approved':
+      return NotificationType.bidApproved;
+    case 'bid_declined':
+      return NotificationType.bidDeclined;
+    case 'training_approved':
+      return NotificationType.trainingApproved;
+    case 'training_rejected':
+      return NotificationType.trainingRejected;
+    case 'enrollment_approved':
+      return NotificationType.enrollmentApproved;
+    case 'enrollment_rejected':
+      return NotificationType.enrollmentRejected;
+    case 'verification_approved':
+      return NotificationType.verificationApproved;
+    case 'verification_rejected':
+      return NotificationType.verificationRejected;
+    case 'job_suspended':
+      return NotificationType.jobSuspended;
+    case 'worker_banned':
+      return NotificationType.workerBanned;
+    case 'manual':
+      return NotificationType.manual;
+    default:
+      return NotificationType.manual;
   }
 }
 

@@ -55,6 +55,9 @@ class JobDetailData {
   /// List of job photo URLs
   final List<String> photoUrls;
 
+  /// Job id — dipakai sebagai target saat "Laporkan Iklan" (F-20)
+  final String jobId;
+
   const JobDetailData({
     required this.category,
     required this.adCode,
@@ -72,6 +75,7 @@ class JobDetailData {
     required this.phoneNumber,
     required this.requirements,
     required this.photoUrls,
+    required this.jobId,
   });
 }
 
@@ -107,12 +111,16 @@ class JobDetailBottomSheet extends StatelessWidget {
   /// Whether the take job action is in loading state (checking worker profile)
   final bool isLoading;
 
+  /// Callback when "Laporkan Iklan" is pressed (F-20, PRD §5.10)
+  final VoidCallback? onReportPressed;
+
   const JobDetailBottomSheet({
     super.key,
     required this.data,
     this.onChatPressed,
     this.onTakeJobPressed,
     this.isLoading = false,
+    this.onReportPressed,
   });
 
   /// Shows the job detail bottom sheet
@@ -266,8 +274,26 @@ class JobDetailBottomSheet extends StatelessWidget {
           ),
         ),
 
-        // Right: Status badge
-        _buildAvailabilityBadge(),
+        // Right: Status badge + report link
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            _buildAvailabilityBadge(),
+            if (onReportPressed != null) ...[
+              const SizedBox(height: AppSpacing.xs),
+              GestureDetector(
+                onTap: onReportPressed,
+                child: Text(
+                  'Laporkan Iklan',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.error,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ],
     );
   }

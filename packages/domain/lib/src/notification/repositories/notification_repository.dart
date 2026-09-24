@@ -3,10 +3,8 @@ import '../entities/notification_entity.dart';
 import '../failures/notification_failure.dart';
 
 abstract class NotificationRepository {
-  Future<Either<NotificationFailure, NotificationsResultEntity>> getNotifications({
-    int page = 1,
-    int limit = 10,
-  });
+  Future<Either<NotificationFailure, NotificationsResultEntity>>
+  getNotifications({int page = 1, int limit = 10});
 
   Future<Either<NotificationFailure, Unit>> markAsRead(String id);
 

@@ -16,7 +16,9 @@ T _$identity<T>(T value) => value;
 mixin _$UserInfoModel {
 
  String get id;@JsonKey(name: 'user_id') String get userId;@JsonKey(name: 'full_name') String get fullName; String get nik; String get gender; String get dob; int get age; String get province; String get city; String get districts; String get village;@JsonKey(name: 'rt_rw') String get rtRw;@JsonKey(name: 'ktp_file_path') String get ktpFilePath;@JsonKey(name: 'created_at') String get createdAt;@JsonKey(name: 'updated_at') String get updatedAt;// Additional fields from API response
-@JsonKey(name: 'selfie_ktp_file_path') String get selfieKtpFilePath;@JsonKey(name: 'education_level') String get educationLevel;@JsonKey(name: 'education_focus') String get educationFocus;@JsonKey(name: 'work_experience') String get workExperience;@JsonKey(name: 'address_ktp') String get addressKtp; String get country;
+@JsonKey(name: 'selfie_ktp_file_path') String get selfieKtpFilePath;@JsonKey(name: 'education_level') String get educationLevel;@JsonKey(name: 'education_focus') String get educationFocus;@JsonKey(name: 'work_experience') String get workExperience;@JsonKey(name: 'address_ktp') String get addressKtp; String get country;/// Koordinat hasil geocoding (F-1, P4.6 Kelompok 3 Phase 4) — `null` bila
+/// backend belum kirim (alamat belum diisi/geocoding gagal, degradasi anggun).
+ double? get latitude; double? get longitude;
 /// Create a copy of UserInfoModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +31,16 @@ $UserInfoModelCopyWith<UserInfoModel> get copyWith => _$UserInfoModelCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserInfoModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.nik, nik) || other.nik == nik)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.dob, dob) || other.dob == dob)&&(identical(other.age, age) || other.age == age)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.districts, districts) || other.districts == districts)&&(identical(other.village, village) || other.village == village)&&(identical(other.rtRw, rtRw) || other.rtRw == rtRw)&&(identical(other.ktpFilePath, ktpFilePath) || other.ktpFilePath == ktpFilePath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.selfieKtpFilePath, selfieKtpFilePath) || other.selfieKtpFilePath == selfieKtpFilePath)&&(identical(other.educationLevel, educationLevel) || other.educationLevel == educationLevel)&&(identical(other.educationFocus, educationFocus) || other.educationFocus == educationFocus)&&(identical(other.workExperience, workExperience) || other.workExperience == workExperience)&&(identical(other.addressKtp, addressKtp) || other.addressKtp == addressKtp)&&(identical(other.country, country) || other.country == country));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserInfoModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.nik, nik) || other.nik == nik)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.dob, dob) || other.dob == dob)&&(identical(other.age, age) || other.age == age)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.districts, districts) || other.districts == districts)&&(identical(other.village, village) || other.village == village)&&(identical(other.rtRw, rtRw) || other.rtRw == rtRw)&&(identical(other.ktpFilePath, ktpFilePath) || other.ktpFilePath == ktpFilePath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.selfieKtpFilePath, selfieKtpFilePath) || other.selfieKtpFilePath == selfieKtpFilePath)&&(identical(other.educationLevel, educationLevel) || other.educationLevel == educationLevel)&&(identical(other.educationFocus, educationFocus) || other.educationFocus == educationFocus)&&(identical(other.workExperience, workExperience) || other.workExperience == workExperience)&&(identical(other.addressKtp, addressKtp) || other.addressKtp == addressKtp)&&(identical(other.country, country) || other.country == country)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,userId,fullName,nik,gender,dob,age,province,city,districts,village,rtRw,ktpFilePath,createdAt,updatedAt,selfieKtpFilePath,educationLevel,educationFocus,workExperience,addressKtp,country]);
+int get hashCode => Object.hashAll([runtimeType,id,userId,fullName,nik,gender,dob,age,province,city,districts,village,rtRw,ktpFilePath,createdAt,updatedAt,selfieKtpFilePath,educationLevel,educationFocus,workExperience,addressKtp,country,latitude,longitude]);
 
 @override
 String toString() {
-  return 'UserInfoModel(id: $id, userId: $userId, fullName: $fullName, nik: $nik, gender: $gender, dob: $dob, age: $age, province: $province, city: $city, districts: $districts, village: $village, rtRw: $rtRw, ktpFilePath: $ktpFilePath, createdAt: $createdAt, updatedAt: $updatedAt, selfieKtpFilePath: $selfieKtpFilePath, educationLevel: $educationLevel, educationFocus: $educationFocus, workExperience: $workExperience, addressKtp: $addressKtp, country: $country)';
+  return 'UserInfoModel(id: $id, userId: $userId, fullName: $fullName, nik: $nik, gender: $gender, dob: $dob, age: $age, province: $province, city: $city, districts: $districts, village: $village, rtRw: $rtRw, ktpFilePath: $ktpFilePath, createdAt: $createdAt, updatedAt: $updatedAt, selfieKtpFilePath: $selfieKtpFilePath, educationLevel: $educationLevel, educationFocus: $educationFocus, workExperience: $workExperience, addressKtp: $addressKtp, country: $country, latitude: $latitude, longitude: $longitude)';
 }
 
 
@@ -49,7 +51,7 @@ abstract mixin class $UserInfoModelCopyWith<$Res>  {
   factory $UserInfoModelCopyWith(UserInfoModel value, $Res Function(UserInfoModel) _then) = _$UserInfoModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'user_id') String userId,@JsonKey(name: 'full_name') String fullName, String nik, String gender, String dob, int age, String province, String city, String districts, String village,@JsonKey(name: 'rt_rw') String rtRw,@JsonKey(name: 'ktp_file_path') String ktpFilePath,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'selfie_ktp_file_path') String selfieKtpFilePath,@JsonKey(name: 'education_level') String educationLevel,@JsonKey(name: 'education_focus') String educationFocus,@JsonKey(name: 'work_experience') String workExperience,@JsonKey(name: 'address_ktp') String addressKtp, String country
+ String id,@JsonKey(name: 'user_id') String userId,@JsonKey(name: 'full_name') String fullName, String nik, String gender, String dob, int age, String province, String city, String districts, String village,@JsonKey(name: 'rt_rw') String rtRw,@JsonKey(name: 'ktp_file_path') String ktpFilePath,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'selfie_ktp_file_path') String selfieKtpFilePath,@JsonKey(name: 'education_level') String educationLevel,@JsonKey(name: 'education_focus') String educationFocus,@JsonKey(name: 'work_experience') String workExperience,@JsonKey(name: 'address_ktp') String addressKtp, String country, double? latitude, double? longitude
 });
 
 
@@ -66,7 +68,7 @@ class _$UserInfoModelCopyWithImpl<$Res>
 
 /// Create a copy of UserInfoModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? fullName = null,Object? nik = null,Object? gender = null,Object? dob = null,Object? age = null,Object? province = null,Object? city = null,Object? districts = null,Object? village = null,Object? rtRw = null,Object? ktpFilePath = null,Object? createdAt = null,Object? updatedAt = null,Object? selfieKtpFilePath = null,Object? educationLevel = null,Object? educationFocus = null,Object? workExperience = null,Object? addressKtp = null,Object? country = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? fullName = null,Object? nik = null,Object? gender = null,Object? dob = null,Object? age = null,Object? province = null,Object? city = null,Object? districts = null,Object? village = null,Object? rtRw = null,Object? ktpFilePath = null,Object? createdAt = null,Object? updatedAt = null,Object? selfieKtpFilePath = null,Object? educationLevel = null,Object? educationFocus = null,Object? workExperience = null,Object? addressKtp = null,Object? country = null,Object? latitude = freezed,Object? longitude = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -89,7 +91,9 @@ as String,educationFocus: null == educationFocus ? _self.educationFocus : educat
 as String,workExperience: null == workExperience ? _self.workExperience : workExperience // ignore: cast_nullable_to_non_nullable
 as String,addressKtp: null == addressKtp ? _self.addressKtp : addressKtp // ignore: cast_nullable_to_non_nullable
 as String,country: null == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
-as String,
+as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -174,10 +178,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String userId, @JsonKey(name: 'full_name')  String fullName,  String nik,  String gender,  String dob,  int age,  String province,  String city,  String districts,  String village, @JsonKey(name: 'rt_rw')  String rtRw, @JsonKey(name: 'ktp_file_path')  String ktpFilePath, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'selfie_ktp_file_path')  String selfieKtpFilePath, @JsonKey(name: 'education_level')  String educationLevel, @JsonKey(name: 'education_focus')  String educationFocus, @JsonKey(name: 'work_experience')  String workExperience, @JsonKey(name: 'address_ktp')  String addressKtp,  String country)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String userId, @JsonKey(name: 'full_name')  String fullName,  String nik,  String gender,  String dob,  int age,  String province,  String city,  String districts,  String village, @JsonKey(name: 'rt_rw')  String rtRw, @JsonKey(name: 'ktp_file_path')  String ktpFilePath, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'selfie_ktp_file_path')  String selfieKtpFilePath, @JsonKey(name: 'education_level')  String educationLevel, @JsonKey(name: 'education_focus')  String educationFocus, @JsonKey(name: 'work_experience')  String workExperience, @JsonKey(name: 'address_ktp')  String addressKtp,  String country,  double? latitude,  double? longitude)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserInfoModel() when $default != null:
-return $default(_that.id,_that.userId,_that.fullName,_that.nik,_that.gender,_that.dob,_that.age,_that.province,_that.city,_that.districts,_that.village,_that.rtRw,_that.ktpFilePath,_that.createdAt,_that.updatedAt,_that.selfieKtpFilePath,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.country);case _:
+return $default(_that.id,_that.userId,_that.fullName,_that.nik,_that.gender,_that.dob,_that.age,_that.province,_that.city,_that.districts,_that.village,_that.rtRw,_that.ktpFilePath,_that.createdAt,_that.updatedAt,_that.selfieKtpFilePath,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.country,_that.latitude,_that.longitude);case _:
   return orElse();
 
 }
@@ -195,10 +199,10 @@ return $default(_that.id,_that.userId,_that.fullName,_that.nik,_that.gender,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String userId, @JsonKey(name: 'full_name')  String fullName,  String nik,  String gender,  String dob,  int age,  String province,  String city,  String districts,  String village, @JsonKey(name: 'rt_rw')  String rtRw, @JsonKey(name: 'ktp_file_path')  String ktpFilePath, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'selfie_ktp_file_path')  String selfieKtpFilePath, @JsonKey(name: 'education_level')  String educationLevel, @JsonKey(name: 'education_focus')  String educationFocus, @JsonKey(name: 'work_experience')  String workExperience, @JsonKey(name: 'address_ktp')  String addressKtp,  String country)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'user_id')  String userId, @JsonKey(name: 'full_name')  String fullName,  String nik,  String gender,  String dob,  int age,  String province,  String city,  String districts,  String village, @JsonKey(name: 'rt_rw')  String rtRw, @JsonKey(name: 'ktp_file_path')  String ktpFilePath, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'selfie_ktp_file_path')  String selfieKtpFilePath, @JsonKey(name: 'education_level')  String educationLevel, @JsonKey(name: 'education_focus')  String educationFocus, @JsonKey(name: 'work_experience')  String workExperience, @JsonKey(name: 'address_ktp')  String addressKtp,  String country,  double? latitude,  double? longitude)  $default,) {final _that = this;
 switch (_that) {
 case _UserInfoModel():
-return $default(_that.id,_that.userId,_that.fullName,_that.nik,_that.gender,_that.dob,_that.age,_that.province,_that.city,_that.districts,_that.village,_that.rtRw,_that.ktpFilePath,_that.createdAt,_that.updatedAt,_that.selfieKtpFilePath,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.country);case _:
+return $default(_that.id,_that.userId,_that.fullName,_that.nik,_that.gender,_that.dob,_that.age,_that.province,_that.city,_that.districts,_that.village,_that.rtRw,_that.ktpFilePath,_that.createdAt,_that.updatedAt,_that.selfieKtpFilePath,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.country,_that.latitude,_that.longitude);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -215,10 +219,10 @@ return $default(_that.id,_that.userId,_that.fullName,_that.nik,_that.gender,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'user_id')  String userId, @JsonKey(name: 'full_name')  String fullName,  String nik,  String gender,  String dob,  int age,  String province,  String city,  String districts,  String village, @JsonKey(name: 'rt_rw')  String rtRw, @JsonKey(name: 'ktp_file_path')  String ktpFilePath, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'selfie_ktp_file_path')  String selfieKtpFilePath, @JsonKey(name: 'education_level')  String educationLevel, @JsonKey(name: 'education_focus')  String educationFocus, @JsonKey(name: 'work_experience')  String workExperience, @JsonKey(name: 'address_ktp')  String addressKtp,  String country)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'user_id')  String userId, @JsonKey(name: 'full_name')  String fullName,  String nik,  String gender,  String dob,  int age,  String province,  String city,  String districts,  String village, @JsonKey(name: 'rt_rw')  String rtRw, @JsonKey(name: 'ktp_file_path')  String ktpFilePath, @JsonKey(name: 'created_at')  String createdAt, @JsonKey(name: 'updated_at')  String updatedAt, @JsonKey(name: 'selfie_ktp_file_path')  String selfieKtpFilePath, @JsonKey(name: 'education_level')  String educationLevel, @JsonKey(name: 'education_focus')  String educationFocus, @JsonKey(name: 'work_experience')  String workExperience, @JsonKey(name: 'address_ktp')  String addressKtp,  String country,  double? latitude,  double? longitude)?  $default,) {final _that = this;
 switch (_that) {
 case _UserInfoModel() when $default != null:
-return $default(_that.id,_that.userId,_that.fullName,_that.nik,_that.gender,_that.dob,_that.age,_that.province,_that.city,_that.districts,_that.village,_that.rtRw,_that.ktpFilePath,_that.createdAt,_that.updatedAt,_that.selfieKtpFilePath,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.country);case _:
+return $default(_that.id,_that.userId,_that.fullName,_that.nik,_that.gender,_that.dob,_that.age,_that.province,_that.city,_that.districts,_that.village,_that.rtRw,_that.ktpFilePath,_that.createdAt,_that.updatedAt,_that.selfieKtpFilePath,_that.educationLevel,_that.educationFocus,_that.workExperience,_that.addressKtp,_that.country,_that.latitude,_that.longitude);case _:
   return null;
 
 }
@@ -230,7 +234,7 @@ return $default(_that.id,_that.userId,_that.fullName,_that.nik,_that.gender,_tha
 @JsonSerializable()
 
 class _UserInfoModel implements UserInfoModel {
-  const _UserInfoModel({required this.id, @JsonKey(name: 'user_id') required this.userId, @JsonKey(name: 'full_name') required this.fullName, required this.nik, required this.gender, required this.dob, this.age = 0, required this.province, required this.city, required this.districts, required this.village, @JsonKey(name: 'rt_rw') required this.rtRw, @JsonKey(name: 'ktp_file_path') required this.ktpFilePath, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'updated_at') required this.updatedAt, @JsonKey(name: 'selfie_ktp_file_path') this.selfieKtpFilePath = '', @JsonKey(name: 'education_level') this.educationLevel = '', @JsonKey(name: 'education_focus') this.educationFocus = '', @JsonKey(name: 'work_experience') this.workExperience = '', @JsonKey(name: 'address_ktp') this.addressKtp = '', this.country = 'Indonesia'});
+  const _UserInfoModel({required this.id, @JsonKey(name: 'user_id') required this.userId, @JsonKey(name: 'full_name') required this.fullName, required this.nik, required this.gender, required this.dob, this.age = 0, required this.province, required this.city, required this.districts, required this.village, @JsonKey(name: 'rt_rw') required this.rtRw, @JsonKey(name: 'ktp_file_path') required this.ktpFilePath, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'updated_at') required this.updatedAt, @JsonKey(name: 'selfie_ktp_file_path') this.selfieKtpFilePath = '', @JsonKey(name: 'education_level') this.educationLevel = '', @JsonKey(name: 'education_focus') this.educationFocus = '', @JsonKey(name: 'work_experience') this.workExperience = '', @JsonKey(name: 'address_ktp') this.addressKtp = '', this.country = 'Indonesia', this.latitude, this.longitude});
   factory _UserInfoModel.fromJson(Map<String, dynamic> json) => _$UserInfoModelFromJson(json);
 
 @override final  String id;
@@ -255,6 +259,10 @@ class _UserInfoModel implements UserInfoModel {
 @override@JsonKey(name: 'work_experience') final  String workExperience;
 @override@JsonKey(name: 'address_ktp') final  String addressKtp;
 @override@JsonKey() final  String country;
+/// Koordinat hasil geocoding (F-1, P4.6 Kelompok 3 Phase 4) — `null` bila
+/// backend belum kirim (alamat belum diisi/geocoding gagal, degradasi anggun).
+@override final  double? latitude;
+@override final  double? longitude;
 
 /// Create a copy of UserInfoModel
 /// with the given fields replaced by the non-null parameter values.
@@ -269,16 +277,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserInfoModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.nik, nik) || other.nik == nik)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.dob, dob) || other.dob == dob)&&(identical(other.age, age) || other.age == age)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.districts, districts) || other.districts == districts)&&(identical(other.village, village) || other.village == village)&&(identical(other.rtRw, rtRw) || other.rtRw == rtRw)&&(identical(other.ktpFilePath, ktpFilePath) || other.ktpFilePath == ktpFilePath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.selfieKtpFilePath, selfieKtpFilePath) || other.selfieKtpFilePath == selfieKtpFilePath)&&(identical(other.educationLevel, educationLevel) || other.educationLevel == educationLevel)&&(identical(other.educationFocus, educationFocus) || other.educationFocus == educationFocus)&&(identical(other.workExperience, workExperience) || other.workExperience == workExperience)&&(identical(other.addressKtp, addressKtp) || other.addressKtp == addressKtp)&&(identical(other.country, country) || other.country == country));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserInfoModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.nik, nik) || other.nik == nik)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.dob, dob) || other.dob == dob)&&(identical(other.age, age) || other.age == age)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.districts, districts) || other.districts == districts)&&(identical(other.village, village) || other.village == village)&&(identical(other.rtRw, rtRw) || other.rtRw == rtRw)&&(identical(other.ktpFilePath, ktpFilePath) || other.ktpFilePath == ktpFilePath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.selfieKtpFilePath, selfieKtpFilePath) || other.selfieKtpFilePath == selfieKtpFilePath)&&(identical(other.educationLevel, educationLevel) || other.educationLevel == educationLevel)&&(identical(other.educationFocus, educationFocus) || other.educationFocus == educationFocus)&&(identical(other.workExperience, workExperience) || other.workExperience == workExperience)&&(identical(other.addressKtp, addressKtp) || other.addressKtp == addressKtp)&&(identical(other.country, country) || other.country == country)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,userId,fullName,nik,gender,dob,age,province,city,districts,village,rtRw,ktpFilePath,createdAt,updatedAt,selfieKtpFilePath,educationLevel,educationFocus,workExperience,addressKtp,country]);
+int get hashCode => Object.hashAll([runtimeType,id,userId,fullName,nik,gender,dob,age,province,city,districts,village,rtRw,ktpFilePath,createdAt,updatedAt,selfieKtpFilePath,educationLevel,educationFocus,workExperience,addressKtp,country,latitude,longitude]);
 
 @override
 String toString() {
-  return 'UserInfoModel(id: $id, userId: $userId, fullName: $fullName, nik: $nik, gender: $gender, dob: $dob, age: $age, province: $province, city: $city, districts: $districts, village: $village, rtRw: $rtRw, ktpFilePath: $ktpFilePath, createdAt: $createdAt, updatedAt: $updatedAt, selfieKtpFilePath: $selfieKtpFilePath, educationLevel: $educationLevel, educationFocus: $educationFocus, workExperience: $workExperience, addressKtp: $addressKtp, country: $country)';
+  return 'UserInfoModel(id: $id, userId: $userId, fullName: $fullName, nik: $nik, gender: $gender, dob: $dob, age: $age, province: $province, city: $city, districts: $districts, village: $village, rtRw: $rtRw, ktpFilePath: $ktpFilePath, createdAt: $createdAt, updatedAt: $updatedAt, selfieKtpFilePath: $selfieKtpFilePath, educationLevel: $educationLevel, educationFocus: $educationFocus, workExperience: $workExperience, addressKtp: $addressKtp, country: $country, latitude: $latitude, longitude: $longitude)';
 }
 
 
@@ -289,7 +297,7 @@ abstract mixin class _$UserInfoModelCopyWith<$Res> implements $UserInfoModelCopy
   factory _$UserInfoModelCopyWith(_UserInfoModel value, $Res Function(_UserInfoModel) _then) = __$UserInfoModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'user_id') String userId,@JsonKey(name: 'full_name') String fullName, String nik, String gender, String dob, int age, String province, String city, String districts, String village,@JsonKey(name: 'rt_rw') String rtRw,@JsonKey(name: 'ktp_file_path') String ktpFilePath,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'selfie_ktp_file_path') String selfieKtpFilePath,@JsonKey(name: 'education_level') String educationLevel,@JsonKey(name: 'education_focus') String educationFocus,@JsonKey(name: 'work_experience') String workExperience,@JsonKey(name: 'address_ktp') String addressKtp, String country
+ String id,@JsonKey(name: 'user_id') String userId,@JsonKey(name: 'full_name') String fullName, String nik, String gender, String dob, int age, String province, String city, String districts, String village,@JsonKey(name: 'rt_rw') String rtRw,@JsonKey(name: 'ktp_file_path') String ktpFilePath,@JsonKey(name: 'created_at') String createdAt,@JsonKey(name: 'updated_at') String updatedAt,@JsonKey(name: 'selfie_ktp_file_path') String selfieKtpFilePath,@JsonKey(name: 'education_level') String educationLevel,@JsonKey(name: 'education_focus') String educationFocus,@JsonKey(name: 'work_experience') String workExperience,@JsonKey(name: 'address_ktp') String addressKtp, String country, double? latitude, double? longitude
 });
 
 
@@ -306,7 +314,7 @@ class __$UserInfoModelCopyWithImpl<$Res>
 
 /// Create a copy of UserInfoModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? fullName = null,Object? nik = null,Object? gender = null,Object? dob = null,Object? age = null,Object? province = null,Object? city = null,Object? districts = null,Object? village = null,Object? rtRw = null,Object? ktpFilePath = null,Object? createdAt = null,Object? updatedAt = null,Object? selfieKtpFilePath = null,Object? educationLevel = null,Object? educationFocus = null,Object? workExperience = null,Object? addressKtp = null,Object? country = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? fullName = null,Object? nik = null,Object? gender = null,Object? dob = null,Object? age = null,Object? province = null,Object? city = null,Object? districts = null,Object? village = null,Object? rtRw = null,Object? ktpFilePath = null,Object? createdAt = null,Object? updatedAt = null,Object? selfieKtpFilePath = null,Object? educationLevel = null,Object? educationFocus = null,Object? workExperience = null,Object? addressKtp = null,Object? country = null,Object? latitude = freezed,Object? longitude = freezed,}) {
   return _then(_UserInfoModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -329,7 +337,9 @@ as String,educationFocus: null == educationFocus ? _self.educationFocus : educat
 as String,workExperience: null == workExperience ? _self.workExperience : workExperience // ignore: cast_nullable_to_non_nullable
 as String,addressKtp: null == addressKtp ? _self.addressKtp : addressKtp // ignore: cast_nullable_to_non_nullable
 as String,country: null == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
-as String,
+as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 

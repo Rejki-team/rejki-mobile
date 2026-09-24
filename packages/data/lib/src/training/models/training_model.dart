@@ -30,9 +30,13 @@ abstract class TrainingModel with _$TrainingModel {
     @JsonKey(name: 'rejection_reason') String? rejectionReason,
     @JsonKey(name: 'bank_name') @Default('') String bankName,
     @JsonKey(name: 'bank_account_number') @Default('') String bankAccountNumber,
-    @JsonKey(name: 'bank_account_holder_name') @Default('') String bankAccountHolderName,
+    @JsonKey(name: 'bank_account_holder_name')
+    @Default('')
+    String bankAccountHolderName,
     @Default([]) List<String> facilities,
-    @JsonKey(name: 'total_approved_enrollees') @Default(0) int totalApprovedEnrollees,
+    @JsonKey(name: 'total_approved_enrollees')
+    @Default(0)
+    int totalApprovedEnrollees,
     @Default([]) List<TrainingImageModel> images,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,

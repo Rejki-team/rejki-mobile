@@ -19,8 +19,7 @@ abstract class ContactRequestState with _$ContactRequestState {
     String? permintaanError,
 
     // ── Tab Diterima (status=approve) ─────────────────────────────────────────
-    @Default(ContactRequestStatus.initial)
-    ContactRequestStatus diterimaStatus,
+    @Default(ContactRequestStatus.initial) ContactRequestStatus diterimaStatus,
     @Default([]) List<IncomingContactEntity> diterimaList,
     @Default(1) int diterimaPage,
     @Default(true) bool diterimaHasNext,

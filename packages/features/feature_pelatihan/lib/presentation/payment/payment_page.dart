@@ -94,8 +94,18 @@ class _TrainingInfoCard extends StatelessWidget {
     String formatDeadline(DateTime? dt) {
       if (dt == null) return '-';
       const months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
       ];
       final h = dt.hour.toString().padLeft(2, '0');
       final m = dt.minute.toString().padLeft(2, '0');
@@ -120,7 +130,10 @@ class _TrainingInfoCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          _InfoRow(label: 'Biaya', value: state.fee.isNotEmpty ? state.fee : 'Gratis'),
+          _InfoRow(
+            label: 'Biaya Komitmen',
+            value: state.fee.isNotEmpty ? state.fee : 'Gratis',
+          ),
           _InfoRow(
             label: 'Batas Bayar',
             value: formatDeadline(state.paymentDeadline),
@@ -156,15 +169,19 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: AppTypography.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-              )),
-          Text(value,
-              style: AppTypography.bodySmall.copyWith(
-                color: AppColors.textBlack,
-                fontWeight: FontWeight.w600,
-              )),
+          Text(
+            label,
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          Text(
+            value,
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textBlack,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -187,9 +204,9 @@ class _UploadProofCard extends StatelessWidget {
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal memilih foto')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Gagal memilih foto')));
       }
     }
   }
@@ -252,8 +269,11 @@ class _UploadProofCard extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.upload_file_outlined,
-                        size: 40, color: AppColors.textSecondary),
+                    const Icon(
+                      Icons.upload_file_outlined,
+                      size: 40,
+                      color: AppColors.textSecondary,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       'Ketuk untuk pilih foto bukti pembayaran',
@@ -331,7 +351,9 @@ class _SubmitBar extends StatelessWidget {
                   : Text(
                       'Kirim Bukti Pembayaran',
                       style: AppTypography.buttonLarge.copyWith(
-                        color: isEnabled ? AppColors.white : AppColors.textBlack,
+                        color: isEnabled
+                            ? AppColors.white
+                            : AppColors.textBlack,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -357,8 +379,11 @@ class _WaitingView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.hourglass_empty_rounded,
-                size: 72, color: AppColors.buttonGradientEnd),
+            const Icon(
+              Icons.hourglass_empty_rounded,
+              size: 72,
+              color: AppColors.buttonGradientEnd,
+            ),
             const SizedBox(height: AppSpacing.lg),
             Text(
               'Menunggu Verifikasi',
@@ -397,8 +422,11 @@ class _ApprovedView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.check_circle_rounded,
-                size: 72, color: Color(0xFF22C55E)),
+            const Icon(
+              Icons.check_circle_rounded,
+              size: 72,
+              color: Color(0xFF22C55E),
+            ),
             const SizedBox(height: AppSpacing.lg),
             Text(
               'Pendaftaran Disetujui',

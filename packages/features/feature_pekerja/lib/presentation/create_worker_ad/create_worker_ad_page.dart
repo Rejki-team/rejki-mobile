@@ -150,9 +150,7 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
           SnackBar(
             content: Text(
               'Gagal mengompres foto. Coba lagi.',
-              style: AppTypography.labelSmall.copyWith(
-                color: AppColors.white,
-              ),
+              style: AppTypography.labelSmall.copyWith(color: AppColors.white),
             ),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
@@ -195,11 +193,14 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<LocationBloc>(
-      create: (context) => GetIt.I<LocationBloc>()..add(const LocationEvent.loadProvinces()),
+      create: (context) =>
+          GetIt.I<LocationBloc>()..add(const LocationEvent.loadProvinces()),
       child: BlocListener<CreateWorkerAdCubit, CreateWorkerAdState>(
         listener: (context, state) {
           // Prefill controllers saat profile selesai dimuat
-          if (!state.isLoadingProfile && !_hasPrefilled && widget.useExistingProfile) {
+          if (!state.isLoadingProfile &&
+              !_hasPrefilled &&
+              widget.useExistingProfile) {
             _hasPrefilled = true;
             _fullNameController.text = state.fullName;
             _phoneController.text = state.phoneNumber;
@@ -249,12 +250,7 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                 subtitle: subtitle,
                 onBackPressed: () => Navigator.of(context).pop(),
               ),
-              body: Stack(
-                children: [
-                  _buildForm(),
-                  _buildOverlay(),
-                ],
-              ),
+              body: Stack(children: [_buildForm(), _buildOverlay()]),
               bottomNavigationBar: _buildBottomActionSection(),
             );
           },
@@ -267,7 +263,7 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
     return BlocBuilder<CreateWorkerAdCubit, CreateWorkerAdState>(
       builder: (context, state) {
         final cubit = context.read<CreateWorkerAdCubit>();
-        
+
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
@@ -296,7 +292,9 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                 options: cubit.educationOptions
                     .map((e) => DropdownOption(value: e, label: e))
                     .toList(),
-                selectedValue: state.education.isNotEmpty ? state.education : null,
+                selectedValue: state.education.isNotEmpty
+                    ? state.education
+                    : null,
                 onChanged: (val) => cubit.educationChanged(val ?? ''),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -309,7 +307,9 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                 options: cubit.workingHourOptions
                     .map((e) => DropdownOption(value: e, label: e))
                     .toList(),
-                selectedValue: state.workingHours.isNotEmpty ? state.workingHours : null,
+                selectedValue: state.workingHours.isNotEmpty
+                    ? state.workingHours
+                    : null,
                 onChanged: (val) => cubit.workingHoursChanged(val ?? ''),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -338,7 +338,9 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                   DropdownOption(value: 'Ya', label: 'Ya'),
                   DropdownOption(value: 'Tidak', label: 'Tidak'),
                 ],
-                selectedValue: state.isNegotiable.isNotEmpty ? state.isNegotiable : null,
+                selectedValue: state.isNegotiable.isNotEmpty
+                    ? state.isNegotiable
+                    : null,
                 onChanged: (val) => cubit.isNegotiableChanged(val ?? ''),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -403,8 +405,9 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
     final indonesiaCountry = LocationEntity(id: 'ID', name: 'Indonesia');
     return BlocBuilder<LocationBloc, LocationState>(
       builder: (context, locationState) {
-        final selectedCountry = locationState.selectedCountry ?? indonesiaCountry;
-        
+        final selectedCountry =
+            locationState.selectedCountry ?? indonesiaCountry;
+
         return CascadingLocationField(
           number: '10',
           label: 'Lokasi Detail',
@@ -426,38 +429,50 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
           isLoadingVillages: locationState.isLoadingVillages,
           errorText: locationState.errorMessage,
           onCountryChanged: (entity) {
-             if (entity != null) {
-                context.read<LocationBloc>().add(LocationEvent.selectCountry(entity));
-                context.read<LocationBloc>().add(const LocationEvent.loadProvinces());
-             }
+            if (entity != null) {
+              context.read<LocationBloc>().add(
+                LocationEvent.selectCountry(entity),
+              );
+              context.read<LocationBloc>().add(
+                const LocationEvent.loadProvinces(),
+              );
+            }
           },
           onProvinceChanged: (entity) {
-             if (entity != null) {
-                context.read<LocationBloc>().add(LocationEvent.selectProvince(entity));
-                context.read<CreateWorkerAdCubit>().provinceChanged(entity.id);
-             }
+            if (entity != null) {
+              context.read<LocationBloc>().add(
+                LocationEvent.selectProvince(entity),
+              );
+              context.read<CreateWorkerAdCubit>().provinceChanged(entity.id);
+            }
           },
           onCityChanged: (entity) {
-             if (entity != null) {
-                context.read<LocationBloc>().add(LocationEvent.selectRegency(entity));
-                context.read<CreateWorkerAdCubit>().cityChanged(entity.id);
-             }
+            if (entity != null) {
+              context.read<LocationBloc>().add(
+                LocationEvent.selectRegency(entity),
+              );
+              context.read<CreateWorkerAdCubit>().cityChanged(entity.id);
+            }
           },
           onDistrictChanged: (entity) {
-             if (entity != null) {
-                context.read<LocationBloc>().add(LocationEvent.selectDistrict(entity));
-                context.read<CreateWorkerAdCubit>().districtChanged(entity.id);
-             }
+            if (entity != null) {
+              context.read<LocationBloc>().add(
+                LocationEvent.selectDistrict(entity),
+              );
+              context.read<CreateWorkerAdCubit>().districtChanged(entity.id);
+            }
           },
           onVillageChanged: (entity) {
-             if (entity != null) {
-                context.read<LocationBloc>().add(LocationEvent.selectVillage(entity));
-                // API expects subdistrict id for ward & village
-                context.read<CreateWorkerAdCubit>().subdistrictChanged(entity.id);
-             }
+            if (entity != null) {
+              context.read<LocationBloc>().add(
+                LocationEvent.selectVillage(entity),
+              );
+              // API expects subdistrict id for ward & village
+              context.read<CreateWorkerAdCubit>().subdistrictChanged(entity.id);
+            }
           },
         );
-      }
+      },
     );
   }
 
@@ -475,7 +490,7 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const CircularProgressIndicator(color: AppColors.white),
-                  if (state.isLoadingProfile) ... [
+                  if (state.isLoadingProfile) ...[
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       'Memuat data profil...',
@@ -514,11 +529,14 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: (state.isLoading || _isCompressing || !state.isFormValid)
+                onPressed:
+                    (state.isLoading || _isCompressing || !state.isFormValid)
                     ? null
                     : () => _showConfirmationDialog(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0A0A0A), // Solid black based on design
+                  backgroundColor: const Color(
+                    0xFF0A0A0A,
+                  ), // Solid black based on design
                   disabledBackgroundColor: AppColors.border,
                   shape: RoundedRectangleBorder(
                     borderRadius: AppDimensions.borderRadiusSm,
@@ -532,7 +550,9 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                         width: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       )
                     : Row(
@@ -543,14 +563,18 @@ class _CreateWorkerAdPageState extends State<CreateWorkerAdPage> {
                                 ? 'Perbarui Data Pekerja'
                                 : 'Submit Data Pekerja',
                             style: AppTypography.buttonRegularSmall.copyWith(
-                              color: state.isFormValid ? AppColors.white : AppColors.textBlack,
+                              color: state.isFormValid
+                                  ? AppColors.white
+                                  : AppColors.textBlack,
                             ),
                           ),
                           const SizedBox(width: AppSpacing.sm),
                           Icon(
                             Icons.arrow_forward,
                             size: AppDimensions.iconXs,
-                            color: state.isFormValid ? AppColors.white : AppColors.textBlack,
+                            color: state.isFormValid
+                                ? AppColors.white
+                                : AppColors.textBlack,
                           ),
                         ],
                       ),

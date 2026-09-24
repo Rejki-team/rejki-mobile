@@ -58,6 +58,8 @@ abstract class AppRoutes {
   static const String barangBekas = '/profile/barang-bekas';
   static const String personalInfo = '/profile/personal-info';
   static const String editPersonalInfo = '/profile/personal-info/edit';
+  // Pelaporan Masalah (F-20, PRD §5.10) — `targetId` opsional via query param.
+  static const String pelaporanMasalah = '/profile/pelaporan-masalah';
 
   // ==================== PEKERJA ====================
   static const String pekerja = '/pekerja';

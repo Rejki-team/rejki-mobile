@@ -177,8 +177,7 @@ class SessionStorage {
   }
 
   /// Ambil user status (active/pending/suspended)
-  String? getUserStatus() =>
-      _prefs.getString(SessionStorageKeys.userStatus);
+  String? getUserStatus() => _prefs.getString(SessionStorageKeys.userStatus);
 
   /// Set user status
   Future<void> saveUserStatus(String status) async {

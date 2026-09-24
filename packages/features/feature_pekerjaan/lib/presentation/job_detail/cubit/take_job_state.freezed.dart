@@ -137,13 +137,13 @@ return failure(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  checkingWorkerProfile,TResult Function()?  workerProfileNotFound,TResult Function( String workerId,  int workerCount,  DateTime? defaultDateTime)?  workerProfileFound,TResult Function()?  submitting,TResult Function()?  success,TResult Function( String message)?  failure,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  checkingWorkerProfile,TResult Function()?  workerProfileNotFound,TResult Function( DateTime? defaultDateTime)?  workerProfileFound,TResult Function()?  submitting,TResult Function()?  success,TResult Function( String message)?  failure,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _CheckingWorkerProfile() when checkingWorkerProfile != null:
 return checkingWorkerProfile();case _WorkerProfileNotFound() when workerProfileNotFound != null:
 return workerProfileNotFound();case _WorkerProfileFound() when workerProfileFound != null:
-return workerProfileFound(_that.workerId,_that.workerCount,_that.defaultDateTime);case _Submitting() when submitting != null:
+return workerProfileFound(_that.defaultDateTime);case _Submitting() when submitting != null:
 return submitting();case _Success() when success != null:
 return success();case _Failure() when failure != null:
 return failure(_that.message);case _:
@@ -164,13 +164,13 @@ return failure(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  checkingWorkerProfile,required TResult Function()  workerProfileNotFound,required TResult Function( String workerId,  int workerCount,  DateTime? defaultDateTime)  workerProfileFound,required TResult Function()  submitting,required TResult Function()  success,required TResult Function( String message)  failure,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  checkingWorkerProfile,required TResult Function()  workerProfileNotFound,required TResult Function( DateTime? defaultDateTime)  workerProfileFound,required TResult Function()  submitting,required TResult Function()  success,required TResult Function( String message)  failure,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _CheckingWorkerProfile():
 return checkingWorkerProfile();case _WorkerProfileNotFound():
 return workerProfileNotFound();case _WorkerProfileFound():
-return workerProfileFound(_that.workerId,_that.workerCount,_that.defaultDateTime);case _Submitting():
+return workerProfileFound(_that.defaultDateTime);case _Submitting():
 return submitting();case _Success():
 return success();case _Failure():
 return failure(_that.message);case _:
@@ -190,13 +190,13 @@ return failure(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  checkingWorkerProfile,TResult? Function()?  workerProfileNotFound,TResult? Function( String workerId,  int workerCount,  DateTime? defaultDateTime)?  workerProfileFound,TResult? Function()?  submitting,TResult? Function()?  success,TResult? Function( String message)?  failure,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  checkingWorkerProfile,TResult? Function()?  workerProfileNotFound,TResult? Function( DateTime? defaultDateTime)?  workerProfileFound,TResult? Function()?  submitting,TResult? Function()?  success,TResult? Function( String message)?  failure,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _CheckingWorkerProfile() when checkingWorkerProfile != null:
 return checkingWorkerProfile();case _WorkerProfileNotFound() when workerProfileNotFound != null:
 return workerProfileNotFound();case _WorkerProfileFound() when workerProfileFound != null:
-return workerProfileFound(_that.workerId,_that.workerCount,_that.defaultDateTime);case _Submitting() when submitting != null:
+return workerProfileFound(_that.defaultDateTime);case _Submitting() when submitting != null:
 return submitting();case _Success() when success != null:
 return success();case _Failure() when failure != null:
 return failure(_that.message);case _:
@@ -307,11 +307,9 @@ String toString() {
 
 
 class _WorkerProfileFound implements TakeJobState {
-  const _WorkerProfileFound({required this.workerId, required this.workerCount, required this.defaultDateTime});
+  const _WorkerProfileFound({required this.defaultDateTime});
   
 
- final  String workerId;
- final  int workerCount;
  final  DateTime? defaultDateTime;
 
 /// Create a copy of TakeJobState
@@ -324,16 +322,16 @@ _$WorkerProfileFoundCopyWith<_WorkerProfileFound> get copyWith => __$WorkerProfi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkerProfileFound&&(identical(other.workerId, workerId) || other.workerId == workerId)&&(identical(other.workerCount, workerCount) || other.workerCount == workerCount)&&(identical(other.defaultDateTime, defaultDateTime) || other.defaultDateTime == defaultDateTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkerProfileFound&&(identical(other.defaultDateTime, defaultDateTime) || other.defaultDateTime == defaultDateTime));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,workerId,workerCount,defaultDateTime);
+int get hashCode => Object.hash(runtimeType,defaultDateTime);
 
 @override
 String toString() {
-  return 'TakeJobState.workerProfileFound(workerId: $workerId, workerCount: $workerCount, defaultDateTime: $defaultDateTime)';
+  return 'TakeJobState.workerProfileFound(defaultDateTime: $defaultDateTime)';
 }
 
 
@@ -344,7 +342,7 @@ abstract mixin class _$WorkerProfileFoundCopyWith<$Res> implements $TakeJobState
   factory _$WorkerProfileFoundCopyWith(_WorkerProfileFound value, $Res Function(_WorkerProfileFound) _then) = __$WorkerProfileFoundCopyWithImpl;
 @useResult
 $Res call({
- String workerId, int workerCount, DateTime? defaultDateTime
+ DateTime? defaultDateTime
 });
 
 
@@ -361,11 +359,9 @@ class __$WorkerProfileFoundCopyWithImpl<$Res>
 
 /// Create a copy of TakeJobState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? workerId = null,Object? workerCount = null,Object? defaultDateTime = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? defaultDateTime = freezed,}) {
   return _then(_WorkerProfileFound(
-workerId: null == workerId ? _self.workerId : workerId // ignore: cast_nullable_to_non_nullable
-as String,workerCount: null == workerCount ? _self.workerCount : workerCount // ignore: cast_nullable_to_non_nullable
-as int,defaultDateTime: freezed == defaultDateTime ? _self.defaultDateTime : defaultDateTime // ignore: cast_nullable_to_non_nullable
+defaultDateTime: freezed == defaultDateTime ? _self.defaultDateTime : defaultDateTime // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }

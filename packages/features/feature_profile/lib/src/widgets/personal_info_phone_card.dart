@@ -161,8 +161,8 @@ class _PhoneVisibilitySwitch extends StatelessWidget {
         decoration: BoxDecoration(
           color: value
               ? (isInteractive
-                  ? AppColors.buttonGradientEnd
-                  : AppColors.buttonGradientEnd.withAlpha(128))
+                    ? AppColors.buttonGradientEnd
+                    : AppColors.buttonGradientEnd.withAlpha(128))
               : AppColors.border,
           borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
         ),

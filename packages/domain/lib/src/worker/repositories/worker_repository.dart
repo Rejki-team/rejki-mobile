@@ -7,11 +7,15 @@ import '../entities/incoming_contact_entity.dart';
 
 /// Worker Repository Interface
 abstract class WorkerRepository {
-  /// Fetches the list of workers based on distance, sorting, and keywords
+  /// Fetches the list of workers based on distance, sorting, and keywords.
+  ///
+  /// [latitude]/[longitude] `null` (device GPS unavailable/denied) → radius
+  /// filter is not applied server-side (F-1); [maxDistance] is only
+  /// meaningful when both coordinates are present.
   Future<Either<WorkerFailure, List<WorkerEntity>>> getWorkers({
-    required double latitude,
-    required double longitude,
-    required double maxDistance,
+    double? latitude,
+    double? longitude,
+    double? maxDistance,
     String? sortBy,
     String? keyword,
   });
@@ -46,11 +50,8 @@ abstract class WorkerRepository {
   });
 
   /// Fetches paginated incoming contact requests targeting worker profiles owned by the user
-  Future<Either<WorkerFailure, IncomingContactsResultEntity>> getIncomingContacts({
-    String? status,
-    int page = 1,
-    int limit = 10,
-  });
+  Future<Either<WorkerFailure, IncomingContactsResultEntity>>
+  getIncomingContacts({String? status, int page = 1, int limit = 10});
 
   /// Updates the status of a contact request (approve/decline) on a worker profile owned by the user
   Future<Either<WorkerFailure, Unit>> updateWorkerContactStatus({
@@ -59,10 +60,12 @@ abstract class WorkerRepository {
     required String status,
   });
 
-  /// Submits a review for a specific worker
+  /// Pemberi kerja menilai pelamar (F-17, PRD §5.15). [pelamarId] =
+  /// `LamaranEntity.pelamarId`, [iklanId] = `LamaranEntity.iklanId`.
   Future<Either<WorkerFailure, Unit>> submitWorkerReview({
-    required String workerId,
-    required int rating,
-    required String review,
+    required String iklanId,
+    required String pelamarId,
+    required int bintang,
+    String? ulasan,
   });
 }

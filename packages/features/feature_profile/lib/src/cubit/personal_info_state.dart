@@ -63,7 +63,8 @@ abstract class PersonalInfoState with _$PersonalInfoState {
     ///
     /// Digunakan oleh BlocListener untuk menampilkan dialog yang tepat.
     /// Di-reset ke [PersonalInfoUpdateResult.none] setelah dialog ditampilkan.
-    @Default(PersonalInfoUpdateResult.none) PersonalInfoUpdateResult updateResult,
+    @Default(PersonalInfoUpdateResult.none)
+    PersonalInfoUpdateResult updateResult,
   }) = _PersonalInfoState;
 
   const PersonalInfoState._();

@@ -220,7 +220,9 @@ class AuthRepositoryImpl implements AuthRepository {
     required OtpPurpose purpose,
   }) async {
     try {
-      print('🔄 [AuthRepository] Resending OTP to: $email, purpose: ${purpose.value}');
+      print(
+        '🔄 [AuthRepository] Resending OTP to: $email, purpose: ${purpose.value}',
+      );
 
       final message = await _remoteDataSource.resendOtp(email, purpose.value);
 

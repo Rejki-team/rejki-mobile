@@ -47,10 +47,12 @@ class WorkerSortFilterBottomSheet extends StatefulWidget {
   }
 
   @override
-  State<WorkerSortFilterBottomSheet> createState() => _WorkerSortFilterBottomSheetState();
+  State<WorkerSortFilterBottomSheet> createState() =>
+      _WorkerSortFilterBottomSheetState();
 }
 
-class _WorkerSortFilterBottomSheetState extends State<WorkerSortFilterBottomSheet> {
+class _WorkerSortFilterBottomSheetState
+    extends State<WorkerSortFilterBottomSheet> {
   WorkerSortOption? _selectedOption;
 
   @override
@@ -156,8 +158,14 @@ class _WorkerSortFilterBottomSheetState extends State<WorkerSortFilterBottomShee
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
         decoration: const BoxDecoration(
           border: Border(
-            top: BorderSide(color: AppColors.border, width: AppDimensions.borderThin),
-            bottom: BorderSide(color: AppColors.border, width: AppDimensions.borderThin),
+            top: BorderSide(
+              color: AppColors.border,
+              width: AppDimensions.borderThin,
+            ),
+            bottom: BorderSide(
+              color: AppColors.border,
+              width: AppDimensions.borderThin,
+            ),
           ),
         ),
         child: Row(
@@ -224,7 +232,10 @@ class _RadioButton extends StatelessWidget {
               child: Container(
                 width: AppDimensions.iconXxs,
                 height: AppDimensions.iconXxs,
-                decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.badgeBlue),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.badgeBlue,
+                ),
               ),
             )
           : null,

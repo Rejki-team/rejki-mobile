@@ -9,51 +9,37 @@ part of 'secondhand_model.dart';
 _SecondhandModel _$SecondhandModelFromJson(Map<String, dynamic> json) =>
     _SecondhandModel(
       id: json['id'] as String,
-      adCode: json['ad_code'] as String,
-      userId: json['user_id'] as String,
-      user: json['user'] == null
-          ? null
-          : SecondhandUserModel.fromJson(json['user'] as Map<String, dynamic>),
-      title: json['title'] as String,
-      description: json['description'] as String,
-      condition: json['condition'] as String,
-      amount: (json['amount'] as num).toInt(),
-      address: json['address'] as String,
-      province: json['province'] as String,
-      city: json['city'] as String,
-      subdistrict: json['subdistrict'] as String,
-      ward: json['ward'] as String? ?? '',
-      village: json['village'] as String,
-      status: json['status'] as String,
-      images:
-          (json['images'] as List<dynamic>?)
-              ?.map(
-                (e) => SecondhandImageModel.fromJson(e as Map<String, dynamic>),
-              )
+      sellerId: json['seller_id'] as String,
+      judul: json['judul'] as String,
+      deskripsi: json['deskripsi'] as String,
+      jenisBarang: json['jenis_barang'] as String,
+      jumlah: (json['jumlah'] as num).toInt(),
+      lokasiPengambilan: json['lokasi_pengambilan'] as String,
+      lokasi: json['lokasi'] as String?,
+      regionId: json['region_id'] as String?,
+      fotoUrls:
+          (json['foto_urls'] as List<dynamic>?)
+              ?.map((e) => e as String)
               .toList() ??
           const [],
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
+      availabilityStatus: json['availability_status'] as String,
+      moderationStatus: json['moderation_status'] as String,
+      createdAt: json['created_at'] as String,
     );
 
 Map<String, dynamic> _$SecondhandModelToJson(_SecondhandModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'ad_code': instance.adCode,
-      'user_id': instance.userId,
-      'user': instance.user,
-      'title': instance.title,
-      'description': instance.description,
-      'condition': instance.condition,
-      'amount': instance.amount,
-      'address': instance.address,
-      'province': instance.province,
-      'city': instance.city,
-      'subdistrict': instance.subdistrict,
-      'ward': instance.ward,
-      'village': instance.village,
-      'status': instance.status,
-      'images': instance.images,
+      'seller_id': instance.sellerId,
+      'judul': instance.judul,
+      'deskripsi': instance.deskripsi,
+      'jenis_barang': instance.jenisBarang,
+      'jumlah': instance.jumlah,
+      'lokasi_pengambilan': instance.lokasiPengambilan,
+      'lokasi': instance.lokasi,
+      'region_id': instance.regionId,
+      'foto_urls': instance.fotoUrls,
+      'availability_status': instance.availabilityStatus,
+      'moderation_status': instance.moderationStatus,
       'created_at': instance.createdAt,
-      'updated_at': instance.updatedAt,
     };

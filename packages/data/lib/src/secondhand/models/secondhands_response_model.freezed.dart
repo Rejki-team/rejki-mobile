@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SecondhandsResponseModel {
 
- List<SecondhandModel> get data; PaginationSecondhandModel get pagination;
+ List<SecondhandModel> get data; PaginationModel get pagination;
 /// Create a copy of SecondhandsResponseModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,11 +48,11 @@ abstract mixin class $SecondhandsResponseModelCopyWith<$Res>  {
   factory $SecondhandsResponseModelCopyWith(SecondhandsResponseModel value, $Res Function(SecondhandsResponseModel) _then) = _$SecondhandsResponseModelCopyWithImpl;
 @useResult
 $Res call({
- List<SecondhandModel> data, PaginationSecondhandModel pagination
+ List<SecondhandModel> data, PaginationModel pagination
 });
 
 
-$PaginationSecondhandModelCopyWith<$Res> get pagination;
+$PaginationModelCopyWith<$Res> get pagination;
 
 }
 /// @nodoc
@@ -69,16 +69,16 @@ class _$SecondhandsResponseModelCopyWithImpl<$Res>
   return _then(_self.copyWith(
 data: null == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
 as List<SecondhandModel>,pagination: null == pagination ? _self.pagination : pagination // ignore: cast_nullable_to_non_nullable
-as PaginationSecondhandModel,
+as PaginationModel,
   ));
 }
 /// Create a copy of SecondhandsResponseModel
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$PaginationSecondhandModelCopyWith<$Res> get pagination {
+$PaginationModelCopyWith<$Res> get pagination {
   
-  return $PaginationSecondhandModelCopyWith<$Res>(_self.pagination, (value) {
+  return $PaginationModelCopyWith<$Res>(_self.pagination, (value) {
     return _then(_self.copyWith(pagination: value));
   });
 }
@@ -163,7 +163,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SecondhandModel> data,  PaginationSecondhandModel pagination)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SecondhandModel> data,  PaginationModel pagination)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SecondhandsResponseModel() when $default != null:
 return $default(_that.data,_that.pagination);case _:
@@ -184,7 +184,7 @@ return $default(_that.data,_that.pagination);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SecondhandModel> data,  PaginationSecondhandModel pagination)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SecondhandModel> data,  PaginationModel pagination)  $default,) {final _that = this;
 switch (_that) {
 case _SecondhandsResponseModel():
 return $default(_that.data,_that.pagination);case _:
@@ -204,7 +204,7 @@ return $default(_that.data,_that.pagination);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SecondhandModel> data,  PaginationSecondhandModel pagination)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SecondhandModel> data,  PaginationModel pagination)?  $default,) {final _that = this;
 switch (_that) {
 case _SecondhandsResponseModel() when $default != null:
 return $default(_that.data,_that.pagination);case _:
@@ -229,7 +229,7 @@ class _SecondhandsResponseModel extends SecondhandsResponseModel {
   return EqualUnmodifiableListView(_data);
 }
 
-@override final  PaginationSecondhandModel pagination;
+@override final  PaginationModel pagination;
 
 /// Create a copy of SecondhandsResponseModel
 /// with the given fields replaced by the non-null parameter values.
@@ -264,11 +264,11 @@ abstract mixin class _$SecondhandsResponseModelCopyWith<$Res> implements $Second
   factory _$SecondhandsResponseModelCopyWith(_SecondhandsResponseModel value, $Res Function(_SecondhandsResponseModel) _then) = __$SecondhandsResponseModelCopyWithImpl;
 @override @useResult
 $Res call({
- List<SecondhandModel> data, PaginationSecondhandModel pagination
+ List<SecondhandModel> data, PaginationModel pagination
 });
 
 
-@override $PaginationSecondhandModelCopyWith<$Res> get pagination;
+@override $PaginationModelCopyWith<$Res> get pagination;
 
 }
 /// @nodoc
@@ -285,7 +285,7 @@ class __$SecondhandsResponseModelCopyWithImpl<$Res>
   return _then(_SecondhandsResponseModel(
 data: null == data ? _self._data : data // ignore: cast_nullable_to_non_nullable
 as List<SecondhandModel>,pagination: null == pagination ? _self.pagination : pagination // ignore: cast_nullable_to_non_nullable
-as PaginationSecondhandModel,
+as PaginationModel,
   ));
 }
 
@@ -293,9 +293,9 @@ as PaginationSecondhandModel,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$PaginationSecondhandModelCopyWith<$Res> get pagination {
+$PaginationModelCopyWith<$Res> get pagination {
   
-  return $PaginationSecondhandModelCopyWith<$Res>(_self.pagination, (value) {
+  return $PaginationModelCopyWith<$Res>(_self.pagination, (value) {
     return _then(_self.copyWith(pagination: value));
   });
 }

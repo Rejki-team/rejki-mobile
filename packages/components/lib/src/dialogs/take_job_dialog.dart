@@ -12,58 +12,41 @@ import '../inputs/app_inputs.dart';
 
 /// Data class untuk konfigurasi TakeJobDialog.
 class TakeJobDialogData {
-  /// DateTime pekerjaan dari job entity untuk jadwal default.
+  /// Jadwal default yang ditetapkan pengiklan (PRD §5.11.3) — `null` bila
+  /// iklan tidak punya jadwal default (backend `IklanPekerjaan` saat ini
+  /// belum menyimpan field ini sama sekali, gap terpisah di luar scope
+  /// Kelompok 3 Phase 2). Checkbox "Ikuti Jadwal Default" dinonaktifkan bila
+  /// `null` — pelamar wajib isi jadwal sendiri.
   final DateTime? defaultDateTime;
 
-  /// Teks tanggal default (display only).
-  final String defaultDateText;
-
-  /// Teks rentang jam kerja default (display only).
-  final String defaultTimeText;
-
-  /// Jumlah total pekerja yang dibutuhkan job ini.
-  final int workerCount;
-
-  const TakeJobDialogData({
-    required this.defaultDateTime,
-    required this.defaultDateText,
-    required this.defaultTimeText,
-    this.workerCount = 1,
-  });
+  const TakeJobDialogData({this.defaultDateTime});
 }
 
 // ============================================================================
 // Dialog Widget
 // ============================================================================
 
-/// Dialog "Atur Jadwal" untuk mengambil pekerjaan.
-///
-/// Menampilkan stepper jumlah slot (1 sampai [TakeJobDialogData.workerCount])
-/// sehingga satu pelamar bisa mengisi beberapa slot sekaligus.
-///
-/// Aturan jadwal:
-/// - Jika slotCount == workerCount (pelamar isi semua slot) → custom date boleh.
-/// - Jika slotCount < workerCount → jadwal default dikunci (backend juga memaksa ini).
+/// Dialog "Atur Jadwal" untuk melamar pekerjaan (F-3, PRD §5.11.3).
 ///
 /// [onSubmit] di-callback dengan:
-/// - [selectedDateTime]: DateTime yang dipilih.
-/// - [workerId]: Worker Profile ID.
-/// - [slotCount]: Jumlah slot yang diisi.
+/// - [tanggal]: tanggal yang dipilih.
+/// - [jamMulai]/[jamAkhir]: format "HH:mm:ss" (wire format backend).
+/// - [kuotaDiambil]: jumlah kuota yang diambil pelamar (≥1).
 class TakeJobDialog extends StatefulWidget {
   final TakeJobDialogData data;
-  final String workerId;
   final bool isSubmitting;
 
   final void Function(
-    DateTime selectedDateTime,
-    String workerId,
-    int slotCount,
-  ) onSubmit;
+    DateTime tanggal,
+    String jamMulai,
+    String jamAkhir,
+    int kuotaDiambil,
+  )
+  onSubmit;
 
   const TakeJobDialog({
     super.key,
     required this.data,
-    required this.workerId,
     required this.onSubmit,
     this.isSubmitting = false,
   });
@@ -73,30 +56,33 @@ class TakeJobDialog extends StatefulWidget {
 }
 
 class _TakeJobDialogState extends State<TakeJobDialog> {
+  static const int _maxKuota = 10;
+  static const Duration _defaultDurationEstimate = Duration(hours: 8);
+
+  bool get _hasDefaultSchedule => widget.data.defaultDateTime != null;
   late bool _useDefaultSchedule;
   DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
-  late int _slotCount;
-
-  /// Jadwal wajib default ketika slot yang dipilih < total kebutuhan.
-  /// Backend juga memaksa ini, tapi UI harus konsisten.
-  bool get _forceDefaultSchedule => _slotCount < widget.data.workerCount;
+  TimeOfDay? _selectedStartTime;
+  TimeOfDay? _selectedEndTime;
+  int _kuotaDiambil = 1;
 
   @override
   void initState() {
     super.initState();
-    _slotCount = 1;
-    _useDefaultSchedule = true;
+    _useDefaultSchedule = _hasDefaultSchedule;
+    if (_hasDefaultSchedule) {
+      final d = widget.data.defaultDateTime!;
+      _selectedDate = d;
+      _selectedStartTime = TimeOfDay(hour: d.hour, minute: d.minute);
+      final end = d.add(_defaultDurationEstimate);
+      _selectedEndTime = TimeOfDay(hour: end.hour, minute: end.minute);
+    }
   }
 
-  void _onSlotChanged(int delta) {
-    final next = (_slotCount + delta).clamp(1, widget.data.workerCount);
-    if (next == _slotCount) return;
-    setState(() {
-      _slotCount = next;
-      // Bila slot kembali ke kurang-dari-total, paksa jadwal default.
-      if (_forceDefaultSchedule) _useDefaultSchedule = true;
-    });
+  void _onKuotaChanged(int delta) {
+    final next = (_kuotaDiambil + delta).clamp(1, _maxKuota);
+    if (next == _kuotaDiambil) return;
+    setState(() => _kuotaDiambil = next);
   }
 
   @override
@@ -120,20 +106,13 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
             _buildHeader(),
             const SizedBox(height: AppSpacing.lg),
 
-            // Info jadwal default dari pemberi kerja
-            _buildDefaultScheduleCard(),
+            _buildKuotaStepper(),
             const SizedBox(height: AppSpacing.md),
 
-            // Stepper jumlah slot (hanya tampil jika job butuh > 1 pekerja)
-            if (widget.data.workerCount > 1) _buildSlotStepper(),
-
-            // Info jadwal ikut default (muncul saat slot < total kebutuhan)
-            if (_forceDefaultSchedule) _buildCollaborationInfo(),
-
-            // Checkbox "Ikuti Jadwal Default" (disabled jika dipaksa)
+            // Checkbox "Ikuti Jadwal Default" — nonaktif bila iklan tidak
+            // punya jadwal default (lihat catatan TakeJobDialogData).
             _buildDefaultScheduleCheckbox(),
 
-            // Custom schedule pickers (hanya muncul jika tidak pakai default)
             if (!_useDefaultSchedule) _buildCustomSchedulePickers(),
 
             const SizedBox(height: AppSpacing.xl),
@@ -174,133 +153,23 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
     );
   }
 
-  Widget _buildSlotStepper() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Jumlah slot yang kamu isi',
-                  style: AppTypography.labelLarge.copyWith(
-                    color: AppColors.textBlack,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xxs),
-                Text(
-                  _slotCount == widget.data.workerCount
-                      ? 'Kamu mengisi semua slot — jadwal custom diizinkan'
-                      : 'Sebagian slot — jadwal mengikuti default iklan',
-                  style: AppTypography.caption.copyWith(
-                    color: _slotCount == widget.data.workerCount
-                        ? AppColors.primary
-                        : AppColors.textCaption,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          _SlotCounter(
-            value: _slotCount,
-            max: widget.data.workerCount,
-            onDecrement: () => _onSlotChanged(-1),
-            onIncrement: () => _onSlotChanged(1),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDefaultScheduleCard() {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Jadwal Default Pemberi Kerja',
+  Widget _buildKuotaStepper() {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Jumlah kuota yang kamu ambil',
             style: AppTypography.labelLarge.copyWith(
               color: AppColors.textBlack,
             ),
           ),
-          const SizedBox(height: AppSpacing.xs),
-          _InfoRow(
-            icon: AppAssets.iconCalendar,
-            text: widget.data.defaultDateText,
-          ),
-          const SizedBox(height: AppSpacing.xxs),
-          _InfoRow(
-            icon: AppAssets.iconClock,
-            text: widget.data.defaultTimeText,
-          ),
-          const SizedBox(height: AppSpacing.xxs),
-          _InfoRow(
-            icon: AppAssets.iconUser,
-            text: 'Dibutuhkan ${widget.data.workerCount} pekerja',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCollaborationInfo() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.sm),
-          margin: const EdgeInsets.only(bottom: AppSpacing.md),
-          decoration: BoxDecoration(
-            color: AppColors.availabilityBadgeBg,
-            borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-            border: Border.all(color: AppColors.availabilityBadgeBorder),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SvgPicture.asset(
-                AppAssets.iconInfoLine,
-                width: AppDimensions.iconXxs,
-                height: AppDimensions.iconXxs,
-                colorFilter: ColorFilter.mode(
-                  AppColors.badgeBlue,
-                  BlendMode.srcIn,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.xs),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Pekerjaan Membutuhkan ${widget.data.workerCount} Pekerja',
-                      style: AppTypography.caption.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.badgeBlue,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xxs),
-                    Text(
-                      'Apabila kamu tidak memiliki rekan, pekerjaan ini akan '
-                      'dimulai setelah semua kuota pekerja terpenuhi. '
-                      'Jadwal mengikuti jadwal default pemberi kerja.',
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textCaption,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        _KuotaCounter(
+          value: _kuotaDiambil,
+          max: _maxKuota,
+          onDecrement: () => _onKuotaChanged(-1),
+          onIncrement: () => _onKuotaChanged(1),
         ),
       ],
     );
@@ -312,24 +181,15 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
         AppRememberMeCheckbox(
           value: _useDefaultSchedule,
           label: 'Ikuti Jadwal Default',
-          onChanged: _forceDefaultSchedule
-              ? null // null = disabled — tidak bisa diubah
-              : (val) {
-                  setState(() {
-                    _useDefaultSchedule = val;
-                    if (!val) {
-                      // Inisialisasi default picker ke besok tanpa jam
-                      _selectedDate = DateTime.now().add(const Duration(days: 1));
-                      _selectedTime = TimeOfDay.now();
-                    }
-                  });
-                },
+          onChanged: !_hasDefaultSchedule
+              ? null // null = disabled — tidak ada jadwal default untuk diikuti
+              : (val) => setState(() => _useDefaultSchedule = val),
         ),
-        if (_forceDefaultSchedule) ...[
+        if (!_hasDefaultSchedule) ...[
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Text(
-              '(wajib karena butuh ${widget.data.workerCount} pekerja)',
+              '(jadwal default belum tersedia untuk iklan ini)',
               style: AppTypography.caption.copyWith(
                 color: AppColors.textCaption,
                 fontStyle: FontStyle.italic,
@@ -350,54 +210,48 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
         const SizedBox(height: AppSpacing.md),
         Text(
           'Jadwal sesuai kesepakatan',
-          style: AppTypography.labelLarge.copyWith(
-            color: AppColors.textBlack,
-          ),
+          style: AppTypography.labelLarge.copyWith(color: AppColors.textBlack),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _DateTimePickerField(
+          label: 'Tanggal *',
+          value: _selectedDate != null
+              ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
+              : 'Pilih Tanggal',
+          icon: AppAssets.iconCalendar,
+          onTap: () async {
+            final date = await showDatePicker(
+              context: context,
+              initialDate:
+                  _selectedDate ?? DateTime.now().add(const Duration(days: 1)),
+              firstDate: DateTime.now(),
+              lastDate: DateTime.now().add(const Duration(days: 365)),
+              builder: (ctx, child) => Theme(
+                data: Theme.of(ctx).copyWith(
+                  colorScheme: const ColorScheme.light(
+                    primary: AppColors.primary,
+                  ),
+                ),
+                child: child!,
+              ),
+            );
+            if (date != null && mounted) setState(() => _selectedDate = date);
+          },
         ),
         const SizedBox(height: AppSpacing.sm),
         Row(
           children: [
             Expanded(
               child: _DateTimePickerField(
-                label: 'Tanggal *',
-                value: _selectedDate != null
-                    ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
-                    : 'Pilih Tanggal',
-                icon: AppAssets.iconCalendar,
-                onTap: () async {
-                  final date = await showDatePicker(
-                    context: context,
-                    initialDate: _selectedDate ??
-                        DateTime.now().add(const Duration(days: 1)),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 365)),
-                    builder: (ctx, child) => Theme(
-                      data: Theme.of(ctx).copyWith(
-                        colorScheme: const ColorScheme.light(
-                          primary: AppColors.primary,
-                        ),
-                      ),
-                      child: child!,
-                    ),
-                  );
-                  if (date != null && mounted) {
-                    setState(() => _selectedDate = date);
-                  }
-                },
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: _DateTimePickerField(
-                label: 'Jam *',
-                value: _selectedTime != null
-                    ? _selectedTime!.format(context)
+                label: 'Jam Mulai *',
+                value: _selectedStartTime != null
+                    ? _selectedStartTime!.format(context)
                     : 'Pilih Jam',
                 icon: AppAssets.iconClock,
                 onTap: () async {
                   final time = await showTimePicker(
                     context: context,
-                    initialTime: _selectedTime ?? TimeOfDay.now(),
+                    initialTime: _selectedStartTime ?? TimeOfDay.now(),
                     builder: (ctx, child) => Theme(
                       data: Theme.of(ctx).copyWith(
                         colorScheme: const ColorScheme.light(
@@ -408,7 +262,34 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
                     ),
                   );
                   if (time != null && mounted) {
-                    setState(() => _selectedTime = time);
+                    setState(() => _selectedStartTime = time);
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _DateTimePickerField(
+                label: 'Jam Akhir *',
+                value: _selectedEndTime != null
+                    ? _selectedEndTime!.format(context)
+                    : 'Pilih Jam',
+                icon: AppAssets.iconClock,
+                onTap: () async {
+                  final time = await showTimePicker(
+                    context: context,
+                    initialTime: _selectedEndTime ?? TimeOfDay.now(),
+                    builder: (ctx, child) => Theme(
+                      data: Theme.of(ctx).copyWith(
+                        colorScheme: const ColorScheme.light(
+                          primary: AppColors.primary,
+                        ),
+                      ),
+                      child: child!,
+                    ),
+                  );
+                  if (time != null && mounted) {
+                    setState(() => _selectedEndTime = time);
                   }
                 },
               ),
@@ -424,45 +305,44 @@ class _TakeJobDialogState extends State<TakeJobDialog> {
       text: 'Submit Pekerjaan',
       showIcon: false,
       isLoading: widget.isSubmitting,
-      onPressed: widget.isSubmitting ? null : _handleSubmit,
+      onPressed: widget.isSubmitting || !_isValid ? null : _handleSubmit,
     );
   }
+
+  bool get _isValid =>
+      _selectedDate != null &&
+      _selectedStartTime != null &&
+      _selectedEndTime != null;
 
   // ---------------------------------------------------------------------------
   // Logic
   // ---------------------------------------------------------------------------
 
+  String _formatTimeOfDay(TimeOfDay t) =>
+      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}:00';
+
   void _handleSubmit() {
-    if (_useDefaultSchedule) {
-      final effectiveDateTime = widget.data.defaultDateTime ?? DateTime.now();
-      widget.onSubmit(effectiveDateTime, widget.workerId, _slotCount);
-      return;
-    }
-
-    if (_selectedDate == null || _selectedTime == null) return;
-
-    final customDateTime = DateTime(
-      _selectedDate!.year,
-      _selectedDate!.month,
-      _selectedDate!.day,
-      _selectedTime!.hour,
-      _selectedTime!.minute,
+    if (!_isValid) return;
+    widget.onSubmit(
+      _selectedDate!,
+      _formatTimeOfDay(_selectedStartTime!),
+      _formatTimeOfDay(_selectedEndTime!),
+      _kuotaDiambil,
     );
-    widget.onSubmit(customDateTime, widget.workerId, _slotCount);
   }
 }
 
 // ============================================================================
-// _SlotCounter — reusable increment/decrement widget
+// _KuotaCounter — reusable increment/decrement widget
 // ============================================================================
 
-class _SlotCounter extends StatelessWidget {
+class _KuotaCounter extends StatelessWidget {
   final int value;
   final int max;
   final VoidCallback onDecrement;
   final VoidCallback onIncrement;
 
-  const _SlotCounter({
+  const _KuotaCounter({
     required this.value,
     required this.max,
     required this.onDecrement,
@@ -533,34 +413,6 @@ class _CounterButton extends StatelessWidget {
 // ============================================================================
 // Private Helper Widgets
 // ============================================================================
-
-class _InfoRow extends StatelessWidget {
-  final String icon;
-  final String text;
-
-  const _InfoRow({required this.icon, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SvgPicture.asset(
-          icon,
-          width: AppDimensions.iconXxs,
-          height: AppDimensions.iconXxs,
-          colorFilter: const ColorFilter.mode(
-            AppColors.textCaption,
-            BlendMode.srcIn,
-          ),
-        ),
-        const SizedBox(width: AppSpacing.xs),
-        Expanded(
-          child: Text(text, style: AppTypography.caption),
-        ),
-      ],
-    );
-  }
-}
 
 class _DateTimePickerField extends StatelessWidget {
   final String label;

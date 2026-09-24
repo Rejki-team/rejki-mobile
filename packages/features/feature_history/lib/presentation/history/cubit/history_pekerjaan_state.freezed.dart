@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HistoryPekerjaanState {
 
- HistoryPekerjaanStatus get status; List<BidEntity> get bids; int get page; bool get hasNext; String? get errorMessage;// Mutation states (Tandai Selesai & Beri Rating)
+ HistoryPekerjaanStatus get status; List<LamaranEntity> get lamaranList; String? get errorMessage;// Mutation states (Mulai Bekerja, Tandai Selesai & Beri Rating)
  HistoryPekerjaanMutationStatus get mutationStatus; String? get mutationSuccessMessage; String? get mutationErrorMessage;
 /// Create a copy of HistoryPekerjaanState
 /// with the given fields replaced by the non-null parameter values.
@@ -26,16 +26,16 @@ $HistoryPekerjaanStateCopyWith<HistoryPekerjaanState> get copyWith => _$HistoryP
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryPekerjaanState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.bids, bids)&&(identical(other.page, page) || other.page == page)&&(identical(other.hasNext, hasNext) || other.hasNext == hasNext)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.mutationStatus, mutationStatus) || other.mutationStatus == mutationStatus)&&(identical(other.mutationSuccessMessage, mutationSuccessMessage) || other.mutationSuccessMessage == mutationSuccessMessage)&&(identical(other.mutationErrorMessage, mutationErrorMessage) || other.mutationErrorMessage == mutationErrorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryPekerjaanState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.lamaranList, lamaranList)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.mutationStatus, mutationStatus) || other.mutationStatus == mutationStatus)&&(identical(other.mutationSuccessMessage, mutationSuccessMessage) || other.mutationSuccessMessage == mutationSuccessMessage)&&(identical(other.mutationErrorMessage, mutationErrorMessage) || other.mutationErrorMessage == mutationErrorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(bids),page,hasNext,errorMessage,mutationStatus,mutationSuccessMessage,mutationErrorMessage);
+int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(lamaranList),errorMessage,mutationStatus,mutationSuccessMessage,mutationErrorMessage);
 
 @override
 String toString() {
-  return 'HistoryPekerjaanState(status: $status, bids: $bids, page: $page, hasNext: $hasNext, errorMessage: $errorMessage, mutationStatus: $mutationStatus, mutationSuccessMessage: $mutationSuccessMessage, mutationErrorMessage: $mutationErrorMessage)';
+  return 'HistoryPekerjaanState(status: $status, lamaranList: $lamaranList, errorMessage: $errorMessage, mutationStatus: $mutationStatus, mutationSuccessMessage: $mutationSuccessMessage, mutationErrorMessage: $mutationErrorMessage)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $HistoryPekerjaanStateCopyWith<$Res>  {
   factory $HistoryPekerjaanStateCopyWith(HistoryPekerjaanState value, $Res Function(HistoryPekerjaanState) _then) = _$HistoryPekerjaanStateCopyWithImpl;
 @useResult
 $Res call({
- HistoryPekerjaanStatus status, List<BidEntity> bids, int page, bool hasNext, String? errorMessage, HistoryPekerjaanMutationStatus mutationStatus, String? mutationSuccessMessage, String? mutationErrorMessage
+ HistoryPekerjaanStatus status, List<LamaranEntity> lamaranList, String? errorMessage, HistoryPekerjaanMutationStatus mutationStatus, String? mutationSuccessMessage, String? mutationErrorMessage
 });
 
 
@@ -63,13 +63,11 @@ class _$HistoryPekerjaanStateCopyWithImpl<$Res>
 
 /// Create a copy of HistoryPekerjaanState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? bids = null,Object? page = null,Object? hasNext = null,Object? errorMessage = freezed,Object? mutationStatus = null,Object? mutationSuccessMessage = freezed,Object? mutationErrorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? lamaranList = null,Object? errorMessage = freezed,Object? mutationStatus = null,Object? mutationSuccessMessage = freezed,Object? mutationErrorMessage = freezed,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as HistoryPekerjaanStatus,bids: null == bids ? _self.bids : bids // ignore: cast_nullable_to_non_nullable
-as List<BidEntity>,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
-as int,hasNext: null == hasNext ? _self.hasNext : hasNext // ignore: cast_nullable_to_non_nullable
-as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as HistoryPekerjaanStatus,lamaranList: null == lamaranList ? _self.lamaranList : lamaranList // ignore: cast_nullable_to_non_nullable
+as List<LamaranEntity>,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,mutationStatus: null == mutationStatus ? _self.mutationStatus : mutationStatus // ignore: cast_nullable_to_non_nullable
 as HistoryPekerjaanMutationStatus,mutationSuccessMessage: freezed == mutationSuccessMessage ? _self.mutationSuccessMessage : mutationSuccessMessage // ignore: cast_nullable_to_non_nullable
 as String?,mutationErrorMessage: freezed == mutationErrorMessage ? _self.mutationErrorMessage : mutationErrorMessage // ignore: cast_nullable_to_non_nullable
@@ -158,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HistoryPekerjaanStatus status,  List<BidEntity> bids,  int page,  bool hasNext,  String? errorMessage,  HistoryPekerjaanMutationStatus mutationStatus,  String? mutationSuccessMessage,  String? mutationErrorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HistoryPekerjaanStatus status,  List<LamaranEntity> lamaranList,  String? errorMessage,  HistoryPekerjaanMutationStatus mutationStatus,  String? mutationSuccessMessage,  String? mutationErrorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HistoryPekerjaanState() when $default != null:
-return $default(_that.status,_that.bids,_that.page,_that.hasNext,_that.errorMessage,_that.mutationStatus,_that.mutationSuccessMessage,_that.mutationErrorMessage);case _:
+return $default(_that.status,_that.lamaranList,_that.errorMessage,_that.mutationStatus,_that.mutationSuccessMessage,_that.mutationErrorMessage);case _:
   return orElse();
 
 }
@@ -179,10 +177,10 @@ return $default(_that.status,_that.bids,_that.page,_that.hasNext,_that.errorMess
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HistoryPekerjaanStatus status,  List<BidEntity> bids,  int page,  bool hasNext,  String? errorMessage,  HistoryPekerjaanMutationStatus mutationStatus,  String? mutationSuccessMessage,  String? mutationErrorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HistoryPekerjaanStatus status,  List<LamaranEntity> lamaranList,  String? errorMessage,  HistoryPekerjaanMutationStatus mutationStatus,  String? mutationSuccessMessage,  String? mutationErrorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _HistoryPekerjaanState():
-return $default(_that.status,_that.bids,_that.page,_that.hasNext,_that.errorMessage,_that.mutationStatus,_that.mutationSuccessMessage,_that.mutationErrorMessage);case _:
+return $default(_that.status,_that.lamaranList,_that.errorMessage,_that.mutationStatus,_that.mutationSuccessMessage,_that.mutationErrorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +197,10 @@ return $default(_that.status,_that.bids,_that.page,_that.hasNext,_that.errorMess
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HistoryPekerjaanStatus status,  List<BidEntity> bids,  int page,  bool hasNext,  String? errorMessage,  HistoryPekerjaanMutationStatus mutationStatus,  String? mutationSuccessMessage,  String? mutationErrorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HistoryPekerjaanStatus status,  List<LamaranEntity> lamaranList,  String? errorMessage,  HistoryPekerjaanMutationStatus mutationStatus,  String? mutationSuccessMessage,  String? mutationErrorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _HistoryPekerjaanState() when $default != null:
-return $default(_that.status,_that.bids,_that.page,_that.hasNext,_that.errorMessage,_that.mutationStatus,_that.mutationSuccessMessage,_that.mutationErrorMessage);case _:
+return $default(_that.status,_that.lamaranList,_that.errorMessage,_that.mutationStatus,_that.mutationSuccessMessage,_that.mutationErrorMessage);case _:
   return null;
 
 }
@@ -214,21 +212,19 @@ return $default(_that.status,_that.bids,_that.page,_that.hasNext,_that.errorMess
 
 
 class _HistoryPekerjaanState implements HistoryPekerjaanState {
-  const _HistoryPekerjaanState({this.status = HistoryPekerjaanStatus.initial, final  List<BidEntity> bids = const [], this.page = 1, this.hasNext = true, this.errorMessage, this.mutationStatus = HistoryPekerjaanMutationStatus.initial, this.mutationSuccessMessage, this.mutationErrorMessage}): _bids = bids;
+  const _HistoryPekerjaanState({this.status = HistoryPekerjaanStatus.initial, final  List<LamaranEntity> lamaranList = const [], this.errorMessage, this.mutationStatus = HistoryPekerjaanMutationStatus.initial, this.mutationSuccessMessage, this.mutationErrorMessage}): _lamaranList = lamaranList;
   
 
 @override@JsonKey() final  HistoryPekerjaanStatus status;
- final  List<BidEntity> _bids;
-@override@JsonKey() List<BidEntity> get bids {
-  if (_bids is EqualUnmodifiableListView) return _bids;
+ final  List<LamaranEntity> _lamaranList;
+@override@JsonKey() List<LamaranEntity> get lamaranList {
+  if (_lamaranList is EqualUnmodifiableListView) return _lamaranList;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_bids);
+  return EqualUnmodifiableListView(_lamaranList);
 }
 
-@override@JsonKey() final  int page;
-@override@JsonKey() final  bool hasNext;
 @override final  String? errorMessage;
-// Mutation states (Tandai Selesai & Beri Rating)
+// Mutation states (Mulai Bekerja, Tandai Selesai & Beri Rating)
 @override@JsonKey() final  HistoryPekerjaanMutationStatus mutationStatus;
 @override final  String? mutationSuccessMessage;
 @override final  String? mutationErrorMessage;
@@ -243,16 +239,16 @@ _$HistoryPekerjaanStateCopyWith<_HistoryPekerjaanState> get copyWith => __$Histo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryPekerjaanState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._bids, _bids)&&(identical(other.page, page) || other.page == page)&&(identical(other.hasNext, hasNext) || other.hasNext == hasNext)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.mutationStatus, mutationStatus) || other.mutationStatus == mutationStatus)&&(identical(other.mutationSuccessMessage, mutationSuccessMessage) || other.mutationSuccessMessage == mutationSuccessMessage)&&(identical(other.mutationErrorMessage, mutationErrorMessage) || other.mutationErrorMessage == mutationErrorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryPekerjaanState&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._lamaranList, _lamaranList)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.mutationStatus, mutationStatus) || other.mutationStatus == mutationStatus)&&(identical(other.mutationSuccessMessage, mutationSuccessMessage) || other.mutationSuccessMessage == mutationSuccessMessage)&&(identical(other.mutationErrorMessage, mutationErrorMessage) || other.mutationErrorMessage == mutationErrorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_bids),page,hasNext,errorMessage,mutationStatus,mutationSuccessMessage,mutationErrorMessage);
+int get hashCode => Object.hash(runtimeType,status,const DeepCollectionEquality().hash(_lamaranList),errorMessage,mutationStatus,mutationSuccessMessage,mutationErrorMessage);
 
 @override
 String toString() {
-  return 'HistoryPekerjaanState(status: $status, bids: $bids, page: $page, hasNext: $hasNext, errorMessage: $errorMessage, mutationStatus: $mutationStatus, mutationSuccessMessage: $mutationSuccessMessage, mutationErrorMessage: $mutationErrorMessage)';
+  return 'HistoryPekerjaanState(status: $status, lamaranList: $lamaranList, errorMessage: $errorMessage, mutationStatus: $mutationStatus, mutationSuccessMessage: $mutationSuccessMessage, mutationErrorMessage: $mutationErrorMessage)';
 }
 
 
@@ -263,7 +259,7 @@ abstract mixin class _$HistoryPekerjaanStateCopyWith<$Res> implements $HistoryPe
   factory _$HistoryPekerjaanStateCopyWith(_HistoryPekerjaanState value, $Res Function(_HistoryPekerjaanState) _then) = __$HistoryPekerjaanStateCopyWithImpl;
 @override @useResult
 $Res call({
- HistoryPekerjaanStatus status, List<BidEntity> bids, int page, bool hasNext, String? errorMessage, HistoryPekerjaanMutationStatus mutationStatus, String? mutationSuccessMessage, String? mutationErrorMessage
+ HistoryPekerjaanStatus status, List<LamaranEntity> lamaranList, String? errorMessage, HistoryPekerjaanMutationStatus mutationStatus, String? mutationSuccessMessage, String? mutationErrorMessage
 });
 
 
@@ -280,13 +276,11 @@ class __$HistoryPekerjaanStateCopyWithImpl<$Res>
 
 /// Create a copy of HistoryPekerjaanState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? bids = null,Object? page = null,Object? hasNext = null,Object? errorMessage = freezed,Object? mutationStatus = null,Object? mutationSuccessMessage = freezed,Object? mutationErrorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? lamaranList = null,Object? errorMessage = freezed,Object? mutationStatus = null,Object? mutationSuccessMessage = freezed,Object? mutationErrorMessage = freezed,}) {
   return _then(_HistoryPekerjaanState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as HistoryPekerjaanStatus,bids: null == bids ? _self._bids : bids // ignore: cast_nullable_to_non_nullable
-as List<BidEntity>,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
-as int,hasNext: null == hasNext ? _self.hasNext : hasNext // ignore: cast_nullable_to_non_nullable
-as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as HistoryPekerjaanStatus,lamaranList: null == lamaranList ? _self._lamaranList : lamaranList // ignore: cast_nullable_to_non_nullable
+as List<LamaranEntity>,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,mutationStatus: null == mutationStatus ? _self.mutationStatus : mutationStatus // ignore: cast_nullable_to_non_nullable
 as HistoryPekerjaanMutationStatus,mutationSuccessMessage: freezed == mutationSuccessMessage ? _self.mutationSuccessMessage : mutationSuccessMessage // ignore: cast_nullable_to_non_nullable
 as String?,mutationErrorMessage: freezed == mutationErrorMessage ? _self.mutationErrorMessage : mutationErrorMessage // ignore: cast_nullable_to_non_nullable

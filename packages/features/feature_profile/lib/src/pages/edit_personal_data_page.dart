@@ -67,7 +67,8 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
           ),
           BlocProvider<LocationBloc>(
             create: (context) =>
-                GetIt.I<LocationBloc>()..add(const LocationEvent.loadProvinces()),
+                GetIt.I<LocationBloc>()
+                  ..add(const LocationEvent.loadProvinces()),
           ),
         ],
         child: BlocListener<EditProfileCubit, EditProfileState>(
@@ -154,8 +155,11 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
   /// Menggunakan Dart Records sebagai selector return type agar
   /// perbandingan equality otomatis field-by-field.
   Widget _buildAppBar() {
-    return BlocSelector<EditProfileCubit, EditProfileState,
-        ({bool isFormValid, bool isLoading})>(
+    return BlocSelector<
+      EditProfileCubit,
+      EditProfileState,
+      ({bool isFormValid, bool isLoading})
+    >(
       selector: (state) =>
           (isFormValid: state.isFormValid, isLoading: state.isLoading),
       builder: (context, data) {
@@ -218,8 +222,9 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
             label: 'NIK',
             hint: 'NIK 16 Angka',
             isMandatory: true,
-            initialValue:
-                currentState.nik.isNotEmpty ? int.tryParse(currentState.nik) : null,
+            initialValue: currentState.nik.isNotEmpty
+                ? int.tryParse(currentState.nik)
+                : null,
             maxValue: 9999999999999999,
             onChanged: cubit.nikChanged,
           ),
@@ -232,10 +237,10 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
               hint: 'Cth. S1',
               isMandatory: true,
               options: _educationOptions,
-              selectedValue:
-                  educationLevel.isNotEmpty ? educationLevel : null,
-              onChanged: (val) =>
-                  context.read<EditProfileCubit>().educationLevelChanged(val ?? ''),
+              selectedValue: educationLevel.isNotEmpty ? educationLevel : null,
+              onChanged: (val) => context
+                  .read<EditProfileCubit>()
+                  .educationLevelChanged(val ?? ''),
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -293,7 +298,8 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
             onCtaPressed: () {},
           ),
           SizedBox(
-              height: MediaQuery.of(context).padding.bottom + AppSpacing.md),
+            height: MediaQuery.of(context).padding.bottom + AppSpacing.md,
+          ),
         ],
       ),
     );
@@ -318,7 +324,9 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
             color: AppColors.white,
             borderRadius: AppDimensions.borderRadiusSm,
             border: Border.all(
-                color: AppColors.border, width: AppDimensions.borderThin),
+              color: AppColors.border,
+              width: AppDimensions.borderThin,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,17 +334,26 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
             children: [
               Row(
                 children: [
-                  Text('6.',
-                      style: AppTypography.formLabel
-                          .copyWith(color: AppColors.textBlack)),
+                  Text(
+                    '6.',
+                    style: AppTypography.formLabel.copyWith(
+                      color: AppColors.textBlack,
+                    ),
+                  ),
                   const SizedBox(width: AppSpacing.xxs),
-                  Text('Tanggal Lahir',
-                      style: AppTypography.formLabel
-                          .copyWith(color: AppColors.textBlack)),
+                  Text(
+                    'Tanggal Lahir',
+                    style: AppTypography.formLabel.copyWith(
+                      color: AppColors.textBlack,
+                    ),
+                  ),
                   const SizedBox(width: AppSpacing.xxs),
-                  Text('*',
-                      style: AppTypography.formLabel
-                          .copyWith(color: AppColors.textBlack)),
+                  Text(
+                    '*',
+                    style: AppTypography.formLabel.copyWith(
+                      color: AppColors.textBlack,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -351,8 +368,9 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
                     color: AppColors.inputBackground,
                     borderRadius: AppDimensions.borderRadiusSm,
                     border: Border.all(
-                        color: AppColors.border,
-                        width: AppDimensions.borderThin),
+                      color: AppColors.border,
+                      width: AppDimensions.borderThin,
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -431,44 +449,44 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
           errorText: locationState.errorMessage,
           onCountryChanged: (entity) {
             if (entity != null) {
-              context
-                  .read<LocationBloc>()
-                  .add(LocationEvent.selectCountry(entity));
-              context
-                  .read<LocationBloc>()
-                  .add(const LocationEvent.loadProvinces());
+              context.read<LocationBloc>().add(
+                LocationEvent.selectCountry(entity),
+              );
+              context.read<LocationBloc>().add(
+                const LocationEvent.loadProvinces(),
+              );
               context.read<EditProfileCubit>().countryChanged(entity.name);
             }
           },
           onProvinceChanged: (entity) {
             if (entity != null) {
-              context
-                  .read<LocationBloc>()
-                  .add(LocationEvent.selectProvince(entity));
+              context.read<LocationBloc>().add(
+                LocationEvent.selectProvince(entity),
+              );
               context.read<EditProfileCubit>().provinceChanged(entity.name);
             }
           },
           onCityChanged: (entity) {
             if (entity != null) {
-              context
-                  .read<LocationBloc>()
-                  .add(LocationEvent.selectRegency(entity));
+              context.read<LocationBloc>().add(
+                LocationEvent.selectRegency(entity),
+              );
               context.read<EditProfileCubit>().cityChanged(entity.name);
             }
           },
           onDistrictChanged: (entity) {
             if (entity != null) {
-              context
-                  .read<LocationBloc>()
-                  .add(LocationEvent.selectDistrict(entity));
+              context.read<LocationBloc>().add(
+                LocationEvent.selectDistrict(entity),
+              );
               context.read<EditProfileCubit>().districtChanged(entity.name);
             }
           },
           onVillageChanged: (entity) {
             if (entity != null) {
-              context
-                  .read<LocationBloc>()
-                  .add(LocationEvent.selectVillage(entity));
+              context.read<LocationBloc>().add(
+                LocationEvent.selectVillage(entity),
+              );
               context.read<EditProfileCubit>().villageChanged(entity.name);
             }
           },
@@ -521,8 +539,8 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
                 onCtaPressed: () {},
               ),
               SizedBox(
-                  height:
-                      MediaQuery.of(context).padding.bottom + AppSpacing.md),
+                height: MediaQuery.of(context).padding.bottom + AppSpacing.md,
+              ),
             ],
           ),
         );
@@ -561,8 +579,7 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
                       builder: (_) => const IdCameraPage(
                         documentType: IdDocumentType.selfieWithKtp,
                         title: 'Foto Swafoto',
-                        instruction:
-                            'Posisikan wajah dan KTP dalam bingkai',
+                        instruction: 'Posisikan wajah dan KTP dalam bingkai',
                       ),
                     ),
                   );
@@ -577,8 +594,8 @@ class _EditPersonalDataPageState extends State<EditPersonalDataPage> {
                 onCtaPressed: () {},
               ),
               SizedBox(
-                  height:
-                      MediaQuery.of(context).padding.bottom + AppSpacing.md),
+                height: MediaQuery.of(context).padding.bottom + AppSpacing.md,
+              ),
             ],
           ),
         );

@@ -159,9 +159,8 @@ class ProfileAvatar extends StatelessWidget {
                       if (loadingProgress == null) return child;
                       return _buildInitial();
                     },
-                    headers: imageHeaders ?? const {
-                      'Accept': 'application/json',
-                    },
+                    headers:
+                        imageHeaders ?? const {'Accept': 'application/json'},
                   )
                 : _buildInitial(),
           ),

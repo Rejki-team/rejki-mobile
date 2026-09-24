@@ -12,7 +12,15 @@ class GetTrainingsUseCase {
     String? search,
     int page = 1,
     int limit = 10,
+    double? latitude,
+    double? longitude,
   }) {
-    return repository.getTrainings(search: search, page: page, limit: limit);
+    return repository.getTrainings(
+      search: search,
+      page: page,
+      limit: limit,
+      latitude: latitude,
+      longitude: longitude,
+    );
   }
 }

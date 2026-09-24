@@ -1,35 +1,35 @@
 /// Design Systems Package
-/// 
+///
 /// A comprehensive design system for the application containing
 /// colors, typography, spacing, dimensions, shadows, animations, and themes.
-/// 
+///
 /// Usage:
 /// ```dart
 /// import 'package:designsystems/designsystems.dart';
-/// 
+///
 /// // Use colors
 /// Container(color: AppColors.primary)
-/// 
+///
 /// // Use typography
 /// Text('Hello', style: AppTypography.headlineLarge)
-/// 
+///
 /// // Use spacing
 /// Padding(padding: AppSpacing.paddingAllMd)
-/// 
+///
 /// // Use dimensions
 /// Container(
 ///   decoration: BoxDecoration(
 ///     borderRadius: AppDimensions.borderRadiusMd,
 ///   ),
 /// )
-/// 
+///
 /// // Use shadows
 /// Container(
 ///   decoration: BoxDecoration(
 ///     boxShadow: AppShadows.md,
 ///   ),
 /// )
-/// 
+///
 /// // Use theme
 /// MaterialApp(
 ///   theme: AppTheme.light,

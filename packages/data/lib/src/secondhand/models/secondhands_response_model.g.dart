@@ -14,7 +14,7 @@ _SecondhandsResponseModel _$SecondhandsResponseModelFromJson(
           ?.map((e) => SecondhandModel.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
-  pagination: PaginationSecondhandModel.fromJson(
+  pagination: PaginationModel.fromJson(
     json['pagination'] as Map<String, dynamic>,
   ),
 );

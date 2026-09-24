@@ -601,9 +601,7 @@ class _CreateJobPageState extends State<CreateJobPage> {
           SnackBar(
             content: Text(
               'Gagal mengompres foto. Coba lagi.',
-              style: AppTypography.labelSmall.copyWith(
-                color: AppColors.white,
-              ),
+              style: AppTypography.labelSmall.copyWith(color: AppColors.white),
             ),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,

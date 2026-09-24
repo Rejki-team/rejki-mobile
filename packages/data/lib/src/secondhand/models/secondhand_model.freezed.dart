@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SecondhandModel {
 
- String get id;@JsonKey(name: 'ad_code') String get adCode;@JsonKey(name: 'user_id') String get userId; SecondhandUserModel? get user; String get title; String get description; String get condition; int get amount; String get address; String get province; String get city; String get subdistrict; String get ward; String get village; String get status; List<SecondhandImageModel> get images;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'updated_at') String? get updatedAt;
+ String get id;@JsonKey(name: 'seller_id') String get sellerId; String get judul; String get deskripsi;@JsonKey(name: 'jenis_barang') String get jenisBarang; int get jumlah;@JsonKey(name: 'lokasi_pengambilan') String get lokasiPengambilan; String? get lokasi;@JsonKey(name: 'region_id') String? get regionId;@JsonKey(name: 'foto_urls') List<String> get fotoUrls;@JsonKey(name: 'availability_status') String get availabilityStatus;@JsonKey(name: 'moderation_status') String get moderationStatus;@JsonKey(name: 'created_at') String get createdAt;
 /// Create a copy of SecondhandModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SecondhandModelCopyWith<SecondhandModel> get copyWith => _$SecondhandModelCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SecondhandModel&&(identical(other.id, id) || other.id == id)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SecondhandModel&&(identical(other.id, id) || other.id == id)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.judul, judul) || other.judul == judul)&&(identical(other.deskripsi, deskripsi) || other.deskripsi == deskripsi)&&(identical(other.jenisBarang, jenisBarang) || other.jenisBarang == jenisBarang)&&(identical(other.jumlah, jumlah) || other.jumlah == jumlah)&&(identical(other.lokasiPengambilan, lokasiPengambilan) || other.lokasiPengambilan == lokasiPengambilan)&&(identical(other.lokasi, lokasi) || other.lokasi == lokasi)&&(identical(other.regionId, regionId) || other.regionId == regionId)&&const DeepCollectionEquality().equals(other.fotoUrls, fotoUrls)&&(identical(other.availabilityStatus, availabilityStatus) || other.availabilityStatus == availabilityStatus)&&(identical(other.moderationStatus, moderationStatus) || other.moderationStatus == moderationStatus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,adCode,userId,user,title,description,condition,amount,address,province,city,subdistrict,ward,village,status,const DeepCollectionEquality().hash(images),createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,sellerId,judul,deskripsi,jenisBarang,jumlah,lokasiPengambilan,lokasi,regionId,const DeepCollectionEquality().hash(fotoUrls),availabilityStatus,moderationStatus,createdAt);
 
 @override
 String toString() {
-  return 'SecondhandModel(id: $id, adCode: $adCode, userId: $userId, user: $user, title: $title, description: $description, condition: $condition, amount: $amount, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, status: $status, images: $images, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'SecondhandModel(id: $id, sellerId: $sellerId, judul: $judul, deskripsi: $deskripsi, jenisBarang: $jenisBarang, jumlah: $jumlah, lokasiPengambilan: $lokasiPengambilan, lokasi: $lokasi, regionId: $regionId, fotoUrls: $fotoUrls, availabilityStatus: $availabilityStatus, moderationStatus: $moderationStatus, createdAt: $createdAt)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $SecondhandModelCopyWith<$Res>  {
   factory $SecondhandModelCopyWith(SecondhandModel value, $Res Function(SecondhandModel) _then) = _$SecondhandModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'ad_code') String adCode,@JsonKey(name: 'user_id') String userId, SecondhandUserModel? user, String title, String description, String condition, int amount, String address, String province, String city, String subdistrict, String ward, String village, String status, List<SecondhandImageModel> images,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt
+ String id,@JsonKey(name: 'seller_id') String sellerId, String judul, String deskripsi,@JsonKey(name: 'jenis_barang') String jenisBarang, int jumlah,@JsonKey(name: 'lokasi_pengambilan') String lokasiPengambilan, String? lokasi,@JsonKey(name: 'region_id') String? regionId,@JsonKey(name: 'foto_urls') List<String> fotoUrls,@JsonKey(name: 'availability_status') String availabilityStatus,@JsonKey(name: 'moderation_status') String moderationStatus,@JsonKey(name: 'created_at') String createdAt
 });
 
 
-$SecondhandUserModelCopyWith<$Res>? get user;
+
 
 }
 /// @nodoc
@@ -65,42 +65,25 @@ class _$SecondhandModelCopyWithImpl<$Res>
 
 /// Create a copy of SecondhandModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? user = freezed,Object? title = null,Object? description = null,Object? condition = null,Object? amount = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = null,Object? status = null,Object? images = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? sellerId = null,Object? judul = null,Object? deskripsi = null,Object? jenisBarang = null,Object? jumlah = null,Object? lokasiPengambilan = null,Object? lokasi = freezed,Object? regionId = freezed,Object? fotoUrls = null,Object? availabilityStatus = null,Object? moderationStatus = null,Object? createdAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,adCode: null == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
-as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as SecondhandUserModel?,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
-as String,condition: null == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
-as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
-as int,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String,province: null == province ? _self.province : province // ignore: cast_nullable_to_non_nullable
-as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
-as String,subdistrict: null == subdistrict ? _self.subdistrict : subdistrict // ignore: cast_nullable_to_non_nullable
-as String,ward: null == ward ? _self.ward : ward // ignore: cast_nullable_to_non_nullable
-as String,village: null == village ? _self.village : village // ignore: cast_nullable_to_non_nullable
-as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,images: null == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
-as List<SecondhandImageModel>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,sellerId: null == sellerId ? _self.sellerId : sellerId // ignore: cast_nullable_to_non_nullable
+as String,judul: null == judul ? _self.judul : judul // ignore: cast_nullable_to_non_nullable
+as String,deskripsi: null == deskripsi ? _self.deskripsi : deskripsi // ignore: cast_nullable_to_non_nullable
+as String,jenisBarang: null == jenisBarang ? _self.jenisBarang : jenisBarang // ignore: cast_nullable_to_non_nullable
+as String,jumlah: null == jumlah ? _self.jumlah : jumlah // ignore: cast_nullable_to_non_nullable
+as int,lokasiPengambilan: null == lokasiPengambilan ? _self.lokasiPengambilan : lokasiPengambilan // ignore: cast_nullable_to_non_nullable
+as String,lokasi: freezed == lokasi ? _self.lokasi : lokasi // ignore: cast_nullable_to_non_nullable
+as String?,regionId: freezed == regionId ? _self.regionId : regionId // ignore: cast_nullable_to_non_nullable
+as String?,fotoUrls: null == fotoUrls ? _self.fotoUrls : fotoUrls // ignore: cast_nullable_to_non_nullable
+as List<String>,availabilityStatus: null == availabilityStatus ? _self.availabilityStatus : availabilityStatus // ignore: cast_nullable_to_non_nullable
+as String,moderationStatus: null == moderationStatus ? _self.moderationStatus : moderationStatus // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
-/// Create a copy of SecondhandModel
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$SecondhandUserModelCopyWith<$Res>? get user {
-    if (_self.user == null) {
-    return null;
-  }
 
-  return $SecondhandUserModelCopyWith<$Res>(_self.user!, (value) {
-    return _then(_self.copyWith(user: value));
-  });
-}
 }
 
 
@@ -182,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'ad_code')  String adCode, @JsonKey(name: 'user_id')  String userId,  SecondhandUserModel? user,  String title,  String description,  String condition,  int amount,  String address,  String province,  String city,  String subdistrict,  String ward,  String village,  String status,  List<SecondhandImageModel> images, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'seller_id')  String sellerId,  String judul,  String deskripsi, @JsonKey(name: 'jenis_barang')  String jenisBarang,  int jumlah, @JsonKey(name: 'lokasi_pengambilan')  String lokasiPengambilan,  String? lokasi, @JsonKey(name: 'region_id')  String? regionId, @JsonKey(name: 'foto_urls')  List<String> fotoUrls, @JsonKey(name: 'availability_status')  String availabilityStatus, @JsonKey(name: 'moderation_status')  String moderationStatus, @JsonKey(name: 'created_at')  String createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SecondhandModel() when $default != null:
-return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.description,_that.condition,_that.amount,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.sellerId,_that.judul,_that.deskripsi,_that.jenisBarang,_that.jumlah,_that.lokasiPengambilan,_that.lokasi,_that.regionId,_that.fotoUrls,_that.availabilityStatus,_that.moderationStatus,_that.createdAt);case _:
   return orElse();
 
 }
@@ -203,10 +186,10 @@ return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'ad_code')  String adCode, @JsonKey(name: 'user_id')  String userId,  SecondhandUserModel? user,  String title,  String description,  String condition,  int amount,  String address,  String province,  String city,  String subdistrict,  String ward,  String village,  String status,  List<SecondhandImageModel> images, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'seller_id')  String sellerId,  String judul,  String deskripsi, @JsonKey(name: 'jenis_barang')  String jenisBarang,  int jumlah, @JsonKey(name: 'lokasi_pengambilan')  String lokasiPengambilan,  String? lokasi, @JsonKey(name: 'region_id')  String? regionId, @JsonKey(name: 'foto_urls')  List<String> fotoUrls, @JsonKey(name: 'availability_status')  String availabilityStatus, @JsonKey(name: 'moderation_status')  String moderationStatus, @JsonKey(name: 'created_at')  String createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _SecondhandModel():
-return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.description,_that.condition,_that.amount,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.sellerId,_that.judul,_that.deskripsi,_that.jenisBarang,_that.jumlah,_that.lokasiPengambilan,_that.lokasi,_that.regionId,_that.fotoUrls,_that.availabilityStatus,_that.moderationStatus,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -223,10 +206,10 @@ return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'ad_code')  String adCode, @JsonKey(name: 'user_id')  String userId,  SecondhandUserModel? user,  String title,  String description,  String condition,  int amount,  String address,  String province,  String city,  String subdistrict,  String ward,  String village,  String status,  List<SecondhandImageModel> images, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'seller_id')  String sellerId,  String judul,  String deskripsi, @JsonKey(name: 'jenis_barang')  String jenisBarang,  int jumlah, @JsonKey(name: 'lokasi_pengambilan')  String lokasiPengambilan,  String? lokasi, @JsonKey(name: 'region_id')  String? regionId, @JsonKey(name: 'foto_urls')  List<String> fotoUrls, @JsonKey(name: 'availability_status')  String availabilityStatus, @JsonKey(name: 'moderation_status')  String moderationStatus, @JsonKey(name: 'created_at')  String createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _SecondhandModel() when $default != null:
-return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.description,_that.condition,_that.amount,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.sellerId,_that.judul,_that.deskripsi,_that.jenisBarang,_that.jumlah,_that.lokasiPengambilan,_that.lokasi,_that.regionId,_that.fotoUrls,_that.availabilityStatus,_that.moderationStatus,_that.createdAt);case _:
   return null;
 
 }
@@ -238,33 +221,28 @@ return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.
 @JsonSerializable()
 
 class _SecondhandModel extends SecondhandModel {
-  const _SecondhandModel({required this.id, @JsonKey(name: 'ad_code') required this.adCode, @JsonKey(name: 'user_id') required this.userId, this.user, required this.title, required this.description, required this.condition, required this.amount, required this.address, required this.province, required this.city, required this.subdistrict, this.ward = '', required this.village, required this.status, final  List<SecondhandImageModel> images = const [], @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt}): _images = images,super._();
+  const _SecondhandModel({required this.id, @JsonKey(name: 'seller_id') required this.sellerId, required this.judul, required this.deskripsi, @JsonKey(name: 'jenis_barang') required this.jenisBarang, required this.jumlah, @JsonKey(name: 'lokasi_pengambilan') required this.lokasiPengambilan, this.lokasi, @JsonKey(name: 'region_id') this.regionId, @JsonKey(name: 'foto_urls') final  List<String> fotoUrls = const [], @JsonKey(name: 'availability_status') required this.availabilityStatus, @JsonKey(name: 'moderation_status') required this.moderationStatus, @JsonKey(name: 'created_at') required this.createdAt}): _fotoUrls = fotoUrls,super._();
   factory _SecondhandModel.fromJson(Map<String, dynamic> json) => _$SecondhandModelFromJson(json);
 
 @override final  String id;
-@override@JsonKey(name: 'ad_code') final  String adCode;
-@override@JsonKey(name: 'user_id') final  String userId;
-@override final  SecondhandUserModel? user;
-@override final  String title;
-@override final  String description;
-@override final  String condition;
-@override final  int amount;
-@override final  String address;
-@override final  String province;
-@override final  String city;
-@override final  String subdistrict;
-@override@JsonKey() final  String ward;
-@override final  String village;
-@override final  String status;
- final  List<SecondhandImageModel> _images;
-@override@JsonKey() List<SecondhandImageModel> get images {
-  if (_images is EqualUnmodifiableListView) return _images;
+@override@JsonKey(name: 'seller_id') final  String sellerId;
+@override final  String judul;
+@override final  String deskripsi;
+@override@JsonKey(name: 'jenis_barang') final  String jenisBarang;
+@override final  int jumlah;
+@override@JsonKey(name: 'lokasi_pengambilan') final  String lokasiPengambilan;
+@override final  String? lokasi;
+@override@JsonKey(name: 'region_id') final  String? regionId;
+ final  List<String> _fotoUrls;
+@override@JsonKey(name: 'foto_urls') List<String> get fotoUrls {
+  if (_fotoUrls is EqualUnmodifiableListView) return _fotoUrls;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_images);
+  return EqualUnmodifiableListView(_fotoUrls);
 }
 
-@override@JsonKey(name: 'created_at') final  String? createdAt;
-@override@JsonKey(name: 'updated_at') final  String? updatedAt;
+@override@JsonKey(name: 'availability_status') final  String availabilityStatus;
+@override@JsonKey(name: 'moderation_status') final  String moderationStatus;
+@override@JsonKey(name: 'created_at') final  String createdAt;
 
 /// Create a copy of SecondhandModel
 /// with the given fields replaced by the non-null parameter values.
@@ -279,16 +257,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SecondhandModel&&(identical(other.id, id) || other.id == id)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SecondhandModel&&(identical(other.id, id) || other.id == id)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId)&&(identical(other.judul, judul) || other.judul == judul)&&(identical(other.deskripsi, deskripsi) || other.deskripsi == deskripsi)&&(identical(other.jenisBarang, jenisBarang) || other.jenisBarang == jenisBarang)&&(identical(other.jumlah, jumlah) || other.jumlah == jumlah)&&(identical(other.lokasiPengambilan, lokasiPengambilan) || other.lokasiPengambilan == lokasiPengambilan)&&(identical(other.lokasi, lokasi) || other.lokasi == lokasi)&&(identical(other.regionId, regionId) || other.regionId == regionId)&&const DeepCollectionEquality().equals(other._fotoUrls, _fotoUrls)&&(identical(other.availabilityStatus, availabilityStatus) || other.availabilityStatus == availabilityStatus)&&(identical(other.moderationStatus, moderationStatus) || other.moderationStatus == moderationStatus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,adCode,userId,user,title,description,condition,amount,address,province,city,subdistrict,ward,village,status,const DeepCollectionEquality().hash(_images),createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,sellerId,judul,deskripsi,jenisBarang,jumlah,lokasiPengambilan,lokasi,regionId,const DeepCollectionEquality().hash(_fotoUrls),availabilityStatus,moderationStatus,createdAt);
 
 @override
 String toString() {
-  return 'SecondhandModel(id: $id, adCode: $adCode, userId: $userId, user: $user, title: $title, description: $description, condition: $condition, amount: $amount, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, status: $status, images: $images, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'SecondhandModel(id: $id, sellerId: $sellerId, judul: $judul, deskripsi: $deskripsi, jenisBarang: $jenisBarang, jumlah: $jumlah, lokasiPengambilan: $lokasiPengambilan, lokasi: $lokasi, regionId: $regionId, fotoUrls: $fotoUrls, availabilityStatus: $availabilityStatus, moderationStatus: $moderationStatus, createdAt: $createdAt)';
 }
 
 
@@ -299,11 +277,11 @@ abstract mixin class _$SecondhandModelCopyWith<$Res> implements $SecondhandModel
   factory _$SecondhandModelCopyWith(_SecondhandModel value, $Res Function(_SecondhandModel) _then) = __$SecondhandModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'ad_code') String adCode,@JsonKey(name: 'user_id') String userId, SecondhandUserModel? user, String title, String description, String condition, int amount, String address, String province, String city, String subdistrict, String ward, String village, String status, List<SecondhandImageModel> images,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt
+ String id,@JsonKey(name: 'seller_id') String sellerId, String judul, String deskripsi,@JsonKey(name: 'jenis_barang') String jenisBarang, int jumlah,@JsonKey(name: 'lokasi_pengambilan') String lokasiPengambilan, String? lokasi,@JsonKey(name: 'region_id') String? regionId,@JsonKey(name: 'foto_urls') List<String> fotoUrls,@JsonKey(name: 'availability_status') String availabilityStatus,@JsonKey(name: 'moderation_status') String moderationStatus,@JsonKey(name: 'created_at') String createdAt
 });
 
 
-@override $SecondhandUserModelCopyWith<$Res>? get user;
+
 
 }
 /// @nodoc
@@ -316,43 +294,26 @@ class __$SecondhandModelCopyWithImpl<$Res>
 
 /// Create a copy of SecondhandModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? user = freezed,Object? title = null,Object? description = null,Object? condition = null,Object? amount = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = null,Object? status = null,Object? images = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? sellerId = null,Object? judul = null,Object? deskripsi = null,Object? jenisBarang = null,Object? jumlah = null,Object? lokasiPengambilan = null,Object? lokasi = freezed,Object? regionId = freezed,Object? fotoUrls = null,Object? availabilityStatus = null,Object? moderationStatus = null,Object? createdAt = null,}) {
   return _then(_SecondhandModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,adCode: null == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
-as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as SecondhandUserModel?,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
-as String,condition: null == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
-as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
-as int,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String,province: null == province ? _self.province : province // ignore: cast_nullable_to_non_nullable
-as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
-as String,subdistrict: null == subdistrict ? _self.subdistrict : subdistrict // ignore: cast_nullable_to_non_nullable
-as String,ward: null == ward ? _self.ward : ward // ignore: cast_nullable_to_non_nullable
-as String,village: null == village ? _self.village : village // ignore: cast_nullable_to_non_nullable
-as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,images: null == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
-as List<SecondhandImageModel>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,sellerId: null == sellerId ? _self.sellerId : sellerId // ignore: cast_nullable_to_non_nullable
+as String,judul: null == judul ? _self.judul : judul // ignore: cast_nullable_to_non_nullable
+as String,deskripsi: null == deskripsi ? _self.deskripsi : deskripsi // ignore: cast_nullable_to_non_nullable
+as String,jenisBarang: null == jenisBarang ? _self.jenisBarang : jenisBarang // ignore: cast_nullable_to_non_nullable
+as String,jumlah: null == jumlah ? _self.jumlah : jumlah // ignore: cast_nullable_to_non_nullable
+as int,lokasiPengambilan: null == lokasiPengambilan ? _self.lokasiPengambilan : lokasiPengambilan // ignore: cast_nullable_to_non_nullable
+as String,lokasi: freezed == lokasi ? _self.lokasi : lokasi // ignore: cast_nullable_to_non_nullable
+as String?,regionId: freezed == regionId ? _self.regionId : regionId // ignore: cast_nullable_to_non_nullable
+as String?,fotoUrls: null == fotoUrls ? _self._fotoUrls : fotoUrls // ignore: cast_nullable_to_non_nullable
+as List<String>,availabilityStatus: null == availabilityStatus ? _self.availabilityStatus : availabilityStatus // ignore: cast_nullable_to_non_nullable
+as String,moderationStatus: null == moderationStatus ? _self.moderationStatus : moderationStatus // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
-/// Create a copy of SecondhandModel
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$SecondhandUserModelCopyWith<$Res>? get user {
-    if (_self.user == null) {
-    return null;
-  }
 
-  return $SecondhandUserModelCopyWith<$Res>(_self.user!, (value) {
-    return _then(_self.copyWith(user: value));
-  });
-}
 }
 
 // dart format on

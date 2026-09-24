@@ -143,10 +143,7 @@ class CreateJobBloc extends Bloc<CreateJobEvent, CreateJobState> {
     LocationCoordinatesChanged event,
     Emitter<CreateJobState> emit,
   ) {
-    emit(state.copyWith(
-      latitude: event.latitude,
-      longitude: event.longitude,
-    ));
+    emit(state.copyWith(latitude: event.latitude, longitude: event.longitude));
   }
 
   Future<void> _onSubmitJob(
@@ -185,6 +182,10 @@ class CreateJobBloc extends Bloc<CreateJobEvent, CreateJobState> {
 
     final params = CreateJobParams(
       title: state.title.value,
+      // Backend mewajibkan `perusahaan` (min 2 karakter) tapi UI ini tidak
+      // punya field khusus untuk itu (gap, lihat catatan di CreateJobParams)
+      // — pakai judul pekerjaan sebagai fallback.
+      perusahaan: state.title.value,
       jobDesc: state.description.value,
       requirements: state.requirements.value,
       salary: salaryInt,

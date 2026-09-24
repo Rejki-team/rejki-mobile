@@ -153,7 +153,6 @@ class VerificationCodeCubit extends Cubit<VerificationCodeState> {
     );
   }
 
-
   /// Reset state
   void reset() {
     _countdownTimer?.cancel();

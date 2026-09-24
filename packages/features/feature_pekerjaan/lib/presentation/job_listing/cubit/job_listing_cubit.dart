@@ -35,9 +35,9 @@ class JobListingCubit extends Cubit<JobListingState> {
   JobListingCubit({
     required GetJobsUseCase getJobsUseCase,
     required SyncEnumsUseCase syncEnumsUseCase,
-  })  : _getJobsUseCase = getJobsUseCase,
-        _syncEnumsUseCase = syncEnumsUseCase,
-        super(const JobListingState()) {
+  }) : _getJobsUseCase = getJobsUseCase,
+       _syncEnumsUseCase = syncEnumsUseCase,
+       super(const JobListingState()) {
     _syncEnumsBackground();
   }
 
@@ -112,7 +112,8 @@ class JobListingCubit extends Cubit<JobListingState> {
   // Location
   // ---------------------------------------------------------------------------
 
-  /// Update device location for proximity-based API filtering.
+  /// Update device location for proximity-based API filtering. Reloads
+  /// listing with the new coordinates.
   void updateLocation({
     required double latitude,
     required double longitude,
@@ -125,6 +126,7 @@ class JobListingCubit extends Cubit<JobListingState> {
         locationName: locationName ?? state.locationName,
       ),
     );
+    loadJobs();
   }
 
   // ---------------------------------------------------------------------------
@@ -137,24 +139,14 @@ class JobListingCubit extends Cubit<JobListingState> {
   void applyDistanceFilter(int distanceKm) {
     _debounceTimer?.cancel();
     final clamped = distanceKm.clamp(0, 2);
-    emit(
-      state.copyWith(
-        distanceKm: clamped,
-        isDistanceFilterApplied: true,
-      ),
-    );
+    emit(state.copyWith(distanceKm: clamped, isDistanceFilterApplied: true));
     loadJobs();
   }
 
   /// Reset distance filter — reverts to max radius (2 KM) and "not applied" visual.
   void resetDistanceFilter() {
     _debounceTimer?.cancel();
-    emit(
-      state.copyWith(
-        distanceKm: 2,
-        isDistanceFilterApplied: false,
-      ),
-    );
+    emit(state.copyWith(distanceKm: 2, isDistanceFilterApplied: false));
     loadJobs();
   }
 
@@ -165,12 +157,7 @@ class JobListingCubit extends Cubit<JobListingState> {
   /// Apply sort option chosen by user (marks `isSortFilterApplied = true`).
   void applySortFilter(JobSortOption option) {
     _debounceTimer?.cancel();
-    emit(
-      state.copyWith(
-        sortOption: option,
-        isSortFilterApplied: true,
-      ),
-    );
+    emit(state.copyWith(sortOption: option, isSortFilterApplied: true));
     loadJobs();
   }
 

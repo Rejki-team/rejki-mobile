@@ -6,6 +6,9 @@ library;
 // Auth Module
 export 'src/auth/auth.dart';
 
+// Chat Module (F-18/F-19, PRD §5.9)
+export 'src/chat/chat.dart';
+
 // Job Module
 export 'src/job/job.dart';
 
@@ -27,3 +30,9 @@ export 'src/training/training.dart';
 
 // Notification Module
 export 'src/notification/notification.dart';
+
+// Rating Module (F-17, PRD §5.15)
+export 'src/rating/rating.dart';
+
+// Report Module (F-20, PRD §5.10/§6.10)
+export 'src/report/report.dart';

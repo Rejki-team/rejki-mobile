@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:designsystems/designsystems.dart';
 
 /// AppPullToRefresh - Reusable Component for Pull-to-Refresh UI
-/// 
+///
 /// This is a styled wrapper around Flutter's built-in RefreshIndicator
 /// that provides a unified design (using AppColors.primary) and ensures
 /// safe state rebuilding.

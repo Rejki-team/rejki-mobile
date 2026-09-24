@@ -2,9 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:designsystems/designsystems.dart';
+import 'history_job_card.dart' show HistoryTabType;
 
-/// Status iklan barang bekas yang di-claim user
-enum HistoryBarangBekasCardStatus { available, pending, sold }
+/// Status Bider (F-15, Kelompok 3 Phase 3/4) — `menunggu/disetujui` dipetakan
+/// `pending`/`sold`; `+withdrawn` (P4.13) ditambahkan karena kontrak Bider
+/// punya status ini (bid ditolak pemilik/dibatalkan), belum terwakili di enum
+/// lama (`available` dipertahankan utk kompatibilitas tab "Iklan Saya").
+enum HistoryBarangBekasCardStatus { available, pending, sold, withdrawn }
 
 /// HistoryBarangBekasCard
 ///
@@ -28,11 +32,18 @@ class HistoryBarangBekasCard extends StatelessWidget {
   /// Alamat / lokasi barang
   final String locationText;
 
-  /// Status item: available, pending, sold
+  /// Status item: available, pending, sold, withdrawn
   final HistoryBarangBekasCardStatus status;
 
   /// Callback ketika tombol "Detail Barang" ditekan
   final VoidCallback onDetailPressed;
+
+  /// `aktifitas` (default) — kartu bid milik peminat, tanpa aksi kelola.
+  /// `iklanSaya` (P4.8) — kartu iklan milik pemilik, tampilkan tombol "Kelola
+  /// Bider" (entry point "Kelola Iklan Saya", PRD §5.14.2).
+  final HistoryTabType tabType;
+  final int biderCount;
+  final VoidCallback? onKelolaBiderPressed;
 
   const HistoryBarangBekasCard({
     super.key,
@@ -43,6 +54,9 @@ class HistoryBarangBekasCard extends StatelessWidget {
     required this.locationText,
     required this.status,
     required this.onDetailPressed,
+    this.tabType = HistoryTabType.aktifitas,
+    this.biderCount = 0,
+    this.onKelolaBiderPressed,
   });
 
   @override
@@ -52,7 +66,10 @@ class HistoryBarangBekasCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-        border: Border.all(color: AppColors.border, width: AppDimensions.borderThin),
+        border: Border.all(
+          color: AppColors.border,
+          width: AppDimensions.borderThin,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -75,6 +92,11 @@ class HistoryBarangBekasCard extends StatelessWidget {
                 _buildInfoRow(),
                 const SizedBox(height: AppSpacing.md),
                 _buildDetailButton(),
+                if (tabType == HistoryTabType.iklanSaya &&
+                    onKelolaBiderPressed != null) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  _buildKelolaBiderButton(),
+                ],
               ],
             ),
           ),
@@ -89,10 +111,7 @@ class HistoryBarangBekasCard extends StatelessWidget {
         topLeft: Radius.circular(AppDimensions.radiusMd),
         topRight: Radius.circular(AppDimensions.radiusMd),
       ),
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: _resolveImage(),
-      ),
+      child: AspectRatio(aspectRatio: 16 / 9, child: _resolveImage()),
     );
   }
 
@@ -102,18 +121,25 @@ class HistoryBarangBekasCard extends StatelessWidget {
       return ColoredBox(
         color: AppColors.imagePlaceholder,
         child: const Center(
-          child: Icon(Icons.image_not_supported_outlined, color: AppColors.textSecondary),
+          child: Icon(
+            Icons.image_not_supported_outlined,
+            color: AppColors.textSecondary,
+          ),
         ),
       );
     }
     return CachedNetworkImage(
       imageUrl: url,
       fit: BoxFit.cover,
-      placeholder: (context, url) => const ColoredBox(color: AppColors.imagePlaceholder),
+      placeholder: (context, url) =>
+          const ColoredBox(color: AppColors.imagePlaceholder),
       errorWidget: (context, url, error) => const ColoredBox(
         color: AppColors.imagePlaceholder,
         child: Center(
-          child: Icon(Icons.broken_image_outlined, color: AppColors.textSecondary),
+          child: Icon(
+            Icons.broken_image_outlined,
+            color: AppColors.textSecondary,
+          ),
         ),
       ),
     );
@@ -156,6 +182,10 @@ class HistoryBarangBekasCard extends StatelessWidget {
         bgColor = AppColors.availabilityBadgeBg;
         textColor = AppColors.primary;
         text = 'Terjual';
+      case HistoryBarangBekasCardStatus.withdrawn:
+        bgColor = AppColors.error.withValues(alpha: 0.15);
+        textColor = AppColors.error;
+        text = 'Withdrawn';
     }
 
     return Container(
@@ -211,7 +241,9 @@ class HistoryBarangBekasCard extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+            style: AppTypography.caption.copyWith(
+              color: AppColors.textSecondary,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -250,11 +282,38 @@ class HistoryBarangBekasCard extends StatelessWidget {
     );
   }
 
+  Widget _buildKelolaBiderButton() {
+    return ElevatedButton(
+      onPressed: onKelolaBiderPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.buttonGradientEnd,
+        minimumSize: const Size(double.infinity, AppDimensions.buttonHeightSm),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+        ),
+        elevation: 0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            biderCount > 0 ? 'Kelola Bider ($biderCount)' : 'Kelola Bider',
+            style: AppTypography.labelMedium.copyWith(color: AppColors.white),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          const Icon(Icons.arrow_forward, color: AppColors.white, size: 16),
+        ],
+      ),
+    );
+  }
+
   String _resolveConditionLabel(String raw) {
     switch (raw.toLowerCase()) {
       case 'new':
+      case 'baru':
         return 'Baru';
       case 'used':
+      case 'bekas':
         return 'Bekas';
       default:
         return raw;

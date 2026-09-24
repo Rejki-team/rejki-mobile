@@ -147,11 +147,8 @@ class _VerificationCodeView extends StatelessWidget {
                       // Content Container (mepet status bar)
                       Expanded(
                         child: _ContentContainer(
-                          maskedEmail: VerificationCodePage.maskEmail(
-                            email,
-                          ),
-                          onCancel:
-                              onCancel ?? () => context.go(loginRoute),
+                          maskedEmail: VerificationCodePage.maskEmail(email),
+                          onCancel: onCancel ?? () => context.go(loginRoute),
                         ),
                       ),
                     ],
@@ -344,7 +341,10 @@ class _FormSection extends StatelessWidget {
                           ),
                         )
                       else
-                        Text('${state.countdown}', style: AppTypography.linkText),
+                        Text(
+                          '${state.countdown}',
+                          style: AppTypography.linkText,
+                        ),
                     ],
                   ),
                 );

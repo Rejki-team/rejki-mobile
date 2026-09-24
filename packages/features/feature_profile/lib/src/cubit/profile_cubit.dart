@@ -49,10 +49,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     // Build image headers dengan Bearer token untuk /helpers/get-image
     final imageHeaders = token != null && token.isNotEmpty
-        ? {
-            'Authorization': 'Bearer $token',
-            'Accept': 'application/json',
-          }
+        ? {'Authorization': 'Bearer $token', 'Accept': 'application/json'}
         : null;
 
     summaryResult.fold(

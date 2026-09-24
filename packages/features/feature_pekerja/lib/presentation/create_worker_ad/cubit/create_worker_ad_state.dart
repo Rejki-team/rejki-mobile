@@ -30,6 +30,7 @@ abstract class CreateWorkerAdState with _$CreateWorkerAdState {
     // ----- Mode & Identity -----
     /// ID profil pekerja yang sudah ada. Non-null dan non-empty saat [isUpdateMode] = true.
     @Default('') String workerId,
+
     /// True jika form sedang dalam mode update (PUT), false untuk create (POST).
     @Default(false) bool isUpdateMode,
     // ----- Status Flags -----

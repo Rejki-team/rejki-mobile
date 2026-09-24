@@ -163,7 +163,9 @@ class _WorkerDistanceFilterBottomSheetState
 
   Widget _buildSliderSection() {
     final activeColor = _isActiveColor ? AppColors.badgeBlue : AppColors.border;
-    final labelColor = _isActiveColor ? AppColors.badgeBlue : AppColors.textCaption;
+    final labelColor = _isActiveColor
+        ? AppColors.badgeBlue
+        : AppColors.textCaption;
 
     return Column(
       children: [
@@ -214,8 +216,18 @@ class _WorkerDistanceFilterBottomSheetState
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('0 KM', style: AppTypography.overline.copyWith(color: AppColors.textCaption)),
-            Text('2 KM', style: AppTypography.overline.copyWith(color: AppColors.textCaption)),
+            Text(
+              '0 KM',
+              style: AppTypography.overline.copyWith(
+                color: AppColors.textCaption,
+              ),
+            ),
+            Text(
+              '2 KM',
+              style: AppTypography.overline.copyWith(
+                color: AppColors.textCaption,
+              ),
+            ),
           ],
         ),
       ],
@@ -267,8 +279,13 @@ class _CustomSliderThumbShape extends SliderComponentShape {
     required Size sizeWithOverflow,
   }) {
     final canvas = context.canvas;
-    final fillPaint = Paint()..color = AppColors.white..style = PaintingStyle.fill;
-    final borderPaint = Paint()..color = AppColors.border..style = PaintingStyle.stroke..strokeWidth = 1;
+    final fillPaint = Paint()
+      ..color = AppColors.white
+      ..style = PaintingStyle.fill;
+    final borderPaint = Paint()
+      ..color = AppColors.border
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
     canvas.drawCircle(center, 7, fillPaint);
     canvas.drawCircle(center, 7, borderPaint);
   }

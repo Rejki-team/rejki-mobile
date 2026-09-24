@@ -15,29 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$JobModel {
 
-/// Unique job identifier
- String get id;/// Advertisement code (e.g., "17/03/2026/1773725269")
-@JsonKey(name: 'ad_code') String get adCode;/// User ID who posted the job
-@JsonKey(name: 'user_id') String get userId;/// Nested user object (employer identity)
- UserJobModel? get user;/// Job title
- String get title;/// Job description
-@JsonKey(name: 'job_desc') String get jobDesc;/// Job requirements (optional)
-@JsonKey(name: 'job_requirements') String? get jobRequirements;/// Salary amount
- int get salary;/// Salary type (e.g., "Borongan", "Harian", "Per Jam")
-@JsonKey(name: 'salary_of_worker') String get salaryOfWorker;/// Number of workers needed
-@JsonKey(name: 'number_of_worker') int get numberOfWorker;/// Job date and time (ISO 8601 string from API)
-@JsonKey(name: 'date_of_job') String get dateOfJob;/// Full address
- String get address;/// Province
- String get province;/// City/Regency
- String get city;/// Subdistrict (Kecamatan)
- String get subdistrict;/// Ward (Kelurahan)
- String get ward;/// Village (Desa/Kampung)
- String? get village;/// Job status (e.g., "open", "closed")
- String get status;/// List of job images
- List<JobImageModel> get images;/// Count of bids derived from the bids array in the API response.
-@JsonKey(name: 'bids', fromJson: _parseBidCount, includeToJson: false) int? get bidCount;/// Job created at
-@JsonKey(name: 'created_at') String? get createdAt;/// Job updated at
-@JsonKey(name: 'updated_at') String? get updatedAt;
+ String get id;@JsonKey(name: 'poster_id') String get posterId; String get judul; String get perusahaan; String get deskripsi; String? get lokasi;@JsonKey(name: 'gaji_min') int? get gajiMin;@JsonKey(name: 'gaji_max') int? get gajiMax; String get tipe;@JsonKey(name: 'foto_urls') List<String> get fotoUrls; String get status;@JsonKey(name: 'created_at') String? get createdAt;
 /// Create a copy of JobModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -50,16 +28,16 @@ $JobModelCopyWith<JobModel> get copyWith => _$JobModelCopyWithImpl<JobModel>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is JobModel&&(identical(other.id, id) || other.id == id)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.title, title) || other.title == title)&&(identical(other.jobDesc, jobDesc) || other.jobDesc == jobDesc)&&(identical(other.jobRequirements, jobRequirements) || other.jobRequirements == jobRequirements)&&(identical(other.salary, salary) || other.salary == salary)&&(identical(other.salaryOfWorker, salaryOfWorker) || other.salaryOfWorker == salaryOfWorker)&&(identical(other.numberOfWorker, numberOfWorker) || other.numberOfWorker == numberOfWorker)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.bidCount, bidCount) || other.bidCount == bidCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is JobModel&&(identical(other.id, id) || other.id == id)&&(identical(other.posterId, posterId) || other.posterId == posterId)&&(identical(other.judul, judul) || other.judul == judul)&&(identical(other.perusahaan, perusahaan) || other.perusahaan == perusahaan)&&(identical(other.deskripsi, deskripsi) || other.deskripsi == deskripsi)&&(identical(other.lokasi, lokasi) || other.lokasi == lokasi)&&(identical(other.gajiMin, gajiMin) || other.gajiMin == gajiMin)&&(identical(other.gajiMax, gajiMax) || other.gajiMax == gajiMax)&&(identical(other.tipe, tipe) || other.tipe == tipe)&&const DeepCollectionEquality().equals(other.fotoUrls, fotoUrls)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,adCode,userId,user,title,jobDesc,jobRequirements,salary,salaryOfWorker,numberOfWorker,dateOfJob,address,province,city,subdistrict,ward,village,status,const DeepCollectionEquality().hash(images),bidCount,createdAt,updatedAt]);
+int get hashCode => Object.hash(runtimeType,id,posterId,judul,perusahaan,deskripsi,lokasi,gajiMin,gajiMax,tipe,const DeepCollectionEquality().hash(fotoUrls),status,createdAt);
 
 @override
 String toString() {
-  return 'JobModel(id: $id, adCode: $adCode, userId: $userId, user: $user, title: $title, jobDesc: $jobDesc, jobRequirements: $jobRequirements, salary: $salary, salaryOfWorker: $salaryOfWorker, numberOfWorker: $numberOfWorker, dateOfJob: $dateOfJob, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, status: $status, images: $images, bidCount: $bidCount, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'JobModel(id: $id, posterId: $posterId, judul: $judul, perusahaan: $perusahaan, deskripsi: $deskripsi, lokasi: $lokasi, gajiMin: $gajiMin, gajiMax: $gajiMax, tipe: $tipe, fotoUrls: $fotoUrls, status: $status, createdAt: $createdAt)';
 }
 
 
@@ -70,11 +48,11 @@ abstract mixin class $JobModelCopyWith<$Res>  {
   factory $JobModelCopyWith(JobModel value, $Res Function(JobModel) _then) = _$JobModelCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'ad_code') String adCode,@JsonKey(name: 'user_id') String userId, UserJobModel? user, String title,@JsonKey(name: 'job_desc') String jobDesc,@JsonKey(name: 'job_requirements') String? jobRequirements, int salary,@JsonKey(name: 'salary_of_worker') String salaryOfWorker,@JsonKey(name: 'number_of_worker') int numberOfWorker,@JsonKey(name: 'date_of_job') String dateOfJob, String address, String province, String city, String subdistrict, String ward, String? village, String status, List<JobImageModel> images,@JsonKey(name: 'bids', fromJson: _parseBidCount, includeToJson: false) int? bidCount,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt
+ String id,@JsonKey(name: 'poster_id') String posterId, String judul, String perusahaan, String deskripsi, String? lokasi,@JsonKey(name: 'gaji_min') int? gajiMin,@JsonKey(name: 'gaji_max') int? gajiMax, String tipe,@JsonKey(name: 'foto_urls') List<String> fotoUrls, String status,@JsonKey(name: 'created_at') String? createdAt
 });
 
 
-$UserJobModelCopyWith<$Res>? get user;
+
 
 }
 /// @nodoc
@@ -87,46 +65,24 @@ class _$JobModelCopyWithImpl<$Res>
 
 /// Create a copy of JobModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? user = freezed,Object? title = null,Object? jobDesc = null,Object? jobRequirements = freezed,Object? salary = null,Object? salaryOfWorker = null,Object? numberOfWorker = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = freezed,Object? status = null,Object? images = null,Object? bidCount = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? posterId = null,Object? judul = null,Object? perusahaan = null,Object? deskripsi = null,Object? lokasi = freezed,Object? gajiMin = freezed,Object? gajiMax = freezed,Object? tipe = null,Object? fotoUrls = null,Object? status = null,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,adCode: null == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
-as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as UserJobModel?,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,jobDesc: null == jobDesc ? _self.jobDesc : jobDesc // ignore: cast_nullable_to_non_nullable
-as String,jobRequirements: freezed == jobRequirements ? _self.jobRequirements : jobRequirements // ignore: cast_nullable_to_non_nullable
-as String?,salary: null == salary ? _self.salary : salary // ignore: cast_nullable_to_non_nullable
-as int,salaryOfWorker: null == salaryOfWorker ? _self.salaryOfWorker : salaryOfWorker // ignore: cast_nullable_to_non_nullable
-as String,numberOfWorker: null == numberOfWorker ? _self.numberOfWorker : numberOfWorker // ignore: cast_nullable_to_non_nullable
-as int,dateOfJob: null == dateOfJob ? _self.dateOfJob : dateOfJob // ignore: cast_nullable_to_non_nullable
-as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String,province: null == province ? _self.province : province // ignore: cast_nullable_to_non_nullable
-as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
-as String,subdistrict: null == subdistrict ? _self.subdistrict : subdistrict // ignore: cast_nullable_to_non_nullable
-as String,ward: null == ward ? _self.ward : ward // ignore: cast_nullable_to_non_nullable
-as String,village: freezed == village ? _self.village : village // ignore: cast_nullable_to_non_nullable
-as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,images: null == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
-as List<JobImageModel>,bidCount: freezed == bidCount ? _self.bidCount : bidCount // ignore: cast_nullable_to_non_nullable
-as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as String,posterId: null == posterId ? _self.posterId : posterId // ignore: cast_nullable_to_non_nullable
+as String,judul: null == judul ? _self.judul : judul // ignore: cast_nullable_to_non_nullable
+as String,perusahaan: null == perusahaan ? _self.perusahaan : perusahaan // ignore: cast_nullable_to_non_nullable
+as String,deskripsi: null == deskripsi ? _self.deskripsi : deskripsi // ignore: cast_nullable_to_non_nullable
+as String,lokasi: freezed == lokasi ? _self.lokasi : lokasi // ignore: cast_nullable_to_non_nullable
+as String?,gajiMin: freezed == gajiMin ? _self.gajiMin : gajiMin // ignore: cast_nullable_to_non_nullable
+as int?,gajiMax: freezed == gajiMax ? _self.gajiMax : gajiMax // ignore: cast_nullable_to_non_nullable
+as int?,tipe: null == tipe ? _self.tipe : tipe // ignore: cast_nullable_to_non_nullable
+as String,fotoUrls: null == fotoUrls ? _self.fotoUrls : fotoUrls // ignore: cast_nullable_to_non_nullable
+as List<String>,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
-/// Create a copy of JobModel
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$UserJobModelCopyWith<$Res>? get user {
-    if (_self.user == null) {
-    return null;
-  }
 
-  return $UserJobModelCopyWith<$Res>(_self.user!, (value) {
-    return _then(_self.copyWith(user: value));
-  });
-}
 }
 
 
@@ -208,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'ad_code')  String adCode, @JsonKey(name: 'user_id')  String userId,  UserJobModel? user,  String title, @JsonKey(name: 'job_desc')  String jobDesc, @JsonKey(name: 'job_requirements')  String? jobRequirements,  int salary, @JsonKey(name: 'salary_of_worker')  String salaryOfWorker, @JsonKey(name: 'number_of_worker')  int numberOfWorker, @JsonKey(name: 'date_of_job')  String dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageModel> images, @JsonKey(name: 'bids', fromJson: _parseBidCount, includeToJson: false)  int? bidCount, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'poster_id')  String posterId,  String judul,  String perusahaan,  String deskripsi,  String? lokasi, @JsonKey(name: 'gaji_min')  int? gajiMin, @JsonKey(name: 'gaji_max')  int? gajiMax,  String tipe, @JsonKey(name: 'foto_urls')  List<String> fotoUrls,  String status, @JsonKey(name: 'created_at')  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _JobModel() when $default != null:
-return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.jobDesc,_that.jobRequirements,_that.salary,_that.salaryOfWorker,_that.numberOfWorker,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.bidCount,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.posterId,_that.judul,_that.perusahaan,_that.deskripsi,_that.lokasi,_that.gajiMin,_that.gajiMax,_that.tipe,_that.fotoUrls,_that.status,_that.createdAt);case _:
   return orElse();
 
 }
@@ -229,10 +185,10 @@ return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'ad_code')  String adCode, @JsonKey(name: 'user_id')  String userId,  UserJobModel? user,  String title, @JsonKey(name: 'job_desc')  String jobDesc, @JsonKey(name: 'job_requirements')  String? jobRequirements,  int salary, @JsonKey(name: 'salary_of_worker')  String salaryOfWorker, @JsonKey(name: 'number_of_worker')  int numberOfWorker, @JsonKey(name: 'date_of_job')  String dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageModel> images, @JsonKey(name: 'bids', fromJson: _parseBidCount, includeToJson: false)  int? bidCount, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'poster_id')  String posterId,  String judul,  String perusahaan,  String deskripsi,  String? lokasi, @JsonKey(name: 'gaji_min')  int? gajiMin, @JsonKey(name: 'gaji_max')  int? gajiMax,  String tipe, @JsonKey(name: 'foto_urls')  List<String> fotoUrls,  String status, @JsonKey(name: 'created_at')  String? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _JobModel():
-return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.jobDesc,_that.jobRequirements,_that.salary,_that.salaryOfWorker,_that.numberOfWorker,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.bidCount,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.posterId,_that.judul,_that.perusahaan,_that.deskripsi,_that.lokasi,_that.gajiMin,_that.gajiMax,_that.tipe,_that.fotoUrls,_that.status,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -249,10 +205,10 @@ return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'ad_code')  String adCode, @JsonKey(name: 'user_id')  String userId,  UserJobModel? user,  String title, @JsonKey(name: 'job_desc')  String jobDesc, @JsonKey(name: 'job_requirements')  String? jobRequirements,  int salary, @JsonKey(name: 'salary_of_worker')  String salaryOfWorker, @JsonKey(name: 'number_of_worker')  int numberOfWorker, @JsonKey(name: 'date_of_job')  String dateOfJob,  String address,  String province,  String city,  String subdistrict,  String ward,  String? village,  String status,  List<JobImageModel> images, @JsonKey(name: 'bids', fromJson: _parseBidCount, includeToJson: false)  int? bidCount, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'poster_id')  String posterId,  String judul,  String perusahaan,  String deskripsi,  String? lokasi, @JsonKey(name: 'gaji_min')  int? gajiMin, @JsonKey(name: 'gaji_max')  int? gajiMax,  String tipe, @JsonKey(name: 'foto_urls')  List<String> fotoUrls,  String status, @JsonKey(name: 'created_at')  String? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _JobModel() when $default != null:
-return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.jobDesc,_that.jobRequirements,_that.salary,_that.salaryOfWorker,_that.numberOfWorker,_that.dateOfJob,_that.address,_that.province,_that.city,_that.subdistrict,_that.ward,_that.village,_that.status,_that.images,_that.bidCount,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.posterId,_that.judul,_that.perusahaan,_that.deskripsi,_that.lokasi,_that.gajiMin,_that.gajiMax,_that.tipe,_that.fotoUrls,_that.status,_that.createdAt);case _:
   return null;
 
 }
@@ -264,60 +220,27 @@ return $default(_that.id,_that.adCode,_that.userId,_that.user,_that.title,_that.
 @JsonSerializable()
 
 class _JobModel extends JobModel {
-  const _JobModel({required this.id, @JsonKey(name: 'ad_code') required this.adCode, @JsonKey(name: 'user_id') required this.userId, this.user, required this.title, @JsonKey(name: 'job_desc') required this.jobDesc, @JsonKey(name: 'job_requirements') this.jobRequirements, required this.salary, @JsonKey(name: 'salary_of_worker') required this.salaryOfWorker, @JsonKey(name: 'number_of_worker') required this.numberOfWorker, @JsonKey(name: 'date_of_job') required this.dateOfJob, required this.address, required this.province, required this.city, required this.subdistrict, required this.ward, this.village, required this.status, final  List<JobImageModel> images = const [], @JsonKey(name: 'bids', fromJson: _parseBidCount, includeToJson: false) this.bidCount, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt}): _images = images,super._();
+  const _JobModel({required this.id, @JsonKey(name: 'poster_id') required this.posterId, required this.judul, required this.perusahaan, required this.deskripsi, this.lokasi, @JsonKey(name: 'gaji_min') this.gajiMin, @JsonKey(name: 'gaji_max') this.gajiMax, required this.tipe, @JsonKey(name: 'foto_urls') final  List<String> fotoUrls = const [], required this.status, @JsonKey(name: 'created_at') this.createdAt}): _fotoUrls = fotoUrls,super._();
   factory _JobModel.fromJson(Map<String, dynamic> json) => _$JobModelFromJson(json);
 
-/// Unique job identifier
 @override final  String id;
-/// Advertisement code (e.g., "17/03/2026/1773725269")
-@override@JsonKey(name: 'ad_code') final  String adCode;
-/// User ID who posted the job
-@override@JsonKey(name: 'user_id') final  String userId;
-/// Nested user object (employer identity)
-@override final  UserJobModel? user;
-/// Job title
-@override final  String title;
-/// Job description
-@override@JsonKey(name: 'job_desc') final  String jobDesc;
-/// Job requirements (optional)
-@override@JsonKey(name: 'job_requirements') final  String? jobRequirements;
-/// Salary amount
-@override final  int salary;
-/// Salary type (e.g., "Borongan", "Harian", "Per Jam")
-@override@JsonKey(name: 'salary_of_worker') final  String salaryOfWorker;
-/// Number of workers needed
-@override@JsonKey(name: 'number_of_worker') final  int numberOfWorker;
-/// Job date and time (ISO 8601 string from API)
-@override@JsonKey(name: 'date_of_job') final  String dateOfJob;
-/// Full address
-@override final  String address;
-/// Province
-@override final  String province;
-/// City/Regency
-@override final  String city;
-/// Subdistrict (Kecamatan)
-@override final  String subdistrict;
-/// Ward (Kelurahan)
-@override final  String ward;
-/// Village (Desa/Kampung)
-@override final  String? village;
-/// Job status (e.g., "open", "closed")
-@override final  String status;
-/// List of job images
- final  List<JobImageModel> _images;
-/// List of job images
-@override@JsonKey() List<JobImageModel> get images {
-  if (_images is EqualUnmodifiableListView) return _images;
+@override@JsonKey(name: 'poster_id') final  String posterId;
+@override final  String judul;
+@override final  String perusahaan;
+@override final  String deskripsi;
+@override final  String? lokasi;
+@override@JsonKey(name: 'gaji_min') final  int? gajiMin;
+@override@JsonKey(name: 'gaji_max') final  int? gajiMax;
+@override final  String tipe;
+ final  List<String> _fotoUrls;
+@override@JsonKey(name: 'foto_urls') List<String> get fotoUrls {
+  if (_fotoUrls is EqualUnmodifiableListView) return _fotoUrls;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_images);
+  return EqualUnmodifiableListView(_fotoUrls);
 }
 
-/// Count of bids derived from the bids array in the API response.
-@override@JsonKey(name: 'bids', fromJson: _parseBidCount, includeToJson: false) final  int? bidCount;
-/// Job created at
+@override final  String status;
 @override@JsonKey(name: 'created_at') final  String? createdAt;
-/// Job updated at
-@override@JsonKey(name: 'updated_at') final  String? updatedAt;
 
 /// Create a copy of JobModel
 /// with the given fields replaced by the non-null parameter values.
@@ -332,16 +255,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _JobModel&&(identical(other.id, id) || other.id == id)&&(identical(other.adCode, adCode) || other.adCode == adCode)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.title, title) || other.title == title)&&(identical(other.jobDesc, jobDesc) || other.jobDesc == jobDesc)&&(identical(other.jobRequirements, jobRequirements) || other.jobRequirements == jobRequirements)&&(identical(other.salary, salary) || other.salary == salary)&&(identical(other.salaryOfWorker, salaryOfWorker) || other.salaryOfWorker == salaryOfWorker)&&(identical(other.numberOfWorker, numberOfWorker) || other.numberOfWorker == numberOfWorker)&&(identical(other.dateOfJob, dateOfJob) || other.dateOfJob == dateOfJob)&&(identical(other.address, address) || other.address == address)&&(identical(other.province, province) || other.province == province)&&(identical(other.city, city) || other.city == city)&&(identical(other.subdistrict, subdistrict) || other.subdistrict == subdistrict)&&(identical(other.ward, ward) || other.ward == ward)&&(identical(other.village, village) || other.village == village)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.bidCount, bidCount) || other.bidCount == bidCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _JobModel&&(identical(other.id, id) || other.id == id)&&(identical(other.posterId, posterId) || other.posterId == posterId)&&(identical(other.judul, judul) || other.judul == judul)&&(identical(other.perusahaan, perusahaan) || other.perusahaan == perusahaan)&&(identical(other.deskripsi, deskripsi) || other.deskripsi == deskripsi)&&(identical(other.lokasi, lokasi) || other.lokasi == lokasi)&&(identical(other.gajiMin, gajiMin) || other.gajiMin == gajiMin)&&(identical(other.gajiMax, gajiMax) || other.gajiMax == gajiMax)&&(identical(other.tipe, tipe) || other.tipe == tipe)&&const DeepCollectionEquality().equals(other._fotoUrls, _fotoUrls)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,adCode,userId,user,title,jobDesc,jobRequirements,salary,salaryOfWorker,numberOfWorker,dateOfJob,address,province,city,subdistrict,ward,village,status,const DeepCollectionEquality().hash(_images),bidCount,createdAt,updatedAt]);
+int get hashCode => Object.hash(runtimeType,id,posterId,judul,perusahaan,deskripsi,lokasi,gajiMin,gajiMax,tipe,const DeepCollectionEquality().hash(_fotoUrls),status,createdAt);
 
 @override
 String toString() {
-  return 'JobModel(id: $id, adCode: $adCode, userId: $userId, user: $user, title: $title, jobDesc: $jobDesc, jobRequirements: $jobRequirements, salary: $salary, salaryOfWorker: $salaryOfWorker, numberOfWorker: $numberOfWorker, dateOfJob: $dateOfJob, address: $address, province: $province, city: $city, subdistrict: $subdistrict, ward: $ward, village: $village, status: $status, images: $images, bidCount: $bidCount, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'JobModel(id: $id, posterId: $posterId, judul: $judul, perusahaan: $perusahaan, deskripsi: $deskripsi, lokasi: $lokasi, gajiMin: $gajiMin, gajiMax: $gajiMax, tipe: $tipe, fotoUrls: $fotoUrls, status: $status, createdAt: $createdAt)';
 }
 
 
@@ -352,11 +275,11 @@ abstract mixin class _$JobModelCopyWith<$Res> implements $JobModelCopyWith<$Res>
   factory _$JobModelCopyWith(_JobModel value, $Res Function(_JobModel) _then) = __$JobModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'ad_code') String adCode,@JsonKey(name: 'user_id') String userId, UserJobModel? user, String title,@JsonKey(name: 'job_desc') String jobDesc,@JsonKey(name: 'job_requirements') String? jobRequirements, int salary,@JsonKey(name: 'salary_of_worker') String salaryOfWorker,@JsonKey(name: 'number_of_worker') int numberOfWorker,@JsonKey(name: 'date_of_job') String dateOfJob, String address, String province, String city, String subdistrict, String ward, String? village, String status, List<JobImageModel> images,@JsonKey(name: 'bids', fromJson: _parseBidCount, includeToJson: false) int? bidCount,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt
+ String id,@JsonKey(name: 'poster_id') String posterId, String judul, String perusahaan, String deskripsi, String? lokasi,@JsonKey(name: 'gaji_min') int? gajiMin,@JsonKey(name: 'gaji_max') int? gajiMax, String tipe,@JsonKey(name: 'foto_urls') List<String> fotoUrls, String status,@JsonKey(name: 'created_at') String? createdAt
 });
 
 
-@override $UserJobModelCopyWith<$Res>? get user;
+
 
 }
 /// @nodoc
@@ -369,47 +292,25 @@ class __$JobModelCopyWithImpl<$Res>
 
 /// Create a copy of JobModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? adCode = null,Object? userId = null,Object? user = freezed,Object? title = null,Object? jobDesc = null,Object? jobRequirements = freezed,Object? salary = null,Object? salaryOfWorker = null,Object? numberOfWorker = null,Object? dateOfJob = null,Object? address = null,Object? province = null,Object? city = null,Object? subdistrict = null,Object? ward = null,Object? village = freezed,Object? status = null,Object? images = null,Object? bidCount = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? posterId = null,Object? judul = null,Object? perusahaan = null,Object? deskripsi = null,Object? lokasi = freezed,Object? gajiMin = freezed,Object? gajiMax = freezed,Object? tipe = null,Object? fotoUrls = null,Object? status = null,Object? createdAt = freezed,}) {
   return _then(_JobModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,adCode: null == adCode ? _self.adCode : adCode // ignore: cast_nullable_to_non_nullable
-as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as UserJobModel?,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,jobDesc: null == jobDesc ? _self.jobDesc : jobDesc // ignore: cast_nullable_to_non_nullable
-as String,jobRequirements: freezed == jobRequirements ? _self.jobRequirements : jobRequirements // ignore: cast_nullable_to_non_nullable
-as String?,salary: null == salary ? _self.salary : salary // ignore: cast_nullable_to_non_nullable
-as int,salaryOfWorker: null == salaryOfWorker ? _self.salaryOfWorker : salaryOfWorker // ignore: cast_nullable_to_non_nullable
-as String,numberOfWorker: null == numberOfWorker ? _self.numberOfWorker : numberOfWorker // ignore: cast_nullable_to_non_nullable
-as int,dateOfJob: null == dateOfJob ? _self.dateOfJob : dateOfJob // ignore: cast_nullable_to_non_nullable
-as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String,province: null == province ? _self.province : province // ignore: cast_nullable_to_non_nullable
-as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
-as String,subdistrict: null == subdistrict ? _self.subdistrict : subdistrict // ignore: cast_nullable_to_non_nullable
-as String,ward: null == ward ? _self.ward : ward // ignore: cast_nullable_to_non_nullable
-as String,village: freezed == village ? _self.village : village // ignore: cast_nullable_to_non_nullable
-as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,images: null == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
-as List<JobImageModel>,bidCount: freezed == bidCount ? _self.bidCount : bidCount // ignore: cast_nullable_to_non_nullable
-as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as String?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as String,posterId: null == posterId ? _self.posterId : posterId // ignore: cast_nullable_to_non_nullable
+as String,judul: null == judul ? _self.judul : judul // ignore: cast_nullable_to_non_nullable
+as String,perusahaan: null == perusahaan ? _self.perusahaan : perusahaan // ignore: cast_nullable_to_non_nullable
+as String,deskripsi: null == deskripsi ? _self.deskripsi : deskripsi // ignore: cast_nullable_to_non_nullable
+as String,lokasi: freezed == lokasi ? _self.lokasi : lokasi // ignore: cast_nullable_to_non_nullable
+as String?,gajiMin: freezed == gajiMin ? _self.gajiMin : gajiMin // ignore: cast_nullable_to_non_nullable
+as int?,gajiMax: freezed == gajiMax ? _self.gajiMax : gajiMax // ignore: cast_nullable_to_non_nullable
+as int?,tipe: null == tipe ? _self.tipe : tipe // ignore: cast_nullable_to_non_nullable
+as String,fotoUrls: null == fotoUrls ? _self._fotoUrls : fotoUrls // ignore: cast_nullable_to_non_nullable
+as List<String>,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
 
-/// Create a copy of JobModel
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$UserJobModelCopyWith<$Res>? get user {
-    if (_self.user == null) {
-    return null;
-  }
 
-  return $UserJobModelCopyWith<$Res>(_self.user!, (value) {
-    return _then(_self.copyWith(user: value));
-  });
-}
 }
 
 // dart format on

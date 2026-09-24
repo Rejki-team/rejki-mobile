@@ -28,22 +28,26 @@ class TrainingDetailCubit extends Cubit<TrainingDetailState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        isLoading: false,
-        isFailure: true,
-        errorMessage: failure.maybeWhen(
-          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
-          orElse: () => 'Gagal memuat detail pelatihan.',
+      (failure) => emit(
+        state.copyWith(
+          isLoading: false,
+          isFailure: true,
+          errorMessage: failure.maybeWhen(
+            serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+            orElse: () => 'Gagal memuat detail pelatihan.',
+          ),
         ),
-      )),
+      ),
       (entity) {
         final currentUserId = _sessionStorage.getUserId();
         final isOwner = currentUserId != null && entity.userId == currentUserId;
-        emit(state.copyWith(
-          isLoading: false,
-          training: _entityToModel(entity),
-          isOwner: isOwner,
-        ));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            training: _entityToModel(entity),
+            isOwner: isOwner,
+          ),
+        );
       },
     );
   }
@@ -57,17 +61,18 @@ class TrainingDetailCubit extends Cubit<TrainingDetailState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        isRegistering: false,
-        errorMessage: failure.maybeWhen(
-          serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
-          orElse: () => 'Gagal mendaftar pelatihan.',
+      (failure) => emit(
+        state.copyWith(
+          isRegistering: false,
+          errorMessage: failure.maybeWhen(
+            serverError: (msg) => msg ?? 'Terjadi kesalahan pada server',
+            orElse: () => 'Gagal mendaftar pelatihan.',
+          ),
         ),
-      )),
-      (_) => emit(state.copyWith(
-        isRegistering: false,
-        isRegistrationSuccess: true,
-      )),
+      ),
+      (_) => emit(
+        state.copyWith(isRegistering: false, isRegistrationSuccess: true),
+      ),
     );
   }
 
@@ -77,17 +82,19 @@ class TrainingDetailCubit extends Cubit<TrainingDetailState> {
         : null;
 
     final facilities = entity.facilities
-        .map((f) => TrainingFacilityModel(
-              iconAsset: AppAssets.iconPaper,
-              label: f,
-            ))
+        .map(
+          (f) =>
+              TrainingFacilityModel(iconAsset: AppAssets.iconPaper, label: f),
+        )
         .toList();
 
     final regionParts = <String>[
       if (entity.village != null && entity.village!.isNotEmpty) entity.village!,
-      if (entity.district != null && entity.district!.isNotEmpty) entity.district!,
+      if (entity.district != null && entity.district!.isNotEmpty)
+        entity.district!,
       if (entity.city != null && entity.city!.isNotEmpty) entity.city!,
-      if (entity.province != null && entity.province!.isNotEmpty) entity.province!,
+      if (entity.province != null && entity.province!.isNotEmpty)
+        entity.province!,
     ];
     final region = regionParts.isNotEmpty ? regionParts.join(', ') : null;
 
@@ -95,7 +102,8 @@ class TrainingDetailCubit extends Cubit<TrainingDetailState> {
       id: entity.id,
       imageUrl: imageUrl,
       title: entity.title,
-      badge: entity.certificate ??
+      badge:
+          entity.certificate ??
           (entity.feePerPerson == 0 ? 'Gratis' : 'Berbayar'),
       description: entity.description,
       date: _formatDate(entity.dateOfTraining),
@@ -114,8 +122,12 @@ class TrainingDetailCubit extends Cubit<TrainingDetailState> {
       contactRole: entity.role,
       region: region,
       bankName: entity.bankName.isEmpty ? null : entity.bankName,
-      bankAccountNumber: entity.bankAccountNumber.isEmpty ? null : entity.bankAccountNumber,
-      bankAccountHolderName: entity.bankAccountHolderName.isEmpty ? null : entity.bankAccountHolderName,
+      bankAccountNumber: entity.bankAccountNumber.isEmpty
+          ? null
+          : entity.bankAccountNumber,
+      bankAccountHolderName: entity.bankAccountHolderName.isEmpty
+          ? null
+          : entity.bankAccountHolderName,
     );
   }
 
@@ -123,8 +135,18 @@ class TrainingDetailCubit extends Cubit<TrainingDetailState> {
     try {
       final dt = DateTime.parse(raw);
       const months = [
-        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
       ];
       return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
     } catch (_) {
